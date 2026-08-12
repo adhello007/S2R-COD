@@ -1,3 +1,5 @@
+/Result*
 /Dataset*
 *.pth
 __pycache__*
+.python-version

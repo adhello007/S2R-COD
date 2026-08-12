@@ -17,14 +17,27 @@ parser.add_argument('--model_path', type=str,
                     default='./Snapshot/SINet-v2/test/Tea_epoch_best.pth')
 parser.add_argument('--test_save', type=str,
                     default='./Result/SINet-v2/test/')
+parser.add_argument('--gpu', type=int, default=0, help='choose which gpu you use')
 opt = parser.parse_args()
 
+torch.cuda.set_device(opt.gpu)
 
 if opt.network == 'SINet':
     model = SINet_ResNet50().cuda()
 elif opt.network == 'SINet-v2':
     model = Network().cuda()
-model.load_state_dict(torch.load(opt.model_path))
+
+# Load onto CPU and let load_state_dict copy across to the model's device.
+# A state_dict whose tensors live on a *different* CUDA device than the model, is
+# silently not copied at all -- load_state_dict still returns "All keys matched
+# successfully", leaving a randomly initialised network. See CHECKPOINT_LOADING_BUG.md.
+state_dict = torch.load(opt.model_path, map_location='cpu')
+model.load_state_dict(state_dict)
+loaded = model.state_dict()
+copied = sum(torch.equal(v.to(loaded[k].device), loaded[k]) for k, v in state_dict.items())
+assert copied == len(state_dict), (
+    f'checkpoint load copied only {copied}/{len(state_dict)} tensors from '
+    f'{opt.model_path} -- refusing to run inference on partially loaded weights')
 model.eval()
 
 

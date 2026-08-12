@@ -1,0 +1,6 @@
+python MyTrain.py   --network SINet   --task S2C   --gpu 0   --iteration 2   --save_model ./Snapshot/SINet/S2C/   --source_root ./Dataset/Source/HKU-IS/   --target_root ./Dataset/Target/   --val_root ./Dataset/Val/CAMO/   2>&1 | tee train_sinet_s2c.log
+
+
+python MyTest.py  --network SINet  --model_path ./Snapshot/SINet/S2C/Tea_epoch_best.pth  --test_save ./Result/SINet/S2C
+
+Eval$ python MyEval.py --gt_root  ../Dataset/Test --pred_root ../Result/SINet/S2C --txt_name  SINet/S2C

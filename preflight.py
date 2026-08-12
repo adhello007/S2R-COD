@@ -22,6 +22,11 @@ import importlib
 import os
 import shutil
 import sys
+import warnings
+
+# The deprecations these raise (F.upsample, reduce=) are themselves checked and
+# reported in section I -- silence the raw tracebacks so the report stays readable.
+warnings.filterwarnings("ignore", category=UserWarning)
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 
@@ -436,7 +441,7 @@ def check_outputs(opt):
         n = len(os.listdir(os.path.join(it2, "GT"))) if os.path.isdir(
             os.path.join(it2, "GT")) else 0
         report("WARN", "no stale CLS output", f"{it2} exists ({n} GT files)",
-               f"CLS deletes it, but remove it first to avoid ambiguity: rm -rf {it2}")
+               f"CLS rmtree's it at the start of the cycle: rm -rf {it2}")
     else:
         report("PASS", "no stale CLS output", f"{it2} absent")
 
@@ -462,6 +467,71 @@ def check_outputs(opt):
         report("PASS", "free disk", f"{human(free)} free, ~{human(need)} needed")
     else:
         report("FAIL", "free disk", f"{human(free)} free, ~{human(need)} needed")
+
+    check_cls_collision(opt, it2)
+
+
+@guard("CLS output collision")
+def check_cls_collision(opt, it2):
+    """CLS derives its output path from --source_root ALONE (CLS.py:15-16) -- the
+    network name is not part of it. Two networks sharing a --source_root therefore
+    fight over one directory, and CLS starts by rmtree'ing it (CLS.py:18-20)."""
+    report("INFO", "CLS output path", f"{it2}  (derived from --source_root only, "
+           "NOT from --network)")
+
+    # A concurrent run on the same source_root is a destructive race: the other
+    # process's rmtree deletes this run's round-2 dataset mid-epoch.
+    others = []
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit() or int(pid) == os.getpid():
+            continue
+        try:
+            with open(f"/proc/{pid}/cmdline", "rb") as fh:
+                argv = fh.read().decode("utf-8", "replace").split("\0")
+        except OSError:
+            continue
+        if not any("MyTrain.py" in a for a in argv):
+            continue
+        root = "./Dataset/Source/CNC/"  # MyTrain.py default
+        for i, a in enumerate(argv):
+            if a == "--source_root" and i + 1 < len(argv):
+                root = argv[i + 1]
+            elif a.startswith("--source_root="):
+                root = a.split("=", 1)[1]
+        if any(a == "S2C" for a in argv):
+            root = "./Dataset/Source/HKU-IS/"  # --task S2C overrides after parsing
+        if os.path.normpath(root) == os.path.normpath(opt.source_root):
+            others.append((pid, root))
+
+    if others:
+        report("FAIL", "no concurrent run on this source_root",
+               f"MyTrain.py already running as pid(s) "
+               f"{', '.join(p for p, _ in others)} with the same --source_root",
+               f"both will rmtree {it2}; give each network its own --source_root "
+               "(see the fix below) or run them strictly sequentially")
+    else:
+        report("PASS", "no concurrent run on this source_root", "no other MyTrain.py")
+
+    # Even sequentially, the second network destroys the first network's pseudo-label
+    # set. Detect that a different network has already trained against this root.
+    siblings = []
+    snap_parent = os.path.dirname(os.path.dirname(opt.save_model.rstrip("/")))
+    if os.path.isdir(snap_parent):
+        for d in sorted(os.listdir(snap_parent)):
+            if d != os.path.basename(os.path.dirname(opt.save_model.rstrip("/"))):
+                if any(f.endswith(".pth")
+                       for _, _, fs in os.walk(os.path.join(snap_parent, d))
+                       for f in fs):
+                    siblings.append(d)
+    if siblings:
+        report("WARN", "no other network trained on this source_root",
+               f"checkpoints exist for {siblings}; with --task S2C every network is "
+               f"forced onto {opt.source_root}, so this run's CLS will rmtree their "
+               f"pseudo-label set",
+               f"archive it first: mv {it2.rstrip('/')} {it2.rstrip('/')}-<network>  "
+               "(--source_root cannot separate them — MyTrain.py:159 overrides it)")
+    else:
+        report("PASS", "no other network trained on this source_root", "")
 
 
 # ======================================================== H. config sanity ===
@@ -721,10 +791,23 @@ def main():
     if opt.network == "SINet-v2":  # mirror MyTrain.py:174-180
         opt.epoch, opt.batchsize = 100, 32
 
+    # MyTrain.py:159 hard-resets source_root inside the --task S2C block, AFTER
+    # argparse. Mirror it so every path this script reports is the one actually used.
+    s2c_forced = "./Dataset/Source/HKU-IS/"
+    overridden = opt.task == "S2C" and os.path.normpath(opt.source_root) != os.path.normpath(s2c_forced)
+    if opt.task == "S2C":
+        opt.source_root = s2c_forced
+
     print(f"{BOLD}S2R-COD pre-flight — {opt.network} / {opt.task} / cuda:{opt.gpu}{OFF}")
     print(f"{GREY}repo: {REPO}{OFF}")
 
     check_repo()
+    if overridden:
+        section("A0. Argument override")
+        report("WARN", "--source_root is a no-op with --task S2C",
+               f"MyTrain.py:159 forces source_root = {s2c_forced}; "
+               "everything below reports that path",
+               "to use a different source root you must edit MyTrain.py:159")
     check_packages()
     torch = check_cuda(opt)
     check_backbone(opt, torch)

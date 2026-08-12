@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSRDA — A Visual Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --display:"Space Grotesk","IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --text-primary:#24231f;
+  --text-secondary:#5f5e58;
+  --text-muted:#8a887f;
+  --surface-0:#f6f7f8;
+  --surface-1:#ffffff;
+  --border:#e6e4dc;
+  --border-strong:#d6d3c8;
+  --accent:#0f6e56;
+  --accent-soft:#e1f5ee;
+  --arrow:#73726c;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --text-primary:#ecebe4;
+    --text-secondary:#b4b2a9;
+    --text-muted:#8a887f;
+    --surface-0:#191a1b;
+    --surface-1:#232422;
+    --border:#3a3a36;
+    --border-strong:#4a4a45;
+    --accent:#5dcaa5;
+    --accent-soft:#0f2e28;
+    --arrow:#9c9a92;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:var(--sans);font-size:16px;line-height:1.72;font-weight:400}
+.wrap{max-width:880px;margin:0 auto;padding:72px 24px 104px}
+
+header{margin-bottom:56px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--accent);margin:0 0 18px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px}
+.sub{font-size:18px;color:var(--text-secondary);max-width:60ch;margin:0 0 22px}
+.rule{width:56px;height:3px;background:var(--accent);border-radius:2px;margin:0 0 22px}
+.meta{font-family:var(--mono);font-size:13px;color:var(--text-secondary);margin:0;display:flex;flex-wrap:wrap;gap:6px 4px;align-items:baseline}
+.meta .tick{color:var(--accent)}
+
+section{margin:0 0 60px;scroll-margin-top:24px}
+.sec-eyebrow{font-family:var(--mono);font-size:12.5px;color:var(--accent);letter-spacing:.03em;margin:0 0 8px}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(22px,3.4vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0 0 16px}
+p{margin:0 0 16px;max-width:70ch}
+p.tight{margin-bottom:10px}
+code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:5px;white-space:nowrap}
+strong{font-weight:600}
+
+figure.diagram{margin:26px 0 12px;background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:22px 22px 14px}
+figure.diagram svg{display:block;width:100%;height:auto}
+figcaption{font-family:var(--mono);font-size:12px;color:var(--text-muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+figcaption b{color:var(--text-secondary);font-weight:500}
+
+table{width:100%;border-collapse:collapse;margin:20px 0 8px;font-size:14.5px}
+caption{text-align:left;font-family:var(--mono);font-size:12.5px;color:var(--text-muted);padding-bottom:10px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+thead th{font-weight:500;color:var(--text-secondary);font-size:13px;border-bottom:1px solid var(--border-strong)}
+td.sym{font-family:var(--mono);color:var(--text-primary);white-space:nowrap}
+td.val{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+
+.note{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:16px 0}
+.note.warn{border-color:var(--border-strong)}
+.note .chip{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.02em;padding:2px 9px;border-radius:20px;margin-bottom:8px}
+.chip.info{background:var(--accent-soft);color:var(--accent)}
+.chip.caution{background:#faece7;color:#993c1d}
+@media (prefers-color-scheme:dark){.chip.caution{background:#3a1c10;color:#f0997b}}
+.note p{margin:4px 0 0;font-size:15px}
+.note p+p{margin-top:8px}
+
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:12px;color:var(--text-muted)}
+
+svg .t{font-family:var(--sans);font-size:14px;fill:var(--text-primary)}
+svg .ts{font-family:var(--sans);font-size:12px;fill:var(--text-secondary)}
+svg .th{font-family:var(--sans);font-weight:500;font-size:14px;fill:var(--text-primary)}
+svg .arr{fill:none;stroke:var(--arrow);stroke-width:1.5}
+svg .c-gray{--f:#F1EFE8;--s:#5F5E5A;--tt:#444441;--st:#5F5E5A}
+svg .c-blue{--f:#E6F1FB;--s:#185FA5;--tt:#0C447C;--st:#185FA5}
+svg .c-teal{--f:#E1F5EE;--s:#0F6E56;--tt:#085041;--st:#0F6E56}
+svg .c-purple{--f:#EEEDFE;--s:#534AB7;--tt:#3C3489;--st:#534AB7}
+svg .c-coral{--f:#FAECE7;--s:#993C1D;--tt:#712B13;--st:#993C1D}
+svg .c-amber{--f:#FAEEDA;--s:#854F0B;--tt:#633806;--st:#854F0B}
+svg .c-pink{--f:#FBEAF0;--s:#993556;--tt:#72243E;--st:#993556}
+svg [class*="c-"]>rect,svg [class*="c-"]>circle,svg [class*="c-"]>ellipse,svg rect[class*="c-"],svg circle[class*="c-"]{fill:var(--f);stroke:var(--s)}
+svg [class*="c-"]>.th,svg [class*="c-"]>.t{fill:var(--tt)}
+svg [class*="c-"]>.ts{fill:var(--st)}
+@media (prefers-color-scheme:dark){
+  svg .c-gray{--f:#444441;--s:#B4B2A9;--tt:#D3D1C7;--st:#B4B2A9}
+  svg .c-blue{--f:#0C447C;--s:#85B7EB;--tt:#B5D4F4;--st:#85B7EB}
+  svg .c-teal{--f:#085041;--s:#5DCAA5;--tt:#9FE1CB;--st:#5DCAA5}
+  svg .c-purple{--f:#3C3489;--s:#AFA9EC;--tt:#CECBF6;--st:#AFA9EC}
+  svg .c-coral{--f:#712B13;--s:#F0997B;--tt:#F5C4B3;--st:#F0997B}
+  svg .c-amber{--f:#633806;--s:#EF9F27;--tt:#FAC775;--st:#EF9F27}
+  svg .c-pink{--f:#72243E;--s:#ED93B1;--tt:#F4C0D1;--st:#ED93B1}
+}
+@media print{
+  html{--text-primary:#1a1a18;--text-secondary:#55544f;--surface-0:#fff;--surface-1:#fff;--border:#dddbd3;--arrow:#73726c}
+  body{background:#fff}
+  figure.diagram{box-shadow:none}
+  section,figure,table,.note{break-inside:avoid;page-break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header>
+  <p class="eyebrow">Domain adaptation · visual guide</p>
+  <h1>CSRDA: cyclic synthetic-to-real domain adaptation</h1>
+  <p class="sub">A visual walkthrough of the method and its reproduction — from the outer loop down through each mechanism, then the practical pipeline that produces the numbers.</p>
+  <div class="rule"></div>
+  <p class="meta"><span class="tick">▸</span> Table&nbsp;1 · Ŝ2C task <span class="tick">·</span> source&nbsp;=&nbsp;HKU-IS (synthetic) <span class="tick">→</span> target&nbsp;=&nbsp;COD10K (real) <span class="tick">·</span> eval&nbsp;=&nbsp;COD10K-test</p>
+</header>
+
+<section>
+  <p>CSRDA is a mean-teacher domain-adaptation method wrapped in a cyclic outer loop. It bridges the gap between labeled synthetic images and unlabeled real ones for camouflaged object detection. The sections below build the picture top-down — the loop, then the training step inside it, then the two custom pieces (the consistency loss and the pseudo-label selector) — and finish with the data layout and the four-phase reproduction run.</p>
+
+  <table>
+    <caption>Key settings for the Ŝ2C task (hard-coded as a task override, not passed on the CLI)</caption>
+    <thead><tr><th>Symbol</th><th>Meaning</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td class="sym">λ</td><td>teacher EMA smoothing</td><td class="val">0.996</td></tr>
+      <tr><td class="sym">μ</td><td>CLS agreement multiplier</td><td class="val">0.8</td></tr>
+      <tr><td class="sym">τ</td><td>CLS confidence threshold</td><td class="val">0.4</td></tr>
+      <tr><td class="sym">a, b, c</td><td>edge / region / saliency-offset weights</td><td class="val">0.9, 0.3, 0.5</td></tr>
+      <tr><td class="sym">—</td><td>optimizer / lr / batch / trainsize</td><td class="val">Adam · 1e-4 · 16 · 352</td></tr>
+      <tr><td class="sym">—</td><td>epochs · rounds · decay</td><td class="val">40 · 2 · ×0.1@30</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <p class="sec-eyebrow">01 · The big picture</p>
+  <h2>The cyclic CSRDA loop</h2>
+  <p>One invocation runs <code>--iteration</code> rounds (default 2). Each round is a full mean-teacher training run that starts from <strong>fresh ImageNet weights</strong> — round 2 does not fine-tune round 1. What carries forward is only the <em>data</em>: between rounds, CLS harvests confident predictions on the real target domain and folds them into the source set, so the supervised loss itself begins pulling the model toward the target domain instead of leaving that job entirely to the consistency term.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 260" role="img"><title>CSRDA cyclic domain-adaptation loop</title><desc>One invocation runs Round 1 (mean-teacher training), then CLS selects pseudo-labels, then Round 2 (mean-teacher training with fresh weights but augmented data), then testing and evaluation. Only data carries between rounds, not weights.</desc>
+    <defs><marker id="arrow_1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g class="c-teal"><rect x="40" y="50" width="140" height="56" rx="8" stroke-width="0.5"/><text class="th" x="110" y="72" text-anchor="middle" dominant-baseline="central">Round 1</text><text class="ts" x="110" y="90" text-anchor="middle" dominant-baseline="central">mean-teacher run</text></g>
+    <g class="c-coral"><rect x="200" y="50" width="125" height="56" rx="8" stroke-width="0.5"/><text class="th" x="262" y="72" text-anchor="middle" dominant-baseline="central">CLS</text><text class="ts" x="262" y="90" text-anchor="middle" dominant-baseline="central">harvest labels</text></g>
+    <g class="c-teal"><rect x="345" y="50" width="140" height="56" rx="8" stroke-width="0.5"/><text class="th" x="415" y="72" text-anchor="middle" dominant-baseline="central">Round 2</text><text class="ts" x="415" y="90" text-anchor="middle" dominant-baseline="central">mean-teacher run</text></g>
+    <g class="c-gray"><rect x="505" y="50" width="120" height="56" rx="8" stroke-width="0.5"/><text class="th" x="565" y="72" text-anchor="middle" dominant-baseline="central">Test + eval</text><text class="ts" x="565" y="90" text-anchor="middle" dominant-baseline="central">COD10K-test</text></g>
+    <line x1="180" y1="78" x2="198" y2="78" class="arr" marker-end="url(#arrow_1)"/>
+    <line x1="325" y1="78" x2="343" y2="78" class="arr" marker-end="url(#arrow_1)"/>
+    <line x1="485" y1="78" x2="503" y2="78" class="arr" marker-end="url(#arrow_1)"/>
+    <path d="M262 106 C 262 160, 415 160, 415 106" fill="none" stroke="#D85A30" stroke-width="1" stroke-dasharray="5 5" marker-end="url(#arrow_1)"/>
+    <text class="ts" x="338" y="182" text-anchor="middle">real images added to source set</text>
+    <text class="ts" x="110" y="132" text-anchor="middle">fresh ImageNet weights</text>
+    <text class="ts" x="415" y="132" text-anchor="middle">fresh ImageNet weights</text>
+    <rect class="c-teal" x="40" y="210" width="14" height="14" rx="3" stroke-width="0.5"/><text class="ts" x="62" y="217" dominant-baseline="central">training round</text>
+    <rect class="c-coral" x="185" y="210" width="14" height="14" rx="3" stroke-width="0.5"/><text class="ts" x="207" y="217" dominant-baseline="central">pseudo-label harvest</text>
+    </svg>
+    <figcaption><b>Figure 1.</b> The outer loop. Weights reset each round; only pseudo-labeled data carries forward.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">02 · Inside one round</p>
+  <h2>The mean-teacher training step</h2>
+  <p>On every batch, two things happen in parallel. A <strong>supervised</strong> pass runs labeled source images through the student, producing <code>L_sup</code> (a BCE on both SINet outputs). A <strong>consistency</strong> pass takes the same target image in two augmentations: the teacher sees the weak view (resize + normalize) and the student sees the strong view (adds RandomAutocontrast and GaussianBlur), sharing one random horizontal flip. The teacher's map supervises the student's through <code>L_con = ESLoss</code>.</p>
+  <p>The total loss <code>L = L_sup + L_con</code> updates the student with Adam. The teacher never sees a gradient — it only ever updates as a slow EMA of the student, <code>φ ← λφ + (1−λ)θ</code> with λ = 0.996. One subtlety worth knowing: the EMA covers parameters only, not BatchNorm buffers, and the teacher runs in train() mode on target images — so it quietly accumulates target-domain batch-norm statistics.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 450" role="img"><title>Single mean-teacher training step</title><desc>Source labeled data and target strong-augmented data feed the trainable student; target weak-augmented data feeds the frozen teacher. The student produces a supervised BCE loss and a prediction; the teacher produces a prediction. The two predictions form the ESLoss consistency term. Supervised plus consistency loss updates the student with Adam, and the teacher updates as an EMA of the student.</desc>
+    <defs><marker id="arrow_2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g class="c-gray"><rect x="45" y="40" width="170" height="48" rx="8" stroke-width="0.5"/><text class="th" x="130" y="58" text-anchor="middle" dominant-baseline="central">Source: image + GT</text><text class="ts" x="130" y="76" text-anchor="middle" dominant-baseline="central">labeled</text></g>
+    <g class="c-gray"><rect x="255" y="40" width="160" height="48" rx="8" stroke-width="0.5"/><text class="th" x="335" y="58" text-anchor="middle" dominant-baseline="central">Target: strong aug</text><text class="ts" x="335" y="76" text-anchor="middle" dominant-baseline="central">unlabeled</text></g>
+    <g class="c-gray"><rect x="455" y="40" width="160" height="48" rx="8" stroke-width="0.5"/><text class="th" x="535" y="58" text-anchor="middle" dominant-baseline="central">Target: weak aug</text><text class="ts" x="535" y="76" text-anchor="middle" dominant-baseline="central">unlabeled</text></g>
+    <g class="c-teal"><rect x="130" y="140" width="205" height="52" rx="8" stroke-width="0.5"/><text class="th" x="232" y="160" text-anchor="middle" dominant-baseline="central">Student Sθ</text><text class="ts" x="232" y="178" text-anchor="middle" dominant-baseline="central">trainable, gradient descent</text></g>
+    <g class="c-purple"><rect x="425" y="140" width="190" height="52" rx="8" stroke-width="0.5"/><text class="th" x="520" y="160" text-anchor="middle" dominant-baseline="central">Teacher Tφ</text><text class="ts" x="520" y="178" text-anchor="middle" dominant-baseline="central">EMA copy, no gradient</text></g>
+    <g class="c-coral"><rect x="70" y="240" width="185" height="48" rx="8" stroke-width="0.5"/><text class="th" x="162" y="258" text-anchor="middle" dominant-baseline="central">L_sup</text><text class="ts" x="162" y="276" text-anchor="middle" dominant-baseline="central">BCE on source</text></g>
+    <g class="c-coral"><rect x="335" y="240" width="255" height="48" rx="8" stroke-width="0.5"/><text class="th" x="462" y="258" text-anchor="middle" dominant-baseline="central">L_con = ESLoss(p_stu, p_tea)</text><text class="ts" x="462" y="276" text-anchor="middle" dominant-baseline="central">edge + region consistency</text></g>
+    <g class="c-teal"><rect x="185" y="330" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="335" y="350" text-anchor="middle" dominant-baseline="central">Total loss → Adam step</text><text class="ts" x="335" y="368" text-anchor="middle" dominant-baseline="central">L = L_sup + L_con, update θ</text></g>
+    <line x1="130" y1="88" x2="180" y2="138" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="335" y1="88" x2="290" y2="138" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="535" y1="88" x2="520" y2="138" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="200" y1="192" x2="170" y2="238" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="280" y1="192" x2="400" y2="238" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="510" y1="192" x2="500" y2="238" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="170" y1="288" x2="285" y2="328" class="arr" marker-end="url(#arrow_2)"/>
+    <line x1="455" y1="288" x2="390" y2="328" class="arr" marker-end="url(#arrow_2)"/>
+    <path d="M485 356 H638 V166 H617" fill="none" stroke="#7F77DD" stroke-width="1" stroke-dasharray="5 5" marker-end="url(#arrow_2)"/>
+    <text class="ts" x="632" y="270" text-anchor="end">EMA update φ</text>
+    <rect class="c-teal" x="45" y="410" width="14" height="14" rx="3" stroke-width="0.5"/><text class="ts" x="67" y="417" dominant-baseline="central">student (trainable)</text>
+    <rect class="c-purple" x="255" y="410" width="14" height="14" rx="3" stroke-width="0.5"/><text class="ts" x="277" y="417" dominant-baseline="central">teacher (EMA, frozen)</text>
+    </svg>
+    <figcaption><b>Figure 2.</b> One step. Student learns by gradient descent; teacher trails it as an EMA.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">03 · The consistency loss</p>
+  <h2>Anatomy of ESLoss</h2>
+  <p><code>ESLoss = a · edge_loss + b · region_loss</code>, with a = 0.9 and b = 0.3. The <strong>edge</strong> term is the L1 distance between the Sobel gradient magnitudes of the two maps; the <strong>region</strong> term is a BCE between them weighted by <code>p_tea + c</code> (c = 0.5), which upweights pixels the teacher already believes are object. Because a is roughly three times b, boundary agreement dominates the signal — and boundaries are exactly where synthetic→real transfer degrades most, which is what makes the loss camouflage-aware.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 320" role="img"><title>ESLoss composition</title><desc>Student and teacher predictions both feed an edge loss, which is the L1 distance between their Sobel gradient magnitudes, and a region loss, which is a binary cross-entropy weighted by the teacher map plus a constant. The final ESLoss is 0.9 times the edge loss plus 0.3 times the region loss, so boundary agreement dominates.</desc>
+    <defs><marker id="arrow_3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g class="c-teal"><rect x="140" y="40" width="160" height="48" rx="8" stroke-width="0.5"/><text class="th" x="220" y="58" text-anchor="middle" dominant-baseline="central">p_stu</text><text class="ts" x="220" y="76" text-anchor="middle" dominant-baseline="central">student map</text></g>
+    <g class="c-purple"><rect x="380" y="40" width="160" height="48" rx="8" stroke-width="0.5"/><text class="th" x="460" y="58" text-anchor="middle" dominant-baseline="central">p_tea</text><text class="ts" x="460" y="76" text-anchor="middle" dominant-baseline="central">teacher map</text></g>
+    <g class="c-coral"><rect x="80" y="140" width="235" height="56" rx="8" stroke-width="0.5"/><text class="th" x="197" y="160" text-anchor="middle" dominant-baseline="central">edge_loss  (weight a = 0.9)</text><text class="ts" x="197" y="180" text-anchor="middle" dominant-baseline="central">L1 of Sobel gradient magnitudes</text></g>
+    <g class="c-amber"><rect x="360" y="140" width="235" height="56" rx="8" stroke-width="0.5"/><text class="th" x="477" y="160" text-anchor="middle" dominant-baseline="central">region_loss  (weight b = 0.3)</text><text class="ts" x="477" y="180" text-anchor="middle" dominant-baseline="central">BCE, weight = p_tea + c</text></g>
+    <g class="c-gray"><rect x="150" y="248" width="380" height="52" rx="8" stroke-width="0.5"/><text class="th" x="340" y="268" text-anchor="middle" dominant-baseline="central">ESLoss = a · edge_loss + b · region_loss</text><text class="ts" x="340" y="286" text-anchor="middle" dominant-baseline="central">boundary agreement dominates the signal</text></g>
+    <line x1="205" y1="88" x2="185" y2="138" class="arr" marker-end="url(#arrow_3)"/>
+    <line x1="240" y1="88" x2="420" y2="138" class="arr" marker-end="url(#arrow_3)"/>
+    <line x1="440" y1="88" x2="260" y2="138" class="arr" marker-end="url(#arrow_3)"/>
+    <line x1="475" y1="88" x2="490" y2="138" class="arr" marker-end="url(#arrow_3)"/>
+    <line x1="230" y1="196" x2="290" y2="246" class="arr" marker-end="url(#arrow_3)"/>
+    <line x1="460" y1="196" x2="400" y2="246" class="arr" marker-end="url(#arrow_3)"/>
+    </svg>
+    <figcaption><b>Figure 3.</b> Two comparisons of the same pair of maps; the edge term is weighted heavier. Note: CLS scoring uses an <em>unweighted</em>-BCE variant so its ranking isn't biased by predicted object area.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">04 · Selecting pseudo-labels</p>
+  <h2>CLS — the two-gate filter</h2>
+  <p>Between rounds, CLS decides which real target images are trustworthy enough to become supervised data. It loads the trained student (<code>Stu_40.pth</code>) and the selected teacher (<code>Tea_epoch_best.pth</code>). <strong>Pass 1</strong> measures, for every target image, how much the two disagree — <code>d(x)</code>, an unweighted ESLoss — and its dataset mean. <strong>Pass 2</strong> admits an image only if it clears both gates: the <em>agreement gate</em> (<code>d(x) &lt; μ·mean</code>, μ = 0.8), a relative self-calibrating threshold, and the <em>saturation gate</em> (teacher confidence <code>max ≥ τ</code>, τ = 0.4). Kept maps are thresholded — everything below τ zeroed — then min-max renormalized and saved as soft-mask pseudo-GTs into the next source set.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 470" role="img"><title>CLS confident label selection funnel</title><desc>CLS loads the trained student and selected teacher, measures per-image disagreement and its dataset mean in pass one, then in pass two filters each target image through an agreement gate (disagreement below 0.8 times the mean) and a saturation gate (teacher confidence at least 0.4). Images passing both gates are saved as pseudo-labels; failing either gate drops the image.</desc>
+    <defs><marker id="arrow_4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g class="c-teal"><rect x="120" y="40" width="190" height="48" rx="8" stroke-width="0.5"/><text class="th" x="215" y="58" text-anchor="middle" dominant-baseline="central">Student  Stu_40.pth</text><text class="ts" x="215" y="76" text-anchor="middle" dominant-baseline="central">trained student</text></g>
+    <g class="c-purple"><rect x="375" y="40" width="190" height="48" rx="8" stroke-width="0.5"/><text class="th" x="470" y="58" text-anchor="middle" dominant-baseline="central">Teacher  Tea_best.pth</text><text class="ts" x="470" y="76" text-anchor="middle" dominant-baseline="central">selected teacher</text></g>
+    <g class="c-coral"><rect x="225" y="118" width="230" height="52" rx="8" stroke-width="0.5"/><text class="th" x="340" y="138" text-anchor="middle" dominant-baseline="central">Pass 1 — disagreement</text><text class="ts" x="340" y="156" text-anchor="middle" dominant-baseline="central">d(x) per image → mean d</text></g>
+    <g class="c-blue"><rect x="225" y="198" width="230" height="52" rx="8" stroke-width="0.5"/><text class="th" x="340" y="218" text-anchor="middle" dominant-baseline="central">Agreement gate (μ)</text><text class="ts" x="340" y="236" text-anchor="middle" dominant-baseline="central">d(x) &lt; 0.8 × mean d</text></g>
+    <g class="c-blue"><rect x="225" y="282" width="230" height="52" rx="8" stroke-width="0.5"/><text class="th" x="340" y="302" text-anchor="middle" dominant-baseline="central">Saturation gate (τ)</text><text class="ts" x="340" y="320" text-anchor="middle" dominant-baseline="central">max teacher cam ≥ 0.4</text></g>
+    <g class="c-teal"><rect x="225" y="366" width="230" height="52" rx="8" stroke-width="0.5"/><text class="th" x="340" y="386" text-anchor="middle" dominant-baseline="central">Keep → save pseudo-GT</text><text class="ts" x="340" y="404" text-anchor="middle" dominant-baseline="central">added to next source set</text></g>
+    <g class="c-gray"><rect x="490" y="232" width="150" height="52" rx="8" stroke-width="0.5"/><text class="th" x="565" y="252" text-anchor="middle" dominant-baseline="central">Drop image</text><text class="ts" x="565" y="270" text-anchor="middle" dominant-baseline="central">excluded</text></g>
+    <line x1="215" y1="88" x2="305" y2="116" class="arr" marker-end="url(#arrow_4)"/>
+    <line x1="470" y1="88" x2="375" y2="116" class="arr" marker-end="url(#arrow_4)"/>
+    <line x1="340" y1="170" x2="340" y2="196" class="arr" marker-end="url(#arrow_4)"/>
+    <text class="ts" x="352" y="185" dominant-baseline="central">each image</text>
+    <line x1="340" y1="250" x2="340" y2="280" class="arr" marker-end="url(#arrow_4)"/>
+    <text class="ts" x="352" y="266" dominant-baseline="central">pass</text>
+    <line x1="340" y1="334" x2="340" y2="364" class="arr" marker-end="url(#arrow_4)"/>
+    <text class="ts" x="352" y="350" dominant-baseline="central">pass</text>
+    <line x1="455" y1="222" x2="488" y2="250" class="arr" marker-end="url(#arrow_4)"/>
+    <text class="ts" x="470" y="216" dominant-baseline="central">fail</text>
+    <line x1="455" y1="308" x2="488" y2="268" class="arr" marker-end="url(#arrow_4)"/>
+    <text class="ts" x="470" y="326" dominant-baseline="central">fail</text>
+    </svg>
+    <figcaption><b>Figure 4.</b> A pseudo-label must clear both gates. Failing either drops the image.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">05 · The data</p>
+  <h2>Dataset layout and roles</h2>
+  <p>The final <code>Dataset/</code> layout carries four roles: labeled synthetic source (4447 pairs), unlabeled real target (4040 images), a real validation set for model selection (250 pairs), and the real test set (2026 image/GT pairs). Two archives — <code>Target.rar</code> and <code>Test.rar</code> — ship unextracted and <strong>nest their own top-level folder</strong>, so you extract into <code>Dataset/</code>, not into the subfolder, or the loaders fail. The <code>HKU-IS_iteration2/</code> directory is created by CLS at runtime; never build it by hand. Steps per epoch settle at <code>min(⌈4447/16⌉, ⌈4040/16⌉) = 253</code>.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 345" role="img"><title>Dataset directory layout and roles</title><desc>The Dataset folder holds Source/HKU-IS with 4447 labeled synthetic pairs used as source_root, Target/Image with 4040 unlabeled real images used as target_root, Val/CAMO with 250 pairs for model selection, and Test with 2026 image and GT pairs for testing and evaluation. A fifth directory, HKU-IS_iteration2, is created by CLS at runtime and holds the source copy plus kept pseudo-labels.</desc>
+    <g class="c-gray"><rect x="60" y="40" width="560" height="272" rx="20" stroke-width="0.5"/><text class="th" x="85" y="68" dominant-baseline="central">Dataset/  — final layout</text></g>
+    <g class="c-blue"><rect x="85" y="92" width="245" height="58" rx="10" stroke-width="0.5"/><text class="th" x="207" y="114" text-anchor="middle" dominant-baseline="central">Source/HKU-IS</text><text class="ts" x="207" y="133" text-anchor="middle" dominant-baseline="central">4447 pairs · source_root</text></g>
+    <g class="c-amber"><rect x="355" y="92" width="245" height="58" rx="10" stroke-width="0.5"/><text class="th" x="477" y="114" text-anchor="middle" dominant-baseline="central">Target/Image</text><text class="ts" x="477" y="133" text-anchor="middle" dominant-baseline="central">4040 imgs · target_root</text></g>
+    <g class="c-teal"><rect x="85" y="166" width="245" height="58" rx="10" stroke-width="0.5"/><text class="th" x="207" y="188" text-anchor="middle" dominant-baseline="central">Val/CAMO</text><text class="ts" x="207" y="207" text-anchor="middle" dominant-baseline="central">250 pairs · val_root</text></g>
+    <g class="c-pink"><rect x="355" y="166" width="245" height="58" rx="10" stroke-width="0.5"/><text class="th" x="477" y="188" text-anchor="middle" dominant-baseline="central">Test/Image + GT</text><text class="ts" x="477" y="207" text-anchor="middle" dominant-baseline="central">2026 each · test + eval</text></g>
+    <g class="c-coral"><rect x="85" y="240" width="515" height="54" rx="10" stroke-width="0.5" stroke-dasharray="5 4"/><text class="th" x="342" y="260" text-anchor="middle" dominant-baseline="central">HKU-IS_iteration2/   —  created by CLS at runtime</text><text class="ts" x="342" y="279" text-anchor="middle" dominant-baseline="central">source copy + kept pseudo-labels · do not create by hand</text></g>
+    </svg>
+    <figcaption><b>Figure 5.</b> Folder roles. The dashed box is generated at runtime, not authored.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">06 · Running it</p>
+  <h2>The reproduction pipeline</h2>
+  <p>Four phases. <strong>Setup</strong>: add the missing dependencies (<code>scipy</code>, <code>opencv-python</code>, <code>scikit-learn</code>, <code>prettytable</code>, <code>tqdm</code>) and sync, download the ResNet-50 backbone, and extract the datasets. <strong>Train</strong>: a single <code>MyTrain.py</code> invocation runs both CSRDA rounds and the CLS step between them — you never launch round 2 by hand. <strong>Test</strong>: run <code>MyTest.py</code> with the final round's teacher (<code>Tea_epoch_best.pth</code>) to produce 2026 masks. <strong>Eval</strong>: run <code>MyEval.py</code> from inside <code>Eval/</code> and compare <code>_eval.txt</code> to Table 1. Every path argument must end in a trailing slash.</p>
+
+  <figure class="diagram">
+    <svg width="100%" viewBox="0 0 680 180" role="img"><title>Four-phase reproduction pipeline</title><desc>Setup prepares the environment, backbone weights, and extracted datasets. Train runs one command that executes both CSRDA rounds plus the CLS step. Test generates masks with the final teacher checkpoint. Eval scores the run against Table 1.</desc>
+    <defs><marker id="arrow_6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <g class="c-gray"><rect x="40" y="55" width="135" height="60" rx="8" stroke-width="0.5"/><text class="th" x="107" y="77" text-anchor="middle" dominant-baseline="central">1 · Setup</text><text class="ts" x="107" y="97" text-anchor="middle" dominant-baseline="central">prepare env</text></g>
+    <g class="c-gray"><rect x="195" y="55" width="135" height="60" rx="8" stroke-width="0.5"/><text class="th" x="262" y="77" text-anchor="middle" dominant-baseline="central">2 · Train</text><text class="ts" x="262" y="97" text-anchor="middle" dominant-baseline="central">rounds + CLS</text></g>
+    <g class="c-gray"><rect x="350" y="55" width="135" height="60" rx="8" stroke-width="0.5"/><text class="th" x="417" y="77" text-anchor="middle" dominant-baseline="central">3 · Test</text><text class="ts" x="417" y="97" text-anchor="middle" dominant-baseline="central">make masks</text></g>
+    <g class="c-teal"><rect x="505" y="55" width="135" height="60" rx="8" stroke-width="0.5"/><text class="th" x="572" y="77" text-anchor="middle" dominant-baseline="central">4 · Eval</text><text class="ts" x="572" y="97" text-anchor="middle" dominant-baseline="central">vs Table 1</text></g>
+    <line x1="175" y1="85" x2="193" y2="85" class="arr" marker-end="url(#arrow_6)"/>
+    <line x1="330" y1="85" x2="348" y2="85" class="arr" marker-end="url(#arrow_6)"/>
+    <line x1="485" y1="85" x2="503" y2="85" class="arr" marker-end="url(#arrow_6)"/>
+    <text class="ts" x="262" y="140" text-anchor="middle">one command = Round 1 → CLS → Round 2</text>
+    </svg>
+    <figcaption><b>Figure 6.</b> Setup → train → test → eval. Phase 2 runs the entire loop from Figure 1.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="sec-eyebrow">Reference</p>
+  <h2>Three gotchas worth remembering</h2>
+  <p>These live in the upstream code and match the settings that produced the published numbers — so for reproduction, change nothing. They're listed so nothing surprises you.</p>
+
+  <div class="note">
+    <span class="chip info">schedule</span>
+    <p><strong>The LR schedule compounds.</strong> From epoch 30 the learning rate is multiplied by 0.1 <em>every</em> epoch, not once — so it falls 1e-5 → 1e-6 → … and training is effectively frozen after about epoch 31. In practice, <code>Tea_epoch_best.pth</code> is selected from epochs 21–31.</p>
+  </div>
+
+  <div class="note">
+    <span class="chip info">off-by-one</span>
+    <p><strong>39 epochs, not 40.</strong> The loop runs <code>range(1, 40)</code>, and the checkpoint named <code>Tea_40.pth</code> is saved at the final step only because saving uses <code>epoch + 1</code>. CLS depends on that exact filename, so don't change <code>--epoch</code>.</p>
+  </div>
+
+  <div class="note warn">
+    <span class="chip caution">the dangerous one</span>
+    <p><strong>The CLS working directory is shared by every network — and CLS deletes it.</strong> Both SINet and SINet-v2 write to <code>HKU-IS_iteration2/</code>, because the S2C task block resets <code>source_root</code> after argparse and discards your <code>--source_root</code>.</p>
+    <p><strong>Sequential runs are safe</strong> — CLS wipes and rebuilds from the pristine source — but the earlier network's pseudo-label set is lost unless you rename the directory between runs. <strong>A concurrent run is a destructive race</strong>: one process's delete pulls files out from under the other mid-epoch, giving a FileNotFoundError or, worse, silently mixed pseudo-labels. Run the two networks one after another, and rename <code>HKU-IS_iteration2</code> after each.</p>
+  </div>
+</section>
+
+<footer>
+  CSRDA visual guide · Ŝ2C task (HKU-IS → COD10K) · diagrams render in light and dark mode and are print-safe (File → Print → Save as PDF).
+</footer>
+
+</main>
+</body>
+</html>

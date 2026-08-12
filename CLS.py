@@ -50,17 +50,21 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
         raise NotImplementedError(f'network {network} not supported.')
     
 
-    model.load_state_dict(torch.load(os.path.join(model_path, stu_ckpt_name)))
+    # map_location='cpu' is required: a state_dict left on a different CUDA device than
+    # the model is silently not copied by load_state_dict, which would make CLS generate
+    # pseudo-labels from a randomly initialised network. See CHECKPOINT_LOADING_BUG.md.
+    model.load_state_dict(torch.load(os.path.join(model_path, stu_ckpt_name),
+                                     map_location='cpu'))
 
     tea_best_path = os.path.join(model_path, 'Tea_epoch_best.pth')
 
 
     if os.path.exists(tea_best_path):
         print(f'[Info] Loading EMA model from: {tea_best_path}')
-        ema_model.load_state_dict(torch.load(tea_best_path))
+        ema_model.load_state_dict(torch.load(tea_best_path, map_location='cpu'))
     elif os.path.exists(tea_fallback_path):
         print(f'[Warning] TeaNet_epoch_best.pth not found, using fallback: {tea_fallback_path}')
-        ema_model.load_state_dict(torch.load(tea_fallback_path))
+        ema_model.load_state_dict(torch.load(tea_fallback_path, map_location='cpu'))
     else:
         raise FileNotFoundError('[Error] Neither TeaNet_epoch_best.pth nor TeaSINet_40.pth was found.')
     

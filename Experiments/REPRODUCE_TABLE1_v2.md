@@ -150,7 +150,10 @@ toward the target domain instead of only `L_con` doing it.
 | Test (real) | `Dataset/Test/` | `Test.rar` (606 MB) | ❌ **not extracted** |
 
 Archive contents (verified with `unrar lb`):
-- `Target.rar` → `Target/Image/camourflage_XXXXX.jpg` × **4040** (COD10K train split)
+- `Target.rar` → `Target/Image/` × **4040** (COD10K train split), in **two naming
+  schemes**: 3040 `COD10K-CAM-*.jpg` (camouflaged) + 1000 `camourflage_*.jpg`
+  (non-camouflaged). Both are real target-domain images; the mix is expected, not
+  corruption. It does mean CLS pseudo-labels carry both prefixes.
 - `Test.rar`  → `Test/Image/*.jpg` × **2026** and `Test/GT/*.png` × **2026** (COD10K test split)
 
 ### Required final layout
@@ -310,11 +313,25 @@ uv run python MyTrain.py --network SINet-v2 --task S2C --gpu 1 --iteration 2 \
   --save_model ./Snapshot/SINet-v2/S2C/ --source_root ./Dataset/Source/HKU-IS/
 ```
 `--network SINet-v2` self-overrides to 100 epochs / batch 32 / decay@50 and enables
-gradient clipping ([MyTrain.py:174-180](MyTrain.py#L174-L180)). ⚠️ See §8 item 3 —
-`structure_loss` has a bug that will likely raise on modern PyTorch; smoke-test the
-SINet-v2 path before committing to a long run.
+gradient clipping ([MyTrain.py:174-180](MyTrain.py#L174-L180)).
 
-The two networks are independent — run them concurrently on GPU 0 and GPU 1.
+> ⚠️ **Never run SINet and SINet-v2 at the same time, and archive the CLS output
+> between them.** Both networks are forced onto the same CLS working directory and
+> will destroy each other's round-2 dataset. See §8 item 9 — this is the one gotcha
+> that can silently invalidate a run.
+
+```bash
+# correct sequence for both rows
+uv run python MyTrain.py --network SINet --task S2C --gpu 0 --iteration 2 \
+  --save_model ./Snapshot/SINet/S2C/ 2>&1 | tee train_sinet_s2c.log
+
+mv Dataset/Source/HKU-IS_iteration2 Dataset/Source/HKU-IS_iteration2-SINet   # keep the record
+
+uv run python MyTrain.py --network SINet-v2 --task S2C --gpu 0 --iteration 2 \
+  --save_model ./Snapshot/SINet-v2/S2C/ 2>&1 | tee train_sinetv2_s2c.log
+
+mv Dataset/Source/HKU-IS_iteration2 Dataset/Source/HKU-IS_iteration2-SINetV2
+```
 
 ---
 
@@ -480,7 +497,65 @@ never touched during training — good, no test leakage — but the selected che
 the CAMO-MAE-optimal one, not the COD10K-optimal one. Keep it that way; changing it
 invalidates the comparison.
 
-**8. Validation only runs after epoch 20.** Before that no `Tea_epoch_best.pth`
+**9. The CLS working directory is shared by every network — and CLS deletes it.**
+This is the most damaging gotcha in the repo, so it gets the most space.
+
+`CLS.py` derives its output path from `source_root` **alone**
+([CLS.py:15-16](CLS.py#L15-L16)) — the network name is not part of it:
+
+```python
+source_copy_root = source_root.rstrip('/\\') + f'_iteration{iteration + 1}/'
+```
+
+And you cannot separate the two networks with `--source_root`, because the
+`--task S2C` block hard-resets it *after* argparse
+([MyTrain.py:159](MyTrain.py#L159)):
+
+```python
+if opt.task == 'S2C':
+    ...
+    opt.source_root = './Dataset/Source/HKU-IS/'   # your --source_root is discarded
+```
+
+So **both** `--network SINet` and `--network SINet-v2` write to
+`./Dataset/Source/HKU-IS_iteration2/`. CLS then opens by *deleting* it
+([CLS.py:18-20](CLS.py#L18-L20)):
+
+```python
+if os.path.exists(source_copy_root):
+    shutil.rmtree(source_copy_root)          # <-- the previous network's set, gone
+shutil.copytree(source_root, source_copy_root)   # fresh copy of pristine HKU-IS
+```
+
+Consequences:
+
+| Scenario | Outcome |
+|---|---|
+| **Sequential** (SINet finishes, then SINet-v2) | Not polluted — cleanly wiped and rebuilt from pristine `HKU-IS/`. SINet's trained weights in `Snapshot/SINet/S2C/` are safe, but its **pseudo-label set is permanently lost**, so you can no longer audit or re-run round 2. |
+| **Concurrent** (`--gpu 0` and `--gpu 1` together) | **Destructive race.** `SrcDataset` snapshots its file list when the round-2 loader is built; the other process's `rmtree` then pulls the files out from under it → `FileNotFoundError` mid-epoch, or worse, silently reading the *other* network's pseudo-labels for whichever names happen to overlap. Never do this. |
+
+Mixing is not a failure mode — deletion is. There is no code path that interleaves two
+networks' pseudo-labels, because the `rmtree` + `copytree` always restores a pristine
+4447-file source before writing.
+
+*Fix, no code change:* run sequentially and rename the directory after each network.
+
+```bash
+mv Dataset/Source/HKU-IS_iteration2 Dataset/Source/HKU-IS_iteration2-SINet
+```
+
+*Fix, one-line code change* (needed only if you want concurrent runs): delete or
+guard `opt.source_root = './Dataset/Source/HKU-IS/'` at
+[MyTrain.py:159](MyTrain.py#L159) so `--source_root` is honoured, then give each
+network its own copy of the source tree (`cp -r Dataset/Source/HKU-IS
+Dataset/Source/HKU-IS-SINet`, 113 MB each). This deviates from the released code, so
+note it if you publish the numbers.
+
+`preflight.py` checks all of this: it reports the resolved CLS output path, FAILs if
+another `MyTrain.py` is already running against the same source root, and WARNs if
+another network's checkpoints exist.
+
+**10. Validation only runs after epoch 20.** Before that no `Tea_epoch_best.pth`
 exists. If you kill a run early, `CLS.py` falls back to `Tea_40.pth`
 ([CLS.py:61-63](CLS.py#L61-L63)) — which also will not exist. Let each round finish.
 
@@ -495,7 +570,7 @@ exists. If you kill a run early, `CLS.py` falls back to `Tea_40.pth`
 | CLS overhead | 2 passes × 4040 images × 2 models = ~16k forwards per cycle, a few minutes |
 | Wall clock (SINet, 1× RTX PRO 6000) | **rough estimate ~2–4 h total** for both rounds. Time the first epoch and extrapolate rather than trusting this. |
 | Disk | ~3.5 GB (checkpoints) + 113 MB (source copy) + ~1.7 GB (extracted data) |
-| Parallelism | SINet on `--gpu 0` and SINet-v2 on `--gpu 1` can run simultaneously |
+| Parallelism | **None.** SINet and SINet-v2 cannot run concurrently — they share one CLS working directory (§8 item 9). Run sequentially on a single GPU. |
 
 Note `num_workers=6` is hard-coded in the loader calls
 ([MyTrain.py:204](MyTrain.py#L204), [:208](MyTrain.py#L208)) — raise it there if the

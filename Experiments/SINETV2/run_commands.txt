@@ -1,0 +1,75 @@
+SINet-v2 / S2C (HKU-IS -> COD10K) — Table 1 "Ours" row
+=======================================================
+Run every command from the repo root: /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD
+(except MyEval.py, which MUST run from inside Eval/ — it does `import metrics`).
+-------------------------------------------------------------------------------
+0. PRE-FLIGHT
+-------------------------------------------------------------------------------
+uv run python preflight.py --network SINet-v2
+-------------------------------------------------------------------------------
+1. TRAIN  (both CSRDA rounds + the CLS step, one command)
+-------------------------------------------------------------------------------
+uv run python MyTrain.py --network SINet-v2 --task S2C --gpu 0 --iteration 2 \
+  --save_model ./Snapshot/SINet-v2/S2C/ \
+  --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ \
+  2>&1 | tee train_sinetv2_s2c.log
+
+# Notes:
+#  * --gpu is now free to be anything. Before the MyTest.py fix, training on --gpu 1
+#    produced a checkpoint that MyTest.py could not load. Keeping --gpu 0 is still the
+#    simplest default.
+#  * NEVER run SINet and SINet-v2 at the same time: both write
+#    ./Dataset/Source/HKU-IS_iteration2/ and CLS rmtree's it on entry.
+
+------------------------------------------------------------------------------
+2. ARCHIVE the CLS pseudo-label set (before training the other network)
+-------------------------------------------------------------------------------
+mv Dataset/Source/HKU-IS_iteration2 Dataset/Source/HKU-IS_iteration2-SINetV2
+
+-------------------------------------------------------------------------------
+3. INFERENCE on COD10K-test
+-------------------------------------------------------------------------------
+uv run python MyTest.py --network SINet-v2 --gpu 0 \
+  --model_path ./Snapshot/SINet-v2/S2C/Tea_epoch_best.pth \
+  --test_save ./Result/SINet-v2/S2C
+
+ls Result/SINet-v2/S2C | wc -l          # must be 2026
+
+# Notes:
+#  * --gpu is NEW (added with the fix). It no longer has to match the training GPU;
+#    the checkpoint is now loaded via map_location='cpu' and is device-agnostic.
+#  * MyTest.py now asserts that all 880 checkpoint tensors were actually copied.
+#    If the assert fires, STOP — do not evaluate the masks.
+#  * MyTest.py hard-codes ./Dataset/Test/{Image,GT}/ regardless of any flag.
+-------------------------------------------------------------------------------
+4. EVALUATE  (must cd into Eval/)
+-------------------------------------------------------------------------------
+cd Eval && uv run python MyEval.py \
+  --gt_root  ../Dataset/Test \
+  --pred_root ../Result/SINet-v2/S2C \
+  --txt_name  SINet-v2/S2C ; cd ..
+
+cat Eval/Eval/eval_txt/SINet-v2/S2C/_eval.txt
+-------------------------------------------------------------------------------
+5. SANITY CHECK the masks before trusting the metrics
+-------------------------------------------------------------------------------
+uv run python -c "
+import numpy as np, cv2, glob
+a=[cv2.imread(f,0).astype(np.float32)/255. for f in sorted(glob.glob('Result/SINet-v2/S2C/*.png'))[:200]]
+print('mean %.4f  std %.4f  frac>0.5 %.4f' % (np.mean([x.mean() for x in a]),
+      np.mean([x.std() for x in a]), np.mean([(x>0.5).mean() for x in a])))"
+
+# Healthy  : mean ~0.15-0.19   std ~0.28-0.34   frac>0.5 ~0.15-0.20   (GT is 0.180/0.337/0.180)
+# BROKEN   : mean ~0.59        std ~0.14        frac>0.5 ~0.73        <- the 11 Aug failure
+-------------------------------------------------------------------------------
+TARGET (paper Table 1, SINet-v2 / Ours)
+-------------------------------------------------------------------------------
+Sa 0.6845 | Fbw 0.4764 | Ead 0.7707 | Emn 0.7571 | Emx 0.7643
+          | Fad 0.5341 | Fmn 0.5319 | Fmx 0.5380 | MAE 0.0787
+
+If the numbers land well above MAE 0.0787, compare the other checkpoints before
+suspecting the data — on round-2 source, loss_sup was
+  Stu_100.pth 0.895  <  Tea_100.pth 0.944  <  Tea_epoch_best.pth 1.142
+i.e. the "best" checkpoint is the worst of the three there, because the compounding-LR
+bug (Src/utils/tool.py adjust_lr) kills SINet-v2's learning rate from epoch 50 and
+confines best-checkpoint selection to a narrow window.
