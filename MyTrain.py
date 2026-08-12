@@ -14,6 +14,26 @@ import random
 import os
 
 
+def consistency_loss(stu_out, tea_out, opt):
+    """Target-domain consistency term, selected by --method (Table 1 rows).
+
+    'ours'         -- the paper's edge-aware + saliency-weighted ESLoss (L_ES, Eq. 6).
+    'mean_teacher' -- the paper's "MT + L_CE" row (Table 1 / Table 5): plain unweighted
+                      binary cross-entropy between the student's and teacher's
+                      predictions. This is L_SW (Eq. 8) with the weight vector W = 1,
+                      i.e. no edge-alignment term and no saliency weighting.
+    'source_only'  -- disabled; supervised loss on the synthetic source domain only.
+    """
+    if opt.method == 'ours':
+        return ES_Loss(stu_out, tea_out)
+    elif opt.method == 'mean_teacher':
+        return F.binary_cross_entropy(stu_out, tea_out)
+    elif opt.method == 'source_only':
+        return torch.zeros((), device=stu_out.device)
+    else:
+        raise ValueError(f'Unsupported method: {opt.method}')
+
+
 def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, opt, loss_func, total_step, alpha, log_file_path):
     global global_step
     model.train()
@@ -37,7 +57,7 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
 
             # Supervised loss on source, consistency loss on target
             loss_sup = loss_func(cam_sm, src_gt) + loss_func(cam_im, src_gt)
-            loss_con = ES_Loss(stu_out, tea_out)
+            loss_con = consistency_loss(stu_out, tea_out, opt)
         
         elif opt.network == 'SINet-v2':
             preds = model(src_image)
@@ -49,7 +69,7 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
             stu_out = stu_out.sigmoid()
 
             loss_sup = structure_loss(preds[0], src_gt) + structure_loss(preds[1], src_gt) + structure_loss(preds[2], src_gt) + structure_loss(preds[3], src_gt)
-            loss_con = ES_Loss(stu_out, tea_out)
+            loss_con = consistency_loss(stu_out, tea_out, opt)
         
         else:
             raise ValueError(f"Unsupported model type: {opt.network}")
@@ -134,6 +154,12 @@ if __name__ == "__main__":
     parser.add_argument('--gpu', type=int, default=0, help='choose which gpu you use')
     parser.add_argument('--save_epoch', type=int, default=10, help='every N epochs save your trained snapshot')
     parser.add_argument('--iteration', type=int, default=2)
+    parser.add_argument('--method', type=str, default='ours',
+                        choices=['ours', 'mean_teacher', 'source_only'],
+                        help="Which Table 1 row to train. 'ours' = full CSRDA. "
+                             "'mean_teacher' = plain MSE consistency, no CLS. "
+                             "'source_only' = no consistency at all. The two baselines "
+                             "force --iteration 1 (CLS is part of 'ours').")
     parser.add_argument('--task', type=str, default='S2C',choices=['C2C', 'S2C'], 
                         help="Select the task type: 'C2C' or 'S2C'. ""This determines the source dataset and associated hyperparameters.")
     parser.add_argument('--alpha', type=float, default=0.9996, help='EMA update momentum: teacher-student model smoothing factor')
@@ -157,6 +183,12 @@ if __name__ == "__main__":
         opt.b = 0.3
         opt.c = 0.5
         opt.source_root = './Dataset/Source/HKU-IS/'
+
+    # CLS and the cyclic round are part of 'ours'; the baselines are single-round by
+    # definition, so don't let a stray --iteration silently turn a baseline into CSRDA.
+    if opt.method != 'ours' and opt.iteration != 1:
+        print(f"[Info] --method {opt.method}: forcing --iteration 1 (was {opt.iteration})")
+        opt.iteration = 1
 
     torch.cuda.set_device(opt.gpu)
 
