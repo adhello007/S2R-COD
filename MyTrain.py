@@ -3,6 +3,7 @@ import argparse
 import torch.nn.functional as F
 from Src.model.SINet.SINet import SINet_ResNet50
 from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network
+from Src.model.SegMaR.SegMaR import Generator
 from Src.utils.Dataloader import get_srcloader, get_tarloader, test_dataset
 from Src.utils.tool import structure_loss, clip_gradient, set_random_seed, adjust_lr, update_ema
 from torch.autograd import Variable
@@ -40,37 +41,81 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
     ema_model.train()
 
     cuda = torch.device('cuda')
-    for step, ((src_image, src_gt), (tar_weak_image, tar_strong_image)) in enumerate(zip(source_loader, target_loader)):
+    # Source-Only must never forward a target image. Doing so in train() mode would update
+    # BatchNorm running statistics with target-domain data -- implicit domain adaptation
+    # (AdaBN-like) -- so the "source-only" baseline would silently see the target domain.
+    # It also iterates the FULL source loader instead of being gated by len(target_loader).
+    if opt.method == 'source_only':
+        batches = ((src_batch, (None, None)) for src_batch in source_loader)
+    else:
+        batches = zip(source_loader, target_loader)
+
+    for step, ((src_image, src_gt), (tar_weak_image, tar_strong_image)) in enumerate(batches):
         optimizer.zero_grad()
-        src_image, tar_weak_image, tar_strong_image = Variable(src_image).cuda(), Variable(tar_weak_image).cuda(),Variable(tar_strong_image).cuda()
+        src_image = Variable(src_image).cuda()
         src_gt = Variable(src_gt).cuda()
+        if opt.method != 'source_only':
+            tar_weak_image = Variable(tar_weak_image).cuda()
+            tar_strong_image = Variable(tar_strong_image).cuda()
 
         if opt.network == 'SINet':
             cam_sm, cam_im= model(src_image)
 
-            with torch.no_grad():
-                _, tea_out= ema_model(tar_weak_image)
-            tea_out = tea_out.sigmoid()
+            if opt.method == 'source_only':
+                loss_sup = loss_func(cam_sm, src_gt) + loss_func(cam_im, src_gt)
+                loss_con = torch.zeros((), device=src_image.device)
+            else:
+                with torch.no_grad():
+                    _, tea_out= ema_model(tar_weak_image)
+                tea_out = tea_out.sigmoid()
 
-            _, stu_out= model(tar_strong_image)
-            stu_out  = stu_out.sigmoid()
+                _, stu_out= model(tar_strong_image)
+                stu_out  = stu_out.sigmoid()
 
-            # Supervised loss on source, consistency loss on target
-            loss_sup = loss_func(cam_sm, src_gt) + loss_func(cam_im, src_gt)
-            loss_con = consistency_loss(stu_out, tea_out, opt)
-        
+                # Supervised loss on source, consistency loss on target
+                loss_sup = loss_func(cam_sm, src_gt) + loss_func(cam_im, src_gt)
+                loss_con = consistency_loss(stu_out, tea_out, opt)
+
         elif opt.network == 'SINet-v2':
             preds = model(src_image)
-            with torch.no_grad():
-                _, _, _, tea_out = ema_model(tar_weak_image)
-            tea_out = tea_out.sigmoid()
 
-            _, _, _, stu_out = model(tar_strong_image)
-            stu_out = stu_out.sigmoid()
+            if opt.method == 'source_only':
+                loss_con = torch.zeros((), device=src_image.device)
+            else:
+                with torch.no_grad():
+                    _, _, _, tea_out = ema_model(tar_weak_image)
+                tea_out = tea_out.sigmoid()
+
+                _, _, _, stu_out = model(tar_strong_image)
+                stu_out = stu_out.sigmoid()
+
+                loss_con = consistency_loss(stu_out, tea_out, opt)
 
             loss_sup = structure_loss(preds[0], src_gt) + structure_loss(preds[1], src_gt) + structure_loss(preds[2], src_gt) + structure_loss(preds[3], src_gt)
-            loss_con = consistency_loss(stu_out, tea_out, opt)
-        
+
+        elif opt.network == 'SegMaR':
+            # Generator.forward -> (fix_pred, cod_pred2); cod_pred2 is the COD output and the
+            # only one used for consistency / validation / CLS / testing.
+            fix_pred, cod_pred2 = model(src_image)
+
+            if opt.method == 'source_only':
+                loss_con = torch.zeros((), device=src_image.device)
+            else:
+                with torch.no_grad():
+                    _, tea_out = ema_model(tar_weak_image)
+                tea_out = tea_out.sigmoid()
+
+                _, stu_out = model(tar_strong_image)
+                stu_out = stu_out.sigmoid()
+
+                loss_con = consistency_loss(stu_out, tea_out, opt)
+
+            # Upstream SegMaR supervises fix_pred with a precomputed Discriminative Mask, which
+            # cannot be built for synthetic HKU-IS (DiscriminativeMask.py needs Edge/ AND
+            # fixation/ maps, and no fixation annotations exist for LAKE-RED output). SegMaR's
+            # own train.py sanctions substituting GT. See Explanations/SEGMAR.md.
+            loss_sup = structure_loss(fix_pred, src_gt) + structure_loss(cod_pred2, src_gt)
+
         else:
             raise ValueError(f"Unsupported model type: {opt.network}")
 
@@ -124,6 +169,8 @@ def val(test_loader, ema_model, network, epoch, save_path):
             elif network == 'SINet-v2':
                 res_all = ema_model(image)
                 res = res_all[3]
+            elif network == 'SegMaR':
+                _, res = ema_model(image)          # (fix_pred, cod_pred2)
 
             res = F.upsample(res, size=gt.shape, mode='bilinear', align_corners=False)
             res = res.sigmoid().data.cpu().numpy().squeeze()
@@ -143,7 +190,7 @@ def val(test_loader, ema_model, network, epoch, save_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--network', type=str, default='SINet', choices=['SINet', 'SINet-v2'], help='Select the model architecture.')
+    parser.add_argument('--network', type=str, default='SINet', choices=['SINet', 'SINet-v2', 'SegMaR'], help='Select the model architecture.')
     parser.add_argument('--epoch', type=int, default=40, help='epoch number, default=40')
     parser.add_argument('--lr', type=float, default=1e-4, help='init learning rate, try `lr=1e-4`')
     parser.add_argument('--batchsize', type=int, default=16, help='training batch size (Note: ~500MB per img in GPU)')
@@ -210,6 +257,19 @@ if __name__ == "__main__":
             opt.batchsize = 32
             opt.decay_epoch = 50
             clip_grad = True
+        elif opt.network == 'SegMaR':
+            model = Generator(channel=32).cuda()
+            model_ema = Generator(channel=32).cuda()
+            # SegMaR's own OurModule/train.py defaults. S2R-COD never publishes SegMaR's
+            # settings (its stated 40/16/1e-4 is scoped to SINet), so we follow the same
+            # convention the repo already uses for SINet-v2: each model keeps its native
+            # config. opt.lr must be set here -- the optimizer is built from it below.
+            opt.epoch = 50
+            opt.batchsize = 24
+            opt.lr = 2.5e-5
+            opt.decay_rate = 0.9
+            opt.decay_epoch = 40
+            clip_grad = False
         else:
             raise ValueError(f"Unsupported model type: {opt.network}")
         print(f'[Info] Using network: {opt.network}')
@@ -242,7 +302,9 @@ if __name__ == "__main__":
         val_loader = test_dataset(image_root=opt.val_root + 'Imgs/',
                                 gt_root=opt.val_root + 'GT/',
                                 testsize=opt.trainsize)
-        total_step = min(len(source_loader), len(target_loader))
+        # zip() truncates to the shorter loader; Source-Only ignores the target loader.
+        total_step = (len(source_loader) if opt.method == 'source_only'
+                      else min(len(source_loader), len(target_loader)))
 
         log_file_path = os.path.join(opt.save_model, 'training_log.log')
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)

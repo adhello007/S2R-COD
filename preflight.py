@@ -206,6 +206,10 @@ def check_cuda(opt):
 BACKBONES = {
     "SINet": ("Src/model/SINet/resnet50-11ad3fa6.pth", 102540417,
               "https://download.pytorch.org/models/resnet50-11ad3fa6.pth"),
+    # SegMaR's B2_ResNet has the same layer names as SINet's ResNet_2Branch, and our port
+    # deliberately loads the same IMAGENET1K_V2 file.
+    "SegMaR": ("Src/model/SINet/resnet50-11ad3fa6.pth", 102540417,
+               "https://download.pytorch.org/models/resnet50-11ad3fa6.pth"),
     "SINet-v2": ("Src/model/SINetV2/res2net50_v1b_26w_4s-3cf99910.pth", None,
                  "https://shanghuagao.oss-cn-beijing.aliyuncs.com/res2net/"
                  "res2net50_v1b_26w_4s-3cf99910.pth"),
@@ -242,7 +246,7 @@ def check_backbone(opt, torch):
         return
 
     # Replay SINet's own key-remapping so a silent assert at model init is caught here.
-    if opt.network == "SINet":
+    if opt.network in ("SINet", "SegMaR"):
         try:
             sys.path.insert(0, REPO)
             from Src.model.SINet.ResNet import ResNet_2Branch
@@ -542,8 +546,9 @@ def check_config(opt):
     section("H. Config coherence")
 
     # CLS.py loads a checkpoint named literally Stu_40.pth (SINet) / Stu_100.pth (v2).
-    required_epoch = {"SINet": 40, "SINet-v2": 100}[opt.network]
-    ckpt = {"SINet": "Stu_40.pth", "SINet-v2": "Stu_100.pth"}[opt.network]
+    required_epoch = {"SINet": 40, "SINet-v2": 100, "SegMaR": 50}[opt.network]
+    ckpt = {"SINet": "Stu_40.pth", "SINet-v2": "Stu_100.pth",
+            "SegMaR": "Stu_50.pth"}[opt.network]
     if opt.iteration > 1:
         if opt.epoch == required_epoch:
             report("PASS", "epoch ↔ CLS checkpoint name",
@@ -556,6 +561,10 @@ def check_config(opt):
         report("INFO", "epoch ↔ CLS checkpoint name",
                "--iteration 1: CLS is skipped, no coupling")
 
+    if opt.network == "SegMaR":
+        report("INFO", "SegMaR self-override",
+               "MyTrain.py forces epoch=50, batchsize=24, lr=2.5e-5, decay_rate=0.9, "
+               "decay_epoch=40 (SegMaR's own train.py defaults; S2R-COD never states them)")
     if opt.network == "SINet-v2":
         report("INFO", "SINet-v2 self-override",
                "MyTrain.py forces epoch=100, batchsize=32, decay_epoch=50, clip_grad=True")
@@ -715,6 +724,9 @@ def check_smoke(opt, torch):
         if opt.network == "SINet":
             from Src.model.SINet.SINet import SINet_ResNet50 as Net
             kw = {"channel": 32}
+        elif opt.network == "SegMaR":
+            from Src.model.SegMaR.SegMaR import Generator as Net
+            kw = {"channel": 32}
         else:
             from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network as Net
             kw = {"channel": 32}
@@ -732,6 +744,9 @@ def check_smoke(opt, torch):
         bce = torch.nn.BCEWithLogitsLoss()
         if opt.network == "SINet":
             loss = bce(outs[0], y) + bce(outs[1], y)
+        elif opt.network == "SegMaR":
+            from Src.utils.tool import structure_loss
+            loss = structure_loss(outs[0], y) + structure_loss(outs[1], y)
         else:
             from Src.utils.tool import structure_loss
             loss = sum(structure_loss(o, y) for o in outs)
@@ -771,7 +786,8 @@ def check_smoke(opt, torch):
 def main():
     p = argparse.ArgumentParser(
         description="Pre-flight checklist for the S2R-COD Table 1 (S2C) reproduction.")
-    p.add_argument("--network", default="SINet", choices=["SINet", "SINet-v2"])
+    p.add_argument("--network", default="SINet",
+                   choices=["SINet", "SINet-v2", "SegMaR"])
     p.add_argument("--task", default="S2C", choices=["C2C", "S2C"])
     p.add_argument("--gpu", type=int, default=0)
     p.add_argument("--epoch", type=int, default=40)
@@ -788,8 +804,10 @@ def main():
                    help="fully decode every source image (slow, catches truncation)")
     opt = p.parse_args()
 
-    if opt.network == "SINet-v2":  # mirror MyTrain.py:174-180
+    if opt.network == "SINet-v2":  # mirror MyTrain.py's per-network overrides
         opt.epoch, opt.batchsize = 100, 32
+    elif opt.network == "SegMaR":
+        opt.epoch, opt.batchsize = 50, 24
 
     # MyTrain.py:159 hard-resets source_root inside the --task S2C block, AFTER
     # argparse. Mirror it so every path this script reports is the one actually used.

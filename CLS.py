@@ -7,6 +7,7 @@ import shutil
 from PIL import Image
 from Src.model.SINet.SINet import SINet_ResNet50
 from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network
+from Src.model.SegMaR.SegMaR import Generator
 from Src.utils.Dataloader import test_dataset
 
 def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteration=1, testsize=352, dataset_name='COD10K', network='SINet'):
@@ -46,6 +47,11 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
         ema_model = Network().cuda()
         stu_ckpt_name = 'Stu_100.pth'
         tea_fallback_path = os.path.join(model_path, 'Tea_100.pth')
+    elif network == 'SegMaR':
+        model = Generator().cuda()
+        ema_model = Generator().cuda()
+        stu_ckpt_name = 'Stu_50.pth'
+        tea_fallback_path = os.path.join(model_path, 'Tea_50.pth')
     else:
         raise NotImplementedError(f'network {network} not supported.')
     
@@ -89,6 +95,9 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
             tea_all = ema_model(image)
             stu = stu_all[3]
             tea = tea_all[3]
+        elif network == 'SegMaR':
+            _, stu = model(image)
+            _, tea = ema_model(image)
         
         stu1 = stu.sigmoid()
         tea1 = tea.sigmoid()
@@ -120,6 +129,9 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
             tea_all = ema_model(image)
             stu = stu_all[3]
             tea = tea_all[3]
+        elif network == 'SegMaR':
+            _, stu = model(image)
+            _, tea = ema_model(image)
         stu1 = stu.sigmoid()
         tea1 = tea.sigmoid()
 
@@ -129,6 +141,8 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
                 _, cam = ema_model(image)
             elif network == 'SINet-v2':
                 _, _, _, cam = ema_model(image)
+            elif network == 'SegMaR':
+                _, cam = ema_model(image)
             cam = F.interpolate(cam, size=(original_image.size[1], original_image.size[0]), mode='bilinear', align_corners=True)
             cam = cam.sigmoid().data.cpu().numpy().squeeze()
 

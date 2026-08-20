@@ -5,13 +5,14 @@ import os
 import argparse
 from Src.model.SINet.SINet import SINet_ResNet50
 from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network
+from Src.model.SegMaR.SegMaR import Generator
 from Src.utils.Dataloader import test_dataset
 from Src.utils.tool import eval_mae, numpy2tensor
 import cv2
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--network', type=str, default='SINet-v2', choices=['SINet', 'SINet-v2'], help='Select the model architecture.')
+parser.add_argument('--network', type=str, default='SINet-v2', choices=['SINet', 'SINet-v2', 'SegMaR'], help='Select the model architecture.')
 parser.add_argument('--testsize', type=int, default=352, help='the snapshot input size')
 parser.add_argument('--model_path', type=str,
                     default='./Snapshot/SINet-v2/test/Tea_epoch_best.pth')
@@ -26,6 +27,8 @@ if opt.network == 'SINet':
     model = SINet_ResNet50().cuda()
 elif opt.network == 'SINet-v2':
     model = Network().cuda()
+elif opt.network == 'SegMaR':
+    model = Generator().cuda()
 
 # Load onto CPU and let load_state_dict copy across to the model's device.
 # A state_dict whose tensors live on a *different* CUDA device than the model, is
@@ -63,6 +66,8 @@ for dataset in ['COD10K']:
         elif opt.network == 'SINet-v2':
             _, _, _, res2 = model(image)
             cam = res2
+        elif opt.network == 'SegMaR':
+            _, cam = model(image)          # (fix_pred, cod_pred2)
         # reshape and squeeze
         cam = F.upsample(cam, size=gt.shape, mode='bilinear', align_corners=True)
         cam = cam.sigmoid().data.cpu().numpy().squeeze()
