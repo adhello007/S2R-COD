@@ -62,3 +62,95 @@
 # Run-book: EVIDENCE_SCRIPTS.md      Rationale: EVIDENCE_APPROACH.md
 ################################################################################
 
+================================================================================
+2026-08-27T18:07:09+05:30 | commit ea23734 (dirty) | EXP E0
+CMD  LAKE-RED/.venv/bin/python evidence/e0_rescue.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  prediction_dirs_rescued   = 6    (pred_{s42,s43,s45,s46,repB,repC})
+  prediction_files_total    = 12156    (6 x 2026)
+  checkpoints_rescued       = 12/12    (Stu_40.pth + Tea_epoch_best.pth per run)
+  feature_cache_files       = 39    (dinoB/L/L518 + InceptionV3 + score json)
+  provenance_files          = 30    (original scripts and run logs)
+  manifest_lines_singletons = 81    (MANIFEST.sha256)
+  rescued_size_gib          = 3.42
+  sa_values_rescued         = {"repB": 0.7058, "repC": 0.7016, "s42": 0.7022, "s43": 0.7005, "s45": 0.6961, "s46": 0.6971}    (audit6.json)
+THRESHOLD  every pred_* dir has 2026 files -> PASS
+THRESHOLD  all 12 checkpoints present -> PASS
+THRESHOLD  PRIOR_REVIEW.md vendored -> PASS
+THRESHOLD  rescued Sa values match the audit to 4 dp -> PASS
+EXPECTED (source)  prediction files = 12156 -> MATCH
+EXPECTED (source)  Sa per run (6 runs) = 0.6961/0.6971/0.7005/0.7016/0.7022/0.7058 -> MATCH
+ARTIFACTS  evidence/manifests/MANIFEST.sha256, evidence/manifests/PRED_DIGESTS.txt, evidence/manifests/SOURCES.sha256, evidence/out/e0_environment.json, evidence/sources/PRIOR_REVIEW.md
+REVISION   none (this step establishes provenance for the rest)
+TRAINS     NO
+NOTES      Copies only -- the originals in the scratchpad are left untouched.
+           Deliberately NOT rescued: the other 15 checkpoints per run (~17 GB); they are not load-bearing for any experiment in this package.
+           snap_s44 holds no checkpoints -- train_s44.log shows the run died just after loading the dataloaders. That is the "5th distinct seed NOT RUN" item in STAGE_C_RED_TEAM_AUDIT.md (d)(3); its logs are rescued as evidence of the failed attempt.
+           Two live breakages recorded in the surviving code: audit6.py hardcodes the scratchpad path AND Dataset/Test/GT, which is now Dataset/Test/COD10K/GT. C3 ships a corrected-path port rather than the original.
+           evidence/artifacts/ is gitignored (~3.5 GB, and *.pth is ignored repo-wide). The manifests under evidence/manifests/ ARE committed, so inputs are verified by checksum rather than by checkout. This is a real limitation of the package.
+           PRIOR_REVIEW.md is vendored from ~/.claude/plans/hazy-launching-eclipse.md, which is outside the repo and outside git -- it is the sole source for C2 section 0.7-D1 (the "raise B" retraction) and part of D2 section 0.5.
+================================================================================
+
+================================================================================
+2026-08-27T18:08:09+05:30 | commit ea23734 (dirty) | EXP E0
+CMD  LAKE-RED/.venv/bin/python evidence/e0_rescue.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  prediction_dirs_rescued   = 6    (pred_{s42,s43,s45,s46,repB,repC})
+  prediction_files_total    = 12156    (6 x 2026)
+  checkpoints_rescued       = 12/12    (Stu_40.pth + Tea_epoch_best.pth per run)
+  feature_cache_files       = 39    (dinoB/L/L518 + InceptionV3 + score json)
+  provenance_files          = 30    (original scripts and run logs)
+  manifest_lines_singletons = 81    (MANIFEST.sha256)
+  rescued_size_gib          = 3.42
+  sa_values_rescued         = {"repB": 0.7058, "repC": 0.7016, "s42": 0.7022, "s43": 0.7005, "s45": 0.6961, "s46": 0.6971}    (audit6.json)
+THRESHOLD  every pred_* dir has 2026 files -> PASS
+THRESHOLD  all 12 checkpoints present -> PASS
+THRESHOLD  PRIOR_REVIEW.md vendored -> PASS
+THRESHOLD  rescued Sa values match the audit to 4 dp -> PASS
+EXPECTED (source)  prediction files = 12156 -> MATCH
+EXPECTED (source)  Sa per run (6 runs) = 0.6961/0.6971/0.7005/0.7016/0.7022/0.7058 -> MATCH
+ARTIFACTS  evidence/manifests/MANIFEST.sha256, evidence/manifests/PRED_DIGESTS.txt, evidence/manifests/SOURCES.sha256, evidence/out/e0_environment.json, evidence/sources/PRIOR_REVIEW.md
+REVISION   none (this step establishes provenance for the rest)
+TRAINS     NO
+NOTES      Copies only -- the originals in the scratchpad are left untouched.
+           Deliberately NOT rescued: the other 15 checkpoints per run (~17 GB); they are not load-bearing for any experiment in this package.
+           snap_s44 holds no checkpoints -- train_s44.log shows the run died just after loading the dataloaders. That is the "5th distinct seed NOT RUN" item in STAGE_C_RED_TEAM_AUDIT.md (d)(3); its logs are rescued as evidence of the failed attempt.
+           Two live breakages recorded in the surviving code: audit6.py hardcodes the scratchpad path AND Dataset/Test/GT, which is now Dataset/Test/COD10K/GT. C3 ships a corrected-path port rather than the original.
+           evidence/artifacts/ is gitignored (~3.5 GB, and *.pth is ignored repo-wide). The manifests under evidence/manifests/ ARE committed, so inputs are verified by checksum rather than by checkout. This is a real limitation of the package.
+           PRIOR_REVIEW.md is vendored from ~/.claude/plans/hazy-launching-eclipse.md, which is outside the repo and outside git -- it is the sole source for C2 section 0.7-D1 (the "raise B" retraction) and part of D2 section 0.5.
+           RE-RUN of E0: the per-directory listings now carry repo-relative paths so that 'sha256sum -c' verifies from the repo root, which the first E0 block's listings did not. The pred_* digests therefore differ from the first block BY CONSTRUCTION (the hashed listing format changed); the underlying 12156 prediction files are byte-identical and their per-file hashes are unchanged.
+================================================================================
+
+================================================================================
+2026-08-27T18:46:15+05:30 | commit ea23734 (dirty) | EXP E0
+CMD  LAKE-RED/.venv/bin/python evidence/e0_rescue.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  prediction_dirs_rescued   = 6    (pred_{s42,s43,s45,s46,repB,repC})
+  prediction_files_total    = 12156    (6 x 2026)
+  checkpoints_rescued       = 12/12    (Stu_40.pth + Tea_epoch_best.pth per run)
+  feature_cache_files       = 39    (dinoB/L/L518 + InceptionV3 + score json)
+  provenance_files          = 30    (original scripts and run logs)
+  manifest_lines_singletons = 81    (MANIFEST.sha256)
+  rescued_size_gib          = 3.42
+  sa_values_rescued         = {"repB": 0.7058, "repC": 0.7016, "s42": 0.7022, "s43": 0.7005, "s45": 0.6961, "s46": 0.6971}    (audit6.json)
+THRESHOLD  every pred_* dir has 2026 files -> PASS
+THRESHOLD  all 12 checkpoints present -> PASS
+THRESHOLD  PRIOR_REVIEW.md vendored -> PASS
+THRESHOLD  rescued Sa values match the audit to 4 dp -> PASS
+EXPECTED (source)  prediction files = 12156 -> MATCH
+EXPECTED (source)  Sa per run (6 runs) = 0.6961/0.6971/0.7005/0.7016/0.7022/0.7058 -> MATCH
+ARTIFACTS  evidence/manifests/MANIFEST.sha256, evidence/manifests/PRED_DIGESTS.txt, evidence/manifests/SOURCES.sha256, evidence/out/e0_environment.json, evidence/sources/PRIOR_REVIEW.md
+REVISION   none (this step establishes provenance for the rest)
+TRAINS     NO
+NOTES      Copies only -- the originals in the scratchpad are left untouched.
+           Deliberately NOT rescued: the other 15 checkpoints per run (~17 GB); they are not load-bearing for any experiment in this package.
+           snap_s44 holds no checkpoints -- train_s44.log shows the run died just after loading the dataloaders. That is the "5th distinct seed NOT RUN" item in STAGE_C_RED_TEAM_AUDIT.md (d)(3); its logs are rescued as evidence of the failed attempt.
+           Two live breakages recorded in the surviving code: audit6.py hardcodes the scratchpad path AND Dataset/Test/GT, which is now Dataset/Test/COD10K/GT. C3 ships a corrected-path port rather than the original.
+           evidence/artifacts/ is gitignored (~3.5 GB, and *.pth is ignored repo-wide). The manifests under evidence/manifests/ ARE committed, so inputs are verified by checksum rather than by checkout. This is a real limitation of the package.
+           PRIOR_REVIEW.md is vendored from ~/.claude/plans/hazy-launching-eclipse.md, which is outside the repo and outside git -- it is the sole source for C2 section 0.7-D1 (the "raise B" retraction) and part of D2 section 0.5.
+           RE-RUN 3 of E0, scope fix: SOURCES.sha256 now hashes only the three IMMUTABLE source documents (the two audits + vendored PRIOR_REVIEW.md). EVIDENCE_APPROACH.md and EVIDENCE_SCRIPTS.md were previously included and are deliberately dropped: they are living deliverables corrected in place as experiments run, so hashing them guaranteed a stale manifest. Their integrity comes from git history. No rescued data changed in this run.
+================================================================================
+

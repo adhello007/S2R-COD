@@ -1,5 +1,7 @@
 # Why we concluded the Stage C extension is not viable
 
+> **New here?** Start with [EVIDENCE_README.md](EVIDENCE_README.md) — orientation, script map, and current status.
+
 **Audience.** A reader who has the E1/CSRDA-G plan but none of the investigation history. This
 document explains *what we asked, how we checked it, and what we found*, in plain language. It is
 the companion to [EVIDENCE_SCRIPTS.md](EVIDENCE_SCRIPTS.md), which is the run-book: every number

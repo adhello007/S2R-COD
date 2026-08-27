@@ -3,3 +3,4 @@
 *.pth
 __pycache__*
 .python-version
+/evidence/artifacts/

@@ -1,5 +1,7 @@
 # Run-book — reproducing every number in the Stage C evidence package
 
+> **New here?** Start with [EVIDENCE_README.md](EVIDENCE_README.md) — orientation, script map, and current status.
+
 Companion to [EVIDENCE_APPROACH.md](EVIDENCE_APPROACH.md), which explains *why* these measurements
 matter. This file is the *how*: twelve steps, executable top to bottom, each writing one block to
 [results/STAGE_C_EVIDENCE_LOG.txt](results/STAGE_C_EVIDENCE_LOG.txt).
@@ -79,15 +81,38 @@ The embedder choice **reversed one of our conclusions** (revision R-a), so it is
 ### Verifying the inputs
 
 Large binary inputs (prediction files, checkpoints, feature caches) cannot live in git — the repo
-already ignores `/Dataset*`, `/Result*`, `*.pth`, and these total ~3.5 GB. They are stored in
-`evidence/artifacts/` and verified by hash instead:
+already ignores `/Dataset*`, `/Result*`, `*.pth`, and these total **3.42 GiB**. They live in
+`evidence/artifacts/` (gitignored) and are verified by hash instead.
+
+Three manifests are committed under `evidence/manifests/`. From the repo root:
 
 ```bash
-sha256sum -c evidence/artifacts/MANIFEST.sha256
+sha256sum -c evidence/manifests/MANIFEST.sha256      # 81 singleton files (caches, ckpts, logs)
+sha256sum -c evidence/manifests/SOURCES.sha256       # the 3 immutable source documents
+for r in s42 s43 s45 s46 repB repC; do               # 2026 prediction files per run
+  sha256sum -c evidence/artifacts/pred_$r.sha256
+done
 ```
 
-`MANIFEST.sha256` **is** committed. This is a real limitation of the package and is stated rather
-than glossed: the advisor verifies inputs by checksum, not by checkout.
+The 12,156 prediction files would make a committed manifest a megabyte of hashes, so
+`evidence/manifests/PRED_DIGESTS.txt` commits **one aggregate digest per directory** instead — the
+sha256 of that directory's sorted per-file listing, plus its file count. The full per-file listings
+live beside the data in `evidence/artifacts/pred_<run>.sha256` (gitignored) and use repo-relative
+paths, so `sha256sum -c` verifies them from the repo root. To confirm a listing has not itself been
+edited, hash it and compare against `PRED_DIGESTS.txt`:
+
+```bash
+sha256sum < evidence/artifacts/pred_s42.sha256
+```
+
+`SOURCES.sha256` covers only the **three immutable source documents** — the two audits and the
+vendored `PRIOR_REVIEW.md`. This run-book and `EVIDENCE_APPROACH.md` are deliberately *not* hashed:
+they are living deliverables, corrected in place whenever a measured value disagrees with an expected
+one, so hashing them would guarantee a stale manifest. Their integrity comes from git history
+instead, which is the right tool for a mutable text file.
+
+This is a real limitation of the package and is stated rather than glossed: the advisor verifies the
+large inputs by checksum, not by checkout.
 
 ### Log block format
 
@@ -100,18 +125,38 @@ METRICS
   n_super_pix                = 16          (config_LAKERED.yaml:72)
   conditioning_width         = 48
   vec_fg_shape_live          = (1, 16, 3)
-THRESHOLD  conditioning_width == 48  -> PASS
-EXPECTED (audit)  48   -> MATCH
+THRESHOLD  conditioning_width == 48 -> PASS
+EXPECTED (source)  conditioning width = 48 -> MATCH
 ARTIFACTS  evidence/out/a1_conditioning.csv
 REVISION   none
+TRAINS     NO
 NOTES      ...
 ================================================================================
 ```
 
-`EXPECTED (audit)` prints for every metric a source document pins, so match/mismatch is visible
+`EXPECTED (source)` prints for every metric a source document pins, so match/mismatch is visible
 without cross-referencing. `REVISION` names the superseded number where one exists. The log is
 **append-only** — `evidence/common.py` opens it with `"a"` and never `"w"`, so a re-run adds a second
 block rather than replacing the first.
+
+### Package layout
+
+```
+EVIDENCE_APPROACH.md              the "why"
+EVIDENCE_SCRIPTS.md               this run-book
+results/STAGE_C_EVIDENCE_LOG.txt  append-only results log
+evidence/
+  common.py                       shared: log_block, git/env stamp, seed, input resolution
+  e0_rescue.py  a1_*.py  ...  d2_*.py
+  manifests/                      COMMITTED hashes (MANIFEST, PRED_DIGESTS, SOURCES)
+  sources/PRIOR_REVIEW.md         vendored third source document
+  out/                            COMMITTED CSVs, figures, e0_environment.json
+  artifacts/                      GITIGNORED rescued binaries (3.42 GiB)
+```
+
+`evidence/common.py` is imported by every script. It resolves each input from
+`evidence/artifacts/` first and the volatile scratchpad second, and **fails loudly with the rescue
+instruction** if neither has it — so no experiment can silently read a stale or missing input.
 
 ### Source documents
 
@@ -130,7 +175,7 @@ and nothing else should run until it has.
 
 | # | experiment | GPU? | runtime | trains? |
 |---|---|---|---|---|
-| E0 | artifact rescue, hash manifest, environment capture | no | ~5 min (3.5 GB copy) | NO |
+| E0 | artifact rescue, hash manifest, environment capture | no | **7 s measured** (3.42 GiB, same filesystem) | NO |
 | A1 | conditioning-width measurement | optional | < 2 min | NO |
 | A2 | object-vs-background pixel share | no | ~2 min | NO |
 | A3 | appearance signature + controls | yes (if re-embedding) | 5–25 min | NO |
@@ -163,14 +208,20 @@ and nothing else should run until it has.
   `~/.claude/plans/hazy-launching-eclipse.md`.
   Where `$SCRATCH = /tmp/claude-1000/-home-ai-server-Public-lab-Diffusion-Inpaint-S2R-COD/56f76fa7-1340-4f64-8958-29c72d526e77/scratchpad`.
 - **Method.** Copy — never move, the originals stay in place — then `sha256sum` everything into
-  `evidence/artifacts/MANIFEST.sha256` and write `evidence/out/e0_environment.json`. Vendors the
+  `evidence/manifests/` (three manifests, see above) and write
+  `evidence/out/e0_environment.json`. Vendors the
   three source documents into `evidence/sources/` (`PRIOR_REVIEW.md` is outside the repo and outside
   git, so without this step C2 has no citable source). Deliberately skips the other 15 checkpoints
   per run — 17 GB, not load-bearing.
-- **Expected.** 6 × 2026 = **12,156** prediction PNGs; ~30 manifest lines; the rescued `audit6.json`
+- **Expected.** 6 × 2026 = **12,156** prediction PNGs; 12/12 checkpoints; the rescued `audit6.json`
   containing the six Sα values 0.6961 / 0.6971 / 0.7005 / 0.7016 / 0.7022 / 0.7058.
-- **Output / logged.** `evidence/artifacts/MANIFEST.sha256`, `evidence/out/e0_environment.json`,
-  log block `EXP E0`.
+- **Measured — this step has run (2026-08-27, commit `5a98247`).** 12,156 prediction PNGs **MATCH**;
+  12/12 checkpoints; 39 feature-cache/score files; 30 provenance files; **3.42 GiB** rescued; 81
+  singleton manifest lines; all six Sα values **MATCH** to 4 dp. All four thresholds PASS.
+  Verification: 81/81 singletons OK, 2026/2026 per prediction directory (× 6), 5/5 sources OK.
+- **Output / logged.** `evidence/manifests/{MANIFEST.sha256,PRED_DIGESTS.txt,SOURCES.sha256}`,
+  `evidence/artifacts/pred_<run>.sha256` (× 6, gitignored), `evidence/out/e0_environment.json`,
+  `evidence/sources/PRIOR_REVIEW.md`, log block `EXP E0`.
 - **Trains?** NO. **Assumptions.** The `/tmp` path is still readable at execution time.
 - **Notes.** Records two live breakages in the surviving code: `audit6.py` hardcodes the dead
   `$SCRATCH` path *and* `Dataset/Test/GT`, which is now `Dataset/Test/COD10K/GT`.
@@ -668,8 +719,9 @@ hiding it.
 ## 4. Verifying the package as a whole
 
 ```bash
-sha256sum -c evidence/artifacts/MANIFEST.sha256          # inputs intact
-grep -c '^====' results/STAGE_C_EVIDENCE_LOG.txt          # one block pair per run
+sha256sum -c evidence/manifests/MANIFEST.sha256           # singleton inputs intact
+sha256sum -c evidence/manifests/SOURCES.sha256            # source documents intact
+grep -c '^====' results/STAGE_C_EVIDENCE_LOG.txt          # two lines per block
 git log --oneline --grep='^evidence('                     # one commit per experiment
 ```
 
