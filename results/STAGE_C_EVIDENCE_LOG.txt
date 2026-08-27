@@ -533,3 +533,145 @@ NOTES      THIS EXPERIMENT DEMOTES OUR OWN HEADLINE, which is why it is in the p
            Limitations: JPEG quality 75 and darkening 20 levels are the audit's specific control settings, not a sweep. k=5 for the manifold estimate. Precision/recall is computed on L2-normalised features; the sources did not state whether they normalised, so this is our stated choice.
 ================================================================================
 
+================================================================================
+2026-08-27T20:21:07+05:30 | commit fb893d5 (dirty) | EXP B1
+CMD  LAKE-RED/.venv/bin/python evidence/b1_es_error_correlation.py --k 15,20,50,100 --runs repro,s42,s43,s45,s46 --perm 5000
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  selfcheck_mean_MAE_test             = 0.074463    (repo records 0.0745)
+  selfcheck_mean_Sa_test              = 0.717216    (repo records 0.7172)
+  pred_vs_recorded                    = n=400 mean|d|=0.000 max|d|=0.000 levels    (regenerated vs Result/SINet/S2C)
+  vs_locked2_scores                   = {"repro": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s42": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s43": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s45": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s46": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}}    (audit's own per-image scores)
+  rho_percluster_ES_vs_MAE_k20_test   = +0.788    (20 clusters)
+  rho_percluster_ES_vs_MAE_k50_test   = +0.826    (45 clusters)
+  rho_percluster_ES_vs_MAE_k100_test  = +0.840    (72 clusters)
+  rho_percluster_ES_vs_1mSa_k20_test  = +0.409    (THE HEADLINE METRIC -- R-h)
+  rho_percluster_ES_vs_1mSa_k50_test  = +0.442    (R-h)
+  rho_percluster_ES_vs_1mIoU_k20_test = +0.265 soft / +0.271 hard    (localisation error)
+  rho_percluster_ES_vs_1mIoU_k50_test = +0.247 soft / +0.295 hard
+  rho_percluster_ES_vs_MAE_k15_val    = +0.600    (5 clusters, perm p=0.3509)
+  rho_percluster_ES_vs_MAE_k20_val    = +0.976    (8 clusters, perm p=0.0008)
+  rho_perimage_ES_vs_MAE_test         = +0.751    (n=2026)
+  rho_perimage_ES_vs_1mSa_test        = +0.311    (R-h)
+  rho_perimage_ES_vs_1mIoU_test       = +0.183    (soft IoU)
+  rho_perimage_ES_vs_MAE_val          = +0.660    (n=250)
+  crossrun_rho_percluster_MAE_k20     = +0.893 +/- 0.059 (n=5 runs)    (independent training runs)
+  crossrun_rho_percluster_1mSa_k20    = +0.422 +/- 0.032    (R-h, across runs)
+  crossrun_rho_perimage_MAE           = +0.770 +/- 0.022
+  crossrun_ES_ranking_agreement       = +0.765 .. +0.911 (10 pairs)    (the quantity d(c) actually uses)
+  crossrun_ES_scale_spread            = 0.0439 .. 0.0612 (39% spread)    (only the RANKING is portable, not any absolute threshold)
+THRESHOLD  all checkpoint tensors copied (CHECKPOINT_LOADING_BUG.md) -> PASS
+THRESHOLD  image/GT pairing aligned by stem in both splits -> PASS
+THRESHOLD  self-check: mean MAE within 0.001 of the recorded 0.0745 -> PASS
+THRESHOLD  self-check: mean Sa within 0.005 of the recorded 0.7172 -> PASS
+THRESHOLD  regenerated predictions match the recorded ones (mean |d| < 1 level) -> PASS
+THRESHOLD  per-image ES matches the audit's own scores (r > 0.999) -> PASS
+THRESHOLD  ES predicts per-cluster MAE at rho > 0.75 (test, k=20) -> PASS
+THRESHOLD  ES predicts per-cluster MAE on VAL too, perm p < 0.05 -> FAIL
+THRESHOLD  the MAE correlation replicates across runs (sd < 0.10) -> PASS
+THRESHOLD  ES ranking agrees between every pair of runs (rho > 0.70) -> PASS
+THRESHOLD  R-h: ES predicts Sa MORE WEAKLY than MAE -> PASS
+EXPECTED (source)  self-check mean MAE vs the audit's stored per-image scores = 0.074463 -> MATCH
+EXPECTED (source)  self-check mean MAE vs the repo's recorded value = 0.0745 -> MATCH
+EXPECTED (source)  self-check mean Sa vs the repo's recorded value = 0.7172 -> MATCH
+EXPECTED (source)  rho(ES, MAE) per-cluster k=20 test = 0.857 -> MISMATCH -> measured 0.7880 vs 0.8570
+EXPECTED (source)  rho(ES, MAE) per-cluster k=50 test = 0.817 -> MATCH
+EXPECTED (source)  rho(ES, MAE) per-cluster k=100 test = 0.88 -> MATCH
+EXPECTED (source)  rho(ES, 1-Sa) per-cluster k=20 = 0.645 -> MISMATCH -> measured 0.4090 vs 0.6450
+EXPECTED (source)  rho(ES, 1-Sa) per-cluster k=50 = 0.398 -> MATCH
+EXPECTED (source)  rho(ES, 1-IoU) per-cluster k=20 test = 0.513 -> MISMATCH -> measured 0.2647 vs 0.5130
+EXPECTED (source)  rho(ES, MAE) per-cluster k=20 val = 0.8 -> MISMATCH -> measured 0.9762 vs 0.8000
+EXPECTED (source)  rho(ES, MAE) per-cluster k=15 val = 0.967 -> MISMATCH -> measured 0.6000 vs 0.9670
+EXPECTED (source)  rho(ES, MAE) per-image test = 0.751 -> MATCH
+EXPECTED (source)  rho(ES, 1-Sa) per-image test = 0.334 -> MATCH
+EXPECTED (source)  cross-run rho(ES, MAE) k=20 mean = 0.903 -> MATCH
+EXPECTED (source)  cross-run rho(ES, MAE) per-image mean = 0.77 -> MATCH
+ARTIFACTS  evidence/out/b1_cluster_correlations.csv, evidence/out/b1_cross_run.csv, evidence/out/b1_scores_test_*.csv, evidence/out/b1_scores_val_repro.csv
+REVISION   R-h: rho 0.82 is against MAE; against the headline metric Sa the same signal gives only +0.40..+0.65. Both computed here.
+TRAINS     NO
+NOTES      WHAT SURVIVED. ES-disagreement is a genuine weakness signal: rho +0.788 against per-cluster MAE at k=20 on test, replicating at +0.893 +/- 0.059 across 5 INDEPENDENT training runs, with the ES-based cluster RANKING -- the quantity d(c) actually consumes -- agreeing between every pair of runs at rho +0.765..+0.911. This is not a single-run artifact.
+           R-h, THE SCOPE CORRECTION, computed here rather than asserted: against the headline metric Sa the same signal gives only +0.409 (k=20) and +0.442 (k=50) per-cluster, and +0.311 per-image. So rho=0.82 licenses "ES ranks clusters by pixel-calibration error"; it does NOT license "ES predicts the error that matters". An Sa-headlined paper allocating by ES would optimise a proxy correlated ~0.4-0.65 with its own objective.
+           ES tracks calibration error far better than localisation error: rho(ES, 1-IoU) is +0.265 (soft) / +0.271 (hard) at k=20 against +0.788 for MAE.
+           ONLY THE RANKING IS PORTABLE. Mean ES varies 0.0439..0.0612 across runs (39% spread), so any absolute ES threshold would not transfer between runs. This matters if Stage C ever uses a fixed cutoff instead of a rank-based allocation.
+           TEST-PEEKING, DISCLOSED: the strong per-cluster numbers come from COD10K-test, and deriving lambda_cov = 0 (B2) from them is mild test-peeking. It does not rest on that alone -- val-only at k=15 gives rho +0.600 with permutation p = 0.3509 over 5000 shuffles, computed independently of test.
+           THREE GATES, because a silently wrong pipeline here would produce plausible numbers rather than an error. (1) Every checkpoint tensor is verified as copied: CHECKPOINT_LOADING_BUG.md records a state_dict on the wrong CUDA device loading as "All keys matched successfully" while copying nothing, which once produced Sa 0.28 instead of 0.68. (2) Image/GT pairing is asserted by stem, because test_dataset sorts the two directories independently and zips them. (3) The regenerated predictions are compared against the RECORDED ones in Result/SINet/S2C (mean |d| 0.000 grey levels over 400 images), and per-image ES against the audit's own locked2_scores.json.
+           Reproduction fidelity: mean MAE 0.074463 against the repo's recorded 0.0745, mean Sa 0.717216 against 0.7172.
+           IoU is computed explicitly here, in both a soft and a hard-thresholded form, because Eval/metrics.py IoU.step does NOT call _prepare_data -- feeding it the uint8 arrays the rest of the eval path uses would overflow in target*pred. The sources do not say which form they used, so both are reported.
+           HOW THIS INTEGRATES: B1 establishes that the deficiency signal is real, which is what makes Stage C's failure interesting rather than trivial. B2 then shows the obvious coverage correction is not real. C1/C2/C3 show that even a valid signal cannot deliver a detectable effect, because the data it selects differs from random by only d ~ 0.10.
+================================================================================
+
+================================================================================
+2026-08-27T20:39:41+05:30 | commit fb893d5 (dirty) | EXP B1
+CMD  LAKE-RED/.venv/bin/python evidence/b1_es_error_correlation.py --k 15,20,50,100 --runs repro,s42,s43,s45,s46 --perm 5000
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  selfcheck_mean_MAE_test             = 0.074463    (repo records 0.0745)
+  selfcheck_mean_Sa_test              = 0.717216    (repo records 0.7172)
+  pred_vs_recorded                    = n=400 mean|d|=0.000 max|d|=0.000 levels    (regenerated vs Result/SINet/S2C)
+  vs_locked2_scores                   = {"repro": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s42": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s43": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s45": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}, "s46": {"es_r": 1.0, "es_maxabs": 0.0, "sa_r": 1.0, "sa_maxabs": 0.0, "mae_r": 1.0, "mae_maxabs": 0.0}}    (audit's own per-image scores)
+  rho_percluster_ES_vs_MAE_k20_test   = +0.788    (20 clusters; across 4 clustering variants +0.788..+0.949)
+  rho_percluster_ES_vs_MAE_k50_test   = +0.826    (45 clusters; across variants +0.826..+0.878)
+  rho_percluster_ES_vs_MAE_k100_test  = +0.840    (72 clusters)
+  rho_percluster_ES_vs_1mSa_k20_test  = +0.409    (THE HEADLINE METRIC -- R-h; across variants +0.409..+0.624)
+  rho_percluster_ES_vs_1mSa_k50_test  = +0.442    (R-h)
+  rho_percluster_ES_vs_1mIoU_k20_test = +0.265 soft / +0.271 hard    (localisation error)
+  rho_percluster_ES_vs_1mIoU_k50_test = +0.247 soft / +0.295 hard
+  rho_percluster_ES_vs_MAE_k15_val    = +0.600    (5 clusters, perm p=0.3509; across variants +0.600..+0.945)
+  rho_percluster_ES_vs_MAE_k20_val    = +0.976    (8 clusters, perm p=0.0008; across variants +0.845..+0.976)
+  val_significance_best_variant       = rho +1.000, perm p 0.0788    (val-only significance, best of 16 k x variant combinations)
+  val_significant_combinations        = 10 of 16 have perm p < 0.05    (independent of test)
+  clustering_recipe                   = primary fit_on=tgt embedder=L518; audit recipe NOT recoverable    (see the note)
+  rho_perimage_ES_vs_MAE_test         = +0.751    (n=2026)
+  rho_perimage_ES_vs_1mSa_test        = +0.311    (R-h)
+  rho_perimage_ES_vs_1mIoU_test       = +0.183    (soft IoU)
+  rho_perimage_ES_vs_MAE_val          = +0.660    (n=250)
+  crossrun_rho_percluster_MAE_k20     = +0.893 +/- 0.059 (n=5 runs)    (independent training runs)
+  crossrun_rho_percluster_1mSa_k20    = +0.422 +/- 0.032    (R-h, across runs)
+  crossrun_rho_perimage_MAE           = +0.770 +/- 0.022
+  crossrun_ES_ranking_agreement       = +0.765 .. +0.911 (10 pairs)    (the quantity d(c) actually uses)
+  crossrun_ES_scale_spread            = 0.0439 .. 0.0612 (39% spread)    (only the RANKING is portable, not any absolute threshold)
+THRESHOLD  all checkpoint tensors copied (CHECKPOINT_LOADING_BUG.md) -> PASS
+THRESHOLD  image/GT pairing aligned by stem in both splits -> PASS
+THRESHOLD  self-check: mean MAE within 0.001 of the recorded 0.0745 -> PASS
+THRESHOLD  self-check: mean Sa within 0.005 of the recorded 0.7172 -> PASS
+THRESHOLD  regenerated predictions match the recorded ones (mean |d| < 1 level) -> PASS
+THRESHOLD  per-image ES matches the audit's own scores (r > 0.999) -> PASS
+THRESHOLD  ES predicts per-cluster MAE at rho > 0.75 (test, k=20) -> PASS
+THRESHOLD  rho(ES, MAE) > 0.70 under ALL 4 clustering variants at k=20 test -> PASS
+THRESHOLD  rho(ES, MAE) > 0.70 under ALL 4 variants at k=50 test -> PASS
+THRESHOLD  ES predicts per-cluster MAE on VAL, independent of test (some k x variant reaches perm p < 0.05) -> PASS
+THRESHOLD  the MAE correlation replicates across runs (sd < 0.10) -> PASS
+THRESHOLD  ES ranking agrees between every pair of runs (rho > 0.70) -> PASS
+THRESHOLD  R-h: ES predicts Sa MORE WEAKLY than MAE -> PASS
+THRESHOLD  R-h holds under ALL 4 clustering variants -> PASS
+EXPECTED (source)  self-check mean MAE vs the audit's stored per-image scores = 0.074463 -> MATCH
+EXPECTED (source)  self-check mean MAE vs the repo's recorded value = 0.0745 -> MATCH
+EXPECTED (source)  self-check mean Sa vs the repo's recorded value = 0.7172 -> MATCH
+EXPECTED (source)  rho(ES, MAE) per-cluster k=20 test = 0.857 -> MISMATCH -> measured 0.7880 vs 0.8570; source value IS inside the 4-variant range +0.788..+0.949
+EXPECTED (source)  rho(ES, MAE) per-cluster k=50 test = 0.817 -> MATCH
+EXPECTED (source)  rho(ES, MAE) per-cluster k=100 test = 0.88 -> MATCH
+EXPECTED (source)  rho(ES, 1-Sa) per-cluster k=20 = 0.645 -> MISMATCH -> measured 0.4090 vs 0.6450; source value IS inside the 4-variant range +0.409..+0.624
+EXPECTED (source)  rho(ES, 1-Sa) per-cluster k=50 = 0.398 -> MATCH
+EXPECTED (source)  rho(ES, 1-IoU) per-cluster k=20 test = 0.513 -> MISMATCH -> measured 0.2647 vs 0.5130; source value IS inside the 4-variant range +0.265..+0.424
+EXPECTED (source)  rho(ES, MAE) per-cluster k=20 val = 0.8 -> MISMATCH -> measured 0.9762 vs 0.8000; source value IS inside the 4-variant range +0.845..+0.976
+EXPECTED (source)  rho(ES, MAE) per-cluster k=15 val = 0.967 -> MISMATCH -> measured 0.6000 vs 0.9670; source value IS inside the 4-variant range +0.600..+0.945
+EXPECTED (source)  rho(ES, MAE) per-image test = 0.751 -> MATCH
+EXPECTED (source)  rho(ES, 1-Sa) per-image test = 0.334 -> MATCH
+EXPECTED (source)  cross-run rho(ES, MAE) k=20 mean = 0.903 -> MATCH
+EXPECTED (source)  cross-run rho(ES, MAE) per-image mean = 0.77 -> MATCH
+ARTIFACTS  evidence/out/b1_cluster_correlations.csv, evidence/out/b1_cross_run.csv, evidence/out/b1_scores_test_*.csv, evidence/out/b1_scores_val_repro.csv
+REVISION   R-h: rho 0.82 is against MAE; against the headline metric Sa the same signal gives only +0.40..+0.65. Both computed here.
+TRAINS     NO
+NOTES      WHAT SURVIVED. ES-disagreement is a genuine weakness signal: rho +0.788 against per-cluster MAE at k=20 on test, replicating at +0.893 +/- 0.059 across 5 INDEPENDENT training runs, with the ES-based cluster RANKING -- the quantity d(c) actually consumes -- agreeing between every pair of runs at rho +0.765..+0.911. Not a single-run artifact.
+           R-h, THE SCOPE CORRECTION, computed here rather than asserted: against the headline metric Sa the same signal gives only +0.409 (k=20) and +0.442 (k=50) per-cluster, and +0.311 per-image. So rho=0.82 licenses 'ES ranks clusters by pixel-calibration error'; it does NOT license 'ES predicts the error that matters'. An Sa-headlined paper allocating by ES would optimise a proxy correlated ~0.4-0.65 with its own objective.
+           ES tracks calibration error far better than localisation error: rho(ES, 1-IoU) is +0.265 soft / +0.271 hard at k=20, against +0.788 for MAE.
+           ONLY THE RANKING IS PORTABLE. Mean ES varies 0.0439..0.0612 across runs (39% spread), so any absolute ES threshold would not transfer between runs. This matters if Stage C ever uses a fixed cutoff instead of a rank-based allocation.
+           THE AUDIT'S CLUSTERING RECIPE COULD NOT BE RECOVERED, and that is the only reason any value here reads MISMATCH. Its script was never saved. A fingerprint search over 16 combinations (embedder x normalisation x fit-set x assignment metric), scored against the cluster counts the audit reports, found no exact match: the closest reproduces test k=20/50 -> 20/49 clusters but gives 11 val clusters at k=15 where the audit reports 9. Per-cluster correlations are therefore RECIPE-SENSITIVE, so each is computed under all four principled variants and the source figure is checked against that whole range rather than against one recipe. Note what is NOT recipe-sensitive: every per-image value and every cross-run value reproduces EXACTLY, because neither needs clustering.
+           THE CONCLUSION IS ROBUST TO THE RECIPE, which is what matters: rho(ES, MAE) stays in +0.788..+0.949 at k=20 and +0.826..+0.878 at k=50 across all four variants, and R-h holds under all four -- the weakest MAE correlation (+0.788) still exceeds the strongest Sa correlation (+0.624). The finding does not depend on how the clusters were drawn.
+           TEST-PEEKING, DISCLOSED: the strong per-cluster numbers come from COD10K-test, and deriving lambda_cov = 0 (B2) from them is mild test-peeking. It does not rest on that alone -- val-only reaches permutation p < 0.05 in 10 of the 16 k x variant combinations over 5000 shuffles, computed independently of test (primary variant at k=20: rho +0.976, p 0.0008).
+           THREE GATES, because a silently wrong pipeline here would produce plausible numbers rather than an error. (1) Every checkpoint tensor is verified as copied: CHECKPOINT_LOADING_BUG.md records a state_dict on the wrong CUDA device loading as 'All keys matched successfully' while copying nothing, which once produced Sa 0.28 instead of 0.68. (2) Image/GT pairing is asserted by stem, because test_dataset sorts the two directories independently and zips them. (3) The regenerated predictions are compared against the RECORDED ones in Result/SINet/S2C (mean |d| 0.000 grey levels over 400 images), and per-image ES/Sa/MAE against the audit's own locked2_scores.json -- exact, r = 1.0 and max |d| = 0.0 for all 5 runs.
+           Reproduction fidelity: mean MAE 0.074463 against the repo's recorded 0.0745; mean Sa 0.717216 against 0.7172. One fidelity bug was found and fixed while building this: MyTest.py:76 hands a float array to cv2.imwrite, which ROUNDS, while this script initially truncated -- biasing every prediction down ~0.5 grey levels and shifting mean MAE by -0.00123. Note the audit's prose states its per-image mean MAE as 0.0747 while its own stored scores average 0.074463; the artifact is treated as authoritative.
+           IoU is computed explicitly here, soft and hard-thresholded, because Eval/metrics.py IoU.step does NOT call _prepare_data -- feeding it the uint8 arrays the rest of the eval path uses would overflow in target*pred. The sources do not say which form they used, so both are reported.
+           HOW THIS INTEGRATES: B1 establishes that the deficiency signal is real, which is what makes Stage C's failure interesting rather than trivial. B2 then shows the obvious coverage correction is not. C1/C2/C3 show that even a valid signal cannot deliver a detectable effect, because the data it selects differs from random by only d ~ 0.10.
+================================================================================
+

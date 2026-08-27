@@ -6,9 +6,9 @@
 > number is in [../EVIDENCE_APPROACH.md](../EVIDENCE_APPROACH.md); how to reproduce it is in
 > [../EVIDENCE_SCRIPTS.md](../EVIDENCE_SCRIPTS.md).
 
-Generated 2026-08-27T19:56:53+05:30 at commit 9ac60f7 (dirty).
+Generated 2026-08-27T20:40:37+05:30 at commit fb893d5 (dirty).
 
-**4 of 12 experiments complete.** 24 of 25 thresholds PASS. Trains a model: NO for every experiment.
+**5 of 12 experiments complete.** 38 of 39 thresholds PASS. Trains a model: NO for every experiment.
 
 ## Status
 
@@ -18,7 +18,7 @@ Generated 2026-08-27T19:56:53+05:30 at commit 9ac60f7 (dirty).
 | **A1** | Conditioning-width measurement | conclusion (i) - the generator is near-unsteerable | **DONE** | 6/6 PASS | 1 NEW, 2 MATCH |
 | **A2** | Object-vs-background pixel share | conclusion (i) - what those 48 numbers have to steer | **DONE** (5 blocks) | 6/6 PASS | 2 MATCH |
 | **A3** | Generated-vs-real appearance signature, with controls | context - demotes the AUC 0.999 finding to a truism (R-c..R-f) | **DONE** (2 blocks) | 8/9 **1 FAIL** | 3 MISMATCH, 10 MATCH |
-| **B1** | ES-vs-true-error correlation | SURVIVED - uncertainty is a real weakness signal | pending | — | — |
+| **B1** | ES-vs-true-error correlation | SURVIVED - uncertainty is a real weakness signal | **DONE** (2 blocks) | 14/14 PASS | 5 MISMATCH, 10 MATCH |
 | **B2** | Coverage-term falsification | SURVIVED - lambda_cov = 0 is measured, not assumed | pending | — | — |
 | **B3** | Targeting acceptance, both embedders, vs chance | SURVIVED - targeting works (and R-a, R-b) | pending | — | — |
 | **C1** | Targeted-vs-random data distance | conclusion (iv) - the effect-size wall | pending | — | — |
@@ -78,6 +78,18 @@ Command: `LAKE-RED/.venv/bin/python evidence/a3_appearance_signature.py --pixel-
 
 Artifacts: `evidence/out/a3_probe_table.csv`, `evidence/out/a3_precision_recall.csv`, `evidence/out/a3_pixel_stats.csv`, `evidence/out/a3_pixel_per_image.csv`
 
+### B1 — ES-vs-true-error correlation
+
+| metric | value | provenance |
+|---|---|---|
+| `selfcheck_mean_MAE_test` | **0.074463** | repo records 0.0745 |
+| `selfcheck_mean_Sa_test` | **0.717216** | repo records 0.7172 |
+| `pred_vs_recorded` | **n=400 mean|d|=0.000 max|d|=0.000 levels** | regenerated vs Result/SINet/S2C |
+
+Command: `LAKE-RED/.venv/bin/python evidence/b1_es_error_correlation.py --k 15,20,50,100 --runs repro,s42,s43,s45,s46 --perm 5000`
+
+Artifacts: `evidence/out/b1_cluster_correlations.csv`, `evidence/out/b1_cross_run.csv`, `evidence/out/b1_scores_test_*.csv`, `evidence/out/b1_scores_val_repro.csv`
+
 ## Revisions surfaced so far
 
 Conclusions that moved once measured. The full 13-row trail, including revisions from
@@ -85,6 +97,7 @@ experiments not yet re-run here, is §5 of [../EVIDENCE_APPROACH.md](../EVIDENCE
 
 - **A2** — within-experiment: first run gave fg 0.1923 under per-image polarity detection, which misfires on 11 corner-covering objects; per-source polarity gives 0.1913. Also refines the source's 81.8% invented background to the measured 80.9%.
 - **A3** — R-c sorted-filename split bug (ceiling 0.893/0.871 -> corrected, both computed here); R-d recall share 54% -> recomputed; R-e ~20-level darkening RETRACTED as the mechanism; R-f AUC 0.999 demoted to near-vacuous
+- **B1** — R-h: rho 0.82 is against MAE; against the headline metric Sa the same signal gives only +0.40..+0.65. Both computed here.
 
 ## Anything that did not simply reproduce
 
@@ -94,13 +107,17 @@ experiments not yet re-run here, is §5 of [../EVIDENCE_APPROACH.md](../EVIDENCE
 | A3 | probe AUC true null vs the audit's particular draw = 0.5289 | **MISMATCH** |
 | A3 | probe AUC JPEG-75 = 0.938 | **MISMATCH** |
 | A3 | fg | **MISMATCH** |
+| B1 | rho(ES, MAE) per-cluster k=20 test = 0.857 | **MISMATCH** |
+| B1 | rho(ES, 1-Sa) per-cluster k=20 = 0.645 | **MISMATCH** |
+| B1 | rho(ES, 1-IoU) per-cluster k=20 test = 0.513 | **MISMATCH** |
+| B1 | rho(ES, MAE) per-cluster k=20 val = 0.8 | **MISMATCH** |
+| B1 | rho(ES, MAE) per-cluster k=15 val = 0.967 | **MISMATCH** |
 
 `NEW` means the package measured something no source document pinned, so there was
 nothing to agree or disagree with.
 
 ## Still to run
 
-- **B1** ES-vs-true-error correlation — SURVIVED - uncertainty is a real weakness signal
 - **B2** Coverage-term falsification — SURVIVED - lambda_cov = 0 is measured, not assumed
 - **B3** Targeting acceptance, both embedders, vs chance — SURVIVED - targeting works (and R-a, R-b)
 - **C1** Targeted-vs-random data distance — conclusion (iv) - the effect-size wall

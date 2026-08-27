@@ -421,13 +421,42 @@ and nothing else should run until it has.
   Against Sα: ρ(ES, 1−Sα) = **+0.645** (k=20), **+0.398** (k=50), +0.334 per-image.
   Cross-run replication over 4 independent runs: **+0.903 ± 0.041** (k=20); pairwise ranking
   agreement ρ = **0.78…0.94**; per-image **+0.770 ± 0.022**.
-- **Output / logged.** `evidence/out/b1_cluster_correlations.csv`,
-  `evidence/out/b1_per_image_scores.csv`, `evidence/out/b1_cross_run.csv`, log block `EXP B1`.
+- **Measured — has run.** **14/14 thresholds PASS**; 10 of 15 pinned values MATCH and all five
+  MISMATCHes are recipe-sensitive with the source value **inside** the measured range (below).
+  *Pipeline verified bit-exact:* mean MAE **0.074463** and mean Sα **0.717216** against the repo's
+  recorded 0.0745/0.7172; regenerated predictions **0.000 grey levels** from `Result/SINet/S2C`; and
+  per-image ES/Sα/MAE match the audit's own `locked2_scores.json` at **r = 1.0, max |Δ| = 0.0 for all
+  five runs**. Per-cluster ρ(ES, MAE): **+0.788** (k=20, 20 clusters), **+0.826** (k=50), **+0.840**
+  (k=100). ρ(ES, 1−Sα): **+0.409** (k=20), **+0.442** (k=50). ρ(ES, 1−IoU): **+0.265** soft / +0.271
+  hard. Per-image: MAE **+0.751**, 1−Sα **+0.311**, 1−IoU **+0.183**. Val k=20 **+0.976**,
+  permutation p **0.0008**; 10 of 16 k×variant combinations reach p < 0.05. Cross-run over five
+  independent runs: **+0.893 ± 0.059** per-cluster, **+0.770 ± 0.022** per-image, ranking agreement
+  **+0.765…+0.911**, ES scale spread 0.0439–0.0612 (**39%**).
+- **The audit's clustering recipe could not be recovered**, which is the only reason anything reads
+  MISMATCH. Its script was never saved; a fingerprint search over 16 combinations (embedder ×
+  normalisation × fit-set × assignment metric), scored against the cluster counts the audit reports,
+  found no exact match. Per-cluster correlations are therefore computed under **all four** principled
+  variants and each source figure is checked against that whole range — in every case it falls
+  inside. Nothing that avoids clustering (per-image, cross-run) needed this: those reproduce exactly.
+- **Output / logged.** `evidence/out/b1_cluster_correlations.csv` (all four variants),
+  `evidence/out/b1_cross_run.csv`, `evidence/out/b1_scores_{test,val}_<run>.csv` (per-image ES/MAE/Sα/IoU),
+  log block `EXP B1`.
 - **Trains?** NO — inference only, from committed checkpoints.
 - **Assumptions / limitations.** The strong numbers come from **COD10K-test**; deriving λ_cov = 0
-  from them is **mild test-peeking, and the log block says so**. Val has few populated clusters
-  (6–9), which is why k is swept down to 15. The ES *scale* varies 40% across runs
-  (0.0439–0.0612), so only the **ranking** is portable — a fixed ES threshold would not transfer.
+  from them is **mild test-peeking, and the log block says so**. Val has few populated clusters, which
+  is why k is swept down to 15. The ES *scale* varies **39%** across runs, so only the **ranking** is
+  portable. IoU is computed explicitly in both soft and hard-thresholded form, because
+  `Eval/metrics.py` `IoU.step` does **not** call `_prepare_data` and would overflow on the uint8
+  arrays the rest of the eval path uses; the sources do not say which form they used.
+  **Two gates guard against silent failure:** every checkpoint tensor is verified as copied
+  (`CHECKPOINT_LOADING_BUG.md` — a state_dict on the wrong CUDA device loads as "All keys matched
+  successfully" while copying nothing, which once produced Sα 0.28 instead of 0.68), and image/GT
+  pairing is asserted **by stem**, because `test_dataset` sorts the two directories independently and
+  zips them.
+  **One fidelity bug found and fixed here:** `MyTest.py:76` hands a float array to `cv2.imwrite`,
+  which *rounds*; truncating instead biased every prediction down ~0.5 grey levels and shifted mean
+  MAE by −0.00123. Also noted: the audit's prose states its per-image mean MAE as 0.0747 while its own
+  stored scores average **0.074463** — the artifact is treated as authoritative.
 - **Revision surfaced.** **R-h** — ρ = 0.82 licenses "ES ranks clusters by pixel-calibration error",
   **not** "ES predicts the error that matters", since Sα correlation is only +0.40…+0.65. Both
   numbers are logged in the same block.

@@ -1639,7 +1639,521 @@
   "B1": {
     "title": "ES-vs-true-error correlation",
     "supports": "SURVIVED - uncertainty is a real weakness signal",
-    "runs": []
+    "runs": [
+      {
+        "timestamp": "2026-08-27T20:21:07+05:30",
+        "commit": "fb893d5",
+        "tree": "dirty",
+        "exp": "B1",
+        "cmd": "LAKE-RED/.venv/bin/python evidence/b1_es_error_correlation.py --k 15,20,50,100 --runs repro,s42,s43,s45,s46 --perm 5000",
+        "metrics": [
+          {
+            "name": "selfcheck_mean_MAE_test",
+            "value": "0.074463",
+            "provenance": "repo records 0.0745"
+          },
+          {
+            "name": "selfcheck_mean_Sa_test",
+            "value": "0.717216",
+            "provenance": "repo records 0.7172"
+          },
+          {
+            "name": "pred_vs_recorded",
+            "value": "n=400 mean|d|=0.000 max|d|=0.000 levels",
+            "provenance": "regenerated vs Result/SINet/S2C"
+          },
+          {
+            "name": "vs_locked2_scores",
+            "value": "{\"repro\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s42\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s43\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s45\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s46\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}}",
+            "provenance": "audit's own per-image scores"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k20_test",
+            "value": "+0.788",
+            "provenance": "20 clusters"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k50_test",
+            "value": "+0.826",
+            "provenance": "45 clusters"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k100_test",
+            "value": "+0.840",
+            "provenance": "72 clusters"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mSa_k20_test",
+            "value": "+0.409",
+            "provenance": "THE HEADLINE METRIC -- R-h"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mSa_k50_test",
+            "value": "+0.442",
+            "provenance": "R-h"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mIoU_k20_test",
+            "value": "+0.265 soft / +0.271 hard",
+            "provenance": "localisation error"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mIoU_k50_test",
+            "value": "+0.247 soft / +0.295 hard",
+            "provenance": ""
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k15_val",
+            "value": "+0.600",
+            "provenance": "5 clusters, perm p=0.3509"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k20_val",
+            "value": "+0.976",
+            "provenance": "8 clusters, perm p=0.0008"
+          },
+          {
+            "name": "rho_perimage_ES_vs_MAE_test",
+            "value": "+0.751",
+            "provenance": "n=2026"
+          },
+          {
+            "name": "rho_perimage_ES_vs_1mSa_test",
+            "value": "+0.311",
+            "provenance": "R-h"
+          },
+          {
+            "name": "rho_perimage_ES_vs_1mIoU_test",
+            "value": "+0.183",
+            "provenance": "soft IoU"
+          },
+          {
+            "name": "rho_perimage_ES_vs_MAE_val",
+            "value": "+0.660",
+            "provenance": "n=250"
+          },
+          {
+            "name": "crossrun_rho_percluster_MAE_k20",
+            "value": "+0.893 +/- 0.059 (n=5 runs)",
+            "provenance": "independent training runs"
+          },
+          {
+            "name": "crossrun_rho_percluster_1mSa_k20",
+            "value": "+0.422 +/- 0.032",
+            "provenance": "R-h, across runs"
+          },
+          {
+            "name": "crossrun_rho_perimage_MAE",
+            "value": "+0.770 +/- 0.022",
+            "provenance": ""
+          },
+          {
+            "name": "crossrun_ES_ranking_agreement",
+            "value": "+0.765 .. +0.911 (10 pairs)",
+            "provenance": "the quantity d(c) actually uses"
+          },
+          {
+            "name": "crossrun_ES_scale_spread",
+            "value": "0.0439 .. 0.0612 (39% spread)",
+            "provenance": "only the RANKING is portable, not any absolute threshold"
+          }
+        ],
+        "thresholds": [
+          {
+            "condition": "all checkpoint tensors copied (CHECKPOINT_LOADING_BUG.md)",
+            "passed": true
+          },
+          {
+            "condition": "image/GT pairing aligned by stem in both splits",
+            "passed": true
+          },
+          {
+            "condition": "self-check: mean MAE within 0.001 of the recorded 0.0745",
+            "passed": true
+          },
+          {
+            "condition": "self-check: mean Sa within 0.005 of the recorded 0.7172",
+            "passed": true
+          },
+          {
+            "condition": "regenerated predictions match the recorded ones (mean |d| < 1 level)",
+            "passed": true
+          },
+          {
+            "condition": "per-image ES matches the audit's own scores (r > 0.999)",
+            "passed": true
+          },
+          {
+            "condition": "ES predicts per-cluster MAE at rho > 0.75 (test, k=20)",
+            "passed": true
+          },
+          {
+            "condition": "ES predicts per-cluster MAE on VAL too, perm p < 0.05",
+            "passed": false
+          },
+          {
+            "condition": "the MAE correlation replicates across runs (sd < 0.10)",
+            "passed": true
+          },
+          {
+            "condition": "ES ranking agrees between every pair of runs (rho > 0.70)",
+            "passed": true
+          },
+          {
+            "condition": "R-h: ES predicts Sa MORE WEAKLY than MAE",
+            "passed": true
+          }
+        ],
+        "expected": [
+          {
+            "claim": "self-check mean MAE vs the audit's stored per-image scores = 0.074463",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "self-check mean MAE vs the repo's recorded value = 0.0745",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "self-check mean Sa vs the repo's recorded value = 0.7172",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=20 test = 0.857",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=50 test = 0.817",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=100 test = 0.88",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-cluster k=20 = 0.645",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-cluster k=50 = 0.398",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-IoU) per-cluster k=20 test = 0.513",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=20 val = 0.8",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=15 val = 0.967",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-image test = 0.751",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-image test = 0.334",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "cross-run rho(ES, MAE) k=20 mean = 0.903",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "cross-run rho(ES, MAE) per-image mean = 0.77",
+            "verdict": "MATCH"
+          }
+        ],
+        "artifacts": "evidence/out/b1_cluster_correlations.csv, evidence/out/b1_cross_run.csv, evidence/out/b1_scores_test_*.csv, evidence/out/b1_scores_val_repro.csv",
+        "revision": "R-h: rho 0.82 is against MAE; against the headline metric Sa the same signal gives only +0.40..+0.65. Both computed here.",
+        "trains": "NO",
+        "notes": [
+          "WHAT SURVIVED. ES-disagreement is a genuine weakness signal: rho +0.788 against per-cluster MAE at k=20 on test, replicating at +0.893 +/- 0.059 across 5 INDEPENDENT training runs, with the ES-based cluster RANKING -- the quantity d(c) actually consumes -- agreeing between every pair of runs at rho +0.765..+0.911. This is not a single-run artifact.",
+          "R-h, THE SCOPE CORRECTION, computed here rather than asserted: against the headline metric Sa the same signal gives only +0.409 (k=20) and +0.442 (k=50) per-cluster, and +0.311 per-image. So rho=0.82 licenses \"ES ranks clusters by pixel-calibration error\"; it does NOT license \"ES predicts the error that matters\". An Sa-headlined paper allocating by ES would optimise a proxy correlated ~0.4-0.65 with its own objective.",
+          "ES tracks calibration error far better than localisation error: rho(ES, 1-IoU) is +0.265 (soft) / +0.271 (hard) at k=20 against +0.788 for MAE.",
+          "ONLY THE RANKING IS PORTABLE. Mean ES varies 0.0439..0.0612 across runs (39% spread), so any absolute ES threshold would not transfer between runs. This matters if Stage C ever uses a fixed cutoff instead of a rank-based allocation.",
+          "TEST-PEEKING, DISCLOSED: the strong per-cluster numbers come from COD10K-test, and deriving lambda_cov = 0 (B2) from them is mild test-peeking. It does not rest on that alone -- val-only at k=15 gives rho +0.600 with permutation p = 0.3509 over 5000 shuffles, computed independently of test.",
+          "THREE GATES, because a silently wrong pipeline here would produce plausible numbers rather than an error. (1) Every checkpoint tensor is verified as copied: CHECKPOINT_LOADING_BUG.md records a state_dict on the wrong CUDA device loading as \"All keys matched successfully\" while copying nothing, which once produced Sa 0.28 instead of 0.68. (2) Image/GT pairing is asserted by stem, because test_dataset sorts the two directories independently and zips them. (3) The regenerated predictions are compared against the RECORDED ones in Result/SINet/S2C (mean |d| 0.000 grey levels over 400 images), and per-image ES against the audit's own locked2_scores.json.",
+          "Reproduction fidelity: mean MAE 0.074463 against the repo's recorded 0.0745, mean Sa 0.717216 against 0.7172.",
+          "IoU is computed explicitly here, in both a soft and a hard-thresholded form, because Eval/metrics.py IoU.step does NOT call _prepare_data -- feeding it the uint8 arrays the rest of the eval path uses would overflow in target*pred. The sources do not say which form they used, so both are reported.",
+          "HOW THIS INTEGRATES: B1 establishes that the deficiency signal is real, which is what makes Stage C's failure interesting rather than trivial. B2 then shows the obvious coverage correction is not real. C1/C2/C3 show that even a valid signal cannot deliver a detectable effect, because the data it selects differs from random by only d ~ 0.10."
+        ],
+        "no_log": false
+      },
+      {
+        "timestamp": "2026-08-27T20:39:41+05:30",
+        "commit": "fb893d5",
+        "tree": "dirty",
+        "exp": "B1",
+        "cmd": "LAKE-RED/.venv/bin/python evidence/b1_es_error_correlation.py --k 15,20,50,100 --runs repro,s42,s43,s45,s46 --perm 5000",
+        "metrics": [
+          {
+            "name": "selfcheck_mean_MAE_test",
+            "value": "0.074463",
+            "provenance": "repo records 0.0745"
+          },
+          {
+            "name": "selfcheck_mean_Sa_test",
+            "value": "0.717216",
+            "provenance": "repo records 0.7172"
+          },
+          {
+            "name": "pred_vs_recorded",
+            "value": "n=400 mean|d|=0.000 max|d|=0.000 levels",
+            "provenance": "regenerated vs Result/SINet/S2C"
+          },
+          {
+            "name": "vs_locked2_scores",
+            "value": "{\"repro\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s42\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s43\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s45\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}, \"s46\": {\"es_r\": 1.0, \"es_maxabs\": 0.0, \"sa_r\": 1.0, \"sa_maxabs\": 0.0, \"mae_r\": 1.0, \"mae_maxabs\": 0.0}}",
+            "provenance": "audit's own per-image scores"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k20_test",
+            "value": "+0.788",
+            "provenance": "20 clusters; across 4 clustering variants +0.788..+0.949"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k50_test",
+            "value": "+0.826",
+            "provenance": "45 clusters; across variants +0.826..+0.878"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k100_test",
+            "value": "+0.840",
+            "provenance": "72 clusters"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mSa_k20_test",
+            "value": "+0.409",
+            "provenance": "THE HEADLINE METRIC -- R-h; across variants +0.409..+0.624"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mSa_k50_test",
+            "value": "+0.442",
+            "provenance": "R-h"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mIoU_k20_test",
+            "value": "+0.265 soft / +0.271 hard",
+            "provenance": "localisation error"
+          },
+          {
+            "name": "rho_percluster_ES_vs_1mIoU_k50_test",
+            "value": "+0.247 soft / +0.295 hard",
+            "provenance": ""
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k15_val",
+            "value": "+0.600",
+            "provenance": "5 clusters, perm p=0.3509; across variants +0.600..+0.945"
+          },
+          {
+            "name": "rho_percluster_ES_vs_MAE_k20_val",
+            "value": "+0.976",
+            "provenance": "8 clusters, perm p=0.0008; across variants +0.845..+0.976"
+          },
+          {
+            "name": "val_significance_best_variant",
+            "value": "rho +1.000, perm p 0.0788",
+            "provenance": "val-only significance, best of 16 k x variant combinations"
+          },
+          {
+            "name": "val_significant_combinations",
+            "value": "10 of 16 have perm p < 0.05",
+            "provenance": "independent of test"
+          },
+          {
+            "name": "clustering_recipe",
+            "value": "primary fit_on=tgt embedder=L518; audit recipe NOT recoverable",
+            "provenance": "see the note"
+          },
+          {
+            "name": "rho_perimage_ES_vs_MAE_test",
+            "value": "+0.751",
+            "provenance": "n=2026"
+          },
+          {
+            "name": "rho_perimage_ES_vs_1mSa_test",
+            "value": "+0.311",
+            "provenance": "R-h"
+          },
+          {
+            "name": "rho_perimage_ES_vs_1mIoU_test",
+            "value": "+0.183",
+            "provenance": "soft IoU"
+          },
+          {
+            "name": "rho_perimage_ES_vs_MAE_val",
+            "value": "+0.660",
+            "provenance": "n=250"
+          },
+          {
+            "name": "crossrun_rho_percluster_MAE_k20",
+            "value": "+0.893 +/- 0.059 (n=5 runs)",
+            "provenance": "independent training runs"
+          },
+          {
+            "name": "crossrun_rho_percluster_1mSa_k20",
+            "value": "+0.422 +/- 0.032",
+            "provenance": "R-h, across runs"
+          },
+          {
+            "name": "crossrun_rho_perimage_MAE",
+            "value": "+0.770 +/- 0.022",
+            "provenance": ""
+          },
+          {
+            "name": "crossrun_ES_ranking_agreement",
+            "value": "+0.765 .. +0.911 (10 pairs)",
+            "provenance": "the quantity d(c) actually uses"
+          },
+          {
+            "name": "crossrun_ES_scale_spread",
+            "value": "0.0439 .. 0.0612 (39% spread)",
+            "provenance": "only the RANKING is portable, not any absolute threshold"
+          }
+        ],
+        "thresholds": [
+          {
+            "condition": "all checkpoint tensors copied (CHECKPOINT_LOADING_BUG.md)",
+            "passed": true
+          },
+          {
+            "condition": "image/GT pairing aligned by stem in both splits",
+            "passed": true
+          },
+          {
+            "condition": "self-check: mean MAE within 0.001 of the recorded 0.0745",
+            "passed": true
+          },
+          {
+            "condition": "self-check: mean Sa within 0.005 of the recorded 0.7172",
+            "passed": true
+          },
+          {
+            "condition": "regenerated predictions match the recorded ones (mean |d| < 1 level)",
+            "passed": true
+          },
+          {
+            "condition": "per-image ES matches the audit's own scores (r > 0.999)",
+            "passed": true
+          },
+          {
+            "condition": "ES predicts per-cluster MAE at rho > 0.75 (test, k=20)",
+            "passed": true
+          },
+          {
+            "condition": "rho(ES, MAE) > 0.70 under ALL 4 clustering variants at k=20 test",
+            "passed": true
+          },
+          {
+            "condition": "rho(ES, MAE) > 0.70 under ALL 4 variants at k=50 test",
+            "passed": true
+          },
+          {
+            "condition": "ES predicts per-cluster MAE on VAL, independent of test (some k x variant reaches perm p < 0.05)",
+            "passed": true
+          },
+          {
+            "condition": "the MAE correlation replicates across runs (sd < 0.10)",
+            "passed": true
+          },
+          {
+            "condition": "ES ranking agrees between every pair of runs (rho > 0.70)",
+            "passed": true
+          },
+          {
+            "condition": "R-h: ES predicts Sa MORE WEAKLY than MAE",
+            "passed": true
+          },
+          {
+            "condition": "R-h holds under ALL 4 clustering variants",
+            "passed": true
+          }
+        ],
+        "expected": [
+          {
+            "claim": "self-check mean MAE vs the audit's stored per-image scores = 0.074463",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "self-check mean MAE vs the repo's recorded value = 0.0745",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "self-check mean Sa vs the repo's recorded value = 0.7172",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=20 test = 0.857",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=50 test = 0.817",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=100 test = 0.88",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-cluster k=20 = 0.645",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-cluster k=50 = 0.398",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-IoU) per-cluster k=20 test = 0.513",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=20 val = 0.8",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-cluster k=15 val = 0.967",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "rho(ES, MAE) per-image test = 0.751",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "rho(ES, 1-Sa) per-image test = 0.334",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "cross-run rho(ES, MAE) k=20 mean = 0.903",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "cross-run rho(ES, MAE) per-image mean = 0.77",
+            "verdict": "MATCH"
+          }
+        ],
+        "artifacts": "evidence/out/b1_cluster_correlations.csv, evidence/out/b1_cross_run.csv, evidence/out/b1_scores_test_*.csv, evidence/out/b1_scores_val_repro.csv",
+        "revision": "R-h: rho 0.82 is against MAE; against the headline metric Sa the same signal gives only +0.40..+0.65. Both computed here.",
+        "trains": "NO",
+        "notes": [
+          "WHAT SURVIVED. ES-disagreement is a genuine weakness signal: rho +0.788 against per-cluster MAE at k=20 on test, replicating at +0.893 +/- 0.059 across 5 INDEPENDENT training runs, with the ES-based cluster RANKING -- the quantity d(c) actually consumes -- agreeing between every pair of runs at rho +0.765..+0.911. Not a single-run artifact.",
+          "R-h, THE SCOPE CORRECTION, computed here rather than asserted: against the headline metric Sa the same signal gives only +0.409 (k=20) and +0.442 (k=50) per-cluster, and +0.311 per-image. So rho=0.82 licenses 'ES ranks clusters by pixel-calibration error'; it does NOT license 'ES predicts the error that matters'. An Sa-headlined paper allocating by ES would optimise a proxy correlated ~0.4-0.65 with its own objective.",
+          "ES tracks calibration error far better than localisation error: rho(ES, 1-IoU) is +0.265 soft / +0.271 hard at k=20, against +0.788 for MAE.",
+          "ONLY THE RANKING IS PORTABLE. Mean ES varies 0.0439..0.0612 across runs (39% spread), so any absolute ES threshold would not transfer between runs. This matters if Stage C ever uses a fixed cutoff instead of a rank-based allocation.",
+          "THE AUDIT'S CLUSTERING RECIPE COULD NOT BE RECOVERED, and that is the only reason any value here reads MISMATCH. Its script was never saved. A fingerprint search over 16 combinations (embedder x normalisation x fit-set x assignment metric), scored against the cluster counts the audit reports, found no exact match: the closest reproduces test k=20/50 -> 20/49 clusters but gives 11 val clusters at k=15 where the audit reports 9. Per-cluster correlations are therefore RECIPE-SENSITIVE, so each is computed under all four principled variants and the source figure is checked against that whole range rather than against one recipe. Note what is NOT recipe-sensitive: every per-image value and every cross-run value reproduces EXACTLY, because neither needs clustering.",
+          "THE CONCLUSION IS ROBUST TO THE RECIPE, which is what matters: rho(ES, MAE) stays in +0.788..+0.949 at k=20 and +0.826..+0.878 at k=50 across all four variants, and R-h holds under all four -- the weakest MAE correlation (+0.788) still exceeds the strongest Sa correlation (+0.624). The finding does not depend on how the clusters were drawn.",
+          "TEST-PEEKING, DISCLOSED: the strong per-cluster numbers come from COD10K-test, and deriving lambda_cov = 0 (B2) from them is mild test-peeking. It does not rest on that alone -- val-only reaches permutation p < 0.05 in 10 of the 16 k x variant combinations over 5000 shuffles, computed independently of test (primary variant at k=20: rho +0.976, p 0.0008).",
+          "THREE GATES, because a silently wrong pipeline here would produce plausible numbers rather than an error. (1) Every checkpoint tensor is verified as copied: CHECKPOINT_LOADING_BUG.md records a state_dict on the wrong CUDA device loading as 'All keys matched successfully' while copying nothing, which once produced Sa 0.28 instead of 0.68. (2) Image/GT pairing is asserted by stem, because test_dataset sorts the two directories independently and zips them. (3) The regenerated predictions are compared against the RECORDED ones in Result/SINet/S2C (mean |d| 0.000 grey levels over 400 images), and per-image ES/Sa/MAE against the audit's own locked2_scores.json -- exact, r = 1.0 and max |d| = 0.0 for all 5 runs.",
+          "Reproduction fidelity: mean MAE 0.074463 against the repo's recorded 0.0745; mean Sa 0.717216 against 0.7172. One fidelity bug was found and fixed while building this: MyTest.py:76 hands a float array to cv2.imwrite, which ROUNDS, while this script initially truncated -- biasing every prediction down ~0.5 grey levels and shifting mean MAE by -0.00123. Note the audit's prose states its per-image mean MAE as 0.0747 while its own stored scores average 0.074463; the artifact is treated as authoritative.",
+          "IoU is computed explicitly here, soft and hard-thresholded, because Eval/metrics.py IoU.step does NOT call _prepare_data -- feeding it the uint8 arrays the rest of the eval path uses would overflow in target*pred. The sources do not say which form they used, so both are reported.",
+          "HOW THIS INTEGRATES: B1 establishes that the deficiency signal is real, which is what makes Stage C's failure interesting rather than trivial. B2 then shows the obvious coverage correction is not. C1/C2/C3 show that even a valid signal cannot deliver a detectable effect, because the data it selects differs from random by only d ~ 0.10."
+        ],
+        "no_log": false
+      }
+    ]
   },
   "B2": {
     "title": "Coverage-term falsification",

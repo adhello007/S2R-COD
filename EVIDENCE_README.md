@@ -45,7 +45,8 @@ with the cause. That table is the honest core of the package.
 **What survived as valid** — this is not only a takedown:
 
 - **Uncertainty is a real weakness signal.** ES-disagreement predicts per-cluster true error at
-  **ρ ≈ +0.82** (MAE), replicating at **+0.903 ± 0.041** across four independent runs. (`b1`)
+  **ρ = +0.79…+0.84** (MAE), replicating at **+0.893 ± 0.059** across five independent runs, with
+  cluster rankings agreeing +0.765…+0.911. (`b1` ✓)
 - **Targeting genuinely works.** ~**20%** held-out acceptance, **12–16×** above chance,
   p ≈ 1e-112 — an earlier "0%, this is dead" verdict was an artifact of a weak embedder. (`b3`)
 - **Dropping the coverage term was correct.** λ_cov = 0 is measured, not assumed, and is defensible
@@ -65,7 +66,7 @@ resolution that **fails loudly** rather than silently reading a stale file.
 | A1 | `a1_conditioning_width.py` | the 48-number conditioning channel, from config + trained weights + a live tensor shape | `ddpm.py`, `LAKERED.ckpt` | **DONE**, 6/6 PASS |
 | A2 | `a2_fg_pixel_share.py` | foreground vs invented-background pixel share (0.1913 fg / 80.9% invented) | 4447 masks, 4 sources | **DONE**, 6/6 PASS |
 | A3 | `a3_appearance_signature.py` | real-vs-generated probe AUC **beside** controls that show it is a truism; generation costs 37.5% of recall | DINOv2 caches, GPU | **DONE**, 8/9 PASS |
-| B1 | `b1_es_error_correlation.py` | ES vs true error, separately for MAE / Sα / IoU, val and test | SINet checkpoints, GPU | pending |
+| B1 | `b1_es_error_correlation.py` | ES vs true error for MAE / Sα / IoU, val and test, 5 runs; pipeline verified bit-exact | SINet checkpoints, GPU | **DONE**, 14/14 PASS |
 | B2 | `b2_coverage_falsification.py` | the coverage term is noise on test and anti-predictive on val | ← B1 | pending |
 | B3 | `b3_targeting_acceptance.py` | acceptance under both embedders, vs chance, in-sample and held-out | caches | pending |
 | C1 | `c1_targeted_vs_random.py` | Cohen's d between targeted and random data, across the T sweep | caches, ← B1 | pending |

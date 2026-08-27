@@ -82,9 +82,11 @@ Each link is `claim we needed to check → how we checked it → what we found �
 - **How.** Compute ES exactly as the training loop does, then correlate per-cluster mean ES against
   per-cluster *true* error on labelled data (COD10K-test, CAMO-val). Repeat on four independently
   trained runs to rule out a single-run artifact. → **[B1]**
-- **What we found.** ρ = **+0.82** against MAE per cluster (+0.86 at k=20, +0.88 at k=100),
-  replicating at **+0.903 ± 0.041** across four independent runs, with cluster rankings agreeing
-  ρ = 0.78–0.94 between any two runs. But against Sα — the headline metric — only **+0.40 to +0.65**.
+- **What we found (measured).** ρ = **+0.79 to +0.84** against per-cluster MAE (+0.788 at k=20,
+  +0.826 at k=50, +0.840 at k=100), replicating at **+0.893 ± 0.059** across **five** independent
+  training runs, with cluster rankings agreeing ρ = **+0.765 to +0.911** between any two runs. Against
+  Sα — the headline metric — only **+0.409** (k=20) and **+0.442** (k=50) per cluster, **+0.311**
+  per image. Per-image ρ(ES, MAE) = **+0.751**, reproducing the source exactly.
 - **Implied.** The signal is real, and this is the finding that survived. But it ranks clusters by
   *pixel-calibration* error, not by the structural error the paper reports. Allocating by ES means
   optimising a proxy correlated 0.40–0.65 with the actual objective.
@@ -265,16 +267,22 @@ This is not a takedown of everything. Three findings came through the adversaria
 one of them is a transferable prescription.
 
 **Uncertainty is a real weakness signal.** ES-disagreement predicts per-cluster true error at
-**ρ ≈ +0.82** against MAE (+0.86 at k=20, +0.88 at k=100), and it *replicates*: measured on four
-independently trained runs it gives **+0.903 ± 0.041**, with any two runs' cluster rankings agreeing
-at ρ = 0.78–0.94. It survived a test-peeking attack too — on CAMO-val alone at k=15 it is **+0.967**
-with a permutation p of **0.0002**, so it does not depend on test-set correlations. This is a usable,
-label-free way to find where a model is weak. → **[B1]**
+**ρ = +0.79 to +0.84** against MAE, and it *replicates*: measured on **five** independently trained
+runs it gives **+0.893 ± 0.059**, with any two runs' cluster rankings agreeing at
+**ρ = +0.765 to +0.911**. It survived a test-peeking attack too — on CAMO-val alone, permutation
+testing over 5000 shuffles reaches p < 0.05 in **10 of 16** cluster configurations (k=20 primary:
+ρ = **+0.976**, p = **0.0008**), independently of test. This is a usable, label-free way to find
+where a model is weak. → **[B1]**
 
-*With one scope limit, stated plainly:* ρ = 0.82 licenses "ES ranks clusters by pixel-calibration
-error." It does **not** license "ES predicts where the model is bad" in Sα, which is only +0.40 to
-+0.65. And the ES *scale* varies 40% between runs (0.0439–0.0612), so only the *ranking* transfers —
-a fixed ES threshold would not.
+*The whole B1 pipeline is verified bit-exact:* regenerated predictions match the recorded ones to
+**0.000 grey levels**, and per-image ES, Sα and MAE match the audit's own stored scores at
+**r = 1.0, max |Δ| = 0.0** for all five runs.
+
+*With one scope limit, stated plainly:* ρ ≈ 0.8 licenses "ES ranks clusters by pixel-calibration
+error." It does **not** license "ES predicts where the model is bad" in Sα, which is only **+0.31 to
++0.44**. ES also tracks calibration far better than localisation: ρ(ES, 1−IoU) is just **+0.265**.
+And the ES *scale* varies **39%** between runs (0.0439–0.0612), so only the *ranking* transfers — a
+fixed ES threshold would not.
 
 **Targeting works.** Rejection sampling reaches **~20% acceptance** (20.62% held out, 26.67%
 in-sample) in the deficient clusters at k=20 with native-resolution DINOv2 — **12–16× above chance**,
@@ -307,7 +315,7 @@ revisions are the evidence that the analysis was adversarial rather than confirm
 | R-n | the JPEG-75 control | 0.938, a second support for R-f | **does not reproduce — 0.412** | re-encoding an already-JPEG target image at quality 75 leaves DINOv2 features essentially unchanged. The source script was never saved, so 0.938 cannot be traced. R-f now rests on the cross-dataset control **alone** — sufficient, but one control rather than two | A3 |
 | R-o | fg→bg colour correlation, real side | −0.36 | **−0.19** | robust: −0.183 at n=800, −0.191 at n=4447, −0.189 under luma-601 weighting. The qualitative claim (sign flip, R²≈0.16–0.19 generated) survives; the real-side magnitude is about half what was published | A3 |
 | R-g | planning σ(Sα) | 0.00286 (4 distinct seeds) | **0.00356** (arm-run, n=6) | an arm *is* one run, so its variance must include training nondeterminism as well as seed choice — and 80% of the spread turned out to be nondeterminism, not seed | C3 |
-| R-h | what ES predicts | "predicts where the model is bad", ρ = 0.82 | ρ = 0.82 for **MAE**; only **+0.40…+0.65** for **Sα** | ρ = 0.82 was measured against MAE while the headline metric is Sα | B1 |
+| R-h | what ES predicts | "predicts where the model is bad", ρ = 0.82 | ρ ≈ **0.79–0.84** for **MAE**; only **+0.31…+0.44** for **Sα** | ρ was measured against MAE while the headline metric is Sα. Confirmed under all four clustering variants: the weakest MAE correlation still exceeds the strongest Sα one | B1 |
 | R-i | the coverage term | "noise", ρ = +0.006 | **anti-predictive** on val (−0.717); flips a +0.800 signal to −0.733 | measuring only on test hid the sign instability; the term is worse than uninformative | B2 |
 | R-j | arm A as a control | clean fixed-compute control | **not clean** | arm A sees each image 0.593× per epoch vs 0.517× for B/C (23.1× vs 17.9× per run at B=2000), confounding "more data" with "thinner exposure"; only B-vs-C is clean | C2 |
 | R-k | "raise B to increase the effect" | advised in the red-team audit and the prior review | **arithmetically wrong, retracted** | arms B and C overlap by `B²/4447`, so only `(1 − B/4447)` of the added block differs; the shift is non-monotonic in B and hits exactly 0 at B=4447 | C2 |
