@@ -193,10 +193,11 @@ The cross-attention does retrieve from an **8192-entry** codebook (`bg_embed` is
 those 8192 entries are *addressed* by only those ≤48 scalars. The bottleneck is the query, not the
 codebook, and stating it any more broadly would overclaim.
 
-Meanwhile **~82%** of every output image is background the model invents from scratch; the
-foreground occupies a mean of only **~18%** of the pixels. → **[A2]**
+Meanwhile **80.9%** of every output image is background the model invents from scratch; the
+foreground occupies a mean of only **0.1913** of the pixels (median 0.178, sd 0.109, range
+0.002–0.638 over all 4447 inpainting masks). → **[A2]**
 
-In plain terms: we are trying to aim a process that paints 82% of the picture, using 48 average
+In plain terms: we are trying to aim a process that paints 81% of the picture, using ≤48 average
 colour values as the steering wheel. The colour lever is real but weak — the
 foreground→background colour correlation flips from **−0.36** in real HKU-IS to **+0.45** in
 generated output, but explains only about **20%** of the variance. → **[A3]**

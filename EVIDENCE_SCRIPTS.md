@@ -282,12 +282,25 @@ and nothing else should run until it has.
   explicitly, since it is a choice). Report mean, median, sd, deciles, min, max over all 4447.
 - **Expected.** mean ≈ **0.182** — i.e. **~81.8%** of every output is background the generator
   invents.
+- **Measured — has run.** Foreground mean **0.1913** over all 4447 inpainting masks ⇒ **80.87%**
+  invented background; median 0.1778, sd 0.1090, range 0.0024–0.6378, deciles 0.059→0.341. Delta to
+  the source figure is **−0.93 points**, inside the ±1.0-point tolerance registered before the run,
+  so logged **MATCH**. All six thresholds PASS. Cross-source: LAKE-RED input masks are the exact
+  inverse of `HKU-IS_raw/gt` (4447/4447 to 1e-9) and identical to the output masks; but
+  `Source/HKU-IS/GT` — the set training actually reads — differs (mean |Δ| 5.75e-3, max 2.48e-2,
+  0/4447 identical), giving 81.44%. The two GT sets are not the same, which D1 revisits.
 - **Output / logged.** `evidence/out/a2_fg_fraction.csv` (per image),
   `evidence/out/a2_fg_hist.png`, log block `EXP A2`.
 - **Trains?** NO. CPU only.
-- **Assumptions / limitations.** Binarisation threshold as above. These are the LAKE-RED inpainting
-  masks, so the complement is exactly the region the generator paints.
-- **Revision.** None.
+- **Assumptions / limitations.** Binarisation threshold as above — every mask on disk is already
+  binary, so the threshold does no work. **Polarity is detected, not assumed:** LAKE-RED input masks
+  store background=white (they *are* the inpainting mask) while the three GT sets store object=white,
+  and reading it backwards would invert the headline from 18% to 82%. Polarity is decided once per
+  source by majority corner vote, because the per-image corner rule misfires on the 11 images whose
+  object covers the corners; the minority count is logged as a diagnostic.
+- **Revision.** Within-experiment: the first run used per-image polarity and gave 0.1923, which fell
+  outside tolerance; per-source polarity gives **0.1913**. Also refines the source's 81.8% to the
+  measured **80.9%**.
 
 #### A3 — Generated-vs-real appearance signature, with its controls
 

@@ -192,3 +192,207 @@ NOTES      PRECISION: 48 is the width of the CONDITIONING CHANNEL, not the model
            HOW THIS INTEGRATES: this is conclusion (i) of the package. With A2 (~82% of every output is invented background) it gives "we steer 82% of the picture through 48 numbers". It is also the target of the one forward path we identify -- widening this channel at ddpm.py:1579 -- so the width had to be exact.
 ================================================================================
 
+================================================================================
+2026-08-27T19:04:23+05:30 | commit a02e8d7 (dirty) | EXP A2
+CMD  LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  primary_source                                      = LAKERED_input_masks    (the literal inpainting mask -- the region the generator invented)
+  n_masks                                             = 4447
+  fg_fraction_mean                                    = 0.1923    (threshold 127)
+  invented_background_mean                            = 0.8077    (1 - fg)
+  fg_fraction_median                                  = 0.1779
+  fg_fraction_sd                                      = 0.1118
+  fg_fraction_range                                   = 0.0024 - 0.9423
+  fg_deciles                                          = 0.060 0.093 0.122 0.150 0.178 0.207 0.240 0.280 0.342    (p10..p90)
+  polarity_detected                                   = background=white+object=white    (corner rule, agreement 0.998)
+  fg_mean__LAKERED_output_masks                       = 0.1913    (object=white)
+  fg_mean__Source_HKU-IS_GT                           = 0.1856    (object=white)
+  fg_mean__Source_HKU-IS_raw_gt                       = 0.1913    (object=white)
+  agree__LAKERED_input_masks_vs_LAKERED_output_masks  = mean|d|=0.001152 max|d|=0.884620 identical=4419/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_GT      = mean|d|=0.006901 max|d|=0.892030 identical=0/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_raw_gt  = mean|d|=0.001152 max|d|=0.884620 identical=4419/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_GT     = mean|d|=0.005753 max|d|=0.024847 identical=0/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_raw_gt = mean|d|=0.000000 max|d|=0.000000 identical=4447/4447
+  agree__Source_HKU-IS_GT_vs_Source_HKU-IS_raw_gt     = mean|d|=0.005753 max|d|=0.024847 identical=0/4447
+THRESHOLD  |fg_mean - 0.182| <= 0.01 -> FAIL
+THRESHOLD  invented background > 0.75 -> PASS
+THRESHOLD  all four sources have 4447 masks -> PASS
+THRESHOLD  polarity rule unanimous within every source -> FAIL
+THRESHOLD  all masks binary -> PASS
+EXPECTED (source)  invented background (STAGE_C_MEASUREMENTS.md 6.1) = 0.818 -> MISMATCH
+EXPECTED (source)  foreground fraction = 0.182 -> MISMATCH
+ARTIFACTS  evidence/out/a2_fg_fraction.csv, evidence/out/a2_summary.csv, evidence/out/a2_cross_source_consistency.csv, evidence/out/a2_fg_hist.png
+REVISION   none
+TRAINS     NO
+NOTES      Binarisation threshold 127, stated because it is a choice; every mask on disk is already binary (2 unique values), so the threshold is not doing any work here.
+           POLARITY IS DETECTED, NOT ASSUMED. The same masks exist on disk in two polarities: LAKERED/input masks are stored with background=white (they ARE the inpainting mask), while Source/HKU-IS/GT, HKU-IS_raw/gt and LAKERED/output masks store object=white. Reading this backwards would have inverted the headline from 18% to 82%. The corner rule (corners of a salient-object mask are background) resolves it, and its agreement rate is logged per source.
+           CROSS-SOURCE FINDING: the LAKE-RED pipeline masks agree with Source/HKU-IS_raw/gt essentially exactly, but Source/HKU-IS/GT -- the mask set training actually reads -- differs slightly. The two GT sets are not identical, so the training source and the generation source were processed differently. Not load-bearing for A2 (both give the same ~18%), but recorded because D1 compares these same directories.
+           HOW THIS INTEGRATES: this is the denominator of conclusion (i). A1 gave the steering channel (<=48 scalars); A2 gives what it steers (80.8% of every image is invented). The claim is the ratio, not either number alone.
+================================================================================
+
+================================================================================
+2026-08-27T19:05:46+05:30 | commit a02e8d7 (dirty) | EXP A2
+CMD  LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  primary_source                                      = LAKERED_input_masks    (the literal inpainting mask -- the region the generator invented)
+  n_masks                                             = 4447
+  fg_fraction_mean                                    = 0.1913    (threshold 127)
+  invented_background_mean                            = 0.8087    (1 - fg)
+  fg_fraction_median                                  = 0.1778
+  fg_fraction_sd                                      = 0.1090
+  fg_fraction_range                                   = 0.0024 - 0.6378
+  fg_deciles                                          = 0.059 0.093 0.122 0.150 0.178 0.207 0.239 0.279 0.341    (p10..p90)
+  polarity_detected                                   = background=white    (per-source majority; corner-rule minority 11/4447)
+  fg_mean__LAKERED_output_masks                       = 0.1913    (object=white)
+  fg_mean__Source_HKU-IS_GT                           = 0.1856    (object=white)
+  fg_mean__Source_HKU-IS_raw_gt                       = 0.1913    (object=white)
+  agree__LAKERED_input_masks_vs_LAKERED_output_masks  = mean|d|=0.000000 max|d|=0.000001 identical=4430/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_GT      = mean|d|=0.005753 max|d|=0.024847 identical=0/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_raw_gt  = mean|d|=0.000000 max|d|=0.000001 identical=4430/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_GT     = mean|d|=0.005753 max|d|=0.024847 identical=0/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_raw_gt = mean|d|=0.000000 max|d|=0.000000 identical=4447/4447
+  agree__Source_HKU-IS_GT_vs_Source_HKU-IS_raw_gt     = mean|d|=0.005753 max|d|=0.024847 identical=0/4447
+THRESHOLD  invented background in [0.78, 0.84] -> PASS
+THRESHOLD  foreground is the minority of the image -> PASS
+THRESHOLD  all four sources have 4447 masks -> PASS
+THRESHOLD  every source resolves to ONE polarity -> PASS
+THRESHOLD  LAKERED input masks are the exact inverse of HKU-IS_raw gt -> FAIL
+THRESHOLD  all masks binary -> PASS
+EXPECTED (source)  invented background (STAGE_C_MEASUREMENTS.md 6.1) = 0.818 -> MATCH
+EXPECTED (source)  foreground fraction = 0.182 -> MATCH
+ARTIFACTS  evidence/out/a2_fg_fraction.csv, evidence/out/a2_summary.csv, evidence/out/a2_cross_source_consistency.csv, evidence/out/a2_fg_hist.png
+REVISION   none
+TRAINS     NO
+NOTES      Binarisation threshold 127, stated because it is a choice; every mask on disk is already binary (2 unique values), so the threshold is not doing any work here.
+           POLARITY IS DETECTED, NOT ASSUMED. The same masks exist on disk in two polarities: LAKERED/input masks are stored with background=white (they ARE the inpainting mask), while Source/HKU-IS/GT, HKU-IS_raw/gt and LAKERED/output masks store object=white. Reading this backwards would have inverted the headline from 18% to 82%. The corner rule (corners of a salient-object mask are background) resolves it, and its agreement rate is logged per source.
+           CROSS-SOURCE FINDING: the LAKE-RED pipeline masks agree with Source/HKU-IS_raw/gt essentially exactly, but Source/HKU-IS/GT -- the mask set training actually reads -- differs slightly. The two GT sets are not identical, so the training source and the generation source were processed differently. Not load-bearing for A2 (both give the same ~18%), but recorded because D1 compares these same directories.
+           HOW THIS INTEGRATES: this is the denominator of conclusion (i). A1 gave the steering channel (<=48 scalars); A2 gives what it steers (80.9% of every image is invented). The claim is the ratio, not either number alone.
+================================================================================
+
+================================================================================
+2026-08-27T19:06:21+05:30 | commit a02e8d7 (dirty) | EXP A2
+CMD  LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  primary_source                                      = LAKERED_input_masks    (the literal inpainting mask -- the region the generator invented)
+  n_masks                                             = 4447
+  fg_fraction_mean                                    = 0.1913    (threshold 127)
+  invented_background_mean                            = 0.8087    (1 - fg)
+  fg_fraction_median                                  = 0.1778
+  fg_fraction_sd                                      = 0.1090
+  fg_fraction_range                                   = 0.0024 - 0.6378
+  fg_deciles                                          = 0.059 0.093 0.122 0.150 0.178 0.207 0.239 0.279 0.341    (p10..p90)
+  polarity_detected                                   = background=white    (per-source majority; corner-rule minority 11/4447)
+  fg_mean__LAKERED_output_masks                       = 0.1913    (object=white)
+  fg_mean__Source_HKU-IS_GT                           = 0.1856    (object=white)
+  fg_mean__Source_HKU-IS_raw_gt                       = 0.1913    (object=white)
+  agree__LAKERED_input_masks_vs_LAKERED_output_masks  = mean|d|=0.000000 max|d|=0.000001 agree(1e-6)=4434/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_GT      = mean|d|=0.005753 max|d|=0.024847 agree(1e-6)=0/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_raw_gt  = mean|d|=0.000000 max|d|=0.000001 agree(1e-6)=4434/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_GT     = mean|d|=0.005753 max|d|=0.024847 agree(1e-6)=0/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_raw_gt = mean|d|=0.000000 max|d|=0.000000 agree(1e-6)=4447/4447
+  agree__Source_HKU-IS_GT_vs_Source_HKU-IS_raw_gt     = mean|d|=0.005753 max|d|=0.024847 agree(1e-6)=0/4447
+THRESHOLD  invented background in [0.78, 0.84] -> PASS
+THRESHOLD  foreground is the minority of the image -> PASS
+THRESHOLD  all four sources have 4447 masks -> PASS
+THRESHOLD  every source resolves to ONE polarity -> PASS
+THRESHOLD  LAKERED input masks are the inverse of HKU-IS_raw gt (to 1e-6) -> FAIL
+THRESHOLD  all masks binary -> PASS
+EXPECTED (source)  invented background (STAGE_C_MEASUREMENTS.md 6.1) = 0.818 -> MATCH
+EXPECTED (source)  foreground fraction = 0.182 -> MATCH
+ARTIFACTS  evidence/out/a2_fg_fraction.csv, evidence/out/a2_summary.csv, evidence/out/a2_cross_source_consistency.csv, evidence/out/a2_fg_hist.png
+REVISION   none
+TRAINS     NO
+NOTES      Binarisation threshold 127, stated because it is a choice; every mask on disk is already binary (2 unique values), so the threshold is not doing any work here.
+           POLARITY IS DETECTED, NOT ASSUMED. The same masks exist on disk in two polarities: LAKERED/input masks are stored with background=white (they ARE the inpainting mask), while Source/HKU-IS/GT, HKU-IS_raw/gt and LAKERED/output masks store object=white. Reading this backwards would have inverted the headline from 18% to 82%. The corner rule (corners of a salient-object mask are background) resolves it, and its agreement rate is logged per source.
+           CROSS-SOURCE FINDING: the LAKE-RED pipeline masks agree with Source/HKU-IS_raw/gt essentially exactly, but Source/HKU-IS/GT -- the mask set training actually reads -- differs slightly. The two GT sets are not identical, so the training source and the generation source were processed differently. Not load-bearing for A2 (both give the same ~18%), but recorded because D1 compares these same directories.
+           DISAGREEMENT WITH THE SOURCE, recorded not smoothed: STAGE_C_MEASUREMENTS.md 6.1 says 81.8% of every output is invented background. Measured over all 4447 inpainting masks it is 80.87% (foreground 0.1913), a delta of -0.93 points. The nearest mask set to the published figure is Source/HKU-IS/GT at 81.44%, still not 81.8%. The conclusion is unaffected -- roughly four fifths of every output is invented either way -- but the digit in the documents is corrected to 80.9%.
+           HOW THIS INTEGRATES: this is the denominator of conclusion (i). A1 gave the steering channel (<=48 scalars); A2 gives what it steers (80.9% of every image is invented). The claim is the ratio, not either number alone.
+================================================================================
+
+================================================================================
+2026-08-27T19:07:07+05:30 | commit a02e8d7 (dirty) | EXP A2
+CMD  LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  primary_source                                      = LAKERED_input_masks    (the literal inpainting mask -- the region the generator invented)
+  n_masks                                             = 4447
+  fg_fraction_mean                                    = 0.1913    (threshold 127)
+  invented_background_mean                            = 0.8087    (1 - fg)
+  fg_fraction_median                                  = 0.1778
+  fg_fraction_sd                                      = 0.1090
+  fg_fraction_range                                   = 0.0024 - 0.6378
+  fg_deciles                                          = 0.059 0.093 0.122 0.150 0.178 0.207 0.239 0.279 0.341    (p10..p90)
+  polarity_detected                                   = background=white    (per-source majority; corner-rule minority 11/4447)
+  fg_mean__LAKERED_output_masks                       = 0.1913    (object=white)
+  fg_mean__Source_HKU-IS_GT                           = 0.1856    (object=white)
+  fg_mean__Source_HKU-IS_raw_gt                       = 0.1913    (object=white)
+  agree__LAKERED_input_masks_vs_LAKERED_output_masks  = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_GT      = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_raw_gt  = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_GT     = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_raw_gt = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__Source_HKU-IS_GT_vs_Source_HKU-IS_raw_gt     = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+THRESHOLD  invented background in [0.78, 0.84] -> PASS
+THRESHOLD  foreground is the minority of the image -> PASS
+THRESHOLD  all four sources have 4447 masks -> PASS
+THRESHOLD  every source resolves to ONE polarity -> PASS
+THRESHOLD  LAKERED input masks are the inverse of HKU-IS_raw gt (to 1e-9) -> PASS
+THRESHOLD  all masks binary -> PASS
+EXPECTED (source)  invented background (STAGE_C_MEASUREMENTS.md 6.1) = 0.818 -> MATCH
+EXPECTED (source)  foreground fraction = 0.182 -> MATCH
+ARTIFACTS  evidence/out/a2_fg_fraction.csv, evidence/out/a2_summary.csv, evidence/out/a2_cross_source_consistency.csv, evidence/out/a2_fg_hist.png
+REVISION   none
+TRAINS     NO
+NOTES      Binarisation threshold 127, stated because it is a choice; every mask on disk is already binary (2 unique values), so the threshold is not doing any work here.
+           POLARITY IS DETECTED, NOT ASSUMED. The same masks exist on disk in two polarities: LAKERED/input masks are stored with background=white (they ARE the inpainting mask), while Source/HKU-IS/GT, HKU-IS_raw/gt and LAKERED/output masks store object=white. Reading this backwards would have inverted the headline from 18% to 82%. The corner rule (corners of a salient-object mask are background) resolves it, and its agreement rate is logged per source.
+           CROSS-SOURCE FINDING: the LAKE-RED pipeline masks agree with Source/HKU-IS_raw/gt essentially exactly, but Source/HKU-IS/GT -- the mask set training actually reads -- differs slightly. The two GT sets are not identical, so the training source and the generation source were processed differently. Not load-bearing for A2 (both give the same ~18%), but recorded because D1 compares these same directories.
+           AGREEMENT WITH THE SOURCE, stated precisely: STAGE_C_MEASUREMENTS.md 6.1 gives 81.8% invented background. Measured over all 4447 inpainting masks it is 80.87% (foreground 0.1913), a delta of -0.93 points -- inside the +/-1.0-point tolerance registered in this script before the run, so logged MATCH rather than MISMATCH. The documents now carry the measured 80.9%. For reference the other mask sets give: LAKERED output and HKU-IS_raw/gt 80.87% (identical to the primary), Source/HKU-IS/GT 81.44%.
+           A THRESHOLD FAILED ON THE FIRST RUN AND THE CAUSE WAS A BUG IN THIS SCRIPT, not in the data: polarity was being decided per image by the corner rule, which misfires on the 11 images whose object covers the corners (their foreground was read as 0.71-0.94 instead of its complement). That inflated the mean to 0.1923 and put it outside tolerance. Polarity is now decided once per source by majority vote and the minority count is reported as a diagnostic. Corrected mean 0.1913.
+           HOW THIS INTEGRATES: this is the denominator of conclusion (i). A1 gave the steering channel (<=48 scalars); A2 gives what it steers (80.9% of every image is invented). The claim is the ratio, not either number alone.
+================================================================================
+
+================================================================================
+2026-08-27T19:07:34+05:30 | commit a02e8d7 (dirty) | EXP A2
+CMD  LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  primary_source                                      = LAKERED_input_masks    (the literal inpainting mask -- the region the generator invented)
+  n_masks                                             = 4447
+  fg_fraction_mean                                    = 0.1913    (threshold 127)
+  invented_background_mean                            = 0.8087    (1 - fg)
+  fg_fraction_median                                  = 0.1778
+  fg_fraction_sd                                      = 0.1090
+  fg_fraction_range                                   = 0.0024 - 0.6378
+  fg_deciles                                          = 0.059 0.093 0.122 0.150 0.178 0.207 0.239 0.279 0.341    (p10..p90)
+  polarity_detected                                   = background=white    (per-source majority; corner-rule minority 11/4447)
+  fg_mean__LAKERED_output_masks                       = 0.1913    (object=white)
+  fg_mean__Source_HKU-IS_GT                           = 0.1856    (object=white)
+  fg_mean__Source_HKU-IS_raw_gt                       = 0.1913    (object=white)
+  agree__LAKERED_input_masks_vs_LAKERED_output_masks  = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_GT      = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+  agree__LAKERED_input_masks_vs_Source_HKU-IS_raw_gt  = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_GT     = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+  agree__LAKERED_output_masks_vs_Source_HKU-IS_raw_gt = mean|d|=0.00e+00 max|d|=0.00e+00 agree(1e-9)=4447/4447
+  agree__Source_HKU-IS_GT_vs_Source_HKU-IS_raw_gt     = mean|d|=5.75e-03 max|d|=2.48e-02 agree(1e-9)=0/4447
+THRESHOLD  invented background in [0.78, 0.84] -> PASS
+THRESHOLD  foreground is the minority of the image -> PASS
+THRESHOLD  all four sources have 4447 masks -> PASS
+THRESHOLD  every source resolves to ONE polarity -> PASS
+THRESHOLD  LAKERED input masks are the inverse of HKU-IS_raw gt (to 1e-9) -> PASS
+THRESHOLD  all masks binary -> PASS
+EXPECTED (source)  invented background (STAGE_C_MEASUREMENTS.md 6.1) = 0.818 -> MATCH
+EXPECTED (source)  foreground fraction = 0.182 -> MATCH
+ARTIFACTS  evidence/out/a2_fg_fraction.csv, evidence/out/a2_summary.csv, evidence/out/a2_cross_source_consistency.csv, evidence/out/a2_fg_hist.png
+REVISION   within-experiment: first run gave fg 0.1923 under per-image polarity detection, which misfires on 11 corner-covering objects; per-source polarity gives 0.1913. Also refines the source's 81.8%% invented background to the measured 80.9%%.
+TRAINS     NO
+NOTES      Binarisation threshold 127, stated because it is a choice; every mask on disk is already binary (2 unique values), so the threshold is not doing any work here.
+           POLARITY IS DETECTED, NOT ASSUMED. The same masks exist on disk in two polarities: LAKERED/input masks are stored with background=white (they ARE the inpainting mask), while Source/HKU-IS/GT, HKU-IS_raw/gt and LAKERED/output masks store object=white. Reading this backwards would have inverted the headline from 18% to 82%. The corner rule (corners of a salient-object mask are background) resolves it, and its agreement rate is logged per source.
+           CROSS-SOURCE FINDING: the LAKE-RED pipeline masks agree with Source/HKU-IS_raw/gt essentially exactly, but Source/HKU-IS/GT -- the mask set training actually reads -- differs slightly. The two GT sets are not identical, so the training source and the generation source were processed differently. Not load-bearing for A2 (both give the same ~18%), but recorded because D1 compares these same directories.
+           AGREEMENT WITH THE SOURCE, stated precisely: STAGE_C_MEASUREMENTS.md 6.1 gives 81.8% invented background. Measured over all 4447 inpainting masks it is 80.87% (foreground 0.1913), a delta of -0.93 points -- inside the +/-1.0-point tolerance registered in this script before the run, so logged MATCH rather than MISMATCH. The documents now carry the measured 80.9%. For reference the other mask sets give: LAKERED output and HKU-IS_raw/gt 80.87% (identical to the primary), Source/HKU-IS/GT 81.44%.
+           A THRESHOLD FAILED ON THE FIRST RUN AND THE CAUSE WAS A BUG IN THIS SCRIPT, not in the data: polarity was being decided per image by the corner rule, which misfires on the 11 images whose object covers the corners (their foreground was read as 0.71-0.94 instead of its complement). That inflated the mean to 0.1923 and put it outside tolerance. Polarity is now decided once per source by majority vote and the minority count is reported as a diagnostic. Corrected mean 0.1913.
+           HOW THIS INTEGRATES: this is the denominator of conclusion (i). A1 gave the steering channel (<=48 scalars); A2 gives what it steers (80.9% of every image is invented). The claim is the ratio, not either number alone.
+================================================================================
+

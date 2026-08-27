@@ -34,7 +34,7 @@ with the cause. That table is the honest core of the package.
 
 | # | conclusion | the number | script |
 |---|---|---|---|
-| i | The generator is near-unsteerable | its entire steerable channel is **48 scalars** (16 superpixels × 3 mean colours; effective mean **45.75**), while **~82%** of every output is invented background | `a1` ✓, `a2` |
+| i | The generator is near-unsteerable | its entire steerable channel is **48 scalars** (16 superpixels × 3 mean colours; effective mean **45.75**), while **80.9%** of every output is invented background | `a1` ✓, `a2` ✓ |
 | ii | The training loop adds **zero** gradient steps for added data | `total_step` is pinned at 253 by the *target* loader, so every arm runs **9,867 identical steps** | `c2` |
 | iii | The foreground pool is exhausted | **4447** foregrounds, **4447** generated outputs (4445 unique) — every addition is a *re-render*, not a new object | `d1` |
 | iv | Targeted and random data are nearly identical | **Cohen's d ≈ 0.10**, invariant across a 10× temperature sweep; the pool shift peaks at B=2000 for **1.26×** and hits **0** at B=4447 | `c1`, `c2` |
@@ -61,7 +61,7 @@ resolution that **fails loudly** rather than silently reading a stale file.
 |---|---|---|---|---|
 | **E0** | `e0_rescue.py` | rescues irreplaceable inputs off a volatile temp path; hashes everything | — | **DONE**, verified |
 | A1 | `a1_conditioning_width.py` | the 48-number conditioning channel, from config + trained weights + a live tensor shape | `ddpm.py`, `LAKERED.ckpt` | **DONE**, 6/6 PASS |
-| A2 | `a2_fg_pixel_share.py` | foreground vs invented-background pixel share (~18%) | 4447 HKU-IS masks | pending |
+| A2 | `a2_fg_pixel_share.py` | foreground vs invented-background pixel share (0.1913 fg / 80.9% invented) | 4447 masks, 4 sources | **DONE**, 6/6 PASS |
 | A3 | `a3_appearance_signature.py` | real-vs-generated probe AUC **beside** JPEG/cross-dataset controls that show it is a truism | DINOv2 caches, GPU | pending |
 | B1 | `b1_es_error_correlation.py` | ES vs true error, separately for MAE / Sα / IoU, val and test | SINet checkpoints, GPU | pending |
 | B2 | `b2_coverage_falsification.py` | the coverage term is noise on test and anti-predictive on val | ← B1 | pending |

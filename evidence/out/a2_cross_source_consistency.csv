@@ -1,0 +1,7 @@
+source_a,source_b,shared_stems,mean_abs_diff,max_abs_diff,agree_within_1e6,identical_stems
+LAKERED_input_masks,LAKERED_output_masks,4447,0.0,0.0,4447,1198
+LAKERED_input_masks,Source_HKU-IS_GT,4447,0.005753,0.024847,0,0
+LAKERED_input_masks,Source_HKU-IS_raw_gt,4447,0.0,0.0,4447,1198
+LAKERED_output_masks,Source_HKU-IS_GT,4447,0.005753,0.024847,0,0
+LAKERED_output_masks,Source_HKU-IS_raw_gt,4447,0.0,0.0,4447,4447
+Source_HKU-IS_GT,Source_HKU-IS_raw_gt,4447,0.005753,0.024847,0,0
