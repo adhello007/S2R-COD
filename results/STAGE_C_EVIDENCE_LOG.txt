@@ -1,0 +1,64 @@
+################################################################################
+# STAGE C EVIDENCE LOG  --  APPEND-ONLY
+#
+# Purpose
+#   The raw trail for the conclusion that the E1/CSRDA-G Stage C extension is not
+#   a viable path to a measurable COD accuracy gain. One block per experiment RUN.
+#   Every number quoted in EVIDENCE_APPROACH.md appears here with the command and
+#   commit that produced it. No result lives only in prose.
+#
+# Rules
+#   - APPEND ONLY. evidence/common.py opens this file with mode "a", never "w".
+#     A re-run appends a SECOND block; it never replaces the first. Disagreement
+#     between two runs of the same experiment is evidence and must stay visible.
+#   - Every block records: timestamp, git commit (+ dirty flag), experiment ID,
+#     the exact command, the environment stamp, the metrics, pass/fail against any
+#     threshold, the expected value from the source documents, artifacts produced,
+#     and any revision the experiment surfaces.
+#   - NONE of these experiments trains a model. Any block whose TRAINS field is
+#     not "NO" is a bug in the package.
+#
+# Block format
+#   ================================================================================
+#   <ISO-8601 timestamp> | commit <sha> (clean|dirty) | EXP <id>
+#   CMD  <exact command>
+#   ENV  <python/torch/cuda/timm versions> | <gpus> | seed <n>
+#   METRICS
+#     <name> = <value>    (<provenance>)
+#   THRESHOLD  <condition> -> PASS|FAIL
+#   EXPECTED (audit)  <value> -> MATCH|MISMATCH|NEW
+#   ARTIFACTS  <paths>
+#   REVISION   <superseded number and what was wrong, or "none">
+#   TRAINS     NO
+#   NOTES      <assumptions, limitations, UNVERIFIED flags>
+#   ================================================================================
+#
+# Label vocabulary
+#   MATCH / MISMATCH        measured value vs the value pinned by a source document
+#   NEW                     no stored source value exists to compare against
+#   UNVERIFIED              claimed in a source document, not re-measurable here
+#   NOT-REPRODUCIBLE        the inputs it required no longer exist on disk
+#
+# Source documents
+#   STAGE_C_MEASUREMENTS.md        the DINOv2 re-measurement round
+#   STAGE_C_RED_TEAM_AUDIT.md      the adversarial audit of the above
+#   evidence/sources/PRIOR_REVIEW.md   the earlier review; sole source for C2's
+#                                      retraction table and part of D2
+#
+# Experiment index
+#   E0  artifact rescue, hash manifest, environment capture   (gate - run first)
+#   A1  conditioning-width measurement
+#   A2  object-vs-background pixel share
+#   A3  appearance signature + JPEG/cross-dataset controls
+#   B1  ES-vs-true-error correlation
+#   B2  coverage-term falsification
+#   B3  targeting acceptance, both embedders, vs chance
+#   C1  targeted-vs-random data distance
+#   C2  budget-B arithmetic + per-arm sampling
+#   C3  noise floor + effect-size translation
+#   D1  foreground-exhaustion check
+#   D2  leakage sweep
+#
+# Run-book: EVIDENCE_SCRIPTS.md      Rationale: EVIDENCE_APPROACH.md
+################################################################################
+
