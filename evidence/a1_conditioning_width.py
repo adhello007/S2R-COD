@@ -194,6 +194,9 @@ def main():
     ap.add_argument('--samples', type=int, default=20,
                     help='how many real samples for the occupancy panel')
     ap.add_argument('--seed', type=int, default=C.SEED)
+    ap.add_argument('--no-log', action='store_true',
+                    help='print the block but do not append it to the results '
+                         'log; for iterating on this script')
     opt = ap.parse_args()
     repo = C.REPO
 
@@ -321,7 +324,7 @@ def main():
         artifacts=['evidence/out/a1_conditioning.csv',
                    'evidence/out/a1_superpixel_occupancy.csv'],
         revision='none -- this number has never moved',
-        trains='NO', notes=notes, seed=opt.seed)
+        trains='NO', notes=notes, seed=opt.seed, write=not opt.no_log)
     print(block)
 
 

@@ -122,8 +122,16 @@ def rng(seed=SEED):
 
 
 def log_block(exp, cmd, metrics, thresholds=(), expected=(), artifacts=(),
-              revision='none', trains='NO', notes='', seed=SEED, env=None):
+              revision='none', trains='NO', notes='', seed=SEED, env=None,
+              write=True):
     """Append ONE block to results/STAGE_C_EVIDENCE_LOG.txt.
+
+    write=False formats the block and returns it WITHOUT touching the log. Use
+    it (via each script's --no-log) while iterating on a script, so that fixing
+    a defect in the measurement code does not leave a trail of near-identical
+    blocks. The log is for accepted runs and genuine re-runs, not for debugging
+    rounds -- and because it is append-only, the only way to keep it readable is
+    to not write the noise in the first place.
 
     metrics    : list of (name, value, provenance)
     thresholds : list of (condition_str, passed_bool)
@@ -156,7 +164,10 @@ def log_block(exp, cmd, metrics, thresholds=(), expected=(), artifacts=(),
     for i, para in enumerate(notes.strip().split('\n') if notes else ['none']):
         lines.append('%s %s' % ('NOTES     ' if i == 0 else '          ', para))
     lines += [bar, '']
-    os.makedirs(os.path.dirname(LOG), exist_ok=True)
-    with open(LOG, 'a') as fh:                    # APPEND ONLY -- never 'w'
-        fh.write('\n'.join(lines) + '\n')
+    if write:
+        os.makedirs(os.path.dirname(LOG), exist_ok=True)
+        with open(LOG, 'a') as fh:                # APPEND ONLY -- never 'w'
+            fh.write('\n'.join(lines) + '\n')
+    else:
+        lines.insert(1, '[--no-log: NOT written to the results log]')
     return '\n'.join(lines)

@@ -139,6 +139,13 @@ without cross-referencing. `REVISION` names the superseded number where one exis
 **append-only** — `evidence/common.py` opens it with `"a"` and never `"w"`, so a re-run adds a second
 block rather than replacing the first.
 
+Because it is append-only, every script takes **`--no-log`**: it prints the block but does not write
+it. That is for iterating on a script, so that fixing a defect in the *measurement code* does not
+leave a trail of near-identical blocks. The log is for accepted runs and genuine re-runs. Two
+experiments carry more than one block for exactly that reason, before the flag existed: **E0** has
+three (original, hash-path fix, manifest-scope fix) and **A2** has five (four while a polarity bug
+was found and fixed). Each block's `NOTES` says which it is, and none were removed.
+
 ### Package layout
 
 ```

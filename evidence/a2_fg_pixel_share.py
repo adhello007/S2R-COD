@@ -120,6 +120,9 @@ def stats(vals):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--seed', type=int, default=C.SEED)
+    ap.add_argument('--no-log', action='store_true',
+                    help='print the block but do not append it to the results '
+                         'log; for iterating on this script')
     opt = ap.parse_args()
     repo = C.REPO
     out = os.path.join(repo, 'evidence', 'out')
@@ -315,7 +318,7 @@ def main():
                   'polarity detection, which misfires on 11 corner-covering '
                   'objects; per-source polarity gives 0.1913. Also refines the '
                   "source's 81.8%% invented background to the measured 80.9%%."),
-        trains='NO', notes=notes, seed=opt.seed)
+        trains='NO', notes=notes, seed=opt.seed, write=not opt.no_log)
     print('\n' + block)
 
 
