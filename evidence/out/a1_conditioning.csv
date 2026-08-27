@@ -1,0 +1,20 @@
+panel,key,value,provenance
+1-config,n_super_pix,16,config_LAKERED.yaml:72
+1-source,LMP_returns_b_n_3,True,ddpm.py:1548-1564
+1-source,ddpm.py:1533,self.n_super_pix = int(LR_config['n_super_pix']),LAKE-RED/ldm/ldm/models/diffusion/ddpm.py
+1-source,ddpm.py:1553,"segments = slic(img_as_float(img), n_segments=n, sigma=5, mask=m)",LAKE-RED/ldm/ldm/models/diffusion/ddpm.py
+1-source,ddpm.py:1574,"vec_fg = self.LMP(fg, mask, self.n_super_pix, 5) # b n 3",LAKE-RED/ldm/ldm/models/diffusion/ddpm.py
+1-source,ddpm.py:1577,vec_fg_q = self.mlp_in(vec_fg),LAKE-RED/ldm/ldm/models/diffusion/ddpm.py
+1-source,ddpm.py:1579,"bg_emb = self.crossAttn(vec_fg_q, code_book)",LAKE-RED/ldm/ldm/models/diffusion/ddpm.py
+2-weights,mlp_in.fc1.weight,"(6, 3)",LAKERED.ckpt model.SBG_module.mlp_in.fc1.weight
+2-weights,mlp_out.fc2.weight,"(3, 6)",LAKERED.ckpt model.SBG_module.mlp_out.fc2.weight
+2-weights,crossAttn.to_q.weight,"(512, 3)",LAKERED.ckpt model.SBG_module.crossAttn.to_q.weight
+2-weights,bg_embed,"(3, 8192)",LAKERED.ckpt model.SBG_module.bg_embed
+2-weights,channels_per_superpixel,3,mlp_in.fc1.weight input dim
+2-weights,codebook_entries,8192,bg_embed
+2-weights,crossattn_inner_dim,512,to_q.weight
+3-live,vec_fg_shape,"(1, 16, 3)",hook on mlp_in input
+3-live,vec_fg_numel,48,hook on mlp_in input
+3-live,new_cond_shape,"(1, 4, 128, 128)",BKRA.forward return
+4-occupancy,effective_width_mean,45.75,20 real samples
+summary,conditioning_width,48,n_super_pix x channels_per_superpixel

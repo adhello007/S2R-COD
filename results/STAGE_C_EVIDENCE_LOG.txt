@@ -154,3 +154,41 @@ NOTES      Copies only -- the originals in the scratchpad are left untouched.
            RE-RUN 3 of E0, scope fix: SOURCES.sha256 now hashes only the three IMMUTABLE source documents (the two audits + vendored PRIOR_REVIEW.md). EVIDENCE_APPROACH.md and EVIDENCE_SCRIPTS.md were previously included and are deliberately dropped: they are living deliverables corrected in place as experiments run, so hashing them guaranteed a stale manifest. Their integrity comes from git history. No rescued data changed in this run.
 ================================================================================
 
+================================================================================
+2026-08-27T18:59:58+05:30 | commit 8aaaaf1 (dirty) | EXP A1
+CMD  LAKE-RED/.venv/bin/python evidence/a1_conditioning_width.py --samples 20
+ENV  py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 sklearn1.9.0 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+METRICS
+  n_super_pix             = 16    (config_LAKERED.yaml:72)
+  channels_per_superpixel = 3    (ckpt mlp_in.fc1.weight (6, 3) -> input dim)
+  conditioning_width      = 48    (n_super_pix x channels_per_superpixel)
+  vec_fg_shape_live       = (1, 16, 3)    (hook on mlp_in input, sample SOD_0004)
+  vec_fg_numel_live       = 48    (live forward)
+  new_cond_shape_live     = (1, 4, 128, 128)    (BKRA.forward return, ddpm.py:1596)
+  bgrec_loss_live         = computed    (rec_loss=true as configured)
+  codebook_entries        = 8192    (bg_embed (3, 8192) -- addressed BY the 48)
+  crossattn_inner_dim     = 512    (crossAttn.to_q.weight)
+  superpixel_algorithm    = slic(n_segments=16, sigma=5, mask=1-mask)    (ddpm.py:1553)
+  effective_width_mean    = 45.75    (20 real samples; empty superpixels are zero-filled)
+  effective_width_range   = 36-48    (same samples)
+  ckpt_keys_loaded        = 16 loaded, 0 missing, 0 unexpected    (load_state_dict(strict=False))
+THRESHOLD  conditioning_width == 48 -> PASS
+THRESHOLD  live vec_fg numel == 48 -> PASS
+THRESHOLD  live vec_fg shape == (1, 16, 3) -> PASS
+THRESHOLD  per-superpixel width from WEIGHTS == 3 -> PASS
+THRESHOLD  LMP returns b x n x 3 (source check) -> PASS
+THRESHOLD  all BKRA checkpoint weights load -> PASS
+EXPECTED (source)  conditioning width (STAGE_C_MEASUREMENTS.md 6.1) = 48 -> MATCH
+EXPECTED (source)  n_super_pix = 16 -> MATCH
+EXPECTED (source)  effective width on real samples = not pinned by any source -> NEW
+ARTIFACTS  evidence/out/a1_conditioning.csv, evidence/out/a1_superpixel_occupancy.csv
+REVISION   none -- this number has never moved
+TRAINS     NO
+NOTES      PRECISION: 48 is the width of the CONDITIONING CHANNEL, not the model capacity. The U-Net is unconstrained and the retrieval codebook holds 8192 entries -- but those entries are addressed by only 48 scalars, so the bottleneck is the query side. Stating it any more broadly would overclaim.
+           Three INDEPENDENT confirmations, which is why this is not just a config read: the config gives the token count (16), the TRAINED WEIGHTS give the per-token width (mlp_in.fc1.weight is (6, 3), so each superpixel enters as 3 numbers), and a live forward pass of the real module on a real sample gives vec_fg = (1, 16, 3).
+           NEW FINDING, not in any source document: 48 is an UPPER bound. LMP zero-fills superpixels that SLIC leaves empty (ddpm.py:1558-1560), so the effective width on real samples is 45.75 on average (range 36-48 over 20 samples). The channel is at most 48 numbers wide and in practice narrower.
+           Code observations while reading: LMP uses no attribute of self, and its fourth argument s is dead -- sigma=5 is hardcoded at ddpm.py:1553.
+           Mask convention verified, not assumed: mask==1 is the region the generator invents, so 1-mask is the kept foreground, which is what LMP segments (ddpm.py:1552).
+           HOW THIS INTEGRATES: this is conclusion (i) of the package. With A2 (~82% of every output is invented background) it gives "we steer 82% of the picture through 48 numbers". It is also the target of the one forward path we identify -- widening this channel at ddpm.py:1579 -- so the width had to be exact.
+================================================================================
+

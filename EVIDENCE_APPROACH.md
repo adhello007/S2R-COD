@@ -179,6 +179,20 @@ keeps only the **mean colour of each superpixel**. With `n_super_pix: 16`
 (`config_LAKERED.yaml:72`), that is 16 regions × 3 colour channels = **48 scalars** — the complete
 description of the foreground that reaches the background-generation path at `ddpm.py:1579`. → **[A1]**
 
+**Measured three independent ways** (A1, all thresholds PASS): the config gives the token count (16);
+the *trained weights* give the per-token width — `mlp_in.fc1.weight` is `(6, 3)`, so each superpixel
+enters as exactly 3 numbers, independently of any config; and a live forward pass of the real module
+with real checkpoint weights on a real sample yields `vec_fg` of shape **(1, 16, 3)**, 48 elements.
+
+**And 48 is an upper bound.** `LMP` zero-fills superpixels that SLIC leaves empty
+(`ddpm.py:1558-1560`), so the *effective* width on real samples averages **45.75** and ranges
+**36–48** across 20 images. This is a new finding, not present in any source document: the channel is
+at most 48 numbers wide and in practice narrower.
+
+The cross-attention does retrieve from an **8192-entry** codebook (`bg_embed` is `(3, 8192)`) — but
+those 8192 entries are *addressed* by only those ≤48 scalars. The bottleneck is the query, not the
+codebook, and stating it any more broadly would overclaim.
+
 Meanwhile **~82%** of every output image is background the model invents from scratch; the
 foreground occupies a mean of only **~18%** of the pixels. → **[A2]**
 

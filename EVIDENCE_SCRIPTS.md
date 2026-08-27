@@ -248,13 +248,24 @@ and nothing else should run until it has.
   tensor shape; if the checkpoint will not instantiate standalone, call `LMP()` directly on the real
   image/mask instead. The log records **which path ran**.
 - **Expected.** `n_super_pix = 16`; `vec_fg.shape == (1, 16, 3)`; width = **48**.
+- **Measured — has run (commit `a1` below).** `n_super_pix` **16** MATCH; per-superpixel width **3**
+  read off `mlp_in.fc1.weight (6, 3)`; `conditioning_width` **48** MATCH; live `vec_fg` **(1, 16, 3)**,
+  48 elements; `new_cond` `(1, 4, 128, 128)`; 16/16 BKRA weights loaded, 0 missing. All six
+  thresholds PASS. **NEW:** effective width averages **45.75** (range 36–48, 20 samples) because
+  `LMP` zero-fills empty superpixels — so 48 is an upper bound. Codebook is `(3, 8192)`, addressed by
+  those ≤48 scalars.
 - **Output / logged.** `evidence/out/a1_conditioning.csv`, log block `EXP A1`.
 - **Trains?** NO. GPU optional (path b only).
 - **Assumptions / limitations.** 48 is the width of the **conditioning channel**, not the model's
   capacity — the U-Net is unconstrained. The claim is that the foreground reaches the
   background-generation path only through those 48 numbers, which is precisely the pathway Stage C
-  would need to exploit. The document must say this or it overclaims.
-- **Revision.** None.
+  would need to exploit. The document must say this or it overclaims. The retrieval codebook holds
+  8192 entries; they are addressed by the ≤48 scalars, so the bottleneck is the query side.
+  Two code observations recorded in the log: `LMP` uses no attribute of `self`, and its fourth
+  argument `s` is dead (sigma is hardcoded to 5 at `ddpm.py:1553`). Mask convention verified rather
+  than assumed: `mask==1` is the region the generator invents, so `1-mask` is the kept foreground,
+  which is what `LMP` segments.
+- **Revision.** None — this number has never moved.
 
 #### A2 — Object-vs-background pixel share
 
