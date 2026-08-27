@@ -21,8 +21,8 @@ field below reads **NO**.
 | timm | 1.0.28 | supplies DINOv2 weights via the HF hub |
 | transformers | 5.15.1 | present but not load-bearing |
 | scikit-learn | 1.9.0 | logistic-regression probe, k-means |
-| numpy | 2.5.1 | |
-| opencv | 5.0.0 | `cv2.imread(..., IMREAD_GRAYSCALE)` in the eval path |
+| numpy | 2.5.2 | (the root `.venv` has 2.5.1; use `LAKE-RED/.venv`) |
+| opencv-python-headless | 5.0.0.93 | `cv2.imread(..., IMREAD_GRAYSCALE)` in the eval path |
 | scikit-image | 0.26.0 | `slic` — used by LAKE-RED's `LMP()` |
 | GPUs | 2 × NVIDIA RTX PRO 6000 Blackwell Workstation Edition | |
 
@@ -39,11 +39,11 @@ Every command below is written with the explicit interpreter path, so there is n
 LAKE-RED/.venv/bin/python evidence/<script>.py
 ```
 
-Recreate with `uv` (this project does not use conda):
+Full install instructions, exact pins, dataset layout and troubleshooting are in
+**[EVIDENCE_SETUP.md](EVIDENCE_SETUP.md)**. To check a machine is ready:
 
 ```bash
-cd LAKE-RED && uv sync
-uv pip install "timm==1.0.28" "transformers==5.15.1" "scikit-learn==1.9.0"
+LAKE-RED/.venv/bin/python evidence/setup_check.py     # 34 checks, exit 0 = ready
 ```
 
 ### DINOv2 variant — stated precisely, because it is load-bearing
@@ -746,6 +746,19 @@ evidence(D2): leakage sweep
 Where a measured number disagrees with the expected value quoted in this run-book, the markdown is
 corrected **in that experiment's own commit**, so the git history shows the disagreement rather than
 hiding it.
+
+## 3b. The results summary
+
+```bash
+LAKE-RED/.venv/bin/python evidence/summarize_log.py           # rebuild
+LAKE-RED/.venv/bin/python evidence/summarize_log.py --check    # exit 1 if stale
+```
+
+Writes [results/RESULTS_SUMMARY.md](results/RESULTS_SUMMARY.md) (one quotable page: status,
+headline numbers per experiment, revisions surfaced, anything that did not reproduce, what is still
+pending) and `results/RESULTS_SUMMARY.json` for programmatic access. Both are derived from the log,
+never hand-edited — re-run it after each experiment's commit. It is not an experiment and never
+appends a block.
 
 ## 4. Verifying the package as a whole
 

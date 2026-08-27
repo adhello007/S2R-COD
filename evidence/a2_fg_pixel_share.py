@@ -317,7 +317,7 @@ def main():
         revision=('within-experiment: first run gave fg 0.1923 under per-image '
                   'polarity detection, which misfires on 11 corner-covering '
                   'objects; per-source polarity gives 0.1913. Also refines the '
-                  "source's 81.8%% invented background to the measured 80.9%%."),
+                  "source's 81.8% invented background to the measured 80.9%."),
         trains='NO', notes=notes, seed=opt.seed, write=not opt.no_log)
     print('\n' + block)
 

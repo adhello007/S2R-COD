@@ -21,8 +21,10 @@ runs.
 |---|---|---|---|
 | 1 | **this file** | orientation, script map, current status | 5 min |
 | 2 | [EVIDENCE_APPROACH.md](EVIDENCE_APPROACH.md) | the *why*, in plain language: the chain of questions, the four conclusions, what survived as valid, and a 13-row table of every conclusion we revised mid-analysis | 20 min |
-| 3 | [results/STAGE_C_EVIDENCE_LOG.txt](results/STAGE_C_EVIDENCE_LOG.txt) | the raw trail — one block per experiment run | skim |
-| 4 | [EVIDENCE_SCRIPTS.md](EVIDENCE_SCRIPTS.md) | the run-book: exact commands, inputs, expected values, assumptions | reference |
+| 3 | [results/RESULTS_SUMMARY.md](results/RESULTS_SUMMARY.md) | **every result on one page** — status, headline numbers, what disagreed. Generated from the log, so it cannot drift | 3 min |
+| 4 | [results/STAGE_C_EVIDENCE_LOG.txt](results/STAGE_C_EVIDENCE_LOG.txt) | the raw trail — one block per experiment run | skim |
+| 5 | [EVIDENCE_SCRIPTS.md](EVIDENCE_SCRIPTS.md) | the run-book: exact commands, inputs, expected values, assumptions | reference |
+| 6 | [EVIDENCE_SETUP.md](EVIDENCE_SETUP.md) | install from scratch: pins, weights, datasets, troubleshooting | only if reproducing |
 
 If you read only one thing beyond this page, read **§5 of EVIDENCE_APPROACH.md** — the revision
 trail. Several of our conclusions moved, and both the original and the corrected number are shown
@@ -85,9 +87,10 @@ durable disk with committed hashes. Losing it would have made the noise floor re
 6 × 1.8 h of retraining.
 
 **Important caveat while reading.** The numbers in `EVIDENCE_APPROACH.md` and `EVIDENCE_SCRIPTS.md`
-are currently the **expected** values, carried over from the two prior audits. They are *not yet*
-re-measured by the committed scripts. Only the log tells you what has actually been verified — right
-now that is E0 alone. Treat any number without a log block as a claim awaiting reproduction.
+are the **expected** values carried over from the prior audits until the matching experiment runs.
+[results/RESULTS_SUMMARY.md](results/RESULTS_SUMMARY.md) is the authority on what has actually been
+verified — it is regenerated from the log and lists what is still pending. Treat any number without a
+log block as a claim awaiting reproduction.
 
 **The loop for each remaining experiment.** One experiment, one commit, no batching:
 
@@ -107,10 +110,12 @@ a 2σ bar; a null there would cost days of compute to confirm what the arithmeti
 **Verify it yourself** — from the repo root:
 
 ```bash
+LAKE-RED/.venv/bin/python evidence/setup_check.py    # 34 checks: env, data, ckpts, hashes
 sha256sum -c evidence/manifests/MANIFEST.sha256      # 81 rescued inputs
 sha256sum -c evidence/manifests/SOURCES.sha256       # the 3 immutable source documents
-LAKE-RED/.venv/bin/python evidence/e0_rescue.py --dry-run
 ```
+
+Install from scratch: **[EVIDENCE_SETUP.md](EVIDENCE_SETUP.md)**.
 
 ---
 
