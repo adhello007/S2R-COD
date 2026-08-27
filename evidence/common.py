@@ -171,3 +171,124 @@ def log_block(exp, cmd, metrics, thresholds=(), expected=(), artifacts=(),
     else:
         lines.insert(1, '[--no-log: NOT written to the results log]')
     return '\n'.join(lines)
+
+
+# ---------------------------------------------------------------------------
+# DINOv2 embedding -- the ORIGINAL pipeline, recovered by search
+# ---------------------------------------------------------------------------
+# The audits' feature caches were produced by a script that was never saved, so
+# the preprocessing had to be reverse-engineered. Eight candidate pipelines were
+# tested against the cached vectors; exactly one reproduces them:
+#
+#     PIL -> Resize((S, S), BICUBIC)  [squash, NO aspect preserve, NO crop]
+#         -> ToTensor -> Normalize(ImageNet mean/std)
+#         -> timm ViT CLS token, stored UNNORMALISED
+#
+# Verified at cos = 1.00000 against dinoL_tgt_cls.npy and dinoL_gen_cls.npy.
+# The near-misses are informative: Resize(S)+CenterCrop(S) gives 0.978 and
+# cv2.INTER_AREA gives 0.997, so a plausible-looking pipeline would have
+# silently produced slightly wrong features. Any script mixing fresh and cached
+# features MUST call assert_embedder_matches_cache() first.
+#
+# Two traps: timm.data.resolve_data_config() returns 518 even for a model built
+# with img_size=224 (DINOv2's pretrained size), and timm then hard-asserts on it
+# at timm/layers/patch_embed.py:121 -- so the transform is built by hand here.
+# And the cached vectors are NOT unit-norm (|f| ~ 47), so normalise at use time.
+
+DINOV2 = {'L': 'vit_large_patch14_dinov2.lvd142m',
+          'B': 'vit_base_patch14_dinov2.lvd142m'}
+IMAGENET_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_STD = (0.229, 0.224, 0.225)
+
+
+def l2(a):
+    import numpy as np
+    return a / np.linalg.norm(a, axis=-1, keepdims=True)
+
+
+def _transform(size):
+    import torchvision.transforms as T
+    return T.Compose([
+        T.Resize((size, size), interpolation=T.InterpolationMode.BICUBIC),
+        T.ToTensor(), T.Normalize(IMAGENET_MEAN, IMAGENET_STD)])
+
+
+def load_dinov2(variant='L', size=224, device='cuda'):
+    import timm
+    model = timm.create_model(DINOV2[variant], pretrained=True, num_classes=0,
+                              img_size=size).to(device).eval()
+    return model, _transform(size)
+
+
+def embed(items, variant='L', size=224, batch=64, device='cuda', loader=None,
+          progress=None):
+    """CLS features for a list of image paths (or arrays, via loader).
+
+    Returns an UNNORMALISED (n, d) float32 array, matching how the original
+    caches were stored. `loader` maps an item to a PIL image or HWC uint8 array;
+    the default opens a path and converts to RGB.
+    """
+    import numpy as np
+    import torch
+    from PIL import Image
+    if loader is None:
+        def loader(x):
+            return Image.open(x).convert('RGB')
+    model, tf = load_dinov2(variant, size, device)
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(items), batch):
+            chunk = items[i:i + batch]
+            ims = []
+            for it in chunk:
+                im = loader(it)
+                ims.append(tf(im if isinstance(im, Image.Image)
+                              else Image.fromarray(im)))
+            out.append(model(torch.stack(ims).to(device)).float().cpu().numpy())
+            if progress and (i // batch) % 20 == 0:
+                progress(min(i + batch, len(items)), len(items))
+    del model
+    torch.cuda.empty_cache()
+    return np.concatenate(out).astype('float32')
+
+
+def embed_cached(name, items, variant='L', size=224, **kw):
+    """embed() with an on-disk cache under evidence/artifacts/."""
+    import numpy as np
+    path = os.path.join(ARTIFACTS, '%s_%s%d_cls.npy' % (name, variant, size))
+    if os.path.exists(path):
+        return np.load(path), False
+    feats = embed(items, variant=variant, size=size, **kw)
+    os.makedirs(ARTIFACTS, exist_ok=True)
+    np.save(path, feats)
+    return feats, True
+
+
+def assert_embedder_matches_cache(variant='L', size=224, n=8, seed=SEED,
+                                  tol=0.999):
+    """Gate: prove this pipeline reproduces the audits' cached features.
+
+    Re-embeds n random images of the target set and compares against the stored
+    vectors. Raises unless every cosine >= tol, so a script can never silently
+    mix two different preprocessing pipelines.
+    """
+    import json
+    import numpy as np
+    tag = 'dino%s%s' % (variant, '' if size == 224 else str(size))
+    cache = os.path.join(ARTIFACTS, '%s_tgt_cls.npy' % tag)
+    names_p = os.path.join(ARTIFACTS, '%s_names.json' % tag)
+    if not (os.path.exists(cache) and os.path.exists(names_p)):
+        return None                      # nothing to check against
+    cached = l2(np.load(cache))
+    names = json.load(open(names_p))['tgt']
+    rng = np.random.default_rng(seed)
+    pick = rng.choice(len(names), size=min(n, len(names)), replace=False)
+    fresh = l2(embed([os.path.join(REPO, 'Dataset/Target/Image', names[i])
+                      for i in pick], variant=variant, size=size))
+    cos = [float(fresh[j] @ cached[i]) for j, i in enumerate(pick)]
+    if min(cos) < tol:
+        raise RuntimeError(
+            'embedder does not reproduce the cached features (min cos %.5f < '
+            '%.3f). Fresh and cached vectors must not be mixed. See the '
+            'pipeline note in evidence/common.py.' % (min(cos), tol))
+    return {'n': len(cos), 'min_cos': min(cos), 'mean_cos': float(np.mean(cos))}

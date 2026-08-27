@@ -199,8 +199,11 @@ foreground occupies a mean of only **0.1913** of the pixels (median 0.178, sd 0.
 
 In plain terms: we are trying to aim a process that paints 81% of the picture, using ≤48 average
 colour values as the steering wheel. The colour lever is real but weak — the
-foreground→background colour correlation flips from **−0.36** in real HKU-IS to **+0.45** in
-generated output, but explains only about **20%** of the variance. → **[A3]**
+foreground→background colour correlation flips sign, from **−0.19** in the real HKU-IS photographs
+to **+0.40** in generated output, explaining only about **16%** of the variance. The flip
+**replicates across two independent generation runs**: the authors' released synthetic pool gives
+**+0.39** and our own local re-generation **+0.40**, while the real photographs sit at −0.19. Mean
+background luminance drops **19 levels** under generation. → **[A3]**
 
 *Precision matters here:* what is 48-dimensional is the **conditioning channel**, not the model's
 capacity. The U-Net is unconstrained. The claim is that the foreground can only influence the
@@ -299,8 +302,10 @@ revisions are the evidence that the analysis was adversarial rather than confirm
 | R-b | acceptance headline | 26.67% | **20.62%** | clusters were ranked using the same generations whose acceptance was then measured; a held-out split removes ~27% relative optimism | B3 |
 | R-c | real-vs-real ceiling (the null control) | 0.893 / 0.871 | **0.946 / 0.939** | the control split the target features in *sorted-filename order*, which put 2016 COD10K images on one side and 1017 COD10K + all 1000 CAMO on the other — it was separating two datasets, not measuring a null | A3 |
 | R-d | LAKE-RED recall as % of achievable | 54% | **49.6%** | follows directly from R-c: the ceiling had been understated | A3 |
-| R-e | mechanism of the "LAKE-RED look" | ~20-level background darkening | **retracted** | darkening the identical images gives AUC 0.32 (d = 0.14) — DINOv2 is essentially invariant to that shift, so darkening cannot be the mechanism | A3 |
-| R-f | AUC 0.9989 real-vs-generated | headline evidence of a generator ceiling | **near-vacuous** | JPEG-75 recompression of the *same* images gives 0.938 and two ordinary different datasets give 0.983; AUC 0.999 establishes only "these are different distributions", which nobody disputes | A3 |
+| R-e | mechanism of the "LAKE-RED look" | ~20-level background darkening | **retracted** | darkening the identical images gives AUC 0.35 (measured) — DINOv2 is essentially invariant to that shift, so darkening cannot be the mechanism, even though the 19-level shift itself is real | A3 |
+| R-f | AUC 0.9989 real-vs-generated | headline evidence of a generator ceiling | **near-vacuous** | two ordinary different datasets give **0.983**; AUC 0.999 establishes only "these are different distributions", which nobody disputes | A3 |
+| R-n | the JPEG-75 control | 0.938, a second support for R-f | **does not reproduce — 0.412** | re-encoding an already-JPEG target image at quality 75 leaves DINOv2 features essentially unchanged. The source script was never saved, so 0.938 cannot be traced. R-f now rests on the cross-dataset control **alone** — sufficient, but one control rather than two | A3 |
+| R-o | fg→bg colour correlation, real side | −0.36 | **−0.19** | robust: −0.183 at n=800, −0.191 at n=4447, −0.189 under luma-601 weighting. The qualitative claim (sign flip, R²≈0.16–0.19 generated) survives; the real-side magnitude is about half what was published | A3 |
 | R-g | planning σ(Sα) | 0.00286 (4 distinct seeds) | **0.00356** (arm-run, n=6) | an arm *is* one run, so its variance must include training nondeterminism as well as seed choice — and 80% of the spread turned out to be nondeterminism, not seed | C3 |
 | R-h | what ES predicts | "predicts where the model is bad", ρ = 0.82 | ρ = 0.82 for **MAE**; only **+0.40…+0.65** for **Sα** | ρ = 0.82 was measured against MAE while the headline metric is Sα | B1 |
 | R-i | the coverage term | "noise", ρ = +0.006 | **anti-predictive** on val (−0.717); flips a +0.800 signal to −0.733 | measuring only on test hid the sign instability; the term is worse than uninformative | B2 |
@@ -313,8 +318,9 @@ Two further corrections were made to the *framing* rather than to a number: the 
 result had to be restated from "real and generated are separable" (a truism, R-f) to its actual
 consequence — that the style gap is what makes coverage-counting inverse-ranked by feasibility. And
 measured against the right baseline, generation is not merely *limited* but **destructive**: raw
-HKU-IS has generative recall **0.745**, LAKE-RED output has **0.466** — a **37% relative loss** of
-target-manifold coverage, bought for +0.042 precision. → **[A3]**
+HKU-IS has generative recall **0.746**, LAKE-RED output has **0.466** — a **37.5% relative loss** of
+target-manifold coverage, bought for +0.041 precision. Against a corrected ceiling of 0.937 that is
+**49.7%** of achievable, versus 79.6% for the pool it started from. → **[A3]**
 
 ---
 

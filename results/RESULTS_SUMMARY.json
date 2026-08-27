@@ -1141,7 +1141,500 @@
   "A3": {
     "title": "Generated-vs-real appearance signature, with controls",
     "supports": "context - demotes the AUC 0.999 finding to a truism (R-c..R-f)",
-    "runs": []
+    "runs": [
+      {
+        "timestamp": "2026-08-27T19:54:36+05:30",
+        "commit": "9ac60f7",
+        "tree": "dirty",
+        "exp": "A3",
+        "cmd": "LAKE-RED/.venv/bin/python evidence/a3_appearance_signature.py --pixel-sample 0",
+        "metrics": [
+          {
+            "name": "embedder_gate",
+            "value": "min cos 0.99999 over 8 images",
+            "provenance": "fresh vs cached dinoL_tgt_cls.npy"
+          },
+          {
+            "name": "probe_auc_real_vs_lakered",
+            "value": "0.9989",
+            "provenance": "THE headline claim"
+          },
+          {
+            "name": "probe_auc_real_vs_real_random",
+            "value": "0.4781",
+            "provenance": "the TRUE null control"
+          },
+          {
+            "name": "probe_auc_real_vs_raw_hkuis",
+            "value": "0.9831",
+            "provenance": "two ordinary different datasets"
+          },
+          {
+            "name": "probe_auc_jpeg75",
+            "value": "0.4117",
+            "provenance": "IDENTICAL images, recompressed"
+          },
+          {
+            "name": "probe_auc_darkened20",
+            "value": "0.3469",
+            "provenance": "IDENTICAL images, darkened -- refutes the R-e mechanism"
+          },
+          {
+            "name": "probe_auc_sorted_split_BUG",
+            "value": "0.8888",
+            "provenance": "reproduces the R-c defect"
+          },
+          {
+            "name": "probe_cohens_d",
+            "value": "L/224=4.67 B/224=4.61 L/518=4.33",
+            "provenance": "probe axis, by embedder"
+          },
+          {
+            "name": "precision_lakered",
+            "value": "0.6906",
+            "provenance": ""
+          },
+          {
+            "name": "recall_lakered",
+            "value": "0.4662",
+            "provenance": "k=5 NN manifold"
+          },
+          {
+            "name": "precision_raw_hkuis",
+            "value": "0.6494",
+            "provenance": "the pool LAKE-RED starts FROM"
+          },
+          {
+            "name": "recall_raw_hkuis",
+            "value": "0.7461",
+            "provenance": "the pool LAKE-RED starts FROM"
+          },
+          {
+            "name": "ceiling_random_split",
+            "value": "0.9405 / 0.9370",
+            "provenance": "corrected ceiling"
+          },
+          {
+            "name": "ceiling_SORTED_split_BUG",
+            "value": "0.8934 / 0.8710",
+            "provenance": "the R-c defect reproduced"
+          },
+          {
+            "name": "recall_share_lakered",
+            "value": "49.7%",
+            "provenance": "of the corrected ceiling"
+          },
+          {
+            "name": "recall_share_raw_hkuis",
+            "value": "79.6%",
+            "provenance": "of the corrected ceiling"
+          },
+          {
+            "name": "generation_recall_delta",
+            "value": "-0.2799 (-37.5% relative)",
+            "provenance": "LAKE-RED output minus its own input pool"
+          },
+          {
+            "name": "bg_luminance_real",
+            "value": "117.88",
+            "provenance": "4447 images, mask-restricted"
+          },
+          {
+            "name": "bg_luminance_generated",
+            "value": "98.64",
+            "provenance": "same images"
+          },
+          {
+            "name": "bg_luminance_shift",
+            "value": "-19.24",
+            "provenance": "gen - real"
+          },
+          {
+            "name": "bg_channel_shift_rgb",
+            "value": "-21.33 -22.89 -13.49",
+            "provenance": "gen - real"
+          },
+          {
+            "name": "fg_bg_colour_corr_real",
+            "value": "-0.191",
+            "provenance": "R2 0.036"
+          },
+          {
+            "name": "fg_bg_colour_corr_generated",
+            "value": "+0.397",
+            "provenance": "our local re-generation, R2 0.157"
+          },
+          {
+            "name": "fg_bg_colour_corr_authors_pool",
+            "value": "+0.399",
+            "provenance": "authors' released pool (n=4447), R2 0.160 -- independent replication"
+          },
+          {
+            "name": "bg_luminance_authors_pool",
+            "value": "98.53",
+            "provenance": "authors' released pool"
+          },
+          {
+            "name": "fresh_embeddings_computed",
+            "value": "raw=False jpeg=False dark=False",
+            "provenance": "False = read from cache"
+          }
+        ],
+        "thresholds": [
+          {
+            "condition": "embedder reproduces the cached features (min cos >= 0.999)",
+            "passed": true
+          },
+          {
+            "condition": "real-vs-real RANDOM split is a genuine null (AUC < 0.60)",
+            "passed": true
+          },
+          {
+            "condition": "the sorted-filename split is NOT a null (AUC > 0.75) -- the R-c bug",
+            "passed": true
+          },
+          {
+            "condition": "JPEG-75 alone reaches AUC > 0.85, so 0.999 is near-vacuous",
+            "passed": false
+          },
+          {
+            "condition": "two ordinary different datasets reach AUC > 0.95 -- the surviving support for R-f",
+            "passed": true
+          },
+          {
+            "condition": "the fg->bg colour sign flip replicates in the AUTHORS pool too",
+            "passed": true
+          },
+          {
+            "condition": "darkening does NOT separate (AUC < 0.60) -- R-e retraction",
+            "passed": true
+          },
+          {
+            "condition": "generation REDUCES recall vs its own input pool",
+            "passed": true
+          },
+          {
+            "condition": "corrected ceiling exceeds the buggy one",
+            "passed": true
+          }
+        ],
+        "expected": [
+          {
+            "claim": "probe AUC real vs LAKE-RED = 0.9989",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "probe AUC true null (random split) = 0.5289",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "probe AUC real vs raw HKU-IS = 0.9831",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "probe AUC JPEG-75 = 0.938",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "probe AUC darkened-20 = 0.3204",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "Cohen's d probe axis, L/224 = 4.7",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "LAKE-RED precision/recall = 0.691/0.466",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "raw HKU-IS precision/recall = 0.649/0.745",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "corrected ceiling = 0.946/0.939",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "recall share of ceiling = 49.6%",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "fg",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "fg",
+            "verdict": "MATCH"
+          }
+        ],
+        "artifacts": "evidence/out/a3_probe_table.csv, evidence/out/a3_precision_recall.csv, evidence/out/a3_pixel_stats.csv, evidence/out/a3_pixel_per_image.csv",
+        "revision": "R-c sorted-filename split bug (ceiling 0.893/0.871 -> corrected, both computed here); R-d recall share 54% -> recomputed; R-e ~20-level darkening RETRACTED as the mechanism; R-f AUC 0.999 demoted to near-vacuous",
+        "trains": "NO",
+        "notes": [
+          "THIS EXPERIMENT DEMOTES OUR OWN HEADLINE, which is why it is in the package. AUC 0.9989 real-vs-generated looks damning until the controls sit beside it: JPEG-75 recompression of the IDENTICAL images reaches 0.4117, and two ordinary different datasets reach 0.9831. AUC 0.999 establishes only \"these are different distributions\", which nobody disputes. A reviewer would have dismissed it.",
+          "The protocol itself is sound -- the true null (random real-vs-real split) lands at 0.4781, i.e. chance.",
+          "GATE: this script re-embeds 8 target images and requires cos >= 0.999 against the cached vectors before mixing fresh control features with cached ones (measured 0.99999). The original preprocessing was never saved and had to be recovered by testing eight candidate pipelines; the winner is PIL Resize((224,224)) BICUBIC with no crop, ImageNet normalisation, CLS token stored unnormalised. Near-misses were dangerous: Resize+CenterCrop gives 0.978 and cv2.INTER_AREA gives 0.997, so a reasonable-looking pipeline would have silently produced slightly wrong features.",
+          "R-c REPRODUCED, NOT JUST DESCRIBED: the original \"null control\" split the target features in sorted-filename order, which put COD10K on one side and CAMO on the other. This script computes that split too -- AUC 0.8888 and ceiling 0.893/0.871 -- beside the corrected random split (0.4781, 0.941/0.937). Both are logged so the defect is visible.",
+          "R-e RETRACTED: darkening the identical images by 20 levels gives AUC 0.3469. DINOv2 is essentially invariant to that shift, so background darkening cannot be the mechanism behind the style axis. The earlier mechanistic claim is withdrawn.",
+          "THE RESULT THAT ACTUALLY MATTERS is panel 3, and it points the opposite way from the original framing: LAKE-RED does not merely have LIMITED coverage of the target manifold, it DESTROYS coverage its own input already had. Raw HKU-IS recall 0.746 -> LAKE-RED 0.466, a 37.5% relative loss, bought for +0.041 precision.",
+          "HOW THIS INTEGRATES: A3 supports none of the four load-bearing conclusions. It removes two claims we should not lean on, and reframes the style gap as a CONSEQUENCE -- it is why coverage-counting is inverse-ranked by feasibility, which B2 measures directly as rho(acceptance, n_s) = +0.73..+0.92.",
+          "Limitations: JPEG quality 75 and darkening 20 levels are the audit's specific control settings, not a sweep. k=5 for the manifold estimate. Precision/recall is computed on L2-normalised features; the sources did not state whether they normalised, so this is our stated choice."
+        ],
+        "no_log": false
+      },
+      {
+        "timestamp": "2026-08-27T19:56:10+05:30",
+        "commit": "9ac60f7",
+        "tree": "dirty",
+        "exp": "A3",
+        "cmd": "LAKE-RED/.venv/bin/python evidence/a3_appearance_signature.py --pixel-sample 0",
+        "metrics": [
+          {
+            "name": "embedder_gate",
+            "value": "min cos 0.99999 over 8 images",
+            "provenance": "fresh vs cached dinoL_tgt_cls.npy"
+          },
+          {
+            "name": "probe_auc_real_vs_lakered",
+            "value": "0.9989",
+            "provenance": "THE headline claim"
+          },
+          {
+            "name": "probe_auc_real_vs_real_random",
+            "value": "0.4781",
+            "provenance": "the TRUE null control"
+          },
+          {
+            "name": "probe_auc_real_vs_raw_hkuis",
+            "value": "0.9831",
+            "provenance": "two ordinary different datasets"
+          },
+          {
+            "name": "probe_auc_jpeg75",
+            "value": "0.4117",
+            "provenance": "IDENTICAL images, recompressed"
+          },
+          {
+            "name": "probe_auc_darkened20",
+            "value": "0.3469",
+            "provenance": "IDENTICAL images, darkened -- refutes the R-e mechanism"
+          },
+          {
+            "name": "probe_auc_sorted_split_BUG",
+            "value": "0.8888",
+            "provenance": "reproduces the R-c defect"
+          },
+          {
+            "name": "probe_cohens_d",
+            "value": "L/224=4.67 B/224=4.61 L/518=4.33",
+            "provenance": "probe axis, by embedder"
+          },
+          {
+            "name": "precision_lakered",
+            "value": "0.6906",
+            "provenance": ""
+          },
+          {
+            "name": "recall_lakered",
+            "value": "0.4662",
+            "provenance": "k=5 NN manifold"
+          },
+          {
+            "name": "precision_raw_hkuis",
+            "value": "0.6494",
+            "provenance": "the pool LAKE-RED starts FROM"
+          },
+          {
+            "name": "recall_raw_hkuis",
+            "value": "0.7461",
+            "provenance": "the pool LAKE-RED starts FROM"
+          },
+          {
+            "name": "ceiling_random_split",
+            "value": "0.9405 / 0.9370",
+            "provenance": "corrected ceiling"
+          },
+          {
+            "name": "ceiling_SORTED_split_BUG",
+            "value": "0.8934 / 0.8710",
+            "provenance": "the R-c defect reproduced"
+          },
+          {
+            "name": "recall_share_lakered",
+            "value": "49.7%",
+            "provenance": "of the corrected ceiling"
+          },
+          {
+            "name": "recall_share_raw_hkuis",
+            "value": "79.6%",
+            "provenance": "of the corrected ceiling"
+          },
+          {
+            "name": "generation_recall_delta",
+            "value": "-0.2799 (-37.5% relative)",
+            "provenance": "LAKE-RED output minus its own input pool"
+          },
+          {
+            "name": "bg_luminance_real",
+            "value": "117.88",
+            "provenance": "4447 images, mask-restricted"
+          },
+          {
+            "name": "bg_luminance_generated",
+            "value": "98.64",
+            "provenance": "same images"
+          },
+          {
+            "name": "bg_luminance_shift",
+            "value": "-19.24",
+            "provenance": "gen - real"
+          },
+          {
+            "name": "bg_channel_shift_rgb",
+            "value": "-21.33 -22.89 -13.49",
+            "provenance": "gen - real"
+          },
+          {
+            "name": "fg_bg_colour_corr_real",
+            "value": "-0.191",
+            "provenance": "R2 0.036"
+          },
+          {
+            "name": "fg_bg_colour_corr_generated",
+            "value": "+0.397",
+            "provenance": "our local re-generation, R2 0.157"
+          },
+          {
+            "name": "fg_bg_colour_corr_authors_pool",
+            "value": "+0.399",
+            "provenance": "authors' released pool (n=4447), R2 0.160 -- independent replication"
+          },
+          {
+            "name": "bg_luminance_authors_pool",
+            "value": "98.53",
+            "provenance": "authors' released pool"
+          },
+          {
+            "name": "fresh_embeddings_computed",
+            "value": "raw=False jpeg=False dark=False",
+            "provenance": "False = read from cache"
+          }
+        ],
+        "thresholds": [
+          {
+            "condition": "embedder reproduces the cached features (min cos >= 0.999)",
+            "passed": true
+          },
+          {
+            "condition": "real-vs-real RANDOM split is a genuine null (AUC < 0.60)",
+            "passed": true
+          },
+          {
+            "condition": "the sorted-filename split is NOT a null (AUC > 0.75) -- the R-c bug",
+            "passed": true
+          },
+          {
+            "condition": "JPEG-75 alone reaches AUC > 0.85, so 0.999 is near-vacuous",
+            "passed": false
+          },
+          {
+            "condition": "two ordinary different datasets reach AUC > 0.95 -- the surviving support for R-f",
+            "passed": true
+          },
+          {
+            "condition": "the fg->bg colour sign flip replicates in the AUTHORS pool too",
+            "passed": true
+          },
+          {
+            "condition": "darkening does NOT separate (AUC < 0.60) -- R-e retraction",
+            "passed": true
+          },
+          {
+            "condition": "generation REDUCES recall vs its own input pool",
+            "passed": true
+          },
+          {
+            "condition": "corrected ceiling exceeds the buggy one",
+            "passed": true
+          }
+        ],
+        "expected": [
+          {
+            "claim": "probe AUC real vs LAKE-RED = 0.9989",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "probe AUC true null vs the audit's particular draw = 0.5289",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "true null is chance-level (|AUC - 0.5| <= 0.05) = 0.5",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "probe AUC real vs raw HKU-IS = 0.9831",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "probe AUC JPEG-75 = 0.938",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "probe AUC darkened-20 = 0.3204",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "Cohen's d probe axis, L/224 = 4.7",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "LAKE-RED precision/recall = 0.691/0.466",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "raw HKU-IS precision/recall = 0.649/0.745",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "corrected ceiling = 0.946/0.939",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "recall share of ceiling = 49.6%",
+            "verdict": "MATCH"
+          },
+          {
+            "claim": "fg",
+            "verdict": "MISMATCH"
+          },
+          {
+            "claim": "fg",
+            "verdict": "MATCH"
+          }
+        ],
+        "artifacts": "evidence/out/a3_probe_table.csv, evidence/out/a3_precision_recall.csv, evidence/out/a3_pixel_stats.csv, evidence/out/a3_pixel_per_image.csv",
+        "revision": "R-c sorted-filename split bug (ceiling 0.893/0.871 -> corrected, both computed here); R-d recall share 54% -> recomputed; R-e ~20-level darkening RETRACTED as the mechanism; R-f AUC 0.999 demoted to near-vacuous",
+        "trains": "NO",
+        "notes": [
+          "THIS EXPERIMENT DEMOTES OUR OWN HEADLINE, which is why it is in the package. AUC 0.9989 real-vs-generated looks damning until the controls sit beside it: JPEG-75 recompression of the IDENTICAL images reaches 0.4117, and two ordinary different datasets reach 0.9831. AUC 0.999 establishes only \"these are different distributions\", which nobody disputes. A reviewer would have dismissed it.",
+          "The protocol itself is sound -- the true null (random real-vs-real split) lands at 0.4781, i.e. chance.",
+          "THREE VALUES DID NOT REPRODUCE, and they are not equal in kind:",
+          "(1) the null control, 0.4781 here vs 0.5289 in the source. Both are chance; the exact figure is a property of which random split was drawn, not of any finding. The pre-registered +/-0.05 tolerance is logged as MISMATCH rather than widened, and a second EXPECTED row tests the property that matters (|AUC-0.5| <= 0.05).",
+          "(2) JPEG-75, 0.4117 here vs 0.9380 in the source -- a real disagreement we CANNOT explain. Re-encoding an already-JPEG target image at quality 75 leaves DINOv2 features essentially unchanged, which is what 0.4117 says. The source script was never saved, so the 0.9380 cannot be traced. Consequence: R-f loses one of its two supports. The near-vacuity of AUC 0.999 now rests on the cross-dataset control alone (two ordinary datasets -> 0.9831), which is sufficient but should be stated as one control rather than two.",
+          "(3) the real-image fg->bg colour correlation, -0.191 here vs -0.36 in the source. Robust: -0.183 at n=800, -0.191 at n=4447, -0.189 under luma-601 weighting. The QUALITATIVE claim survives intact -- the correlation flips sign from real to generated and R2 is ~0.15-0.19 on the generated side -- but the real-side magnitude is about half what was published.",
+          "AN INDEPENDENT REPLICATION we added: the sign flip appears in the AUTHORS' released synthetic pool too (+0.399), not just our local re-generation (+0.397), against -0.191 for the real photographs. Two independent LAKE-RED generation runs land within 0.01 of each other while the real photos sit on the other side of zero. That is a stronger form of the claim than either run alone.",
+          "THREE POOLS, easy to confuse: Source/HKU-IS_raw/imgs are the real photographs; Source/HKU-IS/Image is the authors' released LAKE-RED output and is what TRAINING reads; LAKERED/output is our own local re-generation. The middle two are both generated but are NOT the same images (maxdiff 240, cos 0.62-0.91). PRIOR_REVIEW.md 0.5 names them \"Source/HKU-IS (authors')\" and \"LAKERED/local\".",
+          "GATE: this script re-embeds 8 target images and requires cos >= 0.999 against the cached vectors before mixing fresh control features with cached ones (measured 0.99999). The original preprocessing was never saved and had to be recovered by testing eight candidate pipelines; the winner is PIL Resize((224,224)) BICUBIC with no crop, ImageNet normalisation, CLS token stored unnormalised. Near-misses were dangerous: Resize+CenterCrop gives 0.978 and cv2.INTER_AREA gives 0.997, so a reasonable-looking pipeline would have silently produced slightly wrong features.",
+          "R-c REPRODUCED, NOT JUST DESCRIBED: the original \"null control\" split the target features in sorted-filename order, which put COD10K on one side and CAMO on the other. This script computes that split too -- AUC 0.8888 and ceiling 0.893/0.871 -- beside the corrected random split (0.4781, 0.941/0.937). Both are logged so the defect is visible.",
+          "R-e RETRACTED: darkening the identical images by 20 levels gives AUC 0.3469. DINOv2 is essentially invariant to that shift, so background darkening cannot be the mechanism behind the style axis. The earlier mechanistic claim is withdrawn.",
+          "THE RESULT THAT ACTUALLY MATTERS is panel 3, and it points the opposite way from the original framing: LAKE-RED does not merely have LIMITED coverage of the target manifold, it DESTROYS coverage its own input already had. Raw HKU-IS recall 0.746 -> LAKE-RED 0.466, a 37.5% relative loss, bought for +0.041 precision.",
+          "HOW THIS INTEGRATES: A3 supports none of the four load-bearing conclusions. It removes two claims we should not lean on, and reframes the style gap as a CONSEQUENCE -- it is why coverage-counting is inverse-ranked by feasibility, which B2 measures directly as rho(acceptance, n_s) = +0.73..+0.92.",
+          "Limitations: JPEG quality 75 and darkening 20 levels are the audit's specific control settings, not a sweep. k=5 for the manifold estimate. Precision/recall is computed on L2-normalised features; the sources did not state whether they normalised, so this is our stated choice."
+        ],
+        "no_log": false
+      }
+    ]
   },
   "B1": {
     "title": "ES-vs-true-error correlation",

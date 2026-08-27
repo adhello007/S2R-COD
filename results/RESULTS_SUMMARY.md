@@ -6,9 +6,9 @@
 > number is in [../EVIDENCE_APPROACH.md](../EVIDENCE_APPROACH.md); how to reproduce it is in
 > [../EVIDENCE_SCRIPTS.md](../EVIDENCE_SCRIPTS.md).
 
-Generated 2026-08-27T19:29:19+05:30 at commit 81005b7 (dirty).
+Generated 2026-08-27T19:56:53+05:30 at commit 9ac60f7 (dirty).
 
-**3 of 12 experiments complete.** 16 of 16 thresholds PASS. Trains a model: NO for every experiment.
+**4 of 12 experiments complete.** 24 of 25 thresholds PASS. Trains a model: NO for every experiment.
 
 ## Status
 
@@ -17,7 +17,7 @@ Generated 2026-08-27T19:29:19+05:30 at commit 81005b7 (dirty).
 | **E0** | Artifact rescue, hash manifest, environment capture | gate - provenance for everything below | **DONE** (3 blocks) | 4/4 PASS | 2 MATCH |
 | **A1** | Conditioning-width measurement | conclusion (i) - the generator is near-unsteerable | **DONE** | 6/6 PASS | 1 NEW, 2 MATCH |
 | **A2** | Object-vs-background pixel share | conclusion (i) - what those 48 numbers have to steer | **DONE** (5 blocks) | 6/6 PASS | 2 MATCH |
-| **A3** | Generated-vs-real appearance signature, with controls | context - demotes the AUC 0.999 finding to a truism (R-c..R-f) | pending | — | — |
+| **A3** | Generated-vs-real appearance signature, with controls | context - demotes the AUC 0.999 finding to a truism (R-c..R-f) | **DONE** (2 blocks) | 8/9 **1 FAIL** | 3 MISMATCH, 10 MATCH |
 | **B1** | ES-vs-true-error correlation | SURVIVED - uncertainty is a real weakness signal | pending | — | — |
 | **B2** | Coverage-term falsification | SURVIVED - lambda_cov = 0 is measured, not assumed | pending | — | — |
 | **B3** | Targeting acceptance, both embedders, vs chance | SURVIVED - targeting works (and R-a, R-b) | pending | — | — |
@@ -64,25 +64,42 @@ Command: `LAKE-RED/.venv/bin/python evidence/a2_fg_pixel_share.py`
 
 Artifacts: `evidence/out/a2_fg_fraction.csv`, `evidence/out/a2_summary.csv`, `evidence/out/a2_cross_source_consistency.csv`, `evidence/out/a2_fg_hist.png`
 
+### A3 — Generated-vs-real appearance signature, with controls
+
+| metric | value | provenance |
+|---|---|---|
+| `probe_auc_real_vs_lakered` | **0.9989** | THE headline claim |
+| `probe_auc_real_vs_real_random` | **0.4781** | the TRUE null control |
+| `probe_auc_jpeg75` | **0.4117** | IDENTICAL images, recompressed |
+| `recall_lakered` | **0.4662** | k=5 NN manifold |
+| `recall_raw_hkuis` | **0.7461** | the pool LAKE-RED starts FROM |
+
+Command: `LAKE-RED/.venv/bin/python evidence/a3_appearance_signature.py --pixel-sample 0`
+
+Artifacts: `evidence/out/a3_probe_table.csv`, `evidence/out/a3_precision_recall.csv`, `evidence/out/a3_pixel_stats.csv`, `evidence/out/a3_pixel_per_image.csv`
+
 ## Revisions surfaced so far
 
 Conclusions that moved once measured. The full 13-row trail, including revisions from
 experiments not yet re-run here, is §5 of [../EVIDENCE_APPROACH.md](../EVIDENCE_APPROACH.md).
 
 - **A2** — within-experiment: first run gave fg 0.1923 under per-image polarity detection, which misfires on 11 corner-covering objects; per-source polarity gives 0.1913. Also refines the source's 81.8% invented background to the measured 80.9%.
+- **A3** — R-c sorted-filename split bug (ceiling 0.893/0.871 -> corrected, both computed here); R-d recall share 54% -> recomputed; R-e ~20-level darkening RETRACTED as the mechanism; R-f AUC 0.999 demoted to near-vacuous
 
 ## Anything that did not simply reproduce
 
 | id | claim | verdict |
 |---|---|---|
 | A1 | effective width on real samples = not pinned by any source | **NEW** |
+| A3 | probe AUC true null vs the audit's particular draw = 0.5289 | **MISMATCH** |
+| A3 | probe AUC JPEG-75 = 0.938 | **MISMATCH** |
+| A3 | fg | **MISMATCH** |
 
 `NEW` means the package measured something no source document pinned, so there was
 nothing to agree or disagree with.
 
 ## Still to run
 
-- **A3** Generated-vs-real appearance signature, with controls — context - demotes the AUC 0.999 finding to a truism (R-c..R-f)
 - **B1** ES-vs-true-error correlation — SURVIVED - uncertainty is a real weakness signal
 - **B2** Coverage-term falsification — SURVIVED - lambda_cov = 0 is measured, not assumed
 - **B3** Targeting acceptance, both embedders, vs chance — SURVIVED - targeting works (and R-a, R-b)

@@ -347,14 +347,35 @@ and nothing else should run until it has.
   | real-vs-real ceiling (random split) | 0.946 | 0.939 | — |
 
   Also Cohen's d on the probe axis: 4.70 (L/224), 4.62 (B/224), 4.35 (L/518).
+- **Measured — has run.** 9/9 thresholds bar one PASS; **10 of 13 pinned values MATCH**.
+  Probe AUC: real-vs-LAKE-RED **0.9989** MATCH · true null **0.478** (chance) · real vs raw HKU-IS
+  **0.9831** MATCH · JPEG-75 **0.4117** (source says 0.938 — **does not reproduce**) · darkened-20
+  **0.3469** MATCH · **sorted-split bug 0.8888**, reproducing the original defect exactly. Cohen's d
+  on the probe axis 4.67 (L/224), 4.61 (B/224), 4.33 (L/518). Precision/recall: LAKE-RED
+  **0.691/0.466**, raw HKU-IS **0.649/0.746**, corrected ceiling **0.941/0.937**, buggy sorted
+  ceiling **0.893/0.871** — again the audit's exact wrong numbers. Recall share **49.7%** vs 79.6%
+  for the input pool; generation costs **−0.280 recall (−37.5% relative)**. Pixel panel over all
+  4447: background luminance 117.9 → 98.6 (**−19.2**), fg→bg colour correlation **−0.191 → +0.397**,
+  and **+0.393 in the authors' released pool** — the sign flip replicates across two independent
+  generation runs.
 - **Output / logged.** `evidence/out/a3_probe_table.csv`, `evidence/out/a3_precision_recall.csv`,
-  `evidence/out/a3_pixel_stats.csv`, log block `EXP A3`.
+  `evidence/out/a3_pixel_stats.csv`, `evidence/out/a3_pixel_per_image.csv`, log block `EXP A3`.
 - **Trains?** NO — a logistic-regression probe on cached features is not model training. GPU only
   with `--recompute`.
-- **Assumptions / limitations.** JPEG quality 75 and darkening of 20 levels are the specific control
-  choices from the audit, not a sweep. k=5 for the manifold estimate. The feature caches were
-  produced by scripts that were never saved, so `--recompute` exists to re-derive them from images
-  and the log records which path ran.
+- **Assumptions / limitations.** JPEG quality 75 and darkening of 20 levels are the audit's specific
+  control choices, not a sweep. k=5 for the manifold estimate; precision/recall is computed on
+  L2-normalised features, which the sources did not specify — our stated choice.
+  **The embedder had to be reverse-engineered.** The caches' preprocessing was never saved; eight
+  candidate pipelines were tested and exactly one reproduces them (PIL `Resize((224,224))` bicubic,
+  no crop, ImageNet normalisation, CLS token stored **unnormalised**). Near-misses were dangerous —
+  `Resize`+`CenterCrop` gives cos 0.978 and `cv2.INTER_AREA` gives 0.997 — so
+  `common.assert_embedder_matches_cache()` gates the script at cos ≥ 0.999 before any fresh feature
+  is mixed with a cached one. Two traps it avoids: `timm.data.resolve_data_config()` returns 518 even
+  for a 224 model, and timm then hard-asserts on it.
+  **Three pools, easily confused:** `Source/HKU-IS_raw/imgs` are the real photographs;
+  `Source/HKU-IS/Image` is the **authors' released** LAKE-RED output and is what *training* reads;
+  `LAKERED/output` is our **local re-generation**. The last two are both generated but not the same
+  images (maxdiff 240, cos 0.62–0.91).
 - **Revisions surfaced — four.** **R-c** (sorted-filename split bug → random split; ceiling
   0.893/0.871 → **0.946/0.939**), **R-d** (54% → **49.6%**), **R-e** (darkening mechanism
   **retracted**, AUC 0.32), **R-f** (AUC framing demoted to near-vacuous). Both the buggy and the
