@@ -1,5 +1,0 @@
-set,precision,recall,recall_share_of_ceiling,ceiling_used
-LAKE-RED output,0.6906,0.4662,0.4975,random split
-raw HKU-IS (pre-LAKE-RED),0.6494,0.7461,0.7963,random split
-real-vs-real ceiling (RANDOM split),0.9405,0.937,1.0,-
-"real-vs-real ceiling (SORTED split, the R-c bug)",0.8934,0.871,,-
