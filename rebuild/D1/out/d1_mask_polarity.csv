@@ -1,0 +1,5 @@
+mask_set,n,asserted,mean_white_frac,median_white_frac,min_white_frac,max_white_frac,measured_object_is_white,matches_assertion
+raw_gt,4447,object=WHITE,0.19132,0.17776,0.00242,0.63779,True,1
+auth_gt,4447,object=WHITE,0.18557,0.17208,0.00183,0.62995,True,1
+local_msk,4447,object=WHITE,0.19132,0.17776,0.00242,0.63779,True,1
+lr_in_mask,4447,object=BLACK (inverted for LAKE-RED),0.80868,0.82224,0.36221,0.99758,False,1

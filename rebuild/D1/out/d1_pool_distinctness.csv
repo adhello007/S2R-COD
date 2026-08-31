@@ -1,0 +1,4 @@
+pool,description,files,unique,redundant,dup_groups,d2_unique,reconciles,duplicate_names
+raw,the original photographs -- the FOREGROUND source,4447,4443,4,4,4443,1,1555.png|1556.png; 1566.png|1567.png; 1591.png|1592.png; 4250.png|4251.png
+auth,the authors' synthetic pool -- WHAT MyTrain.py READS,4447,4447,0,0,4447,1,
+local,our local LAKE-RED re-generation,4447,4445,2,2,4445,1,SOD_1555.jpg|SOD_1556.jpg; SOD_1591.jpg|SOD_1592.jpg

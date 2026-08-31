@@ -1,0 +1,67 @@
+# REVISION_TABLE.md — where the rebuilt number differs from the old package
+
+Running record, appended as each experiment completes. Every row cites the log block that produced the
+measured value. The "old value" column is the frozen record from `REBUILD_PLAN.md` §4 — a claim under
+test, never an input.
+
+Completed so far: **E0, D2, D1**. Nine experiments outstanding: A1, A2, A3, B1, B2, B3, C1, C2, C3.
+
+---
+
+## 1. Old values that MOVED
+
+| # | Claim | Old value | Measured | Log block | Why it moved |
+|---|---|---|---|---|---|
+| D1.1 | Distinct foregrounds in the base pool | **4447** | **4443** unique of 4447 files (raw) | `EXP D1` | The old package wrote a *file count* as a *distinctness* claim. Byte-level hashing finds 4 redundant files. Strengthens the conclusion — the pool is more exhausted, not less |
+| E0.1 | Render reproducibility at a fixed seed | *"byte-identity is not expected — cuDNN is nondeterministic"* (my own planned expectation) | **4447/4447 byte-identical**, images and masks | `EXP E0` | The expectation was wrong. Measured bit-exact on this stack. The cluster-agreement threshold I built as a fallback passed at 1.0 trivially |
+| E0.2 | Scope of that reproducibility | *unqualified* | holds only at **fixed shard count over a fixed input listing** | `EXP D2` | D2 s7/s8 found a render depends on position-in-shard. E0's headline needed the qualifier and did not have it |
+| D2.1 | CHAMELEON ∩ Target | **0** (pixel identity — correct at that level) | **41/76 (53.9 %)** are re-encodes of Target training images | `EXP D2` | Exact hashing cannot see re-encoding. The old method under-bounded the quantity it was reporting. CHAMELEON is withdrawn as an endpoint |
+| D2.2 | Cross-named duplicate identity | `COD10K-CAM-3-Flying-**53**-Owl-4633` | `Flying-**65**-Owl-4633` | `EXP D2` | Transcription error in the old documents. No such file exists at `Flying-53`. Immaterial to any number |
+
+## 2. Corrections to the rebuild's own work
+
+Kept visible because a rebuild that only ever corrects someone else is not auditing itself.
+
+| # | What was wrong | Where | How it was found | Fix |
+|---|---|---|---|---|
+| R1 | Provenance gate was a grep, and flagged its own `FORBIDDEN` list plus the package's prose — 14 false positives | `EXP E0` blocks 1–2 | The gate FAILED its own threshold | Rewritten as an AST scan; docstrings excluded; pragma exemptions reported, not suppressed; self-tested against injected violations |
+| R2 | Four figures in `E0_RESULTS.md` existed only outside the log (s2 sample size, staging cross-check, two ad-hoc directory digests) | `EXP E0` blocks 3→4 | Mechanical traceability check | Promoted into the script; new threshold comparing image and mask digests |
+| R3 | D2's near-duplicate scan used contrast-normalised thumbnail bucketing — roughly a quarter of the true recall | `EXP D2` blocks 2→3 | Audit against an exhaustive search | Replaced by exhaustive within-dimension search. CHAMELEON moved 10/76 → 41/76 |
+| R4 | `4443` used in `D2_RESULTS.md` as arithmetic rather than a logged metric | `EXP D2` blocks 1→2 | Traceability check | `unique_raw_hkuis` / `unique_authors_pool` added as metrics |
+| R5 | D1 scored **both** pools against `raw_gt`, producing an apparent 406-image anomaly in the authors' pool | D1, pre-log | Audit of D1's own first run | Each pool scored against the mask it was rendered with, plus an eroded interior. Anomaly was a mask-boundary artifact; plausibly-regenerated count is 0 |
+
+**R3 is the only one where a measurement was substantively wrong** rather than untraceable. It was
+found by auditing my own method, not by the method reporting a problem — which is the failure mode
+this rebuild is most exposed to.
+
+## 3. Old values that RE-TESTED CLEAN
+
+Worth recording explicitly: the old package's D2/D1 claims were marked `[no code]` — no producing
+script, no log block — yet these all reproduce. **The old defect was provenance, not arithmetic.**
+Being unverifiable is not the same as being wrong, and the rebuild has to be able to say so.
+
+| Claim | Old value | Measured | Log block |
+|---|---|---|---|
+| COD10K-test ∩ Target | 7 (2 same-name, 5 cross-named) | 7 (2 same-name) | `EXP D2` |
+| CAMO ∩ CHAMELEON | 3 | 3 | `EXP D2` |
+| Internal duplicates in Target | 2 | 2 | `EXP D2` |
+| Internal duplicates in the render pool | 2 (4445 unique) | 2 (4445 unique) | `EXP D2`, `EXP D1` |
+| MAE impact of the leaked images | 0.000012 (0.017 %) | 1.242e-05 (0.0167 %) | `EXP D2` |
+| Every added image is a re-render, not a new object | zero foregrounds outside the base pool | 0 outside; bijection both pools | `EXP D1` |
+| Invented background fraction | 80.87 % | 0.8087 (`staging_background_frac`, independent code path) | `EXP E0` |
+
+## 4. Claims that changed in KIND, not value
+
+| Claim | Old framing | Rebuilt framing | Log block |
+|---|---|---|---|
+| "Object preserved, background generated" | object *regenerated faithfully* | the **source object pixels are composited back** (`test.py:165`); object error 6.245 vs background 71.676 | `EXP E0` |
+| Foreground exhaustion | "additions are re-renders" | **"the foreground pool is exhausted; the background is not"** — the object is fixed pixel-for-pixel, the background has unbounded freedom | `EXP D1` |
+| "The generated pool" | one pool | **three** mutually non-identical pools; training reads the authors' pool, the old evidence embedded the local one | `EXP E0`, `EXP D2` |
+| "The HKU-IS foreground fraction" | one number | **set-dependent** — `raw_gt` 0.19132 vs `auth_gt` 0.18557 | `EXP D1` |
+| Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images | `EXP E0` |
+
+## 5. Still outstanding
+
+Every §4 row of `REBUILD_PLAN.md` belonging to A1, A2, A3, B1, B2, B3, C1, C2, C3 remains
+untested. The load-bearing one is **C1** (`d ≈ 0.10`), which never had a producing script in the old
+package.

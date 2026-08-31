@@ -692,3 +692,69 @@ NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, a
            LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
 ================================================================================
 
+================================================================================
+2026-08-31T18:09:56+05:30 | commit 17dfbbf (dirty) | EXP D1
+CMD   LAKE-RED/.venv/bin/python rebuild/D1/d1_foreground_exhaustion.py --steps s1,s2,s3,s4,s5,s6
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  file bytes (E0 manifest) + decoded pixels of the object region defined by raw_gt
+METRICS
+  e0_manifest_hashes_verified          = 301/301    (random sample; the rest is consumed from E0, not recomputed)
+  unique_raw                           = 4443/4447    (redundant 4; the original photographs -- the FOREGROUND source)
+  unique_auth                          = 4447/4447    (redundant 0; the authors' synthetic pool -- WHAT MyTrain.py READS)
+  unique_local                         = 4445/4447    (redundant 2; our local LAKE-RED re-generation)
+  reconciles_with_D2                   = yes    (D2 measured raw=4443 auth=4447 local=4445)
+  polarity_raw_gt_white_frac           = 0.19132    (n=4447, object_is_white=True, asserted object=WHITE)
+  polarity_auth_gt_white_frac          = 0.18557    (n=4447, object_is_white=True, asserted object=WHITE)
+  polarity_local_msk_white_frac        = 0.19132    (n=4447, object_is_white=True, asserted object=WHITE)
+  polarity_lr_in_mask_white_frac       = 0.80868    (n=4447, object_is_white=False, asserted object=BLACK (inverted for LAKE-RED))
+  base_foreground_files                = 4447    (raw HKU-IS photographs)
+  renders_tracing_to_base_pool         = 4447/4447    (by stem)
+  renders_OUTSIDE_base_pool            = 0    (none)
+  base_foregrounds_without_a_render    = 0    (none)
+  render_set_is_bijection_onto_base    = True
+  authors_pool_tracing_to_base_pool    = 4447/4447    (the pool MyTrain.py actually reads)
+  authors_pool_is_bijection_onto_base  = True
+  local_mask_used                      = raw_gt    (each pool scored against the mask it was rendered with)
+  local_traced_ok                      = 4447/4447    (shape-mismatch 0, degenerate-mask 0, unreadable 0)
+  local_object_region_mean_abs         = 6.003    (full object region, vs its source foreground)
+  local_object_INTERIOR_mean_abs       = 5.603    (mask eroded 3px, n=4443 -- excludes the boundary where the two mask sets disagree)
+  local_background_mean_abs            = 70.802
+  local_bg_over_obj_ratio              = 11.79    (full region)
+  local_bg_over_obj_ratio_INTERIOR     = 12.64
+  local_images_with_object_3x_closer   = 4445/4447    (full region, per-image)
+  local_images_with_INTERIOR_3x_closer = 4442/4443    (interior, per-image)
+  local_objects_plausibly_REGENERATED  = 0    (interior mean|diff| > 40 -- the honest residual)
+  auth_mask_used                       = auth_gt    (each pool scored against the mask it was rendered with)
+  auth_traced_ok                       = 4447/4447    (shape-mismatch 0, degenerate-mask 0, unreadable 0)
+  auth_object_region_mean_abs          = 12.163    (full object region, vs its source foreground)
+  auth_object_INTERIOR_mean_abs        = 9.633    (mask eroded 3px, n=4442 -- excludes the boundary where the two mask sets disagree)
+  auth_background_mean_abs             = 70.555
+  auth_bg_over_obj_ratio               = 5.8    (full region)
+  auth_bg_over_obj_ratio_INTERIOR      = 7.32
+  auth_images_with_object_3x_closer    = 4207/4447    (full region, per-image)
+  auth_images_with_INTERIOR_3x_closer  = 4361/4442    (interior, per-image)
+  auth_objects_plausibly_REGENERATED   = 0    (interior mean|diff| > 40 -- the honest residual)
+  D2_position_dependence_inherited     = 4/4 pairs explained    (read from D2, not re-measured)
+THRESHOLD  every verified file still matches its E0 manifest hash -> PASS
+THRESHOLD  per-pool unique counts reconcile with D2 exactly -> PASS
+THRESHOLD  every mask set's measured polarity matches its assertion -> PASS
+THRESHOLD  zero renders whose foreground lies outside the base pool -> PASS
+THRESHOLD  the render set is a bijection onto the base foreground set -> PASS
+THRESHOLD  the authors' training pool is a bijection onto the base foreground set -> PASS
+THRESHOLD  local: background error exceeds object error 3x on the interior, so the mapping is LITERAL (source object pixels carried through) -> PASS
+THRESHOLD  local: fewer than 1% of objects are plausibly regenerated rather than composited -> PASS
+THRESHOLD  auth: background error exceeds object error 3x on the interior, so the mapping is LITERAL (source object pixels carried through) -> PASS
+THRESHOLD  auth: fewer than 1% of objects are plausibly regenerated rather than composited -> PASS
+OLD CLAIM  D1 "all 4447 foregrounds already in base pool" = 4447 distinct foregrounds -> MISMATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D1 "every added image is a re-render, not a new object" = zero foregrounds in the generated pool absent from the base pool -> MATCH
+ARTIFACTS  rebuild/D1/out/d1_manifest_verify.json, rebuild/D1/out/d1_pool_distinctness.csv, rebuild/D1/out/d1_mask_polarity.csv, rebuild/D1/out/d1_trace_local.csv, rebuild/D1/out/d1_trace_auth.csv, rebuild/D1/out/d1_bijection.json, rebuild/D1/out/d1_scope.json
+TRAINS     NO
+NOTES      Polarity is MEASURED over all 4447 of every mask set, not sampled and not assumed from documentation. A silent polarity flip would invert the object region and corrupt the foreground-to-render mapping in s4/s5 while leaving every count intact -- trap T2.
+           Exhaustion is LITERAL, not statistical. E0 found that --isReplace (test.py:165) composites the source object pixels back into the render, so a foreground and its render share the object region up to JPEG re-encoding. s5 confirms this over all 4447 for BOTH pools rather than a sample: the object region is an order of magnitude closer to the source than the background is. A "new" image in this pipeline therefore contains an object that is already in the pool, pixel for pixel.
+           MEASUREMENT FIX made during D1. The first run scored BOTH pools against raw_gt and found only 4041/4447 authors-pool images with the object 3x closer, against 4445/4447 for the local pool. Auditing that gap showed it was an artifact, not a finding: the failures had small objects (mean fg fraction 0.111 vs 0.199) and the authors pool was rendered with the authors GT, which s3 measures as different from raw_gt. Boundary pixels where the two masks disagree WERE regenerated, and for a small object the boundary dominates the region. Each pool is now scored against the mask it was rendered with, plus an eroded interior. Both numbers are reported.
+           QUALIFIER inherited from D2 s7/s8: a render is a function of (foreground, mask, POSITION IN SHARD), not of the foreground alone. So "the render pool is determined by the foreground pool" holds only at a FIXED shard count over a FIXED input listing. This does not weaken exhaustion -- the object pixels come from the pool either way -- but it does mean one foreground can yield many different renders, which is precisely the degree of freedom a best-of-K scheme would try to exploit, and it is a BACKGROUND degree of freedom only.
+           WHICH POOL. Exhaustion is stated with respect to the pool MyTrain.py actually reads -- Dataset/Source/HKU-IS/Image, the authors' pool -- and separately for our local re-generation. Both are verified against the same raw foreground set. D2 s3 showed the two pools have different internal duplicate structure, so they are genuinely different renderings rather than copies of each other, and each is reported on its own.
+           WHAT D1 DOES NOT ESTABLISH: that new foregrounds could not help. D1 bounds only what this pipeline can add from its fixed pool. It is silent on whether a larger or different foreground set would change any outcome, and it is silent on near-duplicate foregrounds within the pool (D2's scope, and pixel-level only).
+================================================================================
+

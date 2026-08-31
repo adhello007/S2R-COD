@@ -1,0 +1,8 @@
+{
+  "clean_same_input_diff_noise": 1,
+  "duplicate_input_pairs": 4,
+  "mechanism": "torch.manual_seed once per process (test.py:90-91) + stride sharding pairs[i::total] (test.py:115) => per-image noise depends on position within the shard",
+  "prediction_holds_for": 4,
+  "source": "rebuild/D2/out/d2_determinism.json",
+  "status": "OK"
+}

@@ -1,0 +1,15 @@
+{
+  "auth_images": 4447,
+  "auth_in_base": 4447,
+  "auth_outside_base": [],
+  "base_foregrounds": 4447,
+  "base_without_local": [],
+  "is_bijection_auth": true,
+  "is_bijection_local": true,
+  "local_in_base": 4447,
+  "local_mask_in_base": 4447,
+  "local_masks": 4447,
+  "local_outside_base": [],
+  "local_renders": 4447,
+  "raw_gt_covers_base": 4447
+}
