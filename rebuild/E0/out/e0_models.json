@@ -1,0 +1,37 @@
+{
+  "SINet-v2/S2C": {
+    "exists": true,
+    "has_best": true,
+    "pth": 21
+  },
+  "SINet-v2/S2C_MT": {
+    "exists": true,
+    "has_best": true,
+    "pth": 21
+  },
+  "SINet-v2/S2C_SO": {
+    "exists": true,
+    "has_best": true,
+    "pth": 21
+  },
+  "SINet/S2C": {
+    "exists": true,
+    "has_best": true,
+    "pth": 17
+  },
+  "SINet/S2C_MT": {
+    "exists": true,
+    "has_best": true,
+    "pth": 17
+  },
+  "SINet/S2C_SO": {
+    "exists": true,
+    "has_best": true,
+    "pth": 17
+  },
+  "SegMaR/S2C": {
+    "exists": true,
+    "has_best": true,
+    "pth": 11
+  }
+}

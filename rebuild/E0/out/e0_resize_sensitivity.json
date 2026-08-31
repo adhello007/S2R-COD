@@ -1,0 +1,11 @@
+{
+  "cluster_agreement": 0.946,
+  "embedder": "dinoL224",
+  "k": 20,
+  "mean_cosine_between_policies": 0.9308067160665273,
+  "n": 2000,
+  "note": "agreement < 1 means the preprocessing choice alone moves images between clusters, so acceptance-style metrics inherit it",
+  "repr": "R1-full",
+  "seed": 0,
+  "set": "tgt"
+}

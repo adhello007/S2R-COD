@@ -4,3 +4,11 @@
 __pycache__*
 .python-version
 /evidence/artifacts/
+
+# Rebuild: regenerable binaries. Every one of these is reproduced from primary
+# data by the experiment that owns it, so the scripts and the small text
+# outputs are tracked and the large artifacts are not. That is the point of
+# "regenerate, don't rescue" -- see REBUILD_PLAN.md §0.1.
+/rebuild/*/cache/
+/rebuild/*/regen/
+/rebuild/*/*.log

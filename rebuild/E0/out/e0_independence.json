@@ -1,0 +1,43 @@
+{
+  "exempted": [
+    {
+      "file": "rebuild/E0/e0_regenerate.py",
+      "kind": "path-literal",
+      "line": 539,
+      "text": "FORBIDDEN_PATHS = ('/tmp/claude-', '_archive_stageC_old',      # provenance-ok",
+      "token": "/tmp/claude-"
+    },
+    {
+      "file": "rebuild/E0/e0_regenerate.py",
+      "kind": "path-literal",
+      "line": 539,
+      "text": "FORBIDDEN_PATHS = ('/tmp/claude-', '_archive_stageC_old',      # provenance-ok",
+      "token": "_archive_stageC_old"
+    },
+    {
+      "file": "rebuild/E0/e0_regenerate.py",
+      "kind": "path-literal",
+      "line": 540,
+      "text": "'evidence/artifacts', '/scratchpad')        # provenance-ok",
+      "token": "evidence/artifacts"
+    },
+    {
+      "file": "rebuild/E0/e0_regenerate.py",
+      "kind": "path-literal",
+      "line": 540,
+      "text": "'evidence/artifacts', '/scratchpad')        # provenance-ok",
+      "token": "/scratchpad"
+    }
+  ],
+  "forbidden_references": [],
+  "inputs_missing": [],
+  "inputs_resolved": 15,
+  "method": "AST scan for path-like string literals and imports of the old package; docstrings excluded as prose; `provenance-ok` pragma exemptions are listed above, not suppressed",
+  "n_exempted": 4,
+  "n_forbidden": 0,
+  "note": "reference/ is excluded: it holds frozen copies of the OLD package scripts as audited objects, which nothing imports",
+  "scripts_scanned": [
+    "rebuild/common.py",
+    "rebuild/E0/e0_regenerate.py"
+  ]
+}

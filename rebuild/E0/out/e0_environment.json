@@ -1,0 +1,19 @@
+{
+  "cuda": "12.8",
+  "cudnn": 91900,
+  "executable": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python",
+  "gpus": [
+    "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "NVIDIA RTX PRO 6000 Blackwell Workstation Edition"
+  ],
+  "numpy": "2.5.2",
+  "opencv": "5.0.0",
+  "pillow": "12.3.0",
+  "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "scikit-learn": "1.9.0",
+  "scipy": "1.18.0",
+  "seed": 0,
+  "timm": "1.0.28",
+  "torch": "2.11.0+cu128"
+}

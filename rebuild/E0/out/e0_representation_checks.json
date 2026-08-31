@@ -1,0 +1,45 @@
+{
+  "cutout": {
+    "all_bg_flat_grey": true,
+    "all_fg_untouched": true,
+    "grey_value": 128,
+    "mean_bg_pixel_share": 0.8223566642781069,
+    "n": 50,
+    "threshold": 127
+  },
+  "gt_sets_T3": {
+    "identical": 0,
+    "mean_fg_frac_delta": 0.00542054037808269,
+    "n": 200
+  },
+  "isReplace_C3": {
+    "bg_mean_abs_diff": 71.67625929878814,
+    "fg_max_abs_diff": 231,
+    "fg_mean_abs_diff": 6.244705885048458,
+    "interpretation": "foreground is composited back from the source; only the background is generated",
+    "n": 200,
+    "ratio_bg_over_fg": 11.47792395962167
+  },
+  "mask_polarity_T2": {
+    "input_is_inverted": true,
+    "mean_gt_white": 0.18773541352722747,
+    "mean_input_white": 0.8122645864727724,
+    "mean_output_white": 0.18773541352722747,
+    "n": 100,
+    "output_matches_gt": true
+  },
+  "polarity": {
+    "mean_border_white_frac": 0.011867550731105663,
+    "mean_fg_frac": 0.18582786758691244,
+    "n": 400,
+    "object_is_white": true
+  },
+  "pools_T1": {
+    "identical_auth_local": 0,
+    "identical_raw_auth": 0,
+    "mean_auth_local_maxdiff": 232.275,
+    "mean_raw_auth_maxdiff": 237.125,
+    "n": 200,
+    "shape_mismatches": 0
+  }
+}

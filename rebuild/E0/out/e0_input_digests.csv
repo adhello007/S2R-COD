@@ -1,0 +1,16 @@
+key,path,declared_n,actual_n,count_ok,agg16,agg,repr,pool
+tgt,Dataset/Target/Image,4040,4040,True,d5b3cd4b0e826e02,d5b3cd4b0e826e0290e720a1ea6bf101decf81d48f785df5bd96c2f715040a2b,R1-full,
+raw,Dataset/Source/HKU-IS_raw/imgs,4447,4447,True,3d4aeac438aa0332,3d4aeac438aa0332b0ff3c6b47fba9f8a01ed15ece330dc0d2f0c7fd1952d991,R1-full,raw
+auth,Dataset/Source/HKU-IS/Image,4447,4447,True,d7f6de696d5c223e,d7f6de696d5c223e83fc7fa29155a98af54cbd3beafe706628ea641fb5fb8a3a,R1-full,authors
+local,Dataset/LAKERED/output/HKU-IS/images,4447,4447,True,cf6587cfce24b8f6,cf6587cfce24b8f687a0a9d0c675210aa3285c8ec86814112cbde17bb8fdbe6d,R3-render,local
+test,Dataset/Test/COD10K/Imgs,2026,2026,True,67fc0c865423bf17,67fc0c865423bf175caff8931f85612abe22b5171722b7cb00ce56ad549a7e31,R1-full,
+val,Dataset/Val/CAMO/Imgs,250,250,True,630fc537ffb93a27,630fc537ffb93a278e65ccf8302a5130999b7f175250a0de1f617a7d38109bc2,R1-full,
+raw_gt,Dataset/Source/HKU-IS_raw/gt,4447,4447,True,a6a132b44cb267c5,a6a132b44cb267c504f3bb3730a1ce8eeba9ad918b96b85cc33a68e27645ef00,mask,raw
+auth_gt,Dataset/Source/HKU-IS/GT,4447,4447,True,690b0ff8a977b0f6,690b0ff8a977b0f60dfc83b42703aa43cab43e01dba260b072c94b0f19dd2283,mask,authors
+local_msk,Dataset/LAKERED/output/HKU-IS/masks,4447,4447,True,91e9556434cb63e4,91e9556434cb63e4cde29b4216c91d94217bf073a93851e61a483901749d3143,mask,local
+test_gt,Dataset/Test/COD10K/GT,2026,2026,True,81e7332ca565f2ee,81e7332ca565f2ee477838e95c7f25bb41d3d94ab5d3d7cf5837d5c7877df7aa,mask,
+val_gt,Dataset/Val/CAMO/GT,250,250,True,c04fafb3de768204,c04fafb3de768204409baeff3ee83481c0e6f297317e5b789b14d33ad14b6243,mask,
+cham,Dataset/Test/CHAMELEON/Imgs,76,76,True,b6d2c07481a0309d,b6d2c07481a0309db4a65ebf036453071c47531d9e4fdf5c788ede6667d46c86,R1-full,
+nc4k,Dataset/Test/NC4K/Imgs,4121,4121,True,6d1f138926b7b1c0,6d1f138926b7b1c06f30776bf25a3fcdfdddbcf30adb60f7718d93b767a3581e,R1-full,
+lr_in_img,Dataset/LAKERED/input/HKU-IS/validation/images,4447,4447,True,d95a7031144b2b2e,d95a7031144b2b2e6f534affccc0e564efd0c3ec4a117514fdf2ba1632fa7153,R1-full,
+lr_in_mask,Dataset/LAKERED/input/HKU-IS/validation/masks,4447,4447,True,c80a203b7f0348e3,c80a203b7f0348e310bad82bfb1a6664c4dac441c4e2c289933afe6197f558d0,mask-INVERTED,

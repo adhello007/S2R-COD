@@ -1,0 +1,304 @@
+Stage C rebuild -- measurement log
+==================================
+
+APPEND ONLY. One block per accepted run. Every number in REBUILD_FINDINGS.md
+must be traceable to a block here; a number without one is a defect.
+
+Block format
+------------
+  <ISO-8601 timestamp> | commit <sha> (clean|dirty) | EXP <id>
+  CMD        the exact command that produced this block
+  ENV        versions, GPU, seed
+  REPR       which image representation was embedded (REBUILD_PLAN.md §2)
+  METRICS    name = value  (provenance)
+  THRESHOLD  declared condition -> PASS|FAIL
+  OLD CLAIM  the previous package's value -> MATCH|MISMATCH|NEW|UNVERIFIED|
+             NOT-REPRODUCIBLE. A RECORD for REVISION_TABLE.md only: never an
+             input, never a baseline, never a target.
+  ARTIFACTS  files written
+  TRAINS     whether this experiment trained a model
+  NOTES      caveats, assumptions stated AS assumptions, what is UNVERIFIED
+
+Rules
+-----
+  * No number appears in any document before it appears here.
+  * Anything not computable is UNVERIFIED -- never a placeholder value.
+  * No experiment reads the archived old artifacts or any /tmp scratchpad.
+
+================================================================================
+2026-08-30T20:27:10+05:30 | commit 3ad38e8 (dirty) | EXP E0
+CMD   LAKE-RED/.venv/bin/python rebuild/E0/e0_regenerate.py --steps s1,s2,s3,s3b,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1-full, R2-cutout-grey128, R3-render, mask
+METRICS
+  manifest_files_hashed            = 48365    (all declared inputs)
+  manifest_dirs                    = 15
+  dirs_with_count_mismatch         = 0    (none)
+  inputs_missing                   = none
+  HKUIS_gt_object_is_white         = True    (border white 0.0119 vs fg 0.1858)
+  cutout_background_value          = 128    (literal pixel value, threshold 127)
+  cutout_bg_all_flat_grey          = True    (n=50)
+  cutout_fg_untouched              = True    (object pixels equal source)
+  cutout_bg_pixel_share            = 0.8224    (share of frame that is constant grey)
+  T1_pools_identical_raw_vs_auth   = 0    (of n=200)
+  T1_pools_identical_auth_vs_local = 0    (of n=200)
+  T1_mean_maxdiff_auth_vs_local    = 232.3
+  T2_input_mask_white_frac         = 0.8123    (staged, inverted)
+  T2_output_mask_white_frac        = 0.1877    (saved by test.py:173)
+  T2_output_matches_SOD_gt         = True    (polarity flips back)
+  T3_auth_gt_identical_to_raw_gt   = 0    (of n=200)
+  T3_mean_fg_frac_delta            = 0.00542    (raw minus authors)
+  isReplace_fg_mean_abs_diff       = 6.245    (render vs source, object region)
+  isReplace_bg_mean_abs_diff       = 71.676    (render vs source, background)
+  isReplace_bg_over_fg_ratio       = 11.5    (n=200)
+  embedders_built                  = 3    (dinoL224,dinoL518,clipL224)
+  caches_written                   = 21    (7 sets x 3 embedders)
+  cache_count_mismatches           = 0    (none)
+  resize_cluster_agreement         = 0.946    (squash vs aspect-crop, k=20 n=2000)
+  resize_mean_cosine               = 0.9308
+  regen_images                     = 4447    (seed 0, 2 shards)
+  regen_shared_with_disk           = 4447
+  regen_byte_identical             = 4447    (of 4447; bit-exact reproduction at seed 0 on this stack)
+  regen_mean_abs_pixel_diff        = 0.0
+  regen_cluster_agreement          = 1.0    (k=20, n=4447)
+  forbidden_path_references        = 14    (archive / scratchpad / rescued-cache references in rebuild/*.py)
+  inputs_resolved                  = 15    (of 15 declared)
+  inputs_missing                   = none
+THRESHOLD  every declared input present and count matches -> PASS
+THRESHOLD  HKU-IS GT stores object as WHITE -> PASS
+THRESHOLD  cutout background is exactly the flat value 128 -> PASS
+THRESHOLD  cutout leaves object pixels untouched -> PASS
+THRESHOLD  the three HKU-IS pools are mutually non-identical -> PASS
+THRESHOLD  LAKE-RED input masks are inverted (object=0) -> PASS
+THRESHOLD  LAKE-RED output masks return to SOD polarity -> PASS
+THRESHOLD  authors GT differs from raw GT -> PASS
+THRESHOLD  isReplace: background error exceeds foreground error 5x -> PASS
+THRESHOLD  every cache row count equals its declared input count -> PASS
+THRESHOLD  resize policy moves <10%% of images between clusters -> PASS
+THRESHOLD  regenerated renders reproduce the pool on disk -> PASS
+THRESHOLD  regenerated renders keep >=95%% of cluster assignments -> PASS
+THRESHOLD  no rebuild script references the archive or a /tmp scratchpad -> FAIL
+THRESHOLD  every declared input resolves from primary data -> PASS
+OLD CLAIM  A2 fg fraction (manifest_all.json, primary) = 0.191323 -> CROSS-CHECK in A2
+OLD CLAIM  old package cache provenance = rescued from /tmp by e0_rescue.py -> SUPERSEDED
+ARTIFACTS  rebuild/E0/out/e0_manifest.sha256, rebuild/E0/out/e0_input_digests.csv, rebuild/E0/out/e0_models.json, rebuild/E0/out/e0_representation_checks.json, rebuild/E0/out/e0_cache_summary.csv, rebuild/E0/out/e0_resize_sensitivity.json, rebuild/E0/out/e0_render_regen.csv, rebuild/E0/out/e0_render_cluster_agreement.json, rebuild/E0/out/e0_independence.json
+TRAINS     NO
+NOTES      R2 confirmed at pixel level: the "foreground cutout" is the object on a FLAT GREY 128 background covering 82.2% of the frame, applied at native resolution before resize. Threshold 127 on an object-WHITE mask.
+           isReplace: the render carries the SOURCE foreground pixels (test.py:165); only the background is generated. Residual foreground error is JPEG re-encoding, 6.24 mean vs 71.68 in the background.
+           Embedder DECLARED in rebuild/common.py, not reverse-engineered: fp32, squash-BICUBIC, each model's own mean/std, CLS + patch-mean both stored unnormalised. Two families (DINOv2, CLIP) so no conclusion is embedder-specific.
+           Squash-vs-crop is a CHOICE the old package never justified. Measured here: 94.6% of images keep their cluster.
+           regeneration command(s): /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/src/lake_red/prepare_lakered_inputs.py --src_images /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs --src_masks /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/gt --raw_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw --out_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/E0/regen/input --split all --prefix SOD
+           Cluster agreement is 1.0 TRIVIALLY here: the renders are byte-identical, so the embeddings are identical. The cluster threshold was the fallback for a nondeterministic generator; byte-identity subsumes it.
+================================================================================
+
+================================================================================
+2026-08-30T20:33:25+05:30 | commit 3ad38e8 (dirty) | EXP E0
+CMD   LAKE-RED/.venv/bin/python rebuild/E0/e0_regenerate.py --steps s1,s2,s3,s3b,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1-full, R2-cutout-grey128, R3-render, mask
+METRICS
+  manifest_files_hashed            = 48365    (all declared inputs)
+  manifest_dirs                    = 15
+  dirs_with_count_mismatch         = 0    (none)
+  inputs_missing                   = none
+  HKUIS_gt_object_is_white         = True    (border white 0.0119 vs fg 0.1858)
+  cutout_background_value          = 128    (literal pixel value, threshold 127)
+  cutout_bg_all_flat_grey          = True    (n=50)
+  cutout_fg_untouched              = True    (object pixels equal source)
+  cutout_bg_pixel_share            = 0.8224    (share of frame that is constant grey)
+  T1_pools_identical_raw_vs_auth   = 0    (of n=200)
+  T1_pools_identical_auth_vs_local = 0    (of n=200)
+  T1_mean_maxdiff_auth_vs_local    = 232.3
+  T2_input_mask_white_frac         = 0.8123    (staged, inverted)
+  T2_output_mask_white_frac        = 0.1877    (saved by test.py:173)
+  T2_output_matches_SOD_gt         = True    (polarity flips back)
+  T3_auth_gt_identical_to_raw_gt   = 0    (of n=200)
+  T3_mean_fg_frac_delta            = 0.00542    (raw minus authors)
+  isReplace_fg_mean_abs_diff       = 6.245    (render vs source, object region)
+  isReplace_bg_mean_abs_diff       = 71.676    (render vs source, background)
+  isReplace_bg_over_fg_ratio       = 11.5    (n=200)
+  embedders_built                  = 3    (dinoL224,dinoL518,clipL224)
+  caches_written                   = 21    (7 sets x 3 embedders)
+  cache_count_mismatches           = 0    (none)
+  resize_cluster_agreement         = 0.946    (squash vs aspect-crop, k=20 n=2000)
+  resize_mean_cosine               = 0.9308
+  regen_images                     = 4447    (seed 0, 2 shards)
+  regen_shared_with_disk           = 4447
+  regen_byte_identical             = 4447    (of 4447; bit-exact reproduction at seed 0 on this stack)
+  regen_mean_abs_pixel_diff        = 0.0
+  regen_cluster_agreement          = 1.0    (k=20, n=4447)
+  forbidden_path_references        = 1    (AST scan, 2 scripts)
+  provenance_pragma_exemptions     = 4    (listed in e0_independence.json, not suppressed)
+  inputs_resolved                  = 15    (of 15 declared)
+  inputs_missing                   = none
+THRESHOLD  every declared input present and count matches -> PASS
+THRESHOLD  HKU-IS GT stores object as WHITE -> PASS
+THRESHOLD  cutout background is exactly the flat value 128 -> PASS
+THRESHOLD  cutout leaves object pixels untouched -> PASS
+THRESHOLD  the three HKU-IS pools are mutually non-identical -> PASS
+THRESHOLD  LAKE-RED input masks are inverted (object=0) -> PASS
+THRESHOLD  LAKE-RED output masks return to SOD polarity -> PASS
+THRESHOLD  authors GT differs from raw GT -> PASS
+THRESHOLD  isReplace: background error exceeds foreground error 5x -> PASS
+THRESHOLD  every cache row count equals its declared input count -> PASS
+THRESHOLD  resize policy moves <10%% of images between clusters -> PASS
+THRESHOLD  regenerated renders reproduce the pool on disk -> PASS
+THRESHOLD  regenerated renders keep >=95%% of cluster assignments -> PASS
+THRESHOLD  no rebuild script references the archive or a /tmp scratchpad -> FAIL
+THRESHOLD  every declared input resolves from primary data -> PASS
+OLD CLAIM  A2 fg fraction (manifest_all.json, primary) = 0.191323 -> CROSS-CHECK in A2
+OLD CLAIM  old package cache provenance = rescued from /tmp by e0_rescue.py -> SUPERSEDED
+ARTIFACTS  rebuild/E0/out/e0_manifest.sha256, rebuild/E0/out/e0_input_digests.csv, rebuild/E0/out/e0_models.json, rebuild/E0/out/e0_representation_checks.json, rebuild/E0/out/e0_cache_summary.csv, rebuild/E0/out/e0_resize_sensitivity.json, rebuild/E0/out/e0_render_regen.csv, rebuild/E0/out/e0_render_cluster_agreement.json, rebuild/E0/out/e0_independence.json
+TRAINS     NO
+NOTES      R2 confirmed at pixel level: the "foreground cutout" is the object on a FLAT GREY 128 background covering 82.2% of the frame, applied at native resolution before resize. Threshold 127 on an object-WHITE mask.
+           isReplace: the render carries the SOURCE foreground pixels (test.py:165); only the background is generated. Residual foreground error is JPEG re-encoding, 6.24 mean vs 71.68 in the background.
+           Embedder DECLARED in rebuild/common.py, not reverse-engineered: fp32, squash-BICUBIC, each model's own mean/std, CLS + patch-mean both stored unnormalised. Two families (DINOv2, CLIP) so no conclusion is embedder-specific.
+           Squash-vs-crop is a CHOICE the old package never justified. Measured here: 94.6% of images keep their cluster.
+           regeneration command(s): /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/src/lake_red/prepare_lakered_inputs.py --src_images /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs --src_masks /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/gt --raw_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw --out_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/E0/regen/input --split all --prefix SOD
+           Cluster agreement is 1.0 TRIVIALLY here: the renders are byte-identical, so the embeddings are identical. The cluster threshold was the fallback for a nondeterministic generator; byte-identity subsumes it.
+           Provenance gate is an AST scan (path-like string literals + imports of the old package), not a grep. The FIRST logged E0 block reported forbidden_path_references=14 and FAILED this threshold; all 14 were the gate detecting its own FORBIDDEN list and the package's prose. That was a defect in the gate, not a dependency in the package. Rewritten to parse rather than grep, docstrings excluded, exemptions declared by pragma and REPORTED rather than suppressed. Self-tested: a file referencing the scratchpad, the archive and evidence/artifacts is caught on all counts, and removing it returns the gate to zero. This block supersedes that one.
+================================================================================
+
+================================================================================
+2026-08-30T20:38:45+05:30 | commit 3ad38e8 (dirty) | EXP E0
+CMD   LAKE-RED/.venv/bin/python rebuild/E0/e0_regenerate.py --steps s1,s2,s3,s3b,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1-full, R2-cutout-grey128, R3-render, mask
+METRICS
+  manifest_files_hashed            = 48365    (all declared inputs)
+  manifest_dirs                    = 15
+  dirs_with_count_mismatch         = 0    (none)
+  inputs_missing                   = none
+  HKUIS_gt_object_is_white         = True    (border white 0.0119 vs fg 0.1858)
+  cutout_background_value          = 128    (literal pixel value, threshold 127)
+  cutout_bg_all_flat_grey          = True    (n=50)
+  cutout_fg_untouched              = True    (object pixels equal source)
+  cutout_bg_pixel_share            = 0.8224    (share of frame that is constant grey)
+  T1_pools_identical_raw_vs_auth   = 0    (of n=200)
+  T1_pools_identical_auth_vs_local = 0    (of n=200)
+  T1_mean_maxdiff_auth_vs_local    = 232.3
+  T2_input_mask_white_frac         = 0.8123    (staged, inverted)
+  T2_output_mask_white_frac        = 0.1877    (saved by test.py:173)
+  T2_output_matches_SOD_gt         = True    (polarity flips back)
+  T3_auth_gt_identical_to_raw_gt   = 0    (of n=200)
+  T3_mean_fg_frac_delta            = 0.00542    (raw minus authors)
+  isReplace_fg_mean_abs_diff       = 6.245    (render vs source, object region)
+  isReplace_bg_mean_abs_diff       = 71.676    (render vs source, background)
+  isReplace_bg_over_fg_ratio       = 11.5    (n=200)
+  embedders_built                  = 3    (dinoL224,dinoL518,clipL224)
+  caches_written                   = 21    (7 sets x 3 embedders)
+  cache_count_mismatches           = 0    (none)
+  resize_cluster_agreement         = 0.946    (squash vs aspect-crop, k=20 n=2000)
+  resize_mean_cosine               = 0.9308
+  regen_images                     = 4447    (seed 0, 2 shards)
+  regen_shared_with_disk           = 4447
+  regen_byte_identical             = 4447    (of 4447; bit-exact reproduction at seed 0 on this stack)
+  regen_mean_abs_pixel_diff        = 0.0
+  regen_cluster_agreement          = 1.0    (k=20, n=4447)
+  forbidden_path_references        = 0    (AST scan, 2 scripts)
+  provenance_pragma_exemptions     = 4    (listed in e0_independence.json, not suppressed)
+  inputs_resolved                  = 15    (of 15 declared)
+  inputs_missing                   = none
+THRESHOLD  every declared input present and count matches -> PASS
+THRESHOLD  HKU-IS GT stores object as WHITE -> PASS
+THRESHOLD  cutout background is exactly the flat value 128 -> PASS
+THRESHOLD  cutout leaves object pixels untouched -> PASS
+THRESHOLD  the three HKU-IS pools are mutually non-identical -> PASS
+THRESHOLD  LAKE-RED input masks are inverted (object=0) -> PASS
+THRESHOLD  LAKE-RED output masks return to SOD polarity -> PASS
+THRESHOLD  authors GT differs from raw GT -> PASS
+THRESHOLD  isReplace: background error exceeds foreground error 5x -> PASS
+THRESHOLD  every cache row count equals its declared input count -> PASS
+THRESHOLD  resize policy moves <10%% of images between clusters -> PASS
+THRESHOLD  regenerated renders reproduce the pool on disk -> PASS
+THRESHOLD  regenerated renders keep >=95%% of cluster assignments -> PASS
+THRESHOLD  no rebuild script references the archive or a /tmp scratchpad -> PASS
+THRESHOLD  every declared input resolves from primary data -> PASS
+OLD CLAIM  A2 fg fraction (manifest_all.json, primary) = 0.191323 -> CROSS-CHECK in A2
+OLD CLAIM  old package cache provenance = rescued from /tmp by e0_rescue.py -> SUPERSEDED
+ARTIFACTS  rebuild/E0/out/e0_manifest.sha256, rebuild/E0/out/e0_input_digests.csv, rebuild/E0/out/e0_models.json, rebuild/E0/out/e0_representation_checks.json, rebuild/E0/out/e0_cache_summary.csv, rebuild/E0/out/e0_resize_sensitivity.json, rebuild/E0/out/e0_render_regen.csv, rebuild/E0/out/e0_render_cluster_agreement.json, rebuild/E0/out/e0_independence.json
+TRAINS     NO
+NOTES      R2 confirmed at pixel level: the "foreground cutout" is the object on a FLAT GREY 128 background covering 82.2% of the frame, applied at native resolution before resize. Threshold 127 on an object-WHITE mask.
+           isReplace: the render carries the SOURCE foreground pixels (test.py:165); only the background is generated. Residual foreground error is JPEG re-encoding, 6.24 mean vs 71.68 in the background.
+           Embedder DECLARED in rebuild/common.py, not reverse-engineered: fp32, squash-BICUBIC, each model's own mean/std, CLS + patch-mean both stored unnormalised. Two families (DINOv2, CLIP) so no conclusion is embedder-specific.
+           Squash-vs-crop is a CHOICE the old package never justified. Measured here: 94.6% of images keep their cluster.
+           regeneration command(s): /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/src/lake_red/prepare_lakered_inputs.py --src_images /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs --src_masks /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/gt --raw_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw --out_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/E0/regen/input --split all --prefix SOD
+           Cluster agreement is 1.0 TRIVIALLY here: the renders are byte-identical, so the embeddings are identical. The cluster threshold was the fallback for a nondeterministic generator; byte-identity subsumes it.
+           Provenance gate is an AST scan (path-like string literals + imports of the old package), not a grep. The FIRST logged E0 block reported forbidden_path_references=14 and FAILED this threshold; all 14 were the gate detecting its own FORBIDDEN list and the package's prose. That was a defect in the gate, not a dependency in the package. Rewritten to parse rather than grep, docstrings excluded, exemptions declared by pragma and REPORTED rather than suppressed. Self-tested: a probe file referencing the volatile session cache, the moved archive and the old rescued-array directory is caught on all three counts, and removing it returns the gate to zero. This block supersedes that one.
+================================================================================
+
+================================================================================
+2026-08-31T12:59:10+05:30 | commit 3ad38e8 (dirty) | EXP E0
+CMD   LAKE-RED/.venv/bin/python rebuild/E0/e0_regenerate.py --steps s1,s2,s3,s3b,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1-full, R2-cutout-grey128, R3-render, mask
+METRICS
+  manifest_files_hashed            = 48365    (all declared inputs)
+  manifest_dirs                    = 15
+  dirs_with_count_mismatch         = 0    (none)
+  inputs_missing                   = none
+  s2_polarity_sample_n             = 400    (random stems, seed 0)
+  HKUIS_gt_object_is_white         = True    (border white 0.0119 vs fg 0.1858)
+  cutout_background_value          = 128    (literal pixel value, threshold 127)
+  cutout_bg_all_flat_grey          = True    (n=50)
+  cutout_fg_untouched              = True    (object pixels equal source)
+  cutout_bg_pixel_share            = 0.8224    (share of frame that is constant grey)
+  T1_pools_identical_raw_vs_auth   = 0    (of n=200)
+  T1_pools_identical_auth_vs_local = 0    (of n=200)
+  T1_mean_maxdiff_auth_vs_local    = 232.3
+  T2_input_mask_white_frac         = 0.8123    (staged, inverted)
+  T2_output_mask_white_frac        = 0.1877    (saved by test.py:173)
+  T2_output_matches_SOD_gt         = True    (polarity flips back)
+  T3_auth_gt_identical_to_raw_gt   = 0    (of n=200)
+  T3_mean_fg_frac_delta            = 0.00542    (raw minus authors)
+  isReplace_fg_mean_abs_diff       = 6.245    (render vs source, object region)
+  isReplace_bg_mean_abs_diff       = 71.676    (render vs source, background)
+  isReplace_bg_over_fg_ratio       = 11.5    (n=200)
+  embedders_built                  = 3    (dinoL224,dinoL518,clipL224)
+  caches_written                   = 21    (7 sets x 3 embedders)
+  cache_count_mismatches           = 0    (none)
+  resize_cluster_agreement         = 0.946    (squash vs aspect-crop, k=20 n=2000)
+  resize_mean_cosine               = 0.9308
+  regen_images                     = 4447    (seed 0, 2 shards)
+  regen_shared_with_disk           = 4447
+  regen_byte_identical             = 4447    (of 4447; bit-exact reproduction at seed 0 on this stack)
+  regen_mean_abs_pixel_diff        = 0.0
+  agg_sha256_regen_images          = cf6587cfce24b8f687a0a9d0c675210a    (n=4447, sorted-listing digest)
+  agg_sha256_disk_images           = cf6587cfce24b8f687a0a9d0c675210a    (n=4447, sorted-listing digest)
+  agg_sha256_regen_masks           = 91e9556434cb63e4cde29b4216c91d94    (n=4447, sorted-listing digest)
+  agg_sha256_disk_masks            = 91e9556434cb63e4cde29b4216c91d94    (n=4447, sorted-listing digest)
+  staging_background_frac          = 0.8087    (independent cross-check for A2, from prepare_lakered_inputs.py)
+  regen_cluster_agreement          = 1.0    (k=20, n=4447)
+  forbidden_path_references        = 0    (AST scan, 2 scripts)
+  provenance_pragma_exemptions     = 4    (listed in e0_independence.json, not suppressed)
+  inputs_resolved                  = 15    (of 15 declared)
+  inputs_missing                   = none
+THRESHOLD  every declared input present and count matches -> PASS
+THRESHOLD  HKU-IS GT stores object as WHITE -> PASS
+THRESHOLD  cutout background is exactly the flat value 128 -> PASS
+THRESHOLD  cutout leaves object pixels untouched -> PASS
+THRESHOLD  the three HKU-IS pools are mutually non-identical -> PASS
+THRESHOLD  LAKE-RED input masks are inverted (object=0) -> PASS
+THRESHOLD  LAKE-RED output masks return to SOD polarity -> PASS
+THRESHOLD  authors GT differs from raw GT -> PASS
+THRESHOLD  isReplace: background error exceeds foreground error 5x -> PASS
+THRESHOLD  every cache row count equals its declared input count -> PASS
+THRESHOLD  resize policy moves <10%% of images between clusters -> PASS
+THRESHOLD  regenerated image AND mask digests equal the pool on disk -> PASS
+THRESHOLD  regenerated renders reproduce the pool on disk -> PASS
+THRESHOLD  regenerated renders keep >=95%% of cluster assignments -> PASS
+THRESHOLD  no rebuild script references the archive or a /tmp scratchpad -> PASS
+THRESHOLD  every declared input resolves from primary data -> PASS
+OLD CLAIM  A2 fg fraction (manifest_all.json, primary) = 0.191323 -> CROSS-CHECK in A2
+OLD CLAIM  old package cache provenance = rescued from /tmp by e0_rescue.py -> SUPERSEDED
+ARTIFACTS  rebuild/E0/out/e0_manifest.sha256, rebuild/E0/out/e0_input_digests.csv, rebuild/E0/out/e0_models.json, rebuild/E0/out/e0_representation_checks.json, rebuild/E0/out/e0_cache_summary.csv, rebuild/E0/out/e0_resize_sensitivity.json, rebuild/E0/out/e0_render_regen.csv, rebuild/E0/out/e0_render_cluster_agreement.json, rebuild/E0/out/e0_independence.json
+TRAINS     NO
+NOTES      R2 confirmed at pixel level: the "foreground cutout" is the object on a FLAT GREY 128 background covering 82.2% of the frame, applied at native resolution before resize. Threshold 127 on an object-WHITE mask.
+           isReplace: the render carries the SOURCE foreground pixels (test.py:165); only the background is generated. Residual foreground error is JPEG re-encoding, 6.24 mean vs 71.68 in the background.
+           Embedder DECLARED in rebuild/common.py, not reverse-engineered: fp32, squash-BICUBIC, each model's own mean/std, CLS + patch-mean both stored unnormalised. Two families (DINOv2, CLIP) so no conclusion is embedder-specific.
+           Squash-vs-crop is a CHOICE the old package never justified. Measured here: 94.6% of images keep their cluster.
+           regeneration command(s): /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/src/lake_red/prepare_lakered_inputs.py --src_images /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs --src_masks /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/gt --raw_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw --out_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/E0/regen/input --split all --prefix SOD
+           Cluster agreement is 1.0 TRIVIALLY here: the renders are byte-identical, so the embeddings are identical. The cluster threshold was the fallback for a nondeterministic generator; byte-identity subsumes it.
+           Provenance gate is an AST scan (path-like string literals + imports of the old package), not a grep. The FIRST logged E0 block reported forbidden_path_references=14 and FAILED this threshold; all 14 were the gate detecting its own FORBIDDEN list and the package's prose. That was a defect in the gate, not a dependency in the package. Rewritten to parse rather than grep, docstrings excluded, exemptions declared by pragma and REPORTED rather than suppressed. Self-tested: a probe file referencing the volatile session cache, the moved archive and the old rescued-array directory is caught on all three counts, and removing it returns the gate to zero. This block supersedes that one.
+================================================================================
+

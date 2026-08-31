@@ -86,11 +86,12 @@ mask polarity conventions. Each is cited to its line and re-asserted in code.
 
 ---
 
-## ⚠ Live change to primary data, mid-audit
+## Live change to primary data, mid-audit — RESOLVED
 
-`Dataset/Test/CAMO/` **was deleted at 2026-08-30 13:03**, during this exploration. It was present when
-I began (250 files counted, 5 hashed). Every command I ran was read-only; `find` confirms
-`Dataset/Test` is the only repo path modified today. `Dataset/Val/CAMO/` is intact.
+`Dataset/Test/CAMO/` was deleted at **2026-08-30 13:03**, during Phase 0 exploration. It was present
+when I began (250 files counted, 5 hashed). **Confirmed intentional by the user**: it duplicated
+`Dataset/Val/CAMO/`, which is intact. Recorded rather than dropped, because it changes what D2 can
+measure.
 
 | Measurement | Status |
 |---|---|
@@ -100,7 +101,8 @@ I began (250 files counted, 5 hashed). Every command I ran was read-only; `find`
 
 The scoping consequence survives and is independently provable: `MyTrain.py:324` selects
 `Tea_epoch_best.pth` on `--val_root ./Dataset/Val/CAMO/`, which is the published CAMO **test** split
-⇒ **CAMO can never be reported as an endpoint**. Please confirm the deletion was intentional.
+⇒ **CAMO can never be reported as an endpoint**. That the two directories were duplicates is exactly
+why: validation and test were the same 250 images.
 
 ---
 
@@ -174,6 +176,30 @@ re-proves it at execution. Variable names are not evidence.
 
 ---
 
+## §2.5 Per-experiment deliverables — required for every experiment
+
+Each experiment owns a directory `rebuild/<ID>/` containing everything needed to read it without
+looking anywhere else:
+
+| File | Content |
+|---|---|
+| `<ID>.md` | **Setup.** Scripts run (exact commands), every directory read and written, steps, declared thresholds. **No measured values.** |
+| `<ID>_RESULTS.md` | **Verified results.** What was measured, with every figure traceable to its log block — plus a mandatory section: **how the findings change our approach, thinking and assertions.** Each entry states the claim we held, what was measured, the sharpened claim, and the concrete downstream consequence |
+| `out/` | Small text artifacts (CSV / JSON / manifests) — tracked in git |
+| `cache/`, `regen/` | Large regenerable binaries — gitignored |
+
+The `<ID>_RESULTS.md` "what changed" section is not a summary. It is the mechanism that keeps a
+measurement from being quietly absorbed into the prior story. E0's `isReplace` finding is the
+template: the standing claim was "object preserved, background generated"; the measurement
+(6.245 vs 71.676, 11.5x) sharpened it to "the source object pixels are composited back in — only the
+background is synthesized", which then changed what A3, B3 and D1 are actually testing.
+
+Traceability is checked mechanically, not by eye: every bolded figure in a `_RESULTS.md` must appear
+verbatim in its log block. A number that cannot be traced does not belong in the document, **even when
+the number is correct** — E0 log blocks 3 and 4 exist because four such values were caught.
+
+---
+
 ## §3 Experiment list
 
 **Trains? NO** for every experiment.
@@ -196,7 +222,7 @@ One script, one commit, one log block each.
 - **Method.** Declare one canonical embedder in-repo (**≥ 2 families** per §0.2; resolution swept; CLS + patch-mean; squash-resize BICUBIC; ImageNet norm; precision stated; unnormalised storage, L2 at use). Embed all sets × 3 pools. Re-run `run_hkuis.sh --seed 0` into a **new** directory and compare with the existing renders. Emit a full SHA256 manifest + environment/seed stamp.
 - **Representation.** R1–R4, each named in the manifest.
 - **Confirms / refutes.** Manifest complete and every later script runs with `SCRATCH` unset / any script still needing a `/tmp` path.
-- **Threshold.** Manifest covers 100 % of declared inputs. Renders: report mean/max pixel delta **and** cluster-assignment agreement — **≥ 95 % identical** at the chosen k. Byte-identity is *not* required (cuDNN nondeterminism); claiming it would be the error.
+- **Threshold.** Manifest covers 100 % of declared inputs. Renders: report mean/max pixel delta **and** cluster-assignment agreement — **≥ 95 % identical** at the chosen k. Byte-identity was *not* required, on the expectation of cuDNN nondeterminism. **Measured: that expectation was wrong** — all 4447 images and masks reproduce bit-exactly at seed 0 on this stack, so the cluster threshold passes trivially and byte-identity subsumes it. Both recorded; see log block `EXP E0`.
 
 ### D2 — Leakage sweep *(runs early — B3/C1 consume it)*
 - **Objective.** Bound what any result can claim and which sets can be reported; produce the leaked-name set as **data**, not a constant.
@@ -377,7 +403,7 @@ directly from the in-repo training logs, removing its dependence on the deleted 
 | **C2** part 2 | `\|Ds\|` = 6824/7824/8824 | `UNVERIFIED`. Curve shape and part 1 unaffected |
 | **B3** Inception arm | Orphaned caches; which 2000 of 4447 is unrecoverable | Re-implement and log as a re-implementation, or drop with reason |
 | **D2** CAMO row | `Test/CAMO` deleted today | Report pre-deletion evidence and reduced scope |
-| **E0** render regen | Byte-identity not expected across a re-run | Threshold is cluster-assignment agreement |
+| **E0** render regen | ~~Byte-identity not expected across a re-run~~ | **RESOLVED** — reproduction is bit-exact at seed 0 on this stack; no longer an at-risk input |
 | **All** | `Dataset/Test/{Image,GT}` absent | Ported to COD10K with the identity proof logged |
 
 ### (c) Where I most expect the rebuilt number to DIFFER — watch these
