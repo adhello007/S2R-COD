@@ -1,0 +1,17 @@
+split,level,n,unique,dup_groups,redundant_files
+tgt,fhash,4040,4038,2,2
+tgt,phash,4040,4038,2,2
+test,fhash,2026,2026,0,0
+test,phash,2026,2026,0,0
+cham,fhash,76,76,0,0
+cham,phash,76,76,0,0
+nc4k,fhash,4121,4121,0,0
+nc4k,phash,4121,4121,0,0
+val,fhash,250,250,0,0
+val,phash,250,250,0,0
+raw,fhash,4447,4443,4,4
+raw,phash,4447,4357,89,90
+auth,fhash,4447,4447,0,0
+auth,phash,4447,4447,0,0
+local,fhash,4447,4445,2,2
+local,phash,4447,4445,2,2

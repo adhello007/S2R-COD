@@ -302,3 +302,393 @@ NOTES      R2 confirmed at pixel level: the "foreground cutout" is the object on
            Provenance gate is an AST scan (path-like string literals + imports of the old package), not a grep. The FIRST logged E0 block reported forbidden_path_references=14 and FAILED this threshold; all 14 were the gate detecting its own FORBIDDEN list and the package's prose. That was a defect in the gate, not a dependency in the package. Rewritten to parse rather than grep, docstrings excluded, exemptions declared by pragma and REPORTED rather than suppressed. Self-tested: a probe file referencing the volatile session cache, the moved archive and the old rescued-array directory is caught on all three counts, and removing it returns the gate to zero. This block supersedes that one.
 ================================================================================
 
+================================================================================
+2026-08-31T13:24:07+05:30 | commit ddf42f8 (dirty) | EXP D2
+CMD   LAKE-RED/.venv/bin/python rebuild/D2/d2_leakage_sweep.py --steps s2,s3,s4,s5,s6,s7
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  images_hashed                             = 23854    (8 splits)
+  unreadable_images                         = 0    (decode failures)
+  COD10K_test_INTERSECT_target_byte         = 7    (sha256 of file bytes)
+  COD10K_test_INTERSECT_target_pixel        = 7    (decoded-RGB hash)
+  of_those_sharing_a_filename               = 2    (the rest are cross-named and invisible to a name check)
+  CHAMELEON_INTERSECT_target                = 0
+  NC4K_INTERSECT_target                     = 0
+  CAMOval_INTERSECT_target                  = 0
+  CAMOval_INTERSECT_CHAMELEON               = 3
+  endpoint_INTERSECT_HKUIS_pools            = 0    (any test/val image inside raw, authors or render pools)
+  internal_dups_target                      = 2    (redundant files, byte level)
+  internal_dups_renders                     = 2
+  internal_dups_authors_pool                = 0
+  internal_dups_raw_hkuis                   = 4
+  internal_dups_COD10K_test                 = 0
+  unique_renders                            = 4445    (of 4447)
+  target_names_to_exclude                   = 7    (the contract B3/C1 read)
+  near_duplicate_pairs_EXPLORATORY          = 24    (not pixel-identical, mean|diff| <= 2.0)
+  near_dup_endpoint_vs_training_EXPLORATORY = 13
+  nearvdup_test_images_matching_training    = 1/2026 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_images_matching_training    = 10/76 (13.2%)    (distinct endpoint images that are re-encodes)
+  nearvdup_nc4k_images_matching_training    = 0/4121 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_val_images_matching_training     = 1/250 (0.4%)    (distinct endpoint images that are re-encodes)
+  endpoint_MAE_all_2026                     = 0.074463    (Result/SINet/S2C)
+  endpoint_MAE_excl_contaminated            = 0.074476    (n=7 removed)
+  endpoint_MAE_delta                        = -1.242e-05    (-0.0167% relative)
+  contaminated_mean_MAE                     = 0.070882
+  contaminated_mean_percentile              = 0.4761    (0.5 = indistinguishable from clean test images)
+  MyTrain_val_root_default                  = ./Dataset/Val/CAMO/    (MyTrain.py:221)
+  checkpoint_selection_set_is_CAMO          = True    (250 images)
+  duplicate_input_pairs_in_raw_HKUIS        = 4    (byte-identical source photographs)
+  render_identical_prediction_holds         = 4/4    (predicted identical iff mask identical AND same shard-local position)
+  pairs_same_input_different_noise          = 1    (identical image AND mask, different shard position)
+  same_input_render_divergence_mean_abs     = 26.096    (1566 vs 1567)
+  same_input_divergence_background          = 41.667
+  same_input_divergence_foreground          = 0.962    (composited from source, so near-zero expected)
+THRESHOLD  every split count matches the E0 manifest -> PASS
+THRESHOLD  byte- and pixel-level agree on |COD10K-test AND target| -> PASS
+THRESHOLD  no endpoint image appears in any HKU-IS pool -> PASS
+THRESHOLD  leaked-name contract emitted and non-empty -> PASS
+THRESHOLD  no endpoint has >5% of its images as re-encodes of training data (EXPLORATORY, informs reportability) -> FAIL
+THRESHOLD  removing contaminated test images moves MAE by < 0.001 -> PASS
+THRESHOLD  contaminated images show no memorisation signature (percentile in 0.25-0.75) -> PASS
+THRESHOLD  checkpoint selection runs on the CAMO split, so CAMO is excluded as an endpoint -> PASS
+THRESHOLD  render identity across duplicate inputs is fully explained by (mask identity AND shard-local position) -> PASS
+OLD CLAIM  D2.1 COD10K-test AND Target = 7 (2 same-name, 5 cross-named) -> MATCH
+OLD CLAIM  D2.3 CAMO AND CHAMELEON = 3 -> MATCH
+OLD CLAIM  D2.4 internal duplicates in Target = 2 -> MATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D2.5 MAE impact of the leaked images = 0.000012 (0.017% relative) -> MATCH
+ARTIFACTS  rebuild/D2/out/d2_pair_matrix.csv, rebuild/D2/out/d2_collisions.csv, rebuild/D2/out/d2_internal_duplicates.csv, rebuild/D2/out/d2_internal_groups.csv, rebuild/D2/out/d2_leaked_names.json, rebuild/D2/out/d2_endpoint_contamination.json, rebuild/D2/out/d2_near_duplicates.csv, rebuild/D2/out/d2_mae_impact.json, rebuild/D2/out/d2_mae_per_image.csv, rebuild/D2/out/d2_scope.json, rebuild/D2/out/d2_duplicate_input_renders.csv, rebuild/D2/out/d2_determinism.json
+TRAINS     NO
+NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, after s4 returned 13 endpoint-vs-training pairs but BEFORE the per-endpoint breakdown was computed. Any FAIL is a substantive result about the data, not a code defect, and is recorded as a FAIL rather than relaxed.
+           s4 began EXPLORATORY and unthresholded because D2's declared scope is pixel identity. It earned a threshold once it showed that pixel identity under-bounds the claim by an order of magnitude on one endpoint: D2's declared scope is pixel identity. It exists because "nothing filters Target against Test" is exact hashing reports CHAMELEON AND Target = 0, while 10 of CHAMELEON's 76 images are re-encodes of Target images at identical dimensions. A thumbnail hash proposes candidates; actual pixels confirm. Rescaled and re-encoded duplicates are the class it can see; crops, flips and different photographs of one specimen remain out of scope and are not claimed.
+           Scoping consequence: MyTrain.py selects Tea_epoch_best.pth on --val_root Dataset/Val/CAMO, and that 250-image set is the published CAMO TEST split. Every checkpoint in every arm is therefore chosen by its score on a test set. It applies identically to all arms so it cannot bias B-vs-C, but CAMO can never be reported as an endpoint. Primary COD10K; secondary CHAMELEON, NC4K. Inherited from the published S2R-COD protocol, so disclosed rather than "fixed" -- changing the val set would break Table 1 comparability.
+           A render is NOT a function of (image, mask). LAKE-RED sets torch.manual_seed once per process (test.py:90-91) and shards by stride (test.py:115, pairs[i::total]), so per-image DDIM noise is drawn sequentially and depends on POSITION WITHIN THE SHARD. Byte-identical inputs at the same local position give identical renders; at different positions they diverge. Consequence for E0: the bit-exact reproduction holds only for the same shard count over the same input listing -- changing --shard_total, or adding or removing one input file, shifts every later index and yields a different pool. E0 s4 re-ran with shard_total=2 over an unchanged listing, which is why it matched exactly.
+           Detection is by HASH, never by name. Phase 0 found that only 2 of the 7 previously claimed Target/COD10K duplicates share a filename; the other 5 are cross-named. One was also mis-transcribed in the old documents as COD10K-CAM-3-Flying-53-Owl-4633; the file on disk is Flying-65.
+           LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
+================================================================================
+
+================================================================================
+2026-08-31T13:28:33+05:30 | commit ddf42f8 (dirty) | EXP D2
+CMD   LAKE-RED/.venv/bin/python rebuild/D2/d2_leakage_sweep.py --steps s2,s3,s4,s5,s6,s7
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  images_hashed                             = 23854    (8 splits)
+  unreadable_images                         = 0    (decode failures)
+  COD10K_test_INTERSECT_target_byte         = 7    (sha256 of file bytes)
+  COD10K_test_INTERSECT_target_pixel        = 7    (decoded-RGB hash)
+  of_those_sharing_a_filename               = 2    (the rest are cross-named and invisible to a name check)
+  CHAMELEON_INTERSECT_target                = 0
+  NC4K_INTERSECT_target                     = 0
+  CAMOval_INTERSECT_target                  = 0
+  CAMOval_INTERSECT_CHAMELEON               = 3
+  endpoint_INTERSECT_HKUIS_pools            = 0    (any test/val image inside raw, authors or render pools)
+  internal_dups_target                      = 2    (redundant files, byte level)
+  internal_dups_renders                     = 2
+  internal_dups_authors_pool                = 0
+  internal_dups_raw_hkuis                   = 4
+  internal_dups_COD10K_test                 = 0
+  unique_renders                            = 4445    (of 4447 files)
+  unique_raw_hkuis                          = 4443    (of 4447 files)
+  unique_authors_pool                       = 4447    (of 4447 files)
+  target_names_to_exclude                   = 7    (the contract B3/C1 read)
+  near_duplicate_pairs_EXPLORATORY          = 24    (not pixel-identical, mean|diff| <= 2.0)
+  near_dup_endpoint_vs_training_EXPLORATORY = 13
+  nearvdup_test_images_matching_training    = 1/2026 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_images_matching_training    = 10/76 (13.2%)    (distinct endpoint images that are re-encodes)
+  nearvdup_nc4k_images_matching_training    = 0/4121 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_val_images_matching_training     = 1/250 (0.4%)    (distinct endpoint images that are re-encodes)
+  endpoint_MAE_all_2026                     = 0.074463    (Result/SINet/S2C)
+  endpoint_MAE_excl_contaminated            = 0.074476    (n=7 removed)
+  endpoint_MAE_delta                        = -1.242e-05    (-0.0167% relative)
+  contaminated_mean_MAE                     = 0.070882
+  contaminated_mean_percentile              = 0.4761    (0.5 = indistinguishable from clean test images)
+  MyTrain_val_root_default                  = ./Dataset/Val/CAMO/    (MyTrain.py:221)
+  checkpoint_selection_set_is_CAMO          = True    (250 images)
+  duplicate_input_pairs_in_raw_HKUIS        = 4    (byte-identical source photographs)
+  render_identical_prediction_holds         = 4/4    (predicted identical iff mask identical AND same shard-local position)
+  pairs_same_input_different_noise          = 1    (identical image AND mask, different shard position)
+  same_input_render_divergence_mean_abs     = 26.096    (1566 vs 1567)
+  same_input_divergence_background          = 41.667
+  same_input_divergence_foreground          = 0.962    (composited from source, so near-zero expected)
+THRESHOLD  every split count matches the E0 manifest -> PASS
+THRESHOLD  byte- and pixel-level agree on |COD10K-test AND target| -> PASS
+THRESHOLD  no endpoint image appears in any HKU-IS pool -> PASS
+THRESHOLD  leaked-name contract emitted and non-empty -> PASS
+THRESHOLD  no endpoint has >5% of its images as re-encodes of training data (EXPLORATORY, informs reportability) -> FAIL
+THRESHOLD  removing contaminated test images moves MAE by < 0.001 -> PASS
+THRESHOLD  contaminated images show no memorisation signature (percentile in 0.25-0.75) -> PASS
+THRESHOLD  checkpoint selection runs on the CAMO split, so CAMO is excluded as an endpoint -> PASS
+THRESHOLD  render identity across duplicate inputs is fully explained by (mask identity AND shard-local position) -> PASS
+OLD CLAIM  D2.1 COD10K-test AND Target = 7 (2 same-name, 5 cross-named) -> MATCH
+OLD CLAIM  D2.3 CAMO AND CHAMELEON = 3 -> MATCH
+OLD CLAIM  D2.4 internal duplicates in Target = 2 -> MATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D2.5 MAE impact of the leaked images = 0.000012 (0.017% relative) -> MATCH
+ARTIFACTS  rebuild/D2/out/d2_pair_matrix.csv, rebuild/D2/out/d2_collisions.csv, rebuild/D2/out/d2_internal_duplicates.csv, rebuild/D2/out/d2_internal_groups.csv, rebuild/D2/out/d2_leaked_names.json, rebuild/D2/out/d2_endpoint_contamination.json, rebuild/D2/out/d2_near_duplicates.csv, rebuild/D2/out/d2_mae_impact.json, rebuild/D2/out/d2_mae_per_image.csv, rebuild/D2/out/d2_scope.json, rebuild/D2/out/d2_duplicate_input_renders.csv, rebuild/D2/out/d2_determinism.json
+TRAINS     NO
+NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, after s4 returned 13 endpoint-vs-training pairs but BEFORE the per-endpoint breakdown was computed. Any FAIL is a substantive result about the data, not a code defect, and is recorded as a FAIL rather than relaxed.
+           s4 began EXPLORATORY and unthresholded because D2's declared scope is pixel identity. It earned a threshold once it showed that pixel identity under-bounds the claim by an order of magnitude on one endpoint: D2's declared scope is pixel identity. It exists because "nothing filters Target against Test" is exact hashing reports CHAMELEON AND Target = 0, while 10 of CHAMELEON's 76 images are re-encodes of Target images at identical dimensions. A thumbnail hash proposes candidates; actual pixels confirm. Rescaled and re-encoded duplicates are the class it can see; crops, flips and different photographs of one specimen remain out of scope and are not claimed.
+           Scoping consequence: MyTrain.py selects Tea_epoch_best.pth on --val_root Dataset/Val/CAMO, and that 250-image set is the published CAMO TEST split. Every checkpoint in every arm is therefore chosen by its score on a test set. It applies identically to all arms so it cannot bias B-vs-C, but CAMO can never be reported as an endpoint. Primary COD10K; secondary CHAMELEON, NC4K. Inherited from the published S2R-COD protocol, so disclosed rather than "fixed" -- changing the val set would break Table 1 comparability.
+           A render is NOT a function of (image, mask). LAKE-RED sets torch.manual_seed once per process (test.py:90-91) and shards by stride (test.py:115, pairs[i::total]), so per-image DDIM noise is drawn sequentially and depends on POSITION WITHIN THE SHARD. Byte-identical inputs at the same local position give identical renders; at different positions they diverge. Consequence for E0: the bit-exact reproduction holds only for the same shard count over the same input listing -- changing --shard_total, or adding or removing one input file, shifts every later index and yields a different pool. E0 s4 re-ran with shard_total=2 over an unchanged listing, which is why it matched exactly.
+           Detection is by HASH, never by name. Phase 0 found that only 2 of the 7 previously claimed Target/COD10K duplicates share a filename; the other 5 are cross-named. One was also mis-transcribed in the old documents as COD10K-CAM-3-Flying-53-Owl-4633; the file on disk is Flying-65.
+           LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
+================================================================================
+
+================================================================================
+2026-08-31T14:12:05+05:30 | commit ddf42f8 (dirty) | EXP D2
+CMD   LAKE-RED/.venv/bin/python rebuild/D2/d2_leakage_sweep.py --steps s2,s3,s4,s5,s6,s7
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  images_hashed                          = 23854    (8 splits)
+  unreadable_images                      = 0    (decode failures)
+  COD10K_test_INTERSECT_target_byte      = 7    (sha256 of file bytes)
+  COD10K_test_INTERSECT_target_pixel     = 7    (decoded-RGB hash)
+  of_those_sharing_a_filename            = 2    (the rest are cross-named and invisible to a name check)
+  CHAMELEON_INTERSECT_target             = 0
+  NC4K_INTERSECT_target                  = 0
+  CAMOval_INTERSECT_target               = 0
+  CAMOval_INTERSECT_CHAMELEON            = 3
+  endpoint_INTERSECT_HKUIS_pools         = 0    (any test/val image inside raw, authors or render pools)
+  internal_dups_target                   = 2    (redundant files, byte level)
+  internal_dups_renders                  = 2
+  internal_dups_authors_pool             = 0
+  internal_dups_raw_hkuis                = 4
+  internal_dups_COD10K_test              = 0
+  unique_renders                         = 4445    (of 4447 files)
+  unique_raw_hkuis                       = 4443    (of 4447 files)
+  unique_authors_pool                    = 4447    (of 4447 files)
+  target_names_to_exclude                = 7    (the contract B3/C1 read)
+  near_dup_candidate_pairs_shortlisted   = 323    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_duplicate_pairs_confirmed         = 132    (full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training          = 49
+  nearvdup_test_images_matching_training = 2/2026 (0.1%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_images_matching_training = 41/76 (53.9%)    (distinct endpoint images that are re-encodes)
+  nearvdup_nc4k_images_matching_training = 1/4121 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_val_images_matching_training  = 4/250 (1.6%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_at_tol_1                 = 11/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_2                 = 26/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_3                 = 37/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_5                 = 40/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_6                 = 41/76    (distinct CHAMELEON images matching training data)
+  endpoint_MAE_all_2026                  = 0.074463    (Result/SINet/S2C)
+  endpoint_MAE_excl_contaminated         = 0.074476    (n=7 removed)
+  endpoint_MAE_delta                     = -1.242e-05    (-0.0167% relative)
+  contaminated_mean_MAE                  = 0.070882
+  contaminated_mean_percentile           = 0.4761    (0.5 = indistinguishable from clean test images)
+  MyTrain_val_root_default               = ./Dataset/Val/CAMO/    (MyTrain.py:221)
+  checkpoint_selection_set_is_CAMO       = True    (250 images)
+  duplicate_input_pairs_in_raw_HKUIS     = 4    (byte-identical source photographs)
+  render_identical_prediction_holds      = 4/4    (predicted identical iff mask identical AND same shard-local position)
+  pairs_same_input_different_noise       = 1    (identical image AND mask, different shard position)
+  same_input_render_divergence_mean_abs  = 26.096    (1566 vs 1567)
+  same_input_divergence_background       = 41.667
+  same_input_divergence_foreground       = 0.962    (composited from source, so near-zero expected)
+THRESHOLD  every split count matches the E0 manifest -> PASS
+THRESHOLD  byte- and pixel-level agree on |COD10K-test AND target| -> PASS
+THRESHOLD  no endpoint image appears in any HKU-IS pool -> PASS
+THRESHOLD  leaked-name contract emitted and non-empty -> PASS
+THRESHOLD  no endpoint has >5% of its images as re-encodes of training data (EXPLORATORY, informs reportability) -> FAIL
+THRESHOLD  removing contaminated test images moves MAE by < 0.001 -> PASS
+THRESHOLD  contaminated images show no memorisation signature (percentile in 0.25-0.75) -> PASS
+THRESHOLD  checkpoint selection runs on the CAMO split, so CAMO is excluded as an endpoint -> PASS
+THRESHOLD  render identity across duplicate inputs is fully explained by (mask identity AND shard-local position) -> PASS
+OLD CLAIM  D2.1 COD10K-test AND Target = 7 (2 same-name, 5 cross-named) -> MATCH
+OLD CLAIM  D2.3 CAMO AND CHAMELEON = 3 -> MATCH
+OLD CLAIM  D2.4 internal duplicates in Target = 2 -> MATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D2.5 MAE impact of the leaked images = 0.000012 (0.017% relative) -> MATCH
+ARTIFACTS  rebuild/D2/out/d2_pair_matrix.csv, rebuild/D2/out/d2_collisions.csv, rebuild/D2/out/d2_internal_duplicates.csv, rebuild/D2/out/d2_internal_groups.csv, rebuild/D2/out/d2_leaked_names.json, rebuild/D2/out/d2_endpoint_contamination.json, rebuild/D2/out/d2_near_duplicates.csv, rebuild/D2/out/d2_mae_impact.json, rebuild/D2/out/d2_mae_per_image.csv, rebuild/D2/out/d2_scope.json, rebuild/D2/out/d2_duplicate_input_renders.csv, rebuild/D2/out/d2_determinism.json
+TRAINS     NO
+NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, after s4 returned 13 endpoint-vs-training pairs but BEFORE the per-endpoint breakdown was computed. Any FAIL is a substantive result about the data, not a code defect, and is recorded as a FAIL rather than relaxed.
+           s4 began EXPLORATORY and unthresholded because D2's declared scope is pixel identity. It earned a threshold once it showed that pixel identity under-bounds the claim by an order of magnitude on one endpoint: D2's declared scope is pixel identity. It exists because "nothing filters Target against Test" is exact hashing reports CHAMELEON AND Target = 0, while 10 of CHAMELEON's 76 images are re-encodes of Target images at identical dimensions. A thumbnail hash proposes candidates; actual pixels confirm. Rescaled and re-encoded duplicates are the class it can see; crops, flips and different photographs of one specimen remain out of scope and are not claimed.
+           Scoping consequence: MyTrain.py selects Tea_epoch_best.pth on --val_root Dataset/Val/CAMO, and that 250-image set is the published CAMO TEST split. Every checkpoint in every arm is therefore chosen by its score on a test set. It applies identically to all arms so it cannot bias B-vs-C, but CAMO can never be reported as an endpoint. Primary COD10K; secondary CHAMELEON, NC4K. Inherited from the published S2R-COD protocol, so disclosed rather than "fixed" -- changing the val set would break Table 1 comparability.
+           A render is NOT a function of (image, mask). LAKE-RED sets torch.manual_seed once per process (test.py:90-91) and shards by stride (test.py:115, pairs[i::total]), so per-image DDIM noise is drawn sequentially and depends on POSITION WITHIN THE SHARD. Byte-identical inputs at the same local position give identical renders; at different positions they diverge. Consequence for E0: the bit-exact reproduction holds only for the same shard count over the same input listing -- changing --shard_total, or adding or removing one input file, shifts every later index and yields a different pool. E0 s4 re-ran with shard_total=2 over an unchanged listing, which is why it matched exactly.
+           Detection is by HASH, never by name. Phase 0 found that only 2 of the 7 previously claimed Target/COD10K duplicates share a filename; the other 5 are cross-named. One was also mis-transcribed in the old documents as COD10K-CAM-3-Flying-53-Owl-4633; the file on disk is Flying-65.
+           LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
+================================================================================
+
+================================================================================
+2026-08-31T14:18:38+05:30 | commit ddf42f8 (dirty) | EXP D2
+CMD   LAKE-RED/.venv/bin/python rebuild/D2/d2_leakage_sweep.py --steps s2,s3,s4,s5,s6,s7,s8
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  images_hashed                          = 23854    (8 splits)
+  unreadable_images                      = 0    (decode failures)
+  COD10K_test_INTERSECT_target_byte      = 7    (sha256 of file bytes)
+  COD10K_test_INTERSECT_target_pixel     = 7    (decoded-RGB hash)
+  of_those_sharing_a_filename            = 2    (the rest are cross-named and invisible to a name check)
+  CHAMELEON_INTERSECT_target             = 0
+  NC4K_INTERSECT_target                  = 0
+  CAMOval_INTERSECT_target               = 0
+  CAMOval_INTERSECT_CHAMELEON            = 3
+  endpoint_INTERSECT_HKUIS_pools         = 0    (any test/val image inside raw, authors or render pools)
+  internal_dups_target                   = 2    (redundant files, byte level)
+  internal_dups_renders                  = 2
+  internal_dups_authors_pool             = 0
+  internal_dups_raw_hkuis                = 4
+  internal_dups_COD10K_test              = 0
+  unique_renders                         = 4445    (of 4447 files)
+  unique_raw_hkuis                       = 4443    (of 4447 files)
+  unique_authors_pool                    = 4447    (of 4447 files)
+  target_names_to_exclude                = 7    (the contract B3/C1 read)
+  near_dup_candidate_pairs_shortlisted   = 323    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_duplicate_pairs_confirmed         = 132    (full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training          = 49
+  nearvdup_test_images_matching_training = 2/2026 (0.1%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_images_matching_training = 41/76 (53.9%)    (distinct endpoint images that are re-encodes)
+  nearvdup_nc4k_images_matching_training = 1/4121 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_val_images_matching_training  = 4/250 (1.6%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_at_tol_1                 = 11/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_2                 = 26/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_3                 = 37/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_5                 = 40/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_6                 = 41/76    (distinct CHAMELEON images matching training data)
+  endpoint_MAE_all_2026                  = 0.074463    (Result/SINet/S2C)
+  endpoint_MAE_excl_contaminated         = 0.074476    (n=7 removed)
+  endpoint_MAE_delta                     = -1.242e-05    (-0.0167% relative)
+  contaminated_mean_MAE                  = 0.070882
+  contaminated_mean_percentile           = 0.4761    (0.5 = indistinguishable from clean test images)
+  MyTrain_val_root_default               = ./Dataset/Val/CAMO/    (MyTrain.py:221)
+  checkpoint_selection_set_is_CAMO       = True    (250 images)
+  duplicate_input_pairs_in_raw_HKUIS     = 4    (byte-identical source photographs)
+  render_identical_prediction_holds      = 4/4    (predicted identical iff mask identical AND same shard-local position)
+  pairs_same_input_different_noise       = 1    (identical image AND mask, different shard position)
+  same_input_render_divergence_mean_abs  = 26.096    (1566 vs 1567)
+  same_input_divergence_background       = 41.667
+  same_input_divergence_foreground       = 0.962    (composited from source, so near-zero expected)
+  s8_inputs_byte_identical               = True    (3 copies of one (image, mask) pair, named to sort A/B/C)
+  s8_T1_one_shard_all_differ             = True    (positions 0,1,2 of one noise stream)
+  s8_T1_mean_abs_A_vs_B                  = 36.738
+  s8_T1_mean_abs_B_vs_C                  = 40.338
+  s8_T2_run_reproduces_exactly           = True    (identical invocation, fresh output dir)
+  s8_T3_three_shards_all_identical       = True    (each input forced to shard-local position 0)
+  s8_T3_mean_abs_A_vs_B                  = 0.0    (zero confirms the position mechanism)
+  s8_T3_equals_T1_position0              = True    (same local position gives the same render across shard configs)
+THRESHOLD  every split count matches the E0 manifest -> PASS
+THRESHOLD  byte- and pixel-level agree on |COD10K-test AND target| -> PASS
+THRESHOLD  no endpoint image appears in any HKU-IS pool -> PASS
+THRESHOLD  leaked-name contract emitted and non-empty -> PASS
+THRESHOLD  no endpoint has >5% of its images as re-encodes of training data (EXPLORATORY, informs reportability) -> FAIL
+THRESHOLD  removing contaminated test images moves MAE by < 0.001 -> PASS
+THRESHOLD  contaminated images show no memorisation signature (percentile in 0.25-0.75) -> PASS
+THRESHOLD  checkpoint selection runs on the CAMO split, so CAMO is excluded as an endpoint -> PASS
+THRESHOLD  render identity across duplicate inputs is fully explained by (mask identity AND shard-local position) -> PASS
+THRESHOLD  s8 T1: identical inputs at different positions produce different renders -> PASS
+THRESHOLD  s8 T2: an identical invocation reproduces bit-exactly -> PASS
+THRESHOLD  s8 T3: forcing identical inputs to the same shard-local position makes their renders identical -> PASS
+OLD CLAIM  D2.1 COD10K-test AND Target = 7 (2 same-name, 5 cross-named) -> MATCH
+OLD CLAIM  D2.3 CAMO AND CHAMELEON = 3 -> MATCH
+OLD CLAIM  D2.4 internal duplicates in Target = 2 -> MATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D2.5 MAE impact of the leaked images = 0.000012 (0.017% relative) -> MATCH
+ARTIFACTS  rebuild/D2/out/d2_pair_matrix.csv, rebuild/D2/out/d2_collisions.csv, rebuild/D2/out/d2_internal_duplicates.csv, rebuild/D2/out/d2_internal_groups.csv, rebuild/D2/out/d2_leaked_names.json, rebuild/D2/out/d2_endpoint_contamination.json, rebuild/D2/out/d2_near_duplicates.csv, rebuild/D2/out/d2_mae_impact.json, rebuild/D2/out/d2_mae_per_image.csv, rebuild/D2/out/d2_scope.json, rebuild/D2/out/d2_duplicate_input_renders.csv, rebuild/D2/out/d2_determinism.json, rebuild/D2/out/d2_seed_experiment.json
+TRAINS     NO
+NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, after s4 returned 13 endpoint-vs-training pairs but BEFORE the per-endpoint breakdown was computed. Any FAIL is a substantive result about the data, not a code defect, and is recorded as a FAIL rather than relaxed.
+           s4 began EXPLORATORY and unthresholded because D2's declared scope is pixel identity. It earned a threshold once it showed that pixel identity under-bounds the claim by an order of magnitude on one endpoint: D2's declared scope is pixel identity. It exists because "nothing filters Target against Test" is exact hashing reports CHAMELEON AND Target = 0, while 10 of CHAMELEON's 76 images are re-encodes of Target images at identical dimensions. A thumbnail hash proposes candidates; actual pixels confirm. Rescaled and re-encoded duplicates are the class it can see; crops, flips and different photographs of one specimen remain out of scope and are not claimed.
+           Scoping consequence: MyTrain.py selects Tea_epoch_best.pth on --val_root Dataset/Val/CAMO, and that 250-image set is the published CAMO TEST split. Every checkpoint in every arm is therefore chosen by its score on a test set. It applies identically to all arms so it cannot bias B-vs-C, but CAMO can never be reported as an endpoint. Primary COD10K; secondary CHAMELEON, NC4K. Inherited from the published S2R-COD protocol, so disclosed rather than "fixed" -- changing the val set would break Table 1 comparability.
+           A render is NOT a function of (image, mask). LAKE-RED sets torch.manual_seed once per process (test.py:90-91) and shards by stride (test.py:115, pairs[i::total]), so per-image DDIM noise is drawn sequentially and depends on POSITION WITHIN THE SHARD. Byte-identical inputs at the same local position give identical renders; at different positions they diverge. Consequence for E0: the bit-exact reproduction holds only for the same shard count over the same input listing -- changing --shard_total, or adding or removing one input file, shifts every later index and yields a different pool. E0 s4 re-ran with shard_total=2 over an unchanged listing, which is why it matched exactly.
+           s8 is the CONTROLLED test of the mechanism s7 inferred from 4 observational pairs. T3 is the load-bearing one: a negative result (identical inputs diverging) is consistent with several explanations, but only the position mechanism predicts that forcing equal positions collapses the divergence to exactly zero. It does. Corollary for how the seed should be described: it pins the RUN, not the image. Same seed, same listing, same shard count reproduces bit-exactly (T2, and E0 at 4447/4447); the same image at a different position does not.
+           Detection is by HASH, never by name. Phase 0 found that only 2 of the 7 previously claimed Target/COD10K duplicates share a filename; the other 5 are cross-named. One was also mis-transcribed in the old documents as COD10K-CAM-3-Flying-53-Owl-4633; the file on disk is Flying-65.
+           LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
+================================================================================
+
+================================================================================
+2026-08-31T14:32:23+05:30 | commit ddf42f8 (dirty) | EXP D2
+CMD   LAKE-RED/.venv/bin/python rebuild/D2/d2_leakage_sweep.py --steps s2,s3,s4,s4b,s5,s6,s7,s8
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  images_hashed                          = 23854    (8 splits)
+  unreadable_images                      = 0    (decode failures)
+  COD10K_test_INTERSECT_target_byte      = 7    (sha256 of file bytes)
+  COD10K_test_INTERSECT_target_pixel     = 7    (decoded-RGB hash)
+  of_those_sharing_a_filename            = 2    (the rest are cross-named and invisible to a name check)
+  CHAMELEON_INTERSECT_target             = 0
+  NC4K_INTERSECT_target                  = 0
+  CAMOval_INTERSECT_target               = 0
+  CAMOval_INTERSECT_CHAMELEON            = 3
+  endpoint_INTERSECT_HKUIS_pools         = 0    (any test/val image inside raw, authors or render pools)
+  internal_dups_target                   = 2    (redundant files, byte level)
+  internal_dups_renders                  = 2
+  internal_dups_authors_pool             = 0
+  internal_dups_raw_hkuis                = 4
+  internal_dups_COD10K_test              = 0
+  unique_renders                         = 4445    (of 4447 files)
+  unique_raw_hkuis                       = 4443    (of 4447 files)
+  unique_authors_pool                    = 4447    (of 4447 files)
+  target_names_to_exclude                = 7    (the contract B3/C1 read)
+  near_dup_candidate_pairs_shortlisted   = 323    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_duplicate_pairs_confirmed         = 132    (full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training          = 49
+  nearvdup_test_images_matching_training = 2/2026 (0.1%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_images_matching_training = 41/76 (53.9%)    (distinct endpoint images that are re-encodes)
+  nearvdup_nc4k_images_matching_training = 1/4121 (0.0%)    (distinct endpoint images that are re-encodes)
+  nearvdup_val_images_matching_training  = 4/250 (1.6%)    (distinct endpoint images that are re-encodes)
+  nearvdup_cham_at_tol_1                 = 11/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_2                 = 26/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_3                 = 37/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_5                 = 40/76    (distinct CHAMELEON images matching training data)
+  nearvdup_cham_at_tol_6                 = 41/76    (distinct CHAMELEON images matching training data)
+  epNN_test_checkable                    = 1502/2026    (has >=1 same-dimension training candidate)
+  epNN_test_gap                          = none    (no >5x jump found)
+  epNN_cham_checkable                    = 51/76    (has >=1 same-dimension training candidate)
+  epNN_cham_gap                          = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances)
+  epNN_nc4k_checkable                    = 1715/4121    (has >=1 same-dimension training candidate)
+  epNN_nc4k_gap                          = none    (no >5x jump found)
+  epNN_val_checkable                     = 95/250    (has >=1 same-dimension training candidate)
+  epNN_val_gap                           = none    (no >5x jump found)
+  endpoint_MAE_all_2026                  = 0.074463    (Result/SINet/S2C)
+  endpoint_MAE_excl_contaminated         = 0.074476    (n=7 removed)
+  endpoint_MAE_delta                     = -1.242e-05    (-0.0167% relative)
+  contaminated_mean_MAE                  = 0.070882
+  contaminated_mean_percentile           = 0.4761    (0.5 = indistinguishable from clean test images)
+  MyTrain_val_root_default               = ./Dataset/Val/CAMO/    (MyTrain.py:221)
+  checkpoint_selection_set_is_CAMO       = True    (250 images)
+  duplicate_input_pairs_in_raw_HKUIS     = 4    (byte-identical source photographs)
+  render_identical_prediction_holds      = 4/4    (predicted identical iff mask identical AND same shard-local position)
+  pairs_same_input_different_noise       = 1    (identical image AND mask, different shard position)
+  same_input_render_divergence_mean_abs  = 26.096    (1566 vs 1567)
+  same_input_divergence_background       = 41.667
+  same_input_divergence_foreground       = 0.962    (composited from source, so near-zero expected)
+  s8_inputs_byte_identical               = True    (3 copies of one (image, mask) pair, named to sort A/B/C)
+  s8_T1_one_shard_all_differ             = True    (positions 0,1,2 of one noise stream)
+  s8_T1_mean_abs_A_vs_B                  = 36.738
+  s8_T1_mean_abs_B_vs_C                  = 40.338
+  s8_T2_run_reproduces_exactly           = True    (identical invocation, fresh output dir)
+  s8_T3_three_shards_all_identical       = True    (each input forced to shard-local position 0)
+  s8_T3_mean_abs_A_vs_B                  = 0.0    (zero confirms the position mechanism)
+  s8_T3_equals_T1_position0              = True    (same local position gives the same render across shard configs)
+THRESHOLD  every split count matches the E0 manifest -> PASS
+THRESHOLD  byte- and pixel-level agree on |COD10K-test AND target| -> PASS
+THRESHOLD  no endpoint image appears in any HKU-IS pool -> PASS
+THRESHOLD  leaked-name contract emitted and non-empty -> PASS
+THRESHOLD  no endpoint has >5% of its images as re-encodes of training data (EXPLORATORY, informs reportability) -> FAIL
+THRESHOLD  CHAMELEON nearest-neighbour distances show a clean separation, so the matched count is a property of the data and not of the tolerance -> PASS
+THRESHOLD  removing contaminated test images moves MAE by < 0.001 -> PASS
+THRESHOLD  contaminated images show no memorisation signature (percentile in 0.25-0.75) -> PASS
+THRESHOLD  checkpoint selection runs on the CAMO split, so CAMO is excluded as an endpoint -> PASS
+THRESHOLD  render identity across duplicate inputs is fully explained by (mask identity AND shard-local position) -> PASS
+THRESHOLD  s8 T1: identical inputs at different positions produce different renders -> PASS
+THRESHOLD  s8 T2: an identical invocation reproduces bit-exactly -> PASS
+THRESHOLD  s8 T3: forcing identical inputs to the same shard-local position makes their renders identical -> PASS
+OLD CLAIM  D2.1 COD10K-test AND Target = 7 (2 same-name, 5 cross-named) -> MATCH
+OLD CLAIM  D2.3 CAMO AND CHAMELEON = 3 -> MATCH
+OLD CLAIM  D2.4 internal duplicates in Target = 2 -> MATCH
+OLD CLAIM  D1/D2 internal duplicates in render pool = 2 (4445 unique of 4447) -> MATCH
+OLD CLAIM  D2.5 MAE impact of the leaked images = 0.000012 (0.017% relative) -> MATCH
+ARTIFACTS  rebuild/D2/out/d2_pair_matrix.csv, rebuild/D2/out/d2_collisions.csv, rebuild/D2/out/d2_internal_duplicates.csv, rebuild/D2/out/d2_internal_groups.csv, rebuild/D2/out/d2_leaked_names.json, rebuild/D2/out/d2_endpoint_contamination.json, rebuild/D2/out/d2_near_duplicates.csv, rebuild/D2/out/d2_endpoint_nearest.json, rebuild/D2/out/d2_endpoint_nearest.csv, rebuild/D2/out/d2_mae_impact.json, rebuild/D2/out/d2_mae_per_image.csv, rebuild/D2/out/d2_scope.json, rebuild/D2/out/d2_duplicate_input_renders.csv, rebuild/D2/out/d2_determinism.json, rebuild/D2/out/d2_seed_experiment.json
+TRAINS     NO
+NOTES      DISCLOSURE on the 5-percent threshold: it was added mid-experiment, after s4 returned 13 endpoint-vs-training pairs but BEFORE the per-endpoint breakdown was computed. Any FAIL is a substantive result about the data, not a code defect, and is recorded as a FAIL rather than relaxed.
+           s4 began EXPLORATORY and unthresholded because D2's declared scope is pixel identity. It earned a threshold once it showed that pixel identity under-bounds the claim by an order of magnitude on one endpoint: D2's declared scope is pixel identity. It exists because "nothing filters Target against Test" is exact hashing reports CHAMELEON AND Target = 0, while 10 of CHAMELEON's 76 images are re-encodes of Target images at identical dimensions. A thumbnail hash proposes candidates; actual pixels confirm. Rescaled and re-encoded duplicates are the class it can see; crops, flips and different photographs of one specimen remain out of scope and are not claimed.
+           s4b answers a question s4 cannot: s4 counts pairs within a tolerance, which leaves the count entangled with the tolerance. s4b measures, for every endpoint image, the distance to its nearest same-dimension training image, and looks for a gap in the sorted distances. It replaced an abandoned attempt to widen s4 to a 30-grey-level tolerance over all pairs, which was computationally infeasible inside the largest dimension groups. Bounding the comparison to endpoint-vs-training makes the same question cheap.
+           Scoping consequence: MyTrain.py selects Tea_epoch_best.pth on --val_root Dataset/Val/CAMO, and that 250-image set is the published CAMO TEST split. Every checkpoint in every arm is therefore chosen by its score on a test set. It applies identically to all arms so it cannot bias B-vs-C, but CAMO can never be reported as an endpoint. Primary COD10K; secondary CHAMELEON, NC4K. Inherited from the published S2R-COD protocol, so disclosed rather than "fixed" -- changing the val set would break Table 1 comparability.
+           A render is NOT a function of (image, mask). LAKE-RED sets torch.manual_seed once per process (test.py:90-91) and shards by stride (test.py:115, pairs[i::total]), so per-image DDIM noise is drawn sequentially and depends on POSITION WITHIN THE SHARD. Byte-identical inputs at the same local position give identical renders; at different positions they diverge. Consequence for E0: the bit-exact reproduction holds only for the same shard count over the same input listing -- changing --shard_total, or adding or removing one input file, shifts every later index and yields a different pool. E0 s4 re-ran with shard_total=2 over an unchanged listing, which is why it matched exactly.
+           s8 is the CONTROLLED test of the mechanism s7 inferred from 4 observational pairs. T3 is the load-bearing one: a negative result (identical inputs diverging) is consistent with several explanations, but only the position mechanism predicts that forcing equal positions collapses the divergence to exactly zero. It does. Corollary for how the seed should be described: it pins the RUN, not the image. Same seed, same listing, same shard count reproduces bit-exactly (T2, and E0 at 4447/4447); the same image at a different position does not.
+           Detection is by HASH, never by name. Phase 0 found that only 2 of the 7 previously claimed Target/COD10K duplicates share a filename; the other 5 are cross-named. One was also mis-transcribed in the old documents as COD10K-CAM-3-Flying-53-Owl-4633; the file on disk is Flying-65.
+           LIMITATION: pixel identity bounds this sweep. Crops, flips, colour-shifted copies and different photographs of the same specimen are NOT detected and are not claimed. s4 extends coverage to rescaled duplicates only.
+================================================================================
+

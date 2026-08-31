@@ -1,0 +1,55 @@
+{
+  "T1_all_differ": true,
+  "T1_one_shard_hashes": {
+    "A": "155045473bb672a8",
+    "B": "0e8334b9a63daafb",
+    "C": "2e0c0d8c5471544a"
+  },
+  "T1_pairwise": {
+    "A-B": [
+      36.738,
+      221
+    ],
+    "A-C": [
+      26.81,
+      137
+    ],
+    "B-C": [
+      40.338,
+      156
+    ]
+  },
+  "T2_reproduces_exactly": true,
+  "T3_all_identical": true,
+  "T3_equals_T1_position0": true,
+  "T3_pairwise": {
+    "A-B": [
+      0.0,
+      0
+    ],
+    "A-C": [
+      0.0,
+      0
+    ],
+    "B-C": [
+      0.0,
+      0
+    ]
+  },
+  "T3_three_shards_hashes": {
+    "A": "155045473bb672a8",
+    "B": "155045473bb672a8",
+    "C": "155045473bb672a8"
+  },
+  "commands": [
+    "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/test.py --dataset_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/input --data_type SOD --dst_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run1 --isReplace --seed 0 --shard_index 0 --shard_total 1 --log_path /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run1/_log --error_list /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run1/_err.pkl",
+    "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/test.py --dataset_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/input --data_type SOD --dst_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run2 --isReplace --seed 0 --shard_index 0 --shard_total 1 --log_path /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run2/_log --error_list /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run2/_err.pkl",
+    "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/test.py --dataset_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/input --data_type SOD --dst_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s0 --isReplace --seed 0 --shard_index 0 --shard_total 3 --log_path /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s0/_log --error_list /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s0/_err.pkl",
+    "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/test.py --dataset_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/input --data_type SOD --dst_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s1 --isReplace --seed 0 --shard_index 1 --shard_total 3 --log_path /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s1/_log --error_list /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s1/_err.pkl",
+    "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/.venv/bin/python /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED/test.py --dataset_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/input --data_type SOD --dst_root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s2 --isReplace --seed 0 --shard_index 2 --shard_total 3 --log_path /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s2/_log --error_list /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/D2/seedtest/run3_s2/_err.pkl"
+  ],
+  "conclusion": "the seed pins the RUN, not the image: same seed reproduces bit-exactly, but an identical input at a different shard-local position gets different noise",
+  "inputs_identical": true,
+  "status": "OK",
+  "stem": "0004"
+}

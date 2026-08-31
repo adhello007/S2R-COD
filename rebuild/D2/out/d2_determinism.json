@@ -1,0 +1,16 @@
+{
+  "clean_same_input_diff_noise": 1,
+  "divergence": [
+    {
+      "bg_mean_abs": 41.667,
+      "fg_mean_abs": 0.962,
+      "max_abs": 225,
+      "mean_abs": 26.096,
+      "stem_a": "1566",
+      "stem_b": "1567"
+    }
+  ],
+  "duplicate_input_pairs": 4,
+  "mechanism": "torch.manual_seed once per process (test.py:90-91) + stride sharding pairs[i::total] (test.py:115) => per-image noise depends on position within the shard",
+  "prediction_holds_for": 4
+}

@@ -1,0 +1,46 @@
+{
+  "commit": "ddf42f8 (dirty)",
+  "endpoint_side": [
+    {
+      "name": "COD10K-CAM-1-Aquatic-3-Crab-32.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-2-Terrestrial-28-Deer-1762.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-2-Terrestrial-31-Gecko-1892.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-2-Terrestrial-31-Gecko-1895.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-2-Terrestrial-32-Giraffe-1932.jpg",
+      "split": "test"
+    },
+    {
+      "name": "COD10K-CAM-3-Flying-65-Owl-4633.jpg",
+      "split": "test"
+    }
+  ],
+  "generated": "2026-08-31T14:29:59+05:30",
+  "method": "full pairwise hashing of file bytes and decoded RGB; NOT name matching. Consumers must read this file rather than hardcode a name list -- see REBUILD_PLAN.md 0.2",
+  "n_target_excluded": 7,
+  "scope": "pixel identity only; near-duplicates are in d2_near_duplicates.csv",
+  "target_names_to_exclude": [
+    "COD10K-CAM-1-Aquatic-3-Crab-32.jpg",
+    "COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg",
+    "COD10K-CAM-2-Terrestrial-26-Chameleon-1694.jpg",
+    "COD10K-CAM-2-Terrestrial-28-Deer-1796.jpg",
+    "COD10K-CAM-2-Terrestrial-31-Gecko-1928.jpg",
+    "COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg",
+    "COD10K-CAM-3-Flying-53-Bird-3205.jpg"
+  ]
+}

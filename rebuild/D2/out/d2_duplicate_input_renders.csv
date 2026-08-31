@@ -1,0 +1,5 @@
+stem_a,stem_b,image_identical,mask_identical,global_idx_a,global_idx_b,shard_a,local_pos_a,shard_b,local_pos_b,same_local_pos,render_identical,predicted_identical,prediction_holds
+1555,1556,1,1,996,997,0,498,1,498,1,1,1,1
+4250,4251,1,0,2611,2612,1,1305,0,1306,0,0,0,1
+1566,1567,1,1,1005,1006,1,502,0,503,0,0,0,1
+1591,1592,1,1,1024,1025,0,512,1,512,1,1,1,1

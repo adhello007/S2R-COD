@@ -1,0 +1,129 @@
+{
+  "cham": {
+    "frac_vs_training": 0.5395,
+    "n": 76,
+    "names_vs_training": [
+      "animal-1.jpg",
+      "animal-11.jpg",
+      "animal-12.jpg",
+      "animal-13.jpg",
+      "animal-14.jpg",
+      "animal-15.jpg",
+      "animal-17.jpg",
+      "animal-19.jpg",
+      "animal-21.jpg",
+      "animal-23.jpg",
+      "animal-24.jpg",
+      "animal-26.jpg",
+      "animal-29.jpg",
+      "animal-30.jpg",
+      "animal-31.jpg",
+      "animal-33.jpg",
+      "animal-34.jpg",
+      "animal-35.jpg",
+      "animal-37.jpg",
+      "animal-39.jpg",
+      "animal-4.jpg",
+      "animal-40.jpg",
+      "animal-42.jpg",
+      "animal-44.jpg",
+      "animal-45.jpg",
+      "animal-48.jpg",
+      "animal-50.jpg",
+      "animal-52.jpg",
+      "animal-55.jpg",
+      "animal-56.jpg",
+      "animal-57.jpg",
+      "animal-6.jpg",
+      "animal-60.jpg",
+      "animal-63.jpg",
+      "animal-65.jpg",
+      "animal-67.jpg",
+      "animal-70.jpg",
+      "animal-71.jpg",
+      "animal-76.jpg",
+      "animal-8.jpg",
+      "animal-9.jpg"
+    ],
+    "vs_other_endpoint": 32,
+    "vs_training": 41
+  },
+  "nc4k": {
+    "frac_vs_training": 0.0002,
+    "n": 4121,
+    "names_vs_training": [
+      "1244.jpg"
+    ],
+    "vs_other_endpoint": 1,
+    "vs_training": 1
+  },
+  "test": {
+    "frac_vs_training": 0.001,
+    "n": 2026,
+    "names_vs_training": [
+      "COD10K-CAM-3-Flying-57-Dragonfly-3566.jpg",
+      "COD10K-CAM-4-Amphibian-68-Toad-4808.jpg"
+    ],
+    "vs_other_endpoint": 33,
+    "vs_training": 2
+  },
+  "tolerance_sweep": {
+    "tol_1.0": {
+      "pairs": 22,
+      "per_endpoint": {
+        "cham": 11,
+        "nc4k": 0,
+        "test": 1,
+        "val": 0
+      }
+    },
+    "tol_2.0": {
+      "pairs": 60,
+      "per_endpoint": {
+        "cham": 26,
+        "nc4k": 0,
+        "test": 1,
+        "val": 1
+      }
+    },
+    "tol_3.0": {
+      "pairs": 84,
+      "per_endpoint": {
+        "cham": 37,
+        "nc4k": 0,
+        "test": 2,
+        "val": 2
+      }
+    },
+    "tol_5.0": {
+      "pairs": 116,
+      "per_endpoint": {
+        "cham": 40,
+        "nc4k": 1,
+        "test": 2,
+        "val": 3
+      }
+    },
+    "tol_6.0": {
+      "pairs": 132,
+      "per_endpoint": {
+        "cham": 41,
+        "nc4k": 1,
+        "test": 2,
+        "val": 4
+      }
+    }
+  },
+  "val": {
+    "frac_vs_training": 0.016,
+    "n": 250,
+    "names_vs_training": [
+      "camourflage_00090.jpg",
+      "camourflage_00224.jpg",
+      "camourflage_00594.jpg",
+      "camourflage_00998.jpg"
+    ],
+    "vs_other_endpoint": 4,
+    "vs_training": 4
+  }
+}

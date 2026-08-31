@@ -1,0 +1,9 @@
+{
+  "camo_val_n": 250,
+  "myTrain_val_root_line": 221,
+  "note": "Dataset/Test/CAMO was removed 2026-08-30 (confirmed intentional: it duplicated Val/CAMO). Filename identity 250/250 and content identity 5/5 sampled were VERIFIED before removal; full 250/250 content identity is no longer verifiable. The consequence stands either way: checkpoints are selected on the CAMO split, so CAMO cannot be an endpoint. Primary endpoint COD10K; secondary CHAMELEON and NC4K.",
+  "test_camo_present": false,
+  "val_root_default": "./Dataset/Val/CAMO/",
+  "val_root_is_camo": true,
+  "val_root_resolves_to": "Dataset/Val/CAMO"
+}
