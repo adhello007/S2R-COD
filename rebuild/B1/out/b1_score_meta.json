@@ -1,0 +1,112 @@
+{
+  "SINet-v2/S2C|test": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 2026,
+    "n_stu_tensors": 880,
+    "n_tea_tensors": 880
+  },
+  "SINet-v2/S2C|val": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 250,
+    "n_stu_tensors": 880,
+    "n_tea_tensors": 880
+  },
+  "SINet/S2C_MT|test": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 2026,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SINet/S2C_MT|val": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 250,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SINet/S2C_SO|test": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 2026,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SINet/S2C_SO|val": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 250,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SINet/S2C|test": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 2026,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SINet/S2C|val": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 250,
+    "n_stu_tensors": 1223,
+    "n_tea_tensors": 1223
+  },
+  "SegMaR/S2C|test": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 2026,
+    "n_stu_tensors": 645,
+    "n_tea_tensors": 645
+  },
+  "SegMaR/S2C|val": {
+    "es_live": {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "use_weighted_bce": false
+    },
+    "n": 250,
+    "n_stu_tensors": 645,
+    "n_tea_tensors": 645
+  }
+}

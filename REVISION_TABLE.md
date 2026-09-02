@@ -4,7 +4,7 @@ Running record, appended as each experiment completes. Every row cites the log b
 measured value. The "old value" column is the frozen record from `REBUILD_PLAN.md` §4 — a claim under
 test, never an input.
 
-Completed so far: **E0, D2, D1**. Nine experiments outstanding: A1, A2, A3, B1, B2, B3, C1, C2, C3.
+Completed so far: **E0, D2, D1, B1**. Eight experiments outstanding: A1, A2, A3, B2, B3, C1, C2, C3.
 
 ---
 
@@ -17,6 +17,10 @@ Completed so far: **E0, D2, D1**. Nine experiments outstanding: A1, A2, A3, B1, 
 | E0.2 | Scope of that reproducibility | *unqualified* | holds only at **fixed shard count over a fixed input listing** | `EXP D2` | D2 s7/s8 found a render depends on position-in-shard. E0's headline needed the qualifier and did not have it |
 | D2.1 | CHAMELEON ∩ Target | **0** (pixel identity — correct at that level) | **41/76 (53.9 %)** are re-encodes of Target training images | `EXP D2` | Exact hashing cannot see re-encoding. The old method under-bounded the quantity it was reporting. CHAMELEON is withdrawn as an endpoint |
 | D2.2 | Cross-named duplicate identity | `COD10K-CAM-3-Flying-**53**-Owl-4633` | `Flying-**65**-Owl-4633` | `EXP D2` | Transcription error in the old documents. No such file exists at `Flying-53`. Immaterial to any number |
+| B1.1 | ρ(ES, MAE) per-cluster k=20 test | +0.788 | **+0.8699** ± 0.0297 | `EXP B1` | Moved **up**. Old package had no seed spread; this is 10 k-means seeds |
+| B1.2 | ρ(ES, 1−Sα) per-cluster k=20 test | +0.409 | **+0.5067** ± 0.0725 | `EXP B1` | Moved **up** |
+| B1.3 | ρ(ES, 1−IoU) per-cluster k=20 test | +0.265 / +0.271 | **+0.4060** ± 0.0884 | `EXP B1` | Moved **up** |
+| B1.4 | ρ(ES, MAE) per-cluster k=20 **val** | +0.976 | **DEGENERATE — not reportable** | `EXP B1` | Not a value that moved. Only 1–4 CAMO clusters clear the 15-image floor; Spearman over 2–3 points is ±1 by construction |
 
 ## 2. Corrections to the rebuild's own work
 
@@ -29,6 +33,10 @@ Kept visible because a rebuild that only ever corrects someone else is not audit
 | R3 | D2's near-duplicate scan used contrast-normalised thumbnail bucketing — roughly a quarter of the true recall | `EXP D2` blocks 2→3 | Audit against an exhaustive search | Replaced by exhaustive within-dimension search. CHAMELEON moved 10/76 → 41/76 |
 | R4 | `4443` used in `D2_RESULTS.md` as arithmetic rather than a logged metric | `EXP D2` blocks 1→2 | Traceability check | `unique_raw_hkuis` / `unique_authors_pool` added as metrics |
 | R5 | D1 scored **both** pools against `raw_gt`, producing an apparent 406-image anomaly in the authors' pool | D1, pre-log | Audit of D1's own first run | Each pool scored against the mask it was rendered with, plus an eroded interior. Anomaly was a mask-boundary artifact; plausibly-regenerated count is 0 |
+
+| R6 | B1's first scoring pass used `.astype(np.uint8)` (truncation) where `MyTest.py` uses `cv2.imwrite` (rounding), biasing every prediction down ~0.5 grey levels | B1, pre-log | Endpoint MAE missed D2's independently measured value by 1.23e-03, failing a declared threshold | `np.round`; endpoint MAE became 0.074463 (delta 2.3e-07), Sα 0.717216 |
+| R7 | B1's k-selection ranked k by bootstrap ARI, which is biased toward small k — it chose k=5, the worst silhouette in the sweep | B1, pre-log | The selected k had the worst compactness in its own sweep | Silhouette primary; stability reported but not used to rank; discarded criterion recorded in the log |
+| R8 | B1 reported a per-cluster ρ of +1.0 on CAMO from 2 clusters | B1, pre-log | Reproduced the old package's +0.976 artifact | Per-cluster ρ suppressed below 5 surviving clusters |
 
 **R3 is the only one where a measurement was substantively wrong** rather than untraceable. It was
 found by auditing my own method, not by the method reporting a problem — which is the failure mode
@@ -48,6 +56,7 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | Internal duplicates in the render pool | 2 (4445 unique) | 2 (4445 unique) | `EXP D2`, `EXP D1` |
 | MAE impact of the leaked images | 0.000012 (0.017 %) | 1.242e-05 (0.0167 %) | `EXP D2` |
 | Every added image is a re-render, not a new object | zero foregrounds outside the base pool | 0 outside; bijection both pools | `EXP D1` |
+| ρ(ES, MAE) **per-image** test | +0.751 | **+0.7514** [+0.727, +0.777] | `EXP B1` |
 | Invented background fraction | 80.87 % | 0.8087 (`staging_background_frac`, independent code path) | `EXP E0` |
 
 ## 4. Claims that changed in KIND, not value
@@ -58,10 +67,14 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | Foreground exhaustion | "additions are re-renders" | **"the foreground pool is exhausted; the background is not"** — the object is fixed pixel-for-pixel, the background has unbounded freedom | `EXP D1` |
 | "The generated pool" | one pool | **three** mutually non-identical pools; training reads the authors' pool, the old evidence embedded the local one | `EXP E0`, `EXP D2` |
 | "The HKU-IS foreground fraction" | one number | **set-dependent** — `raw_gt` 0.19132 vs `auth_gt` 0.18557 | `EXP D1` |
-| Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images | `EXP E0` |
+| Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images (E0); and the target set's silhouette peaks at only **0.16** with seed-ARI 0.52–0.77 (B1) — the unit of allocation is soft | `EXP E0`, `EXP B1` |
+| "ES predicts the wrong objective" | a binary verdict | an **effect size**: ES tracks pixel error ~2× as strongly as structural error (ρ 0.86 vs 0.43 per-cluster). The binary flips with k (ratio 0.4999 at k=75, 0.5825 at k=20), so the label is not k-stable and is not quoted | `EXP B1` |
 
 ## 5. Still outstanding
 
-Every §4 row of `REBUILD_PLAN.md` belonging to A1, A2, A3, B1, B2, B3, C1, C2, C3 remains
-untested. The load-bearing one is **C1** (`d ≈ 0.10`), which never had a producing script in the old
-package.
+Every §4 row of `REBUILD_PLAN.md` belonging to A1, A2, A3, B2, B3, C1, C2, C3 remains untested. The
+load-bearing one is **C1** (`d ≈ 0.10`), which never had a producing script in the old package; it now
+has its input ready — `rebuild/B1/out/b1_cluster_es.csv`, 75 clusters with per-cluster ES.
+
+The old package's cross-run ρ(ES, MAE) = +0.893 ± 0.059 (n=5 runs) is **UNVERIFIED-DEFERRED**: it is a
+seed-variance claim, and retraining is deferred. B1 substitutes a cross-architecture axis instead.

@@ -758,3 +758,163 @@ NOTES      Polarity is MEASURED over all 4447 of every mask set, not sampled and
            WHAT D1 DOES NOT ESTABLISH: that new foregrounds could not help. D1 bounds only what this pipeline can add from its fixed pool. It is silent on whether a larger or different foreground set would change any outcome, and it is silent on near-duplicate foregrounds within the pool (D2's scope, and pixel-level only).
 ================================================================================
 
+================================================================================
+2026-09-01T13:51:22+05:30 | commit 0a1d238 (dirty) | EXP B1
+CMD   LAKE-RED/.venv/bin/python rebuild/B1/b1_es_error_correlation.py --steps s1,s2,s3,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1 whole target image (dinoL518) for clustering; 352x352 + ImageNet norm for inference; ES on sigmoid outputs
+METRICS
+  ESLoss_config_from_MyTrain              = a=0.9 b=0.3 c=0.5    (parsed from the --task S2C override block, not hardcoded)
+  ESLoss_use_weighted_bce                 = False    (PGT_Loss call: a=opt.a, b=opt.b, c=opt.c, use_weighted_bce=False)
+  CLS_calls_ES_on_sigmoid                 = True    (CLS.py stu.sigmoid()/tea.sigmoid() then ES_loss(stu1, tea1))
+  R1_target_is_whole_image_min_cos        = 1.0    (re-embedded 4 target images with the full-image loader vs the E0 cache)
+  scored_SINet-S2C_test                   = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_val                    = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_MT_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_MT_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_SO_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_SO_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-v2-S2C_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-v2-S2C_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SegMaR-S2C_test                  = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SegMaR-S2C_val                   = 250    (ES + MAE + Sa + IoU per image)
+  endpoint_MAE_SINet_S2C_test             = 0.074463    (fresh teacher inference; D2 measured 0.074463 from the stored Result/ PNGs)
+  target_clustered                        = 4033    (of 4040; 7 leaked names dropped, read from rebuild/D2/out/d2_leaked_names.json)
+  k_sweep                                 = 5,10,15,20,30,50,75,100,150    (10 k-means seeds per k)
+  principled_k                            = 75    (max silhouette (stability reported, not used to rank))
+  k_star_silhouette                       = 0.16
+  k_star_bootstrap_ARI                    = 0.5789    (reported, NOT used to rank: max bootstrap ARI -- biased toward small k; it selected k=5, which has the worst silhouette in the sweep)
+  k_star_seed_ARI                         = 0.6155    (agreement between k-means seeds)
+  percluster_ES_vs_mae_test_k20           = +0.8699 +/- 0.0297  [+0.817,+0.922] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_test_k20  = +0.5067 +/- 0.0725  [+0.373,+0.635] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_test_k20 = +0.4060 +/- 0.0884  [+0.280,+0.564] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_mae_val_k20            = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_val_k20   = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_val_k20  = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_mae_test_k75           = +0.8553 +/- 0.0264  [+0.796,+0.891] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_test_k75  = +0.4276 +/- 0.0461  [+0.356,+0.506] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_test_k75 = +0.2983 +/- 0.0564  [+0.221,+0.401] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  perimage_ES_vs_mae_test                 = +0.7514 [+0.727,+0.777] p=0.0002    (n=2026)
+  perimage_ES_vs_one_minus_sa_test        = +0.3114 [+0.270,+0.355] p=0.0002    (n=2026)
+  perimage_ES_vs_one_minus_iou_test       = +0.2015 [+0.161,+0.247] p=0.0002    (n=2026)
+  percluster_ES_vs_mae_val_k75            = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_val_k75   = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_val_k75  = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  perimage_ES_vs_mae_val                  = +0.6604 [+0.560,+0.747] p=0.0002    (n=250)
+  perimage_ES_vs_one_minus_sa_val         = +0.3888 [+0.268,+0.498] p=0.0002    (n=250)
+  perimage_ES_vs_one_minus_iou_val        = +0.2495 [+0.126,+0.364] p=0.0002    (n=250)
+  VERDICT_rho_1mSa_over_rho_MAE           = 0.4999    (ratio at the principled k on COD10K; <0.5 => wrong objective)
+  VERDICT_ES_predicts_wrong_objective     = True    (declared before running)
+  VERDICT_ratio_at_old_k20                = 0.5825    (same ratio at the old package's k; shows whether the BINARY verdict is k-stable)
+  VERDICT_binary_is_k_stable              = False    (does the classification survive the k choice?)
+  crossarch_SINet-S2C                     = MAE +0.863 | 1-Sa +0.449 | 1-IoU +0.324    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-S2C_MT                  = MAE +0.879 | 1-Sa +0.483 | 1-IoU +0.353    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-S2C_SO                  = MAE +0.402 | 1-Sa +0.510 | 1-IoU +0.354    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-v2-S2C                  = MAE +0.899 | 1-Sa +0.597 | 1-IoU +0.432    (per-cluster, k=75, 3 seeds)
+  crossarch_SegMaR-S2C                    = MAE +0.840 | 1-Sa +0.576 | 1-IoU +0.426    (per-cluster, k=75, 3 seeds)
+  crossarch_ratio_1mSa_over_MAE           = mean 0.738, range 0.520..1.268 over 5 architectures
+  cluster_ES_csv_rows                     = 75    (75 clusters with >=1 COD10K image; C1/B2 read this file)
+THRESHOLD  the live ESLoss matches the config parsed out of MyTrain.py and CLS.py calls it on sigmoid outputs -> PASS
+THRESHOLD  R1: the clustered target representation is the whole image (cos >= 0.999 against a fresh full-image embed) -> PASS
+THRESHOLD  fresh inference reproduces D2's independently measured endpoint MAE within 0.001 (requires matching cv2.imwrite's ROUNDING, not truncation) -> PASS
+THRESHOLD  all of D2's measured leaked names were found and dropped -> PASS
+THRESHOLD  DECLARED: ES predicts the wrong objective iff rho(ES,1-Sa) < 0.5 x rho(ES,MAE) at the principled k on COD10K -- this line records the CLASSIFICATION, it does not filter what is logged -> PASS
+THRESHOLD  the binary wrong-objective classification is stable across the principled k and the old package's k=20 -> FAIL
+THRESHOLD  the ES-vs-error pattern holds across architectures: every architecture falls on the same side of the 0.5 ratio boundary -> PASS
+OLD CLAIM  rho(ES, MAE) per-cluster k=20 test = +0.788 -> RE-MEASURED
+OLD CLAIM  rho(ES, 1-Sa) per-cluster k=20 test = +0.409 -> RE-MEASURED
+OLD CLAIM  rho(ES, 1-IoU) per-cluster k=20 test = +0.265 soft / +0.271 hard -> RE-MEASURED
+OLD CLAIM  rho(ES, MAE) per-cluster k=20 val = +0.976 -> RE-MEASURED
+OLD CLAIM  rho(ES, MAE) per-image test = +0.751 -> RE-MEASURED
+OLD CLAIM  crossrun rho(ES, MAE) per-cluster k=20 = +0.893 +/- 0.059 (n=5 runs) -> RE-MEASURED
+ARTIFACTS  rebuild/B1/out/b1_assertions.json, rebuild/B1/out/b1_scores_SINet-S2C_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_val.csv, rebuild/B1/out/b1_scores_SINet-S2C_MT_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_MT_val.csv, rebuild/B1/out/b1_scores_SINet-S2C_SO_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_SO_val.csv, rebuild/B1/out/b1_scores_SINet-v2-S2C_test.csv, rebuild/B1/out/b1_scores_SINet-v2-S2C_val.csv, rebuild/B1/out/b1_scores_SegMaR-S2C_test.csv, rebuild/B1/out/b1_scores_SegMaR-S2C_val.csv, rebuild/B1/out/b1_k_sweep.csv, rebuild/B1/out/b1_correlations.json, rebuild/B1/out/b1_crossarch.json, rebuild/B1/out/b1_cluster_es.csv, rebuild/B1/out/b1_cluster_assignment.json
+TRAINS     NO
+NOTES      k is CHOSEN, not inherited. The old package fixed k in {20,50,100} without justification. Here k is swept over [5, 10, 15, 20, 30, 50, 75, 100, 150] with 10 k-means seeds each, and the principled k is the most stable partition (max bootstrap ARI over 80% subsamples, tie-broken by silhouette). Results are reported at that k AND at the old package's k=20 for comparability, with the seed spread in both cases.
+           The threshold above CLASSIFIES; it does not gate. Every rho is logged with a bootstrap CI and a permutation p regardless of which side of the boundary it falls on. rho(ES,1-Sa)/rho(ES,MAE) = 0.4999 at k=75.
+           LIMITS. Per-cluster correlation depends on k and on how populated each cluster is; cluster sizes are in b1_correlations.json and clusters with fewer than 15 endpoint images are excluded from the cluster means rather than allowed to contribute a one-image "mean". CAMO-val has only 250 images in total, so its per-cluster rho rests on few and small clusters and is FRAGILE -- flagged, not reported as solid. ES comes from ONE final training run per architecture; cross-architecture is the robustness substitute, and seed-level robustness remains UNVERIFIED-DEFERRED because retraining is deferred.
+           CHAMELEON is excluded as an endpoint on D2's measurement (41/76 = 53.9%% of it are re-encodes of unlabeled target training images). CAMO-val is included for correlation against its own GT but is the checkpoint-SELECTION set (MyTrain.py:221), so it is not an independent endpoint.
+           True error is the TEACHER's error (Tea_epoch_best), because that is the deployed model and what MyTest.py evaluates. Predictions are regenerated by fresh inference rather than read from Result/, and the primary model's endpoint MAE is cross-checked against D2's independently measured value.
+================================================================================
+
+================================================================================
+2026-09-01T13:56:55+05:30 | commit 0a1d238 (dirty) | EXP B1
+CMD   LAKE-RED/.venv/bin/python rebuild/B1/b1_es_error_correlation.py --steps s1,s2,s4,s5
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1 whole target image (dinoL518) for clustering; 352x352 + ImageNet norm for inference; ES on sigmoid outputs
+METRICS
+  ESLoss_config_from_MyTrain              = a=0.9 b=0.3 c=0.5    (parsed from the --task S2C override block, not hardcoded)
+  ESLoss_use_weighted_bce                 = False    (PGT_Loss call: a=opt.a, b=opt.b, c=opt.c, use_weighted_bce=False)
+  CLS_calls_ES_on_sigmoid                 = True    (CLS.py stu.sigmoid()/tea.sigmoid() then ES_loss(stu1, tea1))
+  R1_target_is_whole_image_min_cos        = 1.0    (re-embedded 4 target images with the full-image loader vs the E0 cache)
+  scored_SINet-S2C_test                   = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_val                    = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_MT_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_MT_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_SO_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-S2C_SO_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SINet-v2-S2C_test                = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SINet-v2-S2C_val                 = 250    (ES + MAE + Sa + IoU per image)
+  scored_SegMaR-S2C_test                  = 2026    (ES + MAE + Sa + IoU per image)
+  scored_SegMaR-S2C_val                   = 250    (ES + MAE + Sa + IoU per image)
+  endpoint_MAE_SINet_S2C_test             = 0.074463    (fresh teacher inference; D2 measured 0.074463 from the stored Result/ PNGs)
+  endpoint_Sa_SINet_S2C_test              = 0.717216    (fresh teacher inference; the repo records 0.7172)
+  target_clustered                        = 4033    (of 4040; 7 leaked names dropped, read from rebuild/D2/out/d2_leaked_names.json)
+  k_sweep                                 = 5,10,15,20,30,50,75,100,150    (10 k-means seeds per k)
+  k_sweep_silhouette                      = k5=0.0566 k10=0.0923 k15=0.1152 k20=0.1326 k30=0.1527 k50=0.1556 k75=0.1600 k100=0.1557 k150=0.1507    (compactness / separation)
+  k_sweep_bootstrap_ARI                   = k5=0.624 k10=0.598 k15=0.573 k20=0.506 k30=0.539 k50=0.579 k75=0.579 k100=0.583 k150=0.618    (partition reproducibility)
+  k_sweep_seed_ARI                        = k5=0.732 k10=0.770 k15=0.592 k20=0.524 k30=0.617 k50=0.600 k75=0.616 k100=0.601 k150=0.625    (agreement between k-means seeds)
+  principled_k                            = 75    (max silhouette (stability reported, not used to rank))
+  k_star_silhouette                       = 0.16
+  k_star_bootstrap_ARI                    = 0.5789    (reported, NOT used to rank: max bootstrap ARI -- biased toward small k; it selected k=5, which has the worst silhouette in the sweep)
+  k_star_seed_ARI                         = 0.6155    (agreement between k-means seeds)
+  percluster_ES_vs_mae_test_k20           = +0.8699 +/- 0.0297  [+0.817,+0.922] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_test_k20  = +0.5067 +/- 0.0725  [+0.373,+0.635] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_test_k20 = +0.4060 +/- 0.0884  [+0.280,+0.564] over 10 seeds    (clusters used 19-20 of 20 (min 15 images each))
+  percluster_ES_vs_mae_val_k20            = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_val_k20   = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_val_k20  = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 1-4 of 20 (min 15 images each))
+  percluster_ES_vs_mae_test_k75           = +0.8553 +/- 0.0264  [+0.796,+0.891] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_test_k75  = +0.4276 +/- 0.0461  [+0.356,+0.506] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_test_k75 = +0.2983 +/- 0.0564  [+0.221,+0.401] over 10 seeds    (clusters used 50-53 of 75 (min 15 images each))
+  perimage_ES_vs_mae_test                 = +0.7514 [+0.727,+0.777] p=0.0002    (n=2026)
+  perimage_ES_vs_one_minus_sa_test        = +0.3114 [+0.270,+0.355] p=0.0002    (n=2026)
+  perimage_ES_vs_one_minus_iou_test       = +0.2015 [+0.161,+0.247] p=0.0002    (n=2026)
+  percluster_ES_vs_mae_val_k75            = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_sa_val_k75   = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  percluster_ES_vs_one_minus_iou_val_k75  = DEGENERATE-NOT-REPORTED (<5 clusters survive)    (clusters used 2-2 of 75 (min 15 images each))
+  perimage_ES_vs_mae_val                  = +0.6604 [+0.560,+0.747] p=0.0002    (n=250)
+  perimage_ES_vs_one_minus_sa_val         = +0.3888 [+0.268,+0.498] p=0.0002    (n=250)
+  perimage_ES_vs_one_minus_iou_val        = +0.2495 [+0.126,+0.364] p=0.0002    (n=250)
+  VERDICT_rho_1mSa_over_rho_MAE           = 0.4999    (ratio at the principled k on COD10K; <0.5 => wrong objective)
+  VERDICT_ES_predicts_wrong_objective     = True    (declared before running)
+  VERDICT_ratio_at_old_k20                = 0.5825    (same ratio at the old package's k; shows whether the BINARY verdict is k-stable)
+  VERDICT_binary_is_k_stable              = False    (does the classification survive the k choice?)
+  crossarch_SINet-S2C                     = MAE +0.863 | 1-Sa +0.449 | 1-IoU +0.324    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-S2C_MT                  = MAE +0.879 | 1-Sa +0.483 | 1-IoU +0.353    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-S2C_SO                  = MAE +0.402 | 1-Sa +0.510 | 1-IoU +0.354    (per-cluster, k=75, 3 seeds)
+  crossarch_SINet-v2-S2C                  = MAE +0.899 | 1-Sa +0.597 | 1-IoU +0.432    (per-cluster, k=75, 3 seeds)
+  crossarch_SegMaR-S2C                    = MAE +0.840 | 1-Sa +0.576 | 1-IoU +0.426    (per-cluster, k=75, 3 seeds)
+  crossarch_ratio_1mSa_over_MAE           = mean 0.738, range 0.520..1.268 over 5 architectures
+  cluster_ES_csv_rows                     = 75    (75 clusters with >=1 COD10K image; C1/B2 read this file)
+THRESHOLD  the live ESLoss matches the config parsed out of MyTrain.py and CLS.py calls it on sigmoid outputs -> PASS
+THRESHOLD  R1: the clustered target representation is the whole image (cos >= 0.999 against a fresh full-image embed) -> PASS
+THRESHOLD  fresh inference reproduces D2's independently measured endpoint MAE within 0.001 (requires matching cv2.imwrite's ROUNDING, not truncation) -> PASS
+THRESHOLD  all of D2's measured leaked names were found and dropped -> PASS
+THRESHOLD  DECLARED: ES predicts the wrong objective iff rho(ES,1-Sa) < 0.5 x rho(ES,MAE) at the principled k on COD10K -- this line records the CLASSIFICATION, it does not filter what is logged -> PASS
+THRESHOLD  the binary wrong-objective classification is stable across the principled k and the old package's k=20 -> FAIL
+THRESHOLD  the ES-vs-error pattern holds across architectures: every architecture falls on the same side of the 0.5 ratio boundary -> PASS
+OLD CLAIM  rho(ES, MAE) per-cluster k=20 test = +0.788 -> RE-MEASURED
+OLD CLAIM  rho(ES, 1-Sa) per-cluster k=20 test = +0.409 -> RE-MEASURED
+OLD CLAIM  rho(ES, 1-IoU) per-cluster k=20 test = +0.265 soft / +0.271 hard -> RE-MEASURED
+OLD CLAIM  rho(ES, MAE) per-cluster k=20 val = +0.976 -> RE-MEASURED
+OLD CLAIM  rho(ES, MAE) per-image test = +0.751 -> RE-MEASURED
+OLD CLAIM  crossrun rho(ES, MAE) per-cluster k=20 = +0.893 +/- 0.059 (n=5 runs) -> RE-MEASURED
+ARTIFACTS  rebuild/B1/out/b1_assertions.json, rebuild/B1/out/b1_scores_SINet-S2C_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_val.csv, rebuild/B1/out/b1_scores_SINet-S2C_MT_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_MT_val.csv, rebuild/B1/out/b1_scores_SINet-S2C_SO_test.csv, rebuild/B1/out/b1_scores_SINet-S2C_SO_val.csv, rebuild/B1/out/b1_scores_SINet-v2-S2C_test.csv, rebuild/B1/out/b1_scores_SINet-v2-S2C_val.csv, rebuild/B1/out/b1_scores_SegMaR-S2C_test.csv, rebuild/B1/out/b1_scores_SegMaR-S2C_val.csv, rebuild/B1/out/b1_correlations.json, rebuild/B1/out/b1_crossarch.json, rebuild/B1/out/b1_cluster_es.csv, rebuild/B1/out/b1_cluster_assignment.json
+TRAINS     NO
+NOTES      k is CHOSEN, not inherited. The old package fixed k in {20,50,100} without justification. Here k is swept over [5, 10, 15, 20, 30, 50, 75, 100, 150] with 10 k-means seeds each, and the principled k is the most stable partition (max bootstrap ARI over 80% subsamples, tie-broken by silhouette). Results are reported at that k AND at the old package's k=20 for comparability, with the seed spread in both cases.
+           The threshold above CLASSIFIES; it does not gate. Every rho is logged with a bootstrap CI and a permutation p regardless of which side of the boundary it falls on. rho(ES,1-Sa)/rho(ES,MAE) = 0.4999 at k=75.
+           LIMITS. Per-cluster correlation depends on k and on how populated each cluster is; cluster sizes are in b1_correlations.json and clusters with fewer than 15 endpoint images are excluded from the cluster means rather than allowed to contribute a one-image "mean". CAMO-val has only 250 images in total, so its per-cluster rho rests on few and small clusters and is FRAGILE -- flagged, not reported as solid. ES comes from ONE final training run per architecture; cross-architecture is the robustness substitute, and seed-level robustness remains UNVERIFIED-DEFERRED because retraining is deferred.
+           CHAMELEON is excluded as an endpoint on D2's measurement (41/76 = 53.9%% of it are re-encodes of unlabeled target training images). CAMO-val is included for correlation against its own GT but is the checkpoint-SELECTION set (MyTrain.py:221), so it is not an independent endpoint.
+           True error is the TEACHER's error (Tea_epoch_best), because that is the deployed model and what MyTest.py evaluates. Predictions are regenerated by fresh inference rather than read from Result/, and the primary model's endpoint MAE is cross-checked against D2's independently measured value.
+================================================================================
+

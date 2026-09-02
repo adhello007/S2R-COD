@@ -1,0 +1,47 @@
+{
+  "config_matches": true,
+  "es_config_parsed": {
+    "a": 0.9,
+    "b": 0.3,
+    "c": 0.5,
+    "cls_calls_on_sigmoid": true,
+    "myTrain_line": 286,
+    "pgt_call": "a=opt.a, b=opt.b, c=opt.c, use_weighted_bce=False",
+    "use_weighted_bce": true
+  },
+  "es_loss_live": {
+    "a": 0.9,
+    "b": 0.3,
+    "c": 0.5,
+    "use_weighted_bce": false
+  },
+  "r1_whole_image": {
+    "cache_rows": 4040,
+    "declared_n": 4040,
+    "embedder": "dinoL518",
+    "embedder_meta": {
+      "family": "dinov2",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "model": "vit_large_patch14_dinov2.lvd142m",
+      "pooling": "cls+patchmean",
+      "precision": "fp32",
+      "resize": "squash",
+      "size": 518,
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "tag": "dinoL518"
+    },
+    "loader": "common.load_full (whole image, no mask, no crop)",
+    "mean_cos": 1.0,
+    "min_cos": 0.9999999999999999,
+    "n": 4,
+    "names": 4040
+  }
+}
