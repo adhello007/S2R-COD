@@ -1,0 +1,50 @@
+{
+  "clipL224": {
+    "assignment_json": true,
+    "centroids_npy": true,
+    "cluster_es_csv": true,
+    "clusters_with_target_es": 5,
+    "cutout_aligned_to_raw": true,
+    "cutout_cache": true,
+    "cutout_dim": 1024,
+    "cutout_names_n": 4447,
+    "cutout_rows": 4447,
+    "k": 5,
+    "leaked_names_json": true,
+    "n_clusters": 5,
+    "ready": true,
+    "tag": "clipL224"
+  },
+  "dinoL224": {
+    "assignment_json": true,
+    "centroids_npy": true,
+    "cluster_es_csv": true,
+    "clusters_with_target_es": 50,
+    "cutout_aligned_to_raw": true,
+    "cutout_cache": true,
+    "cutout_dim": 1024,
+    "cutout_names_n": 4447,
+    "cutout_rows": 4447,
+    "k": 50,
+    "leaked_names_json": true,
+    "n_clusters": 50,
+    "ready": true,
+    "tag": "dinoL224"
+  },
+  "dinoL518": {
+    "assignment_json": true,
+    "centroids_npy": true,
+    "cluster_es_csv": true,
+    "clusters_with_target_es": 75,
+    "cutout_aligned_to_raw": true,
+    "cutout_cache": true,
+    "cutout_dim": 1024,
+    "cutout_names_n": 4447,
+    "cutout_rows": 4447,
+    "k": 75,
+    "leaked_names_json": true,
+    "n_clusters": 75,
+    "ready": true,
+    "tag": "dinoL518"
+  }
+}

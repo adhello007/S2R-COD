@@ -20,7 +20,11 @@ Completed so far: **E0, D2, D1, B1**. Eight experiments outstanding: A1, A2, A3,
 | B1.1 | ρ(ES, MAE) per-cluster k=20 test | +0.788 | **+0.8699** ± 0.0297 | `EXP B1` | Moved **up**. Old package had no seed spread; this is 10 k-means seeds |
 | B1.2 | ρ(ES, 1−Sα) per-cluster k=20 test | +0.409 | **+0.5067** ± 0.0725 | `EXP B1` | Moved **up** |
 | B1.3 | ρ(ES, 1−IoU) per-cluster k=20 test | +0.265 / +0.271 | **+0.4060** ± 0.0884 | `EXP B1` | Moved **up** |
-| B1.4 | ρ(ES, MAE) per-cluster k=20 **val** | +0.976 | **DEGENERATE — not reportable** | `EXP B1` | Not a value that moved. Only 1–4 CAMO clusters clear the 15-image floor; Spearman over 2–3 points is ±1 by construction |
+| B1.4 | ρ(ES, MAE) per-cluster k=20 **val** | +0.976 | **DEGENERATE — not reportable** | `EXP B1` | Not a value that moved. Only 1–4 CAMO clusters clear the 15-image floor; Spearman over 2–3 points is ±1 by construction. Confirmed degenerate in **all three** embedder spaces |
+| B1.5 | "ES predicts the wrong objective" as a **binary** | asserted as a clean threshold | **not stateable on endpoint ES** — ratio 0.4919–0.6952 across 3 embedders × 2 k, straddling 0.5 | `EXP B1` (3rd block) | k-unstable and embedder-unstable. Retired in favour of the effect size |
+| B1.6 | The ES signal B1 correlates | **endpoint** ES (COD10K-test) | **target** ES is what `CLS.py:81-105` computes and what Stage C allocates by — GT-free, on the unlabeled target set | `EXP B1` (4th block) | The cluster CSV C1 consumes had `n_target` as a count and **no `target_es`**. A C1 built on it would have allocated by a test-set signal the pipeline does not have |
+| B1.7 | ρ(ES, MAE) per-cluster, as a usable allocation signal | +0.87 (endpoint ES) | **+0.6595** (dinoL224) / **+0.6284** (dinoL518) on the real target-ES signal | `EXP B1` (4th block) | The committed figure **overstated the usable signal by ρ ≈ 0.21–0.25**. The two ES signals only moderately agree per cluster (ρ 0.695 / 0.573) |
+| B1.8 | Direction of the wrong-objective claim | "ES predicts pixel, not structure" | **NOT SUPPORTED on the real signal** — ratio 0.5166 / 0.5463, both ≥ 0.5 in both candidate spaces | `EXP B1` (4th block) | A **reversal of direction**. I declared a threshold expecting the boundary to stay unstateable; it failed because the boundary *is* stateable on target ES and lands on the other side. B1's contribution becomes "the allocation signal is moderately predictive at best", not "it points at the wrong error type" |
 
 ## 2. Corrections to the rebuild's own work
 
@@ -37,6 +41,8 @@ Kept visible because a rebuild that only ever corrects someone else is not audit
 | R6 | B1's first scoring pass used `.astype(np.uint8)` (truncation) where `MyTest.py` uses `cv2.imwrite` (rounding), biasing every prediction down ~0.5 grey levels | B1, pre-log | Endpoint MAE missed D2's independently measured value by 1.23e-03, failing a declared threshold | `np.round`; endpoint MAE became 0.074463 (delta 2.3e-07), Sα 0.717216 |
 | R7 | B1's k-selection ranked k by bootstrap ARI, which is biased toward small k — it chose k=5, the worst silhouette in the sweep | B1, pre-log | The selected k had the worst compactness in its own sweep | Silhouette primary; stability reported but not used to rank; discarded criterion recorded in the log |
 | R8 | B1 reported a per-cluster ρ of +1.0 on CAMO from 2 clusters | B1, pre-log | Reproduced the old package's +0.976 artifact | Per-cluster ρ suppressed below 5 surviving clusters |
+| R9 | B1's `fit_kmeans` cached on `(k, seed)` and `endpoint_emb` on `split` alone, and `step_correlate` / `emit_cluster_es` called `assign_clusters` **without** a tag | B1, before the embedder sweep | Inert with one embedder; would have silently fed dinoL518's k-means fits and endpoint embeddings to the CLIP and dinoL224 runs | Cache keys include the tag; the tag is threaded through; defaults unchanged, verified by reproducing the committed block 7/7 |
+| R10 | B1 correlated **endpoint** ES throughout, and shipped C1 a cluster CSV with no `target_es` column | B1 completions I and II | Reading `CLS.py:81-82` — the loader is built on the target root with `gt_root=None`, so the allocation signal is GT-free and target-side | Target ES computed for all 4040 images × 5 architectures; `target_es` added to all three cluster CSVs; the faithful correlation measured. **Changed the direction of B1's headline claim** — see B1.8 |
 
 **R3 is the only one where a measurement was substantively wrong** rather than untraceable. It was
 found by auditing my own method, not by the method reporting a problem — which is the failure mode
@@ -67,14 +73,18 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | Foreground exhaustion | "additions are re-renders" | **"the foreground pool is exhausted; the background is not"** — the object is fixed pixel-for-pixel, the background has unbounded freedom | `EXP D1` |
 | "The generated pool" | one pool | **three** mutually non-identical pools; training reads the authors' pool, the old evidence embedded the local one | `EXP E0`, `EXP D2` |
 | "The HKU-IS foreground fraction" | one number | **set-dependent** — `raw_gt` 0.19132 vs `auth_gt` 0.18557 | `EXP D1` |
-| Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images (E0); and the target set's silhouette peaks at only **0.16** with seed-ARI 0.52–0.77 (B1) — the unit of allocation is soft | `EXP E0`, `EXP B1` |
+| Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images (E0); silhouette peaks at only 0.1465 / 0.1600 / 0.0568 across the three embedder spaces, and CLIP has no interior peak at all — the unit of allocation is soft in **every** space | `EXP E0`, `EXP B1` |
 | "ES predicts the wrong objective" | a binary verdict | an **effect size**: ES tracks pixel error ~2× as strongly as structural error (ρ 0.86 vs 0.43 per-cluster). The binary flips with k (ratio 0.4999 at k=75, 0.5825 at k=20), so the label is not k-stable and is not quoted | `EXP B1` |
 
 ## 5. Still outstanding
 
 Every §4 row of `REBUILD_PLAN.md` belonging to A1, A2, A3, B2, B3, C1, C2, C3 remains untested. The
 load-bearing one is **C1** (`d ≈ 0.10`), which never had a producing script in the old package; it now
-has its input ready — `rebuild/B1/out/b1_cluster_es.csv`, 75 clusters with per-cluster ES.
+has its input ready — `rebuild/B1/out/b1_cluster_es_dinoL518.csv`, 75 clusters with per-cluster ES,
+**with a mandated sensitivity re-run against `b1_cluster_es_dinoL224.csv` (50 clusters)**, because the
+two spaces differ by 0.10 in ρ(ES,1−Sα) at k=20 and C1 must not re-cluster. Both CSVs now carry
+`target_es`, and **C1 must allocate by `target_es`, not `test_es`** — completion II verified C1
+runnable in both spaces (cutouts 4447×1024, row-aligned to the raw pool).
 
 The old package's cross-run ρ(ES, MAE) = +0.893 ± 0.059 (n=5 runs) is **UNVERIFIED-DEFERRED**: it is a
 seed-variance claim, and retraining is deferred. B1 substitutes a cross-architecture axis instead.

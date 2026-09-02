@@ -215,3 +215,287 @@ been reported.** At k=20 on CAMO only **1–4** clusters clear the 15-image floo
   statement is that no k is strongly supported by the data, which is why everything is reported at two
   k values with the seed spread.
 - **A per-cluster ρ on CAMO.** Structurally unavailable at these k values, not merely uncertain.
+
+---
+---
+
+# B1 completion — the embedder sweep
+
+**Status: COMPLETE. 5 of 8 thresholds PASS; 3 FAIL, all three substantive.**
+
+Source: `results/REBUILD_LOG.txt`, the **third** `EXP B1` block. The two earlier blocks are preserved
+and nothing above this line is overwritten — the committed dinoL518 values were **re-derived from
+scratch** and reproduce (`dinoL518_reproduces_committed_block = True`, 7/7 within 5e-3).
+
+Script: `rebuild/B1/b1_embedder_sweep.py`, which **extends** `b1_es_error_correlation.py` rather than
+replacing it. Reuses E0's cached embeddings; nothing re-embedded. **Trains nothing.**
+
+## C1. What the committed block actually covered
+
+Established from the code, not assumed:
+
+| Component | Embedder-dependent? |
+|---|---|
+| `load_target` → the clustered array | **yes** — `dinoL518` |
+| `step_cluster` → k sweep, silhouette, seed-/bootstrap-ARI | **yes** |
+| `assign_clusters` → endpoint→cluster assignment | **yes** |
+| per-cluster ρ | **yes** |
+| cross-architecture per-cluster ρ | **yes** |
+| `emit_cluster_es` → the C1 artifact | **yes** |
+| `score_arch` → per-image ES, MAE, Sα, IoU | **no** — contains zero references to any embedding cache |
+| **per-image ρ** | **no** — `spearman([r['es']], [r[err]])` over the score CSV alone |
+
+**Per-image ρ needs no sweep and was not recomputed as one.** Instead it is recomputed inside every
+embedder loop and asserted bit-identical, so the independence claim is tested rather than stated:
+
+| Split | ρ(ES,MAE) | ρ(ES,1−Sα) | ρ(ES,1−IoU) |
+|---|---|---|---|
+| COD10K-test | **+0.7514** | **+0.3114** | **+0.2015** |
+| CAMO-val | **+0.6604** | **+0.3888** | **+0.2495** |
+
+`perimage_rho_identical_across_embedders = True`. The MAE value is unchanged from the committed block
+and still matches the old package's +0.751 to four decimals.
+
+## C2. Two latent defects in the committed script, fixed before sweeping
+
+`fit_kmeans` cached on `(k, seed)` and `endpoint_emb` on `split` alone, while `step_correlate` and
+`emit_cluster_es` called `assign_clusters` **without** a tag. With one embedder those are inert. With
+three, the second and third spaces would have silently received **dinoL518's k-means fits and
+dinoL518's endpoint embeddings** — and every "embedder-robust" conclusion here would have been an
+artifact of reading one cache three times. Cache keys now include the tag, the tag is threaded
+through, and defaults are unchanged, which is why the committed result still reproduces.
+
+## C3. Cluster structure in all three spaces
+
+| Embedder | principled k | silhouette peak | peak is | bootstrap ARI | seed ARI |
+|---|---|---|---|---|---|
+| dinoL224 | **50** | **0.1465** | interior maximum | 0.610 | 0.615 |
+| dinoL518 | **75** | **0.1600** | interior maximum | 0.579 | 0.616 |
+| clipL224 | **5** | **0.0568** | **AT THE GRID EDGE** | 0.953 | 0.983 |
+
+CLIP's silhouette curve falls **monotonically** — `k5=0.0568` down to `k150=0.0357` — so the criterion
+returns k=5 by hitting the grid boundary, not by finding a maximum. `THRESHOLD ... an interior
+maximum, not the grid edge -> FAIL`, recorded as a FAIL.
+
+Two consequences, neither smoothed away. CLIP's k*=5 sits **exactly on** the ≥5-cluster guard, where
+Spearman over 5 points takes only a few discrete values — which is why its ρ(MAE) is exactly
+**+1.0000** and its 1−Sα and 1−IoU are both exactly **+0.6000**, and why the ordering test fails there
+on a *tie*, not a reversal. And the honest cross-embedder comparison is therefore at a **common k**.
+**The guard was not relaxed to make this go away.**
+
+## C4. The comparison at a common k=20
+
+| Embedder | ρ(ES,MAE) | ρ(ES,1−Sα) | ρ(ES,1−IoU) | ratio 1−Sα/MAE |
+|---|---|---|---|---|
+| dinoL224 | **+0.8767** | **+0.6095** | **+0.5447** | **0.6952** |
+| dinoL518 | **+0.8699** | **+0.5067** | **+0.4060** | **0.5825** |
+| clipL224 | **+0.8933** | **+0.5102** | **+0.3948** | **0.5712** |
+
+`THRESHOLD at a COMMON k=20 the ordering MAE > 1-Sa > 1-IoU holds in every embedder space -> PASS`.
+
+At each space's own k*: dinoL224@k50 **+0.8731 / +0.4295 / +0.3202** (ratio **0.4919**), dinoL518@k75
+**+0.8553 / +0.4276 / +0.2983** (ratio **0.4999**), clipL224@k5 the degenerate case above.
+
+Across all embedder × k cells the ratio spans **min 0.4919 max 0.6952 spread 0.2033**, and
+`ratio_straddles_the_0.5_boundary = True`.
+
+## C5. How this changes our assertions
+
+### C5.1 The wrong-objective LABEL is now doubly unstateable — effect size is all that survives
+
+- **Before:** the committed block showed the 0.5 binary was **k**-unstable (0.4999 at k=75, 0.5825 at
+  k=20).
+- **Now:** it is also **embedder**-unstable. The ratio ranges 0.4919–0.6952 across three spaces and two
+  k values and straddles the boundary. `THRESHOLD ... the binary label is stateable -> FAIL`.
+- **Position:** the binary label is retired for good. What is robust is the **effect size and the
+  ordering**: ES tracks pixel error strongly (ρ 0.855–0.893 per-cluster, 0.7514 per-image) and
+  structural error **materially less well** (ρ 0.428–0.610 per-cluster, 0.3114 per-image). The ratio
+  sits between roughly **0.49 and 0.70** depending on space and k — i.e. structural correlation is
+  somewhere between half and seven-tenths of pixel correlation, never equal to it.
+- **This is a weaker claim than the committed block implied, and it is the one the data supports.**
+
+### C5.2 Weak cluster structure is embedder-robust, and worse in CLIP
+
+- **Measured:** silhouette peaks **0.1465 / 0.1600 / 0.0568**. All far below 0.25;
+  `THRESHOLD WEAK CLUSTER STRUCTURE is embedder-robust -> PASS`.
+- **Position:** Stage C's "allocate budget over clusters" premise is undermined **regardless of
+  embedder**, and CLIP is not a rescue — it is worse, with no interior peak at all. The unit of
+  allocation is soft in every space E0 declared.
+- **Caveat, stated:** CLIP's high ARI (0.953 bootstrap, 0.983 seed) is the small-k artifact the
+  committed block already identified — 5 huge clusters reproduce trivially. It is not evidence of
+  structure; its silhouette is the lowest of the three.
+
+### C5.3 The ordering is robust; its magnitude is not
+
+- **Measured:** MAE > 1−Sα > 1−IoU holds in **5 of 6** embedder × k cells and in **3 of 3** at the
+  common k=20. The one failure is CLIP at k=5, on a tie between two 5-point Spearman values.
+- **But the magnitudes move materially:** ρ(1−Sα) at k=20 is **+0.6095** in dinoL224 against **+0.5067**
+  in dinoL518 — a 0.10 swing from the embedding choice alone, larger than the seed sd (±0.04–0.07).
+- **Position:** report the ordering as robust and the ratio as a **range**, never a point value. Any
+  document quoting a single ratio is quoting an embedder-and-k-specific number.
+
+---
+
+## C6. Which embedder C1 should inherit — recommendation
+
+**Recommendation: `dinoL518`, with a mandatory sensitivity re-run in `dinoL224`.**
+
+Three reasons that do not depend on the outcome:
+
+1. It is the space the committed `EXP B1` block used, so C1 inherits a clustering whose ES-vs-error
+   behaviour is already measured, logged and reproduced.
+2. It is the only space in which the cross-architecture axis was run.
+3. It has the **highest silhouette** of the three (0.1600) and a genuine **interior** peak — the least
+   bad option on the only criterion that discriminates between them.
+
+**Why the sensitivity run is mandatory rather than optional.** `clipL224` is disqualified: no interior
+peak, and its k* of 5 lands on the degeneracy guard. But `dinoL224` is a legitimate alternative — an
+interior peak at k=50, silhouette 0.1465, and a ratio of 0.4919 versus dinoL518's 0.4999. Those two
+are close, yet they sit on opposite sides of nothing in particular, and at k=20 they differ by 0.10 in
+ρ(1−Sα). Since C1 is the decisive experiment and must not re-cluster, that choice propagates. All
+three per-embedder CSVs are emitted, so the re-run costs one flag.
+
+| Artifact | k | rows |
+|---|---|---|
+| `out/b1_cluster_es_dinoL518.csv` | 75 | **75** ← C1 reads this |
+| `out/b1_cluster_es_dinoL224.csv` | 50 | **50** ← sensitivity re-run |
+| `out/b1_cluster_es_clipL224.csv` | 5 | **5** — disqualified, kept for completeness |
+
+## C7. What the completion does not establish
+
+- **That any of the three embedders is the *right* space.** All three have low silhouette; the choice
+  is between weakly-structured options, and it is made on stated grounds, not on a strong signal.
+- **The cross-architecture axis in the other two spaces.** It was run only in dinoL518. Whether
+  `S2C_SO`'s inversion is embedder-specific is **not measured**.
+- **Anything about CAMO at the cluster level**, in any space. 1–4 clusters clear the floor everywhere;
+  it stays per-image only.
+- **A k grid finer than the 9 values swept.** CLIP's true optimum may be below 5; the grid does not
+  reach there, which is exactly why its "peak" is reported as a grid-edge artifact.
+
+---
+---
+
+# B1 completion II — the allocation signal, and C1's readiness
+
+**Status: COMPLETE. 4 of 6 thresholds PASS; 2 FAIL. One of those FAILs overturns the direction of
+B1's headline claim.**
+
+Source: `results/REBUILD_LOG.txt`, the **fourth** `EXP B1` block. Script:
+`rebuild/B1/b1_allocation_signal.py`, extending both earlier B1 scripts. Nothing above is overwritten.
+**Trains nothing** — inference only.
+
+## D1. The committed blocks measured the wrong ES
+
+`CLS.py:81-82` builds its loader on `target_root + 'Image/'` with **`gt_root=None`**, and `CLS.py:105`
+computes ES there. ES is student-vs-teacher disagreement, so it requires **no ground truth** and *is*
+available on the unlabeled target set at allocation time.
+
+Both committed blocks correlated **endpoint** ES against **endpoint** error — both measured on
+COD10K-test. That is a real result, but it is not the quantity Stage C allocates by. The cluster CSV
+C1 consumes carried `n_target` as a *count* and **no `target_es` at all**. A C1 built on it would have
+allocated by a test-set signal the pipeline does not possess.
+
+| Metric | Value |
+|---|---|
+| Target images scored, no GT used | **4040** |
+| Target ES (SINet/S2C) | **0.0378** ± **0.0315**, range [**0.0043**, **0.3571**] |
+| Endpoint ES, for scale | **0.0439** ± **0.0406** |
+
+## D2. The faithful correlation: target ES → endpoint error
+
+Both aggregated over the **same** cluster partition, so the comparison is not confounded:
+
+| Space | k | clusters | ρ(MAE) | ρ(1−Sα) | ρ(1−IoU) | ratio |
+|---|---|---|---|---|---|---|
+| dinoL224 | 50 | 42 | **+0.6595** | **+0.3407** | **+0.2510** | **0.5166** |
+| dinoL518 | 75 | 50 | **+0.6284** | **+0.3433** | **+0.2613** | **0.5463** |
+| clipL224 | 5 | 5 | **+0.9000** | **+0.3000** | **+0.3000** | 0.3333 (degenerate) |
+
+Endpoint ES on the **identical** clusters, for direct comparison:
+
+| Space | ρ(MAE) | ρ(1−Sα) | ρ(1−IoU) |
+|---|---|---|---|
+| dinoL224 | **+0.8695** | **+0.3916** | **+0.2918** |
+| dinoL518 | **+0.8754** | **+0.3810** | **+0.2304** |
+
+**The real allocation signal is materially weaker**: `rho_drop_endpointES_to_targetES_MAE` =
+**+0.2100** (dinoL224) and **+0.2470** (dinoL518). And the two ES signals only moderately agree per
+cluster — ρ(target ES, endpoint ES) = **0.695** and **0.5732**. They are genuinely different
+quantities, not one thing measured twice.
+
+## D3. This overturns the direction of the headline claim
+
+The declared boundary was "wrong objective iff ρ(1−Sα) < 0.5 × ρ(MAE)". The endpoint-ES row
+below is quoted from the **third** `EXP B1` block (§C4); the target-ES row is from the fourth.
+
+| Signal | ratio, dinoL224 | ratio, dinoL518 | verdict |
+|---|---|---|---|
+| endpoint ES (committed, *block 3*) | 0.4919 @k* / **0.6952** @k20 | **0.4999** @k* / **0.5825** @k20 | straddles 0.5 — not stateable |
+| **target ES (real signal)** | **0.5166** | **0.5463** | **both ≥ 0.5 — consistently NOT wrong-objective** |
+
+I declared a threshold saying the boundary would *still* be unstateable on the real signal. **It
+FAILED — because the boundary is stateable on the real signal, and it lands on the opposite side.**
+That FAIL is informative, not a defect: my expectation was wrong.
+
+**Revised position, and it is a real reversal of direction:**
+
+- "ES optimises the wrong objective" is **not supported** by the signal Stage C would actually use. On
+  target ES the structural correlation is **0.52–0.55** of the pixel correlation in both candidate
+  spaces — above the declared boundary, consistently.
+- What *is* supported, and is the finding that should carry forward: **the real allocation signal is
+  only a moderate predictor of endpoint error at all** — ρ ≈ **0.63–0.66** for MAE and ≈ **0.34** for
+  1−Sα, against the ρ ≈ 0.87 the committed blocks reported for MAE. The committed figure overstated
+  the usable signal by about **0.21–0.25** of ρ because it was measured on the endpoint.
+- So B1's contribution to the verdict changes shape: not *"ES points at the wrong error type"* but
+  *"the allocation signal available at allocation time is substantially weaker than it appears when
+  measured on the test set, and it ranks structural error at roughly a third"*.
+
+The ordering MAE > 1−Sα > 1−IoU **does** hold on the real signal in both C1-candidate spaces (declared
+threshold PASS). The global ordering threshold FAILs only on clipL224's k=5 tie
+(1−Sα = 1−IoU = exactly +0.3000), the same 5-point quantisation as before — recorded, and the guard
+was again not relaxed.
+
+## D4. Cross-architecture gap closed
+
+`B1_RESULTS.md` §C7 recorded that the cross-architecture axis had run only in dinoL518 and that
+whether `S2C_SO`'s inversion was embedder-specific was **not measured**. It is now:
+
+| Space | ordering holds | failures |
+|---|---|---|
+| dinoL224 (k=50) | **4/5** | `SINet/S2C_SO` |
+| dinoL518 (k=75) | **4/5** | `SINet/S2C_SO` |
+| clipL224 (k=5) | **2/5** | `SINet-v2/S2C`, `SINet/S2C`, `SINet/S2C_SO` |
+
+`S2C_SO_inversion_by_embedder = dinoL224=True dinoL518=True clipL224=True`. **The source-only
+inversion is not embedder-specific** — it reproduces in all three spaces, consistent with the
+mechanistic explanation (source-only runs no consistency loss and never forwards a target image, so
+its "teacher" is not an EMA of a student that learned from one).
+
+CLIP's 2/5 is the k=5 quantisation again, not an architecture finding.
+
+## D5. C1 readiness
+
+| Space | ready | k | clusters (with `target_es`) | cutouts |
+|---|---|---|---|---|
+| dinoL518 | **True** | 75 | 75 / 75 | 4447×1024, aligned to raw pool |
+| dinoL224 | **True** | 50 | 50 / 50 | 4447×1024, aligned |
+| clipL224 | **True** | 5 | 5 / 5 | 4447×1024, aligned |
+
+All three cluster CSVs now carry `target_es` and `n_target_scored` beside `n_target`. The cutout cache
+(**R2**, grey-128 — the representation C1 selects over) is verified row-aligned to the raw foreground
+pool in every space.
+
+**C1 must allocate by `target_es`, not `test_es`.** Both columns are present; using `test_es` would
+allocate by a signal the pipeline does not have at allocation time.
+
+## D6. What this completion does not establish
+
+- **Whether allocating by target ES helps.** D2 measures that the signal is moderately predictive.
+  Whether acting on it changes accuracy is C1's and C3's question.
+- **Seed robustness of target ES.** One final checkpoint pair per architecture; retraining deferred,
+  so seed variance stays `UNVERIFIED-DEFERRED`.
+- **A target-side error.** The target set has no GT by construction, so "does ES predict error *on the
+  target*" is unanswerable here. The faithful correlation bridges target-side signal to endpoint-side
+  error, which is the closest measurable proxy and is not the same thing.
+- **Anything at cluster level for CAMO**, in any space, or for clipL224 beyond flagging its degeneracy.
+- **A finer k grid.** CLIP's optimum may sit below k=5; the grid does not reach there.

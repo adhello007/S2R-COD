@@ -425,14 +425,19 @@ def pick_k(rows):
 _KM_CACHE = {}
 
 
-def fit_kmeans(X, k, seed):
-    """One k-means fit per (k, seed), reused across splits and architectures.
+def fit_kmeans(X, k, seed, tag='dinoL518'):
+    """One k-means fit per (tag, k, seed), reused across splits and architectures.
 
     Refitting per call made s4 dominated by redundant clustering: 2 k x 10 seeds
     x 2 splits x 5 architectures is 200 fits of the same 40 partitions.
+
+    The key MUST include the embedder tag. Keyed on (k, seed) alone -- as this
+    was until the embedder sweep -- a second embedder space with the same
+    (k, seed) silently receives the FIRST space's fit. Latent while only one
+    embedder was used; corrupting the moment a second one is.
     """
     from sklearn.cluster import KMeans
-    key = (k, seed)
+    key = (tag, k, seed)
     if key not in _KM_CACHE:
         _KM_CACHE[key] = KMeans(k, n_init=10, random_state=seed).fit(X)
     return _KM_CACHE[key]
@@ -442,17 +447,20 @@ _E_CACHE = {}
 
 
 def endpoint_emb(split, tag='dinoL518'):
-    if split not in _E_CACHE:
+    """Endpoint embeddings, cached per (tag, split) -- see fit_kmeans on why the
+    tag has to be in the key."""
+    key = (tag, split)
+    if key not in _E_CACHE:
         ecls = np.load(os.path.join(E0_CACHE, '%s_%s_cls.npy' % (tag, split)))
         enames = json.load(open(os.path.join(E0_CACHE,
                                              '%s_names.json' % tag)))[split]
-        _E_CACHE[split] = (C.l2(ecls.astype(np.float64)), enames)
-    return _E_CACHE[split]
+        _E_CACHE[key] = (C.l2(ecls.astype(np.float64)), enames)
+    return _E_CACHE[key]
 
 
 def assign_clusters(X, names, k, seed, split, tag='dinoL518'):
     """k-means on the target, then assign endpoint images to those centroids."""
-    km = fit_kmeans(X, k, seed)
+    km = fit_kmeans(X, k, seed, tag)
     cent = C.l2(km.cluster_centers_)
     E, enames = endpoint_emb(split, tag)
     lab = (E @ cent.T).argmax(1)
@@ -484,7 +492,7 @@ def spearman_perm(a, b, n_perm=N_PERM, seed=0):
 
 
 def step_correlate(X, names, k, arch, split, seeds=range(N_SEEDS),
-                   min_n=MIN_CLUSTER_N):
+                   min_n=MIN_CLUSTER_N, tag='dinoL518'):
     rows = load_scores(arch, split)
     if rows is None:
         return None
@@ -499,7 +507,7 @@ def step_correlate(X, names, k, arch, split, seeds=range(N_SEEDS),
     out['per_image'] = per_image
     # ---- per-cluster, across k-means seeds ----
     for s in seeds:
-        amap, _ = assign_clusters(X, names, k, s, split)
+        amap, _ = assign_clusters(X, names, k, s, split, tag)
         buckets = {}
         for nm, r in by_name.items():
             c = amap.get(nm)
@@ -533,14 +541,15 @@ def step_correlate(X, names, k, arch, split, seeds=range(N_SEEDS),
     return out
 
 
-def emit_cluster_es(X, names, k, seed, arch='SINet/S2C'):
+def emit_cluster_es(X, names, k, seed, arch='SINet/S2C', tag='dinoL518',
+                    suffix=''):
     """The first-class deliverable C1 and B2 consume.
 
     Per-cluster ES over the TARGET set -- the quantity a budget would be
     allocated by -- plus, for reference, the endpoint aggregates measured on
     COD10K. Written so C1 reads it rather than recomputing a clustering.
     """
-    km = fit_kmeans(X, k, seed)
+    km = fit_kmeans(X, k, seed, tag)
     cent = C.l2(km.cluster_centers_)
     lab = km.labels_
     tgt_counts = np.bincount(lab, minlength=k)
@@ -550,7 +559,7 @@ def emit_cluster_es(X, names, k, seed, arch='SINet/S2C'):
         rows = load_scores(arch, split)
         if rows is None:
             continue
-        amap, _ = assign_clusters(X, names, k, seed, split)
+        amap, _ = assign_clusters(X, names, k, seed, split, tag)
         b = {}
         for r in rows:
             c = amap.get(r['name'])
@@ -572,14 +581,14 @@ def emit_cluster_es(X, names, k, seed, arch='SINet/S2C'):
                 rec['%s_%s' % (split, fld)] = (
                     round(float(np.mean([r[key] for r in v])), 6) if v else '')
         recs.append(rec)
-    p = os.path.join(OUT, 'b1_cluster_es.csv')
+    p = os.path.join(OUT, 'b1_cluster_es%s.csv' % suffix)
     with open(p, 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(recs[0].keys()))
         w.writeheader(); w.writerows(recs)
-    np.save(os.path.join(OUT, 'b1_centroids_k%d_seed%d.npy' % (k, seed)),
+    np.save(os.path.join(OUT, 'b1_centroids_%s_k%d_seed%d.npy' % (tag, k, seed)),
             km.cluster_centers_)
-    C.save_json(os.path.join(OUT, 'b1_cluster_assignment.json'),
-                dict(k=k, seed=seed, embedder='dinoL518', arch_for_endpoint=arch,
+    C.save_json(os.path.join(OUT, 'b1_cluster_assignment%s.json' % suffix),
+                dict(k=k, seed=seed, embedder=tag, arch_for_endpoint=arch,
                      target_names=names, target_labels=lab.tolist(),
                      note=('ES per cluster is the ENDPOINT-measured mean for the '
                            'images assigned to that cluster; n_target is how many '
@@ -751,7 +760,7 @@ def main():
         results = {}
         for k in sorted({k_star, 20}):
             for split in SPLITS:
-                r = step_correlate(X, tnames, k, 'SINet/S2C', split)
+                r = step_correlate(X, tnames, k, 'SINet/S2C', split, tag=args.embedder)
                 if r is None:
                     continue
                 results['SINet/S2C|%s|k%d' % (split, k)] = r
@@ -826,7 +835,7 @@ def main():
         cross = {}
         for arch in archs:
             r = step_correlate(X, tnames, k_star, arch, 'test',
-                               seeds=range(3))
+                               seeds=range(3), tag=args.embedder)
             if r is None:
                 continue
             cross[arch] = {e: r['percluster_%s' % e] for e in ERRORS}
@@ -855,7 +864,7 @@ def main():
 
     # ---- the deliverable C1 and B2 consume ----
     if k_star is not None and load_scores('SINet/S2C', 'test'):
-        p, recs = emit_cluster_es(X, tnames, k_star, 0)
+        p, recs = emit_cluster_es(X, tnames, k_star, 0, tag=args.embedder)
         populated = sum(1 for r in recs if r.get('n_test') not in ('', 0))
         metrics.append(('cluster_ES_csv_rows', len(recs),
                         '%d clusters with >=1 COD10K image; C1/B2 read this file'
