@@ -1,0 +1,62 @@
+{
+  "dinoL224|R2_cut": {
+    "band_point": "REOPENS",
+    "ci": [
+      0.770015,
+      1.642213
+    ],
+    "ci_straddles": false,
+    "clusters_funded": 50,
+    "d_heldout": 1.232549,
+    "max_alloc_share": 0.072,
+    "order_sensitive": true,
+    "peak_B": 250,
+    "peak_alpha": 2.0,
+    "verdict": "REOPENS"
+  },
+  "dinoL224|R3_render": {
+    "band_point": "REOPENS",
+    "ci": [
+      0.795897,
+      1.390213
+    ],
+    "ci_straddles": false,
+    "clusters_funded": 25,
+    "d_heldout": 1.07954,
+    "max_alloc_share": 0.588,
+    "order_sensitive": true,
+    "peak_B": 250,
+    "peak_alpha": 0.5,
+    "verdict": "REOPENS"
+  },
+  "dinoL518|R2_cut": {
+    "band_point": "REOPENS",
+    "ci": [
+      0.762633,
+      1.495291
+    ],
+    "ci_straddles": false,
+    "clusters_funded": 4,
+    "d_heldout": 1.113459,
+    "max_alloc_share": 0.82,
+    "order_sensitive": false,
+    "peak_B": 250,
+    "peak_alpha": 0.2,
+    "verdict": "REOPENS"
+  },
+  "dinoL518|R3_render": {
+    "band_point": "REOPENS",
+    "ci": [
+      0.661173,
+      1.330095
+    ],
+    "ci_straddles": false,
+    "clusters_funded": 18,
+    "d_heldout": 1.002795,
+    "max_alloc_share": 0.508,
+    "order_sensitive": false,
+    "peak_B": 250,
+    "peak_alpha": 0.5,
+    "verdict": "REOPENS"
+  }
+}

@@ -1050,3 +1050,150 @@ NOTES      WHY THIS BLOCK EXISTS. CLS.py:81-82 builds its loader on target_root 
            LIMITS. Target ES is computed from ONE final checkpoint pair per architecture; seed-level robustness stays UNVERIFIED-DEFERRED. The faithful correlation aggregates a target-side signal and an endpoint-side error over the same cluster partition, so it inherits the weak cluster structure already measured (silhouette 0.1465 / 0.1600 / 0.0568). Clusters needing at least 5 scored target images AND 15 endpoint images are used; the rest are dropped rather than allowed to contribute a thin mean.
 ================================================================================
 
+================================================================================
+2026-09-03T13:15:52+05:30 | commit 470e224 (dirty) | EXP C1
+CMD   LAKE-RED/.venv/bin/python rebuild/C1/c1_targeted_vs_random.py --tags dinoL518,dinoL224
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  selection in R2 (grey-128 cutout); d measured in R2 and R3 (render); allocation by target_es
+METRICS
+  preflight_gates_passed                 = 6/6    (signal, cluster_source, embedder, representation, leakage, freshness)
+  PEAK_dinoL518_R2_cut                   = d_heldout +1.1135  CI [+0.7626, +1.4953]  -> REOPENS    (at B=250 alpha=0.2, 4 clusters funded, max share 0.820)
+  PEAK_dinoL518_R3_render                = d_heldout +1.0028  CI [+0.6612, +1.3301]  -> REOPENS    (at B=250 alpha=0.5, 18 clusters funded, max share 0.508)
+  PEAK_dinoL224_R2_cut                   = d_heldout +1.2325  CI [+0.7700, +1.6422]  -> REOPENS    (at B=250 alpha=2, 50 clusters funded, max share 0.072)
+  PEAK_dinoL224_R3_render                = d_heldout +1.0795  CI [+0.7959, +1.3902]  -> REOPENS    (at B=250 alpha=0.5, 25 clusters funded, max share 0.588)
+  cells_measured                         = 264    (2 tags x B x alpha x 2 reprs)
+  cells_ci_straddles_band                = 118    (A1: interval spans two verdict bands)
+  cells_ORDER_SENSITIVE                  = 87    (A2: d_order_spread >= 0.05 across the 5 serving-order families (desc_nc, asc_nc, asc_index, desc_es, 10 shuffled), paired over 5 draws)
+  max_d_order_spread                     = 0.18002
+  norm_dmean_at_pool_ceiling             = 0    (B=4447: both arms are the entire pool, so this MUST be 0)
+  NULL_CALIBRATION_d_heldout_at_ceiling  = -0.3241 (sd 0.0166) over 44 cells    (what d_heldout returns when the true difference is KNOWN to be zero; negative => the held-out estimator is conservative)
+  NULL_CALIBRATION_d_insample_at_ceiling = +0.0000    (the in-sample estimator on the same known-zero case)
+  alpha_grid_dinoL518                    = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00903)
+  alpha_grid_dinoL224                    = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00988)
+  ceiling_vs_peak_dinoL224_R2_cut        = peak +1.2325    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL224_R3_render     = peak +1.0795    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R2_cut        = peak +1.1135    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R3_render     = peak +1.0028    (ceiling reference in c1_ceiling.csv)
+THRESHOLD  all six Phase-0 gates pass before any array is loaded -> PASS
+THRESHOLD  ||delta mean|| = 0 at the pool ceiling B=4447 (both arms are the entire pool) -> PASS
+THRESHOLD  the peak |d| exceeds the magnitude of the null calibration, i.e. the measured effect is larger than what the estimator returns on a known-zero difference -> PASS
+THRESHOLD  A1: the held-out CI at every peak cell lies entirely within ONE verdict band -> PASS
+THRESHOLD  A2: d_order_spread < 0.05 at every peak cell -> FAIL
+THRESHOLD  both degenerate ends of the temperature sweep were reached in every space -> PASS
+THRESHOLD  the two embedder spaces agree on the verdict band (else EMBEDDER-DEPENDENT) -> PASS
+OLD CLAIM  C1.1 Cohen's d targeted-vs-random = ~0.10  [no code, never computed] -> RE-MEASURED
+OLD CLAIM  C1.2 ||delta mean|| = 0.084-0.099  [no code] -> RE-MEASURED
+OLD CLAIM  C1.3 clusters funded / max alloc = 1-49 / 76-999  [no code] -> RE-MEASURED
+ARTIFACTS  rebuild/C1/out/c1_preflight.json, rebuild/C1/out/c1_cells.csv, rebuild/C1/out/c1_draws.csv, rebuild/C1/out/c1_order_sensitivity.csv, rebuild/C1/out/c1_intervals.csv, rebuild/C1/out/c1_ceiling.csv, rebuild/C1/out/c1_null_calibration.csv, rebuild/C1/out/c1_alpha_grid.json, rebuild/C1/out/c1_verdicts.json
+TRAINS     NO
+NOTES      LIMITATION, logged regardless of outcome. Cohen's d is a MEAN-SHIFT measure along a single direction. Two sets can share a mean and differ substantially in variance, in higher moments, or in which regions of the space they cover. A small d therefore establishes that the targeted and random arms have nearly the same CENTRE; it does NOT establish that they are the same SET. Variance and coverage are unmeasured unless the ambiguity follow-up was triggered, and are the one route by which a true effect could exceed what a mean-shift predicts.
+           NULL CALIBRATION. At B = 4447 both arms are the entire pool, so the true difference is exactly zero. ||delta mean|| duly vanishes (asserted). d_heldout does NOT: with no real difference the fitted direction is split noise and the disjoint evaluation halves are anti-correlated with it, so the held-out d is negative. This was caught by the ceiling assertion and is reported as a CALIBRATION rather than suppressed -- it establishes the estimator behaves conservatively under a known null, and gives every measured d a reference to be read against.
+           The allocation signal is target_es -- ES measured on the UNLABELED target set exactly as CLS.py:81-105 computes it, GT-free and available at allocation time. Gate 1 asserts C1 never reads the endpoint column. B1 completion II measured that signal as only a MODERATE predictor of endpoint error (rho +0.6595 dinoL224 / +0.6284 dinoL518), not the +0.87 the endpoint-ES figure suggested.
+           The partition C1 allocates over is WEAKLY SEPARATED: B1 measured silhouette peaks 0.1465 / 0.1600 / 0.0568 and seed-ARI 0.52-0.77. The unit of allocation is soft, and C1 inherits that.
+           Selection is by R2, the grey-128 cutout, because that is what a real pipeline has at selection time -- the foreground exists, the render does not. d is MEASURED in both R2 and R3. Selecting by R3 would require renders before selection and is out of scope, stated rather than silently omitted.
+           C2 HAS NOT BEEN RUN (0 EXP C2 blocks). The pool-ceiling check above is against C2's ANALYTIC design in REBUILD_PLAN.md 3-C2, not against a measurement, and |Ds| in {6824, 7824, 8824} remains UNVERIFIED because the iteration-2 pools were deleted. Only the |Ds|-free part of the predicted shape is compared. If C2 is later run and disagrees, that is a finding about the two designs.
+           Seed-level robustness of the ES signal is UNVERIFIED-DEFERRED (retraining deferred). clipL224 is DISQUALIFIED as a C1 space: no interior silhouette peak, k*=5 on the degeneracy guard.
+================================================================================
+
+================================================================================
+2026-09-03T14:01:49+05:30 | commit 470e224 (dirty) | EXP C1
+CMD   LAKE-RED/.venv/bin/python rebuild/C1/c1_targeted_vs_random.py --tags dinoL518,dinoL224
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  selection in R2 (grey-128 cutout); d measured in R2 and R3 (render); allocation by target_es
+METRICS
+  preflight_gates_passed                 = 6/6    (signal, cluster_source, embedder, representation, leakage, freshness)
+  PEAK_dinoL518_R2_cut                   = d_heldout +1.1135  CI [+0.7626, +1.4953]  -> REOPENS    (at B=250 alpha=0.2, 4 clusters funded, max share 0.820)
+  PEAK_dinoL518_R3_render                = d_heldout +1.0028  CI [+0.6612, +1.3301]  -> REOPENS    (at B=250 alpha=0.5, 18 clusters funded, max share 0.508)
+  PEAK_dinoL224_R2_cut                   = d_heldout +1.2325  CI [+0.7700, +1.6422]  -> REOPENS    (at B=250 alpha=2, 50 clusters funded, max share 0.072)
+  PEAK_dinoL224_R3_render                = d_heldout +1.0795  CI [+0.7959, +1.3902]  -> REOPENS    (at B=250 alpha=0.5, 25 clusters funded, max share 0.588)
+  cells_measured                         = 264    (2 tags x B x alpha x 2 reprs)
+  cells_ci_straddles_band                = 118    (A1: interval spans two verdict bands)
+  cells_ORDER_SENSITIVE                  = 87    (A2: d_order_spread >= 0.05 across the 5 serving-order families (desc_nc, asc_nc, asc_index, desc_es, 10 shuffled), paired over 5 draws)
+  max_d_order_spread                     = 0.18002
+  norm_dmean_at_pool_ceiling             = 0    (B=4447: both arms are the entire pool, so this MUST be 0)
+  NULL_CALIBRATION_d_heldout_at_ceiling  = -0.3241 (sd 0.0166) over 44 cells    (what d_heldout returns when the true difference is KNOWN to be zero; negative => the held-out estimator is conservative)
+  NULL_CALIBRATION_d_insample_at_ceiling = +0.0000    (the in-sample estimator on the same known-zero case)
+  alpha_grid_dinoL518                    = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00903)
+  alpha_grid_dinoL224                    = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00988)
+  ceiling_vs_peak_dinoL224_R2_cut        = peak +1.2325    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL224_R3_render     = peak +1.0795    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R2_cut        = peak +1.1135    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R3_render     = peak +1.0028    (ceiling reference in c1_ceiling.csv)
+  C2_predicted_peak_B                    = 2000    (ANALYTIC design in REBUILD_PLAN.md 3-C2; C2 is UNRUN)
+  C2_measured_argmax_B                   = dinoL224_R2_cut=250 dinoL224_R3_render=250 dinoL518_R2_cut=250 dinoL518_R3_render=250
+  C2_SHAPE_DIVERGENCE                    = True    (argmax_B outside [1000, 2000, 3000] in: dinoL224|R2_cut, dinoL224|R3_render, dinoL518|R2_cut, dinoL518|R3_render)
+THRESHOLD  all six Phase-0 gates pass before any array is loaded -> PASS
+THRESHOLD  ||delta mean|| = 0 at the pool ceiling B=4447 (both arms are the entire pool) -> PASS
+THRESHOLD  the peak |d| exceeds the magnitude of the null calibration, i.e. the measured effect is larger than what the estimator returns on a known-zero difference -> PASS
+THRESHOLD  A1: the held-out CI at every peak cell lies entirely within ONE verdict band -> PASS
+THRESHOLD  A2: d_order_spread < 0.05 at every peak cell -> FAIL
+THRESHOLD  both degenerate ends of the temperature sweep were reached in every space -> PASS
+THRESHOLD  the two embedder spaces agree on the verdict band (else EMBEDDER-DEPENDENT) -> PASS
+OLD CLAIM  C1.1 Cohen's d targeted-vs-random = ~0.10  [no code, never computed] -> RE-MEASURED
+OLD CLAIM  C1.2 ||delta mean|| = 0.084-0.099  [no code] -> RE-MEASURED
+OLD CLAIM  C1.3 clusters funded / max alloc = 1-49 / 76-999  [no code] -> RE-MEASURED
+ARTIFACTS  rebuild/C1/out/c1_preflight.json, rebuild/C1/out/c1_cells.csv, rebuild/C1/out/c1_draws.csv, rebuild/C1/out/c1_order_sensitivity.csv, rebuild/C1/out/c1_intervals.csv, rebuild/C1/out/c1_ceiling.csv, rebuild/C1/out/c1_null_calibration.csv, rebuild/C1/out/c1_alpha_grid.json, rebuild/C1/out/c1_verdicts.json
+TRAINS     NO
+NOTES      C2 SHAPE DIVERGENCE, and a correction to this experiment's own plan. The plan committed to flagging a divergence if argmax_B(d) fell outside {1000, 2000, 3000}, against C2's analytic pool-shift curve which peaks near B=2000. It does: d is MONOTONE DECREASING in B, with argmax at the smallest budget. On reflection that divergence is EXPECTED and the plan's cross-check was imprecise, because the two curves measure different things. C2's pool-shift is how much the TRAINING POOL composition changes, which is zero when nothing is added and zero again when both arms add everything, hence concave. C1's d is how far apart the two SELECTED SETS are, which is largest when the budget is small enough for targeting to stay concentrated and falls to zero as both arms converge on the whole pool. Comparing their shapes was a category error in the plan; it is recorded here rather than quietly dropped, and it is NOT evidence of a contradiction between experiments.
+           LIMITATION, logged regardless of outcome. Cohen's d is a MEAN-SHIFT measure along a single direction. Two sets can share a mean and differ substantially in variance, in higher moments, or in which regions of the space they cover. A small d therefore establishes that the targeted and random arms have nearly the same CENTRE; it does NOT establish that they are the same SET. Variance and coverage are unmeasured unless the ambiguity follow-up was triggered, and are the one route by which a true effect could exceed what a mean-shift predicts.
+           NULL CALIBRATION. At B = 4447 both arms are the entire pool, so the true difference is exactly zero. ||delta mean|| duly vanishes (asserted). d_heldout does NOT: with no real difference the fitted direction is split noise and the disjoint evaluation halves are anti-correlated with it, so the held-out d is negative. This was caught by the ceiling assertion and is reported as a CALIBRATION rather than suppressed -- it establishes the estimator behaves conservatively under a known null, and gives every measured d a reference to be read against.
+           The allocation signal is target_es -- ES measured on the UNLABELED target set exactly as CLS.py:81-105 computes it, GT-free and available at allocation time. Gate 1 asserts C1 never reads the endpoint column. B1 completion II measured that signal as only a MODERATE predictor of endpoint error (rho +0.6595 dinoL224 / +0.6284 dinoL518), not the +0.87 the endpoint-ES figure suggested.
+           The partition C1 allocates over is WEAKLY SEPARATED: B1 measured silhouette peaks 0.1465 / 0.1600 / 0.0568 and seed-ARI 0.52-0.77. The unit of allocation is soft, and C1 inherits that.
+           Selection is by R2, the grey-128 cutout, because that is what a real pipeline has at selection time -- the foreground exists, the render does not. d is MEASURED in both R2 and R3. Selecting by R3 would require renders before selection and is out of scope, stated rather than silently omitted.
+           C2 HAS NOT BEEN RUN (0 EXP C2 blocks). The pool-ceiling check above is against C2's ANALYTIC design in REBUILD_PLAN.md 3-C2, not against a measurement, and |Ds| in {6824, 7824, 8824} remains UNVERIFIED because the iteration-2 pools were deleted. Only the |Ds|-free part of the predicted shape is compared. If C2 is later run and disagrees, that is a finding about the two designs.
+           Seed-level robustness of the ES signal is UNVERIFIED-DEFERRED (retraining deferred). clipL224 is DISQUALIFIED as a C1 space: no interior silhouette peak, k*=5 on the degeneracy guard.
+================================================================================
+
+================================================================================
+2026-09-03T14:21:50+05:30 | commit 470e224 (dirty) | EXP C1
+CMD   LAKE-RED/.venv/bin/python rebuild/C1/c1_targeted_vs_random.py --tags dinoL518,dinoL224
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  selection in R2 (grey-128 cutout); d measured in R2 and R3 (render); allocation by target_es
+METRICS
+  preflight_gates_passed                   = 6/6    (signal, cluster_source, embedder, representation, leakage, freshness)
+  PEAK_dinoL518_R2_cut                     = d_heldout +1.1135  CI [+0.7626, +1.4953]  -> REOPENS    (at B=250 alpha=0.2, 4 clusters funded, max share 0.820)
+  PEAK_dinoL518_R3_render                  = d_heldout +1.0028  CI [+0.6612, +1.3301]  -> REOPENS    (at B=250 alpha=0.5, 18 clusters funded, max share 0.508)
+  PEAK_dinoL224_R2_cut                     = d_heldout +1.2325  CI [+0.7700, +1.6422]  -> REOPENS    (at B=250 alpha=2, 50 clusters funded, max share 0.072)
+  PEAK_dinoL224_R3_render                  = d_heldout +1.0795  CI [+0.7959, +1.3902]  -> REOPENS    (at B=250 alpha=0.5, 25 clusters funded, max share 0.588)
+  cells_measured                           = 264    (2 tags x B x alpha x 2 reprs)
+  cells_ci_straddles_band                  = 118    (A1: interval spans two verdict bands)
+  cells_ORDER_SENSITIVE                    = 87    (A2: d_order_spread >= 0.05 across the 5 serving-order families (desc_nc, asc_nc, asc_index, desc_es, 10 shuffled), paired over 5 draws)
+  max_d_order_spread                       = 0.18002
+  norm_dmean_at_pool_ceiling               = 0    (B=4447: both arms are the entire pool, so this MUST be 0)
+  NULL_CALIBRATION_d_heldout_at_ceiling    = -0.3241 (sd 0.0166) over 44 cells    (what d_heldout returns when the true difference is KNOWN to be zero; negative => the held-out estimator is conservative)
+  NULL_CALIBRATION_d_insample_at_ceiling   = +0.0000    (the in-sample estimator on the same known-zero case)
+  alpha_grid_dinoL518                      = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00903)
+  alpha_grid_dinoL224                      = [0.02 .. 40], concentrated=True uniform=True    (max p at min alpha 1.0000; TV at max alpha 0.00988)
+  ceiling_vs_peak_dinoL224_R2_cut          = peak +1.2325    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL224_R3_render       = peak +1.0795    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R2_cut          = peak +1.1135    (ceiling reference in c1_ceiling.csv)
+  ceiling_vs_peak_dinoL518_R3_render       = peak +1.0028    (ceiling reference in c1_ceiling.csv)
+  d_at_old_budget_B1000_dinoL518_R2_cut    = d_heldout +0.7973  CI [+0.6156, +0.9675]  -> REOPENS    (alpha=0.5, 40 clusters funded -- the budget the OLD package proposed)
+  d_at_old_budget_B1000_dinoL518_R3_render = d_heldout +0.6547  CI [+0.4615, +0.8325]  -> REOPENS    (alpha=0.2, 4 clusters funded -- the budget the OLD package proposed)
+  d_at_old_budget_B1000_dinoL224_R2_cut    = d_heldout +0.8298  CI [+0.6594, +1.0176]  -> REOPENS    (alpha=0.5, 39 clusters funded -- the budget the OLD package proposed)
+  d_at_old_budget_B1000_dinoL224_R3_render = d_heldout +0.6947  CI [+0.5134, +0.8852]  -> REOPENS    (alpha=0.5, 39 clusters funded -- the budget the OLD package proposed)
+  C2_predicted_peak_B                      = 2000    (ANALYTIC design in REBUILD_PLAN.md 3-C2; C2 is UNRUN)
+  C2_measured_argmax_B                     = dinoL224_R2_cut=250 dinoL224_R3_render=250 dinoL518_R2_cut=250 dinoL518_R3_render=250
+  C2_SHAPE_DIVERGENCE                      = True    (argmax_B outside [1000, 2000, 3000] in: dinoL224|R2_cut, dinoL224|R3_render, dinoL518|R2_cut, dinoL518|R3_render)
+THRESHOLD  all six Phase-0 gates pass before any array is loaded -> PASS
+THRESHOLD  ||delta mean|| = 0 at the pool ceiling B=4447 (both arms are the entire pool) -> PASS
+THRESHOLD  the peak |d| exceeds the magnitude of the null calibration, i.e. the measured effect is larger than what the estimator returns on a known-zero difference -> PASS
+THRESHOLD  A1: the held-out CI at every peak cell lies entirely within ONE verdict band -> PASS
+THRESHOLD  A2: d_order_spread < 0.05 at every peak cell -> FAIL
+THRESHOLD  both degenerate ends of the temperature sweep were reached in every space -> PASS
+THRESHOLD  the two embedder spaces agree on the verdict band (else EMBEDDER-DEPENDENT) -> PASS
+OLD CLAIM  C1.1 Cohen's d targeted-vs-random = ~0.10  [no code, never computed] -> RE-MEASURED
+OLD CLAIM  C1.2 ||delta mean|| = 0.084-0.099  [no code] -> RE-MEASURED
+OLD CLAIM  C1.3 clusters funded / max alloc = 1-49 / 76-999  [no code] -> RE-MEASURED
+ARTIFACTS  rebuild/C1/out/c1_preflight.json, rebuild/C1/out/c1_cells.csv, rebuild/C1/out/c1_draws.csv, rebuild/C1/out/c1_order_sensitivity.csv, rebuild/C1/out/c1_intervals.csv, rebuild/C1/out/c1_ceiling.csv, rebuild/C1/out/c1_null_calibration.csv, rebuild/C1/out/c1_alpha_grid.json, rebuild/C1/out/c1_verdicts.json
+TRAINS     NO
+NOTES      C2 SHAPE DIVERGENCE, and a correction to this experiment's own plan. The plan committed to flagging a divergence if argmax_B(d) fell outside {1000, 2000, 3000}, against C2's analytic pool-shift curve which peaks near B=2000. It does: d is MONOTONE DECREASING in B, with argmax at the smallest budget. On reflection that divergence is EXPECTED and the plan's cross-check was imprecise, because the two curves measure different things. C2's pool-shift is how much the TRAINING POOL composition changes, which is zero when nothing is added and zero again when both arms add everything, hence concave. C1's d is how far apart the two SELECTED SETS are, which is largest when the budget is small enough for targeting to stay concentrated and falls to zero as both arms converge on the whole pool. Comparing their shapes was a category error in the plan; it is recorded here rather than quietly dropped, and it is NOT evidence of a contradiction between experiments.
+           LIMITATION, logged regardless of outcome. Cohen's d is a MEAN-SHIFT measure along a single direction. Two sets can share a mean and differ substantially in variance, in higher moments, or in which regions of the space they cover. A small d therefore establishes that the targeted and random arms have nearly the same CENTRE; it does NOT establish that they are the same SET. Variance and coverage are unmeasured unless the ambiguity follow-up was triggered, and are the one route by which a true effect could exceed what a mean-shift predicts.
+           NULL CALIBRATION. At B = 4447 both arms are the entire pool, so the true difference is exactly zero. ||delta mean|| duly vanishes (asserted). d_heldout does NOT: with no real difference the fitted direction is split noise and the disjoint evaluation halves are anti-correlated with it, so the held-out d is negative. This was caught by the ceiling assertion and is reported as a CALIBRATION rather than suppressed -- it establishes the estimator behaves conservatively under a known null, and gives every measured d a reference to be read against.
+           The allocation signal is target_es -- ES measured on the UNLABELED target set exactly as CLS.py:81-105 computes it, GT-free and available at allocation time. Gate 1 asserts C1 never reads the endpoint column. B1 completion II measured that signal as only a MODERATE predictor of endpoint error (rho +0.6595 dinoL224 / +0.6284 dinoL518), not the +0.87 the endpoint-ES figure suggested.
+           The partition C1 allocates over is WEAKLY SEPARATED: B1 measured silhouette peaks 0.1465 / 0.1600 / 0.0568 and seed-ARI 0.52-0.77. The unit of allocation is soft, and C1 inherits that.
+           Selection is by R2, the grey-128 cutout, because that is what a real pipeline has at selection time -- the foreground exists, the render does not. d is MEASURED in both R2 and R3. Selecting by R3 would require renders before selection and is out of scope, stated rather than silently omitted.
+           C2 HAS NOT BEEN RUN (0 EXP C2 blocks). The pool-ceiling check above is against C2's ANALYTIC design in REBUILD_PLAN.md 3-C2, not against a measurement, and |Ds| in {6824, 7824, 8824} remains UNVERIFIED because the iteration-2 pools were deleted. Only the |Ds|-free part of the predicted shape is compared. If C2 is later run and disagrees, that is a finding about the two designs.
+           Seed-level robustness of the ES signal is UNVERIFIED-DEFERRED (retraining deferred). clipL224 is DISQUALIFIED as a C1 space: no interior silhouette peak, k*=5 on the degeneracy guard.
+================================================================================
+

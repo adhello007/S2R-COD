@@ -1,0 +1,18 @@
+{
+  "dinoL224": {
+    "alpha_max": 40.0,
+    "alpha_min": 0.02,
+    "max_p_at_min_alpha": 1.0,
+    "reached_concentrated": true,
+    "reached_uniform": true,
+    "tv_at_max_alpha": 0.009883674980786603
+  },
+  "dinoL518": {
+    "alpha_max": 40.0,
+    "alpha_min": 0.02,
+    "max_p_at_min_alpha": 0.9999998780936994,
+    "reached_concentrated": true,
+    "reached_uniform": true,
+    "tv_at_max_alpha": 0.009027751793913675
+  }
+}

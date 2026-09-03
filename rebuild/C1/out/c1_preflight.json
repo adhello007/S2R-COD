@@ -1,0 +1,310 @@
+{
+  "all_passed": true,
+  "commit": "470e224 (dirty)",
+  "gates": [
+    {
+      "banned_signal": "test_es",
+      "exempted": [
+        {
+          "file": "rebuild/C1/c1_preflight.py",
+          "line": 65,
+          "text": "BANNED_SIGNAL = 'test_es'                                     # c1-gate-ok",
+          "what": "string literal 'test_es'"
+        }
+      ],
+      "gate": "signal",
+      "note": "C1 allocates by target_es (CLS.py:81-105, GT-free). Any reference to the endpoint column in C1 source is a failure.",
+      "passed": true,
+      "per_tag": {
+        "dinoL224": {
+          "all_positive": true,
+          "exists": true,
+          "has_target_es": true,
+          "n_target_sum": 4033,
+          "passed": true,
+          "populated": 50,
+          "rows": 50
+        },
+        "dinoL518": {
+          "all_positive": true,
+          "exists": true,
+          "has_target_es": true,
+          "n_target_sum": 4033,
+          "passed": true,
+          "populated": 75,
+          "rows": 75
+        }
+      },
+      "violations": []
+    },
+    {
+      "clustering_calls_found": [],
+      "exempted": [],
+      "gate": "cluster_source",
+      "note": "C1 consumes B1's committed partition. It reads centroids and labels; it never fits one.",
+      "passed": true,
+      "per_tag": {
+        "dinoL224": {
+          "assign_embedder": "dinoL224",
+          "assign_k": 50,
+          "assign_seed": 0,
+          "centroid_shape": [
+            50,
+            1024
+          ],
+          "csv_rows": 50,
+          "expected_k": 50,
+          "labels_in_range": true,
+          "n_labels": 4033,
+          "n_names": 4033,
+          "passed": true
+        },
+        "dinoL518": {
+          "assign_embedder": "dinoL518",
+          "assign_k": 75,
+          "assign_seed": 0,
+          "centroid_shape": [
+            75,
+            1024
+          ],
+          "csv_rows": 75,
+          "expected_k": 75,
+          "labels_in_range": true,
+          "n_labels": 4033,
+          "n_names": 4033,
+          "passed": true
+        }
+      }
+    },
+    {
+      "cache_key_discipline": "every cache is keyed by a tuple whose FIRST element is the embedder tag; load_space() asserts the returned Space.tag equals the requested tag, and every downstream function takes a Space rather than loose arrays",
+      "gate": "embedder",
+      "note": "B1 \u00a7C2: fit_kmeans keyed on (k, seed) and endpoint_emb on split alone silently fed one space's arrays to another. Structurally prevented here.",
+      "passed": true,
+      "per_tag": {
+        "dinoL224": {
+          "centroids": [
+            50,
+            1024
+          ],
+          "cut": [
+            4447,
+            1024
+          ],
+          "es_len": 50,
+          "k": 50,
+          "passed": true,
+          "render": [
+            4447,
+            1024
+          ],
+          "tag_returned": "dinoL224"
+        },
+        "dinoL518": {
+          "centroids": [
+            75,
+            1024
+          ],
+          "cut": [
+            4447,
+            1024
+          ],
+          "es_len": 75,
+          "k": 75,
+          "passed": true,
+          "render": [
+            4447,
+            1024
+          ],
+          "tag_returned": "dinoL518"
+        }
+      },
+      "reload_after_all_tags_ok": true,
+      "roles": {
+        "disqualified": {
+          "clipL224": "no interior silhouette peak; k*=5 sits on B1's >=5-cluster degeneracy guard"
+        },
+        "primary": "dinoL518",
+        "sensitivity": "dinoL224"
+      }
+    },
+    {
+      "gate": "representation",
+      "grey": 128,
+      "note": "R2 verified on PIXELS, not by variable name, with a discriminative control: the full scene and the render must BOTH score lower against the cache than the cutout does.",
+      "passed": true,
+      "per_tag": {
+        "dinoL224": {
+          "aligned": true,
+          "all_bg_flat_grey": true,
+          "all_fg_untouched": true,
+          "discriminative": true,
+          "max_cos_full_scene": 0.9401051375918108,
+          "max_cos_render": 0.931194942479411,
+          "min_cos_cutout": 0.9999999999936569,
+          "passed": true,
+          "pixel_checks": [
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "1848"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "3639"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "6134"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "4621"
+            }
+          ],
+          "shape_ok": true,
+          "shapes": [
+            [
+              4447,
+              1024
+            ],
+            [
+              4447,
+              1024
+            ]
+          ]
+        },
+        "dinoL518": {
+          "aligned": true,
+          "all_bg_flat_grey": true,
+          "all_fg_untouched": true,
+          "discriminative": true,
+          "max_cos_full_scene": 0.9543050148958836,
+          "max_cos_render": 0.9278100347340557,
+          "min_cos_cutout": 0.9999999999908266,
+          "passed": true,
+          "pixel_checks": [
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "1848"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "3639"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "6134"
+            },
+            {
+              "bg_is_flat_grey": true,
+              "bg_unique": [
+                128
+              ],
+              "fg_untouched": true,
+              "stem": "4621"
+            }
+          ],
+          "shape_ok": true,
+          "shapes": [
+            [
+              4447,
+              1024
+            ],
+            [
+              4447,
+              1024
+            ]
+          ]
+        }
+      },
+      "threshold": 127
+    },
+    {
+      "endpoint_pool_collisions": [],
+      "endpoint_pool_pairs_checked": 24,
+      "gate": "leakage",
+      "leaked_names": [
+        "COD10K-CAM-1-Aquatic-3-Crab-32.jpg",
+        "COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg",
+        "COD10K-CAM-2-Terrestrial-26-Chameleon-1694.jpg",
+        "COD10K-CAM-2-Terrestrial-28-Deer-1796.jpg",
+        "COD10K-CAM-2-Terrestrial-31-Gecko-1928.jpg",
+        "COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg",
+        "COD10K-CAM-3-Flying-53-Bird-3205.jpg"
+      ],
+      "n_leaked": 7,
+      "note": "The 7 leaked names are COD10K target-domain images, so leakage enters on the ALLOCATION side (B1 already dropped them: 4040 -> 4033). The selection pool is checked separately against D2's measured pair matrix.",
+      "passed": true,
+      "per_tag": {
+        "dinoL224": {
+          "leaked_still_present": [],
+          "n_names": 4033,
+          "n_target_sum": 4033,
+          "passed": true
+        },
+        "dinoL518": {
+          "leaked_still_present": [],
+          "n_names": 4033,
+          "n_target_sum": 4033,
+          "passed": true
+        }
+      }
+    },
+    {
+      "forbidden": [],
+      "gate": "freshness",
+      "manifest_checked": 100,
+      "manifest_mismatches": [],
+      "manifest_ok": 100,
+      "n_forbidden": 0,
+      "note": "E0's own step_independence() is imported and called rather than re-implemented, so C1 cannot drift from the gate E0 self-tested. The .npy caches are derived, so the PRIMARY inputs that produced them are what gets hashed.",
+      "passed": true,
+      "scripts_scanned": [
+        "rebuild/common.py",
+        "rebuild/C1/c1_preflight.py",
+        "rebuild/C1/c1_space.py",
+        "rebuild/C1/c1_targeted_vs_random.py",
+        "rebuild/D2/d2_export_duplicates.py",
+        "rebuild/D2/d2_leakage_sweep.py",
+        "rebuild/B1/b1_allocation_signal.py",
+        "rebuild/B1/b1_embedder_sweep.py",
+        "rebuild/B1/b1_es_error_correlation.py",
+        "rebuild/E0/e0_regenerate.py",
+        "rebuild/D1/d1_foreground_exhaustion.py"
+      ]
+    }
+  ],
+  "generated": "2026-09-03T14:05:24+05:30",
+  "tags": [
+    "dinoL518",
+    "dinoL224"
+  ]
+}

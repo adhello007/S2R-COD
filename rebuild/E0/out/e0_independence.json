@@ -38,6 +38,15 @@
   "note": "reference/ is excluded: it holds frozen copies of the OLD package scripts as audited objects, which nothing imports",
   "scripts_scanned": [
     "rebuild/common.py",
-    "rebuild/E0/e0_regenerate.py"
+    "rebuild/C1/c1_preflight.py",
+    "rebuild/C1/c1_space.py",
+    "rebuild/C1/c1_targeted_vs_random.py",
+    "rebuild/D2/d2_export_duplicates.py",
+    "rebuild/D2/d2_leakage_sweep.py",
+    "rebuild/B1/b1_allocation_signal.py",
+    "rebuild/B1/b1_embedder_sweep.py",
+    "rebuild/B1/b1_es_error_correlation.py",
+    "rebuild/E0/e0_regenerate.py",
+    "rebuild/D1/d1_foreground_exhaustion.py"
   ]
 }
