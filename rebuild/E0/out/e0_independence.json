@@ -41,6 +41,7 @@
     "rebuild/C1/c1_preflight.py",
     "rebuild/C1/c1_space.py",
     "rebuild/C1/c1_targeted_vs_random.py",
+    "rebuild/C1/c1_variance_coverage.py",
     "rebuild/D2/d2_export_duplicates.py",
     "rebuild/D2/d2_leakage_sweep.py",
     "rebuild/B1/b1_allocation_signal.py",

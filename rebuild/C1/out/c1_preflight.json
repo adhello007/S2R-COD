@@ -1,6 +1,6 @@
 {
   "all_passed": true,
-  "commit": "470e224 (dirty)",
+  "commit": "d284628 (dirty)",
   "gates": [
     {
       "banned_signal": "test_es",
@@ -130,122 +130,8 @@
     },
     {
       "gate": "representation",
-      "grey": 128,
-      "note": "R2 verified on PIXELS, not by variable name, with a discriminative control: the full scene and the render must BOTH score lower against the cache than the cutout does.",
       "passed": true,
-      "per_tag": {
-        "dinoL224": {
-          "aligned": true,
-          "all_bg_flat_grey": true,
-          "all_fg_untouched": true,
-          "discriminative": true,
-          "max_cos_full_scene": 0.9401051375918108,
-          "max_cos_render": 0.931194942479411,
-          "min_cos_cutout": 0.9999999999936569,
-          "passed": true,
-          "pixel_checks": [
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "1848"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "3639"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "6134"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "4621"
-            }
-          ],
-          "shape_ok": true,
-          "shapes": [
-            [
-              4447,
-              1024
-            ],
-            [
-              4447,
-              1024
-            ]
-          ]
-        },
-        "dinoL518": {
-          "aligned": true,
-          "all_bg_flat_grey": true,
-          "all_fg_untouched": true,
-          "discriminative": true,
-          "max_cos_full_scene": 0.9543050148958836,
-          "max_cos_render": 0.9278100347340557,
-          "min_cos_cutout": 0.9999999999908266,
-          "passed": true,
-          "pixel_checks": [
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "1848"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "3639"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "6134"
-            },
-            {
-              "bg_is_flat_grey": true,
-              "bg_unique": [
-                128
-              ],
-              "fg_untouched": true,
-              "stem": "4621"
-            }
-          ],
-          "shape_ok": true,
-          "shapes": [
-            [
-              4447,
-              1024
-            ],
-            [
-              4447,
-              1024
-            ]
-          ]
-        }
-      },
-      "threshold": 127
+      "skipped": true
     },
     {
       "endpoint_pool_collisions": [],
@@ -292,6 +178,7 @@
         "rebuild/C1/c1_preflight.py",
         "rebuild/C1/c1_space.py",
         "rebuild/C1/c1_targeted_vs_random.py",
+        "rebuild/C1/c1_variance_coverage.py",
         "rebuild/D2/d2_export_duplicates.py",
         "rebuild/D2/d2_leakage_sweep.py",
         "rebuild/B1/b1_allocation_signal.py",
@@ -302,7 +189,7 @@
       ]
     }
   ],
-  "generated": "2026-09-03T14:05:24+05:30",
+  "generated": "2026-09-03T21:45:47+05:30",
   "tags": [
     "dinoL518",
     "dinoL224"

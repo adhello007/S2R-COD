@@ -1197,3 +1197,54 @@ NOTES      C2 SHAPE DIVERGENCE, and a correction to this experiment's own plan. 
            Seed-level robustness of the ES signal is UNVERIFIED-DEFERRED (retraining deferred). clipL224 is DISQUALIFIED as a C1 space: no interior silhouette peak, k*=5 on the degeneracy guard.
 ================================================================================
 
+================================================================================
+2026-09-03T22:05:25+05:30 | commit d284628 (dirty) | EXP C1
+CMD   LAKE-RED/.venv/bin/python rebuild/C1/c1_variance_coverage.py --tags dinoL518,dinoL224
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  selection in R2; geometry measured in R2 and R3
+METRICS
+  ATTRIBUTION_dinoL518_R2_cut_B250                  = targeted +1.1135 | rnd-vs-rnd -0.0373 | shuffled-ES +1.1304 | rnd-centroid +1.2262 | rnd-direction +1.1245    (all d_heldout, same B, same pool, same space)
+  ATTRIBUTION_dinoL518_R3_render_B250               = targeted +1.0028 | rnd-vs-rnd -0.0109 | shuffled-ES +0.9139 | rnd-centroid +1.0534 | rnd-direction +0.9332    (all d_heldout, same B, same pool, same space)
+  ATTRIBUTION_dinoL224_R2_cut_B250                  = targeted +1.2325 | rnd-vs-rnd -0.0330 | shuffled-ES +1.1940 | rnd-centroid +1.4243 | rnd-direction +1.1433    (all d_heldout, same B, same pool, same space)
+  ATTRIBUTION_dinoL224_R3_render_B250               = targeted +1.0795 | rnd-vs-rnd -0.0115 | shuffled-ES +1.1403 | rnd-centroid +1.1908 | rnd-direction +0.8867    (all d_heldout, same B, same pool, same space)
+  NULL_random_vs_random_d_heldout                   = -0.1328 (range -0.2560 .. -0.0109)    (THE null for a fitted-direction d: two independent random draws)
+  NULL_random_vs_random_d_INSAMPLE                  = +0.6991 (range +0.2144 .. +1.4506)    (the SAME null under the in-sample estimator -- why held-out is the headline)
+  TARGETED_minus_NULL_min_over_cells                = +0.4033    (smallest incremental effect of ES-targeting over the random-vs-random null)
+  SHUFFLED_ES_minus_NULL_max                        = +1.2270    (what the same allocation SHAPE achieves with the ES values scrambled)
+  ES_SIGNAL_INCREMENT_vs_shuffled_es                = mean +0.0073 | sd 0.0560 | range -0.1372 .. +0.0889 | ES wins 13/20 cells    (PAIRED per (tag, repr, B): d_heldout(targeted) MINUS d_heldout(same allocation SHAPE, ES values permuted across clusters))
+  ES_SIGNAL_INCREMENT_vs_random_centroid            = mean -0.0649 | sd 0.0756 | range -0.1993 .. +0.0386 | ES wins 4/20 cells    (PAIRED per (tag, repr, B): d_heldout(targeted) MINUS d_heldout(whole budget to an ARBITRARY cluster))
+  ES_SIGNAL_INCREMENT_vs_random_direction           = mean +0.0479 | sd 0.0531 | range -0.0683 .. +0.1929 | ES wins 18/20 cells    (PAIRED per (tag, repr, B): d_heldout(targeted) MINUS d_heldout(B extremes along a RANDOM unit direction))
+  CEILING_top_ES_cluster_MINUS_random_cluster       = mean +0.0077 | range -0.1007 .. +0.1144 | top-ES wins 10/20 cells    (c1_ceiling.csv (whole budget to the HIGHEST-target_es cluster, from the ORIGINAL C1 run) vs this audit's whole-budget-to-an-ARBITRARY-cluster arm -- two independently produced artifacts)
+  SPREAD_dinoL518_R2_cut_B1000                      = trace ratio 0.9887 | eff-rank 129.8 vs 226.1 (0.574) | logdet delta +2.4    (targeted vs random; <1 means the targeted arm is NARROWER)
+  COVERAGE_dinoL518_R2_cut_B1000                    = arm-used-by-target 0.9830 vs 0.9860 (delta -0.0030) | mean top1 sim 0.2275 vs 0.2220 (delta +0.0056)    (against the 4033-image TARGET manifold, k=5)
+  OCCUPANCY_dinoL518_R2_cut_B1000                   = clusters touched 67 vs 74 of 75 | TV 0.2750 | overlap 235 vs 225 expected (ratio 1.045)
+  SPREAD_dinoL518_R3_render_B1000                   = trace ratio 0.9819 | eff-rank 129.9 vs 202.9 (0.640) | logdet delta +0.1    (targeted vs random; <1 means the targeted arm is NARROWER)
+  COVERAGE_dinoL518_R3_render_B1000                 = arm-used-by-target 0.9540 vs 0.9750 (delta -0.0210) | mean top1 sim 0.2978 vs 0.2447 (delta +0.0530)    (against the 4033-image TARGET manifold, k=5)
+  OCCUPANCY_dinoL518_R3_render_B1000                = clusters touched 67 vs 74 of 75 | TV 0.2940 | overlap 223 vs 225 expected (ratio 0.992)
+  SPREAD_dinoL224_R2_cut_B1000                      = trace ratio 0.9851 | eff-rank 109.8 vs 183.1 (0.600) | logdet delta +2.9    (targeted vs random; <1 means the targeted arm is NARROWER)
+  COVERAGE_dinoL224_R2_cut_B1000                    = arm-used-by-target 0.9410 vs 0.9420 (delta -0.0010) | mean top1 sim 0.3438 vs 0.2501 (delta +0.0936)    (against the 4033-image TARGET manifold, k=5)
+  OCCUPANCY_dinoL224_R2_cut_B1000                   = clusters touched 49 vs 47 of 50 | TV 0.2160 | overlap 212 vs 225 expected (ratio 0.943)
+  SPREAD_dinoL224_R3_render_B1000                   = trace ratio 0.9945 | eff-rank 93.4 vs 173.7 (0.538) | logdet delta +3.6    (targeted vs random; <1 means the targeted arm is NARROWER)
+  COVERAGE_dinoL224_R3_render_B1000                 = arm-used-by-target 0.9250 vs 0.9130 (delta +0.0120) | mean top1 sim 0.3491 vs 0.2533 (delta +0.0958)    (against the 4033-image TARGET manifold, k=5)
+  OCCUPANCY_dinoL224_R3_render_B1000                = clusters touched 46 vs 47 of 50 | TV 0.1870 | overlap 222 vs 225 expected (ratio 0.987)
+  cells_where_targeted_arm_is_NARROWER              = 20/20    (trace-of-covariance ratio < 1)
+  cells_where_targeted_arm_COVERS_TARGET_LESS       = 10/20    (fraction of the arm used as a target nearest-neighbour)
+  cells_where_targeted_arm_has_LOWER_EFFECTIVE_RANK = 20/20 (mean ratio 0.634)    (participation ratio of the covariance spectrum. Reported as an OBSERVATION, not a declared threshold -- see NOTES on why it is not used to rescue the trace-ratio threshold below)
+THRESHOLD  C1's ceiling is a TARGETING ceiling: spending the whole budget on the highest-ES cluster beats spending it on an arbitrary cluster in a majority of cells -> FAIL
+THRESHOLD  the random-vs-random null is small (|d| < 0.3), so a fitted-direction d does not manufacture an effect from sampling noise alone -> PASS
+THRESHOLD  ES-targeting exceeds the random-vs-random null by more than 0.5 in EVERY cell, i.e. the REOPENS verdict is attributable to targeting rather than to the statistic -> FAIL
+THRESHOLD  the in-sample estimator would have been unusable: its random-vs-random null exceeds 0.5 -> PASS
+THRESHOLD  the ES SIGNAL itself adds something: targeted d_heldout beats its own ES-shuffled control by at least 0.1 in a majority of cells -> FAIL
+THRESHOLD  targeting the HIGHEST-ES cluster beats targeting an ARBITRARY cluster in a majority of cells -> FAIL
+THRESHOLD  the arms differ in more than their centre: spread ratio departs from 1 by at least 5% in a majority of cells -> FAIL
+OLD CLAIM  C1 plan §5 follow-up (variance/coverage) = not triggered by the declared rule; run as an explicit audit -> RUN ANYWAY
+ARTIFACTS  rebuild/C1/out/c1_attribution.csv, rebuild/C1/out/c1_spread.csv, rebuild/C1/out/c1_coverage.csv, rebuild/C1/out/c1_occupancy.csv
+TRAINS     NO
+NOTES      WHY THIS RUNS. C1_PLAN.md §5 committed to logging, regardless of outcome, that Cohen's d is a mean-shift along a single FITTED direction and that variance and coverage remain unmeasured unless this follow-up runs. The plan's automatic trigger (AMBIGUOUS band or straddling CI) did NOT fire -- C1 returned a clean REOPENS -- so this is an explicit audit, not an automatic consequence, and it is labelled as such.
+           THE NULL THAT MATTERS. C1 used B=POOL as a null calibration, but there both arms are the SAME SET. The correct null for a fitted-direction d is two INDEPENDENT random draws of the same size: different sets, no targeting. That null is measured here for every cell. It is the control that decides whether C1's headline is about ES-targeting or about the statistic.
+           THE IN-SAMPLE ESTIMATOR WOULD HAVE BEEN UNUSABLE. Under random-vs-random -- where there is no targeting at all -- the in-sample d is large, because the direction is fitted to the very sampling noise it then measures. The held-out estimator returns approximately zero on the same data. Had C1 reported d_insample as its headline, its REOPENS verdict would have been an artefact. This is the strongest available justification for the held-out choice, and it is a measurement rather than an argument.
+           PROVENANCE OF THE PAIRED METRICS -- stated because it matters. This script was first executed with --no-log (exploratory, nothing written). The four null arms, the random-vs-random threshold and the in-sample threshold were declared BEFORE that pass. The ES_SIGNAL_INCREMENT_* metrics and their two thresholds, and the ceiling cross-check, were added AFTER seeing it. They are TIGHTENINGS: each makes the audit harder to pass, none was chosen to make a failing criterion pass, and no declared threshold was weakened or removed. Their content was already implied by the pre-declared SHUFFLED_ES_minus_NULL_max metric; the change is that they pair (tag, repr, B) exactly instead of comparing a max over cells against a min over cells.
+           TRACE AND EFFECTIVE RANK DISAGREE, AND THE DECLARED CRITERION LOSES. The declared spread threshold is on trace-of-covariance, which departs from 1 by only 1-2% -- it FAILS. Effective rank tells a different story: the targeted arm occupies roughly half the effective dimensionality. Trace is dominated by the isotropic bulk of a 1024-d embedding and is insensitive to that. The honest reading is that the declared metric was the wrong one, and it is reported as FAILED rather than quietly replaced by the one that agrees with the conclusion. Effective rank is reported beside it as an observation.
+           SCOPE. This audit still measures GEOMETRY, not accuracy. It establishes whether the targeted and random arms differ, in what respects, and whether the difference is attributable to the ES signal. It does NOT establish that any of it changes a trained model -- that remains C3's question and is untouched here.
+================================================================================
+

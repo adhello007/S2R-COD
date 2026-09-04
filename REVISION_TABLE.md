@@ -6,9 +6,15 @@ test, never an input.
 
 Completed so far: **E0, D2, D1, B1, C1**. Seven outstanding: A1, A2, A3, B2, B3, C2, C3.
 
-> **C1 REOPENS THE VERDICT.** The decisive measurement was never computed by the old
-> package. Measured, it refutes `d ~ 0.10` by roughly an order of magnitude and removes one
-> leg of the "Stage C is not viable" argument. See C1.1-C1.4 below.
+> **C1 REFUTES THE OLD NUMBER, AND THEN ITS OWN AUDIT REFUTES THE INFERENCE.** The decisive
+> measurement was never computed by the old package. Measured, it refutes `d ~ 0.10` by roughly
+> an order of magnitude. **But C1's attribution audit (4th block) shows that separation is not
+> produced by the ES signal:** permuting the ES values across clusters — destroying the targeting
+> while keeping the allocation shape — reproduces the same `d` (+0.91 to +1.14 against a targeted
+> +1.00 to +1.23), and spending the whole budget on an **arbitrary** cluster beats spending it on
+> the highest-ES cluster in 16 of 20 cells. The `d` measures **concentration**, not **targeting**.
+> Net: the old number is wrong; the conclusion it was used to license remains unavailable.
+> See C1.1-C1.8 below.
 
 ---
 
@@ -30,8 +36,12 @@ Completed so far: **E0, D2, D1, B1, C1**. Seven outstanding: A1, A2, A3, B2, B3,
 | B1.7 | ρ(ES, MAE) per-cluster, as a usable allocation signal | +0.87 (endpoint ES) | **+0.6595** (dinoL224) / **+0.6284** (dinoL518) on the real target-ES signal | `EXP B1` (4th block) | The committed figure **overstated the usable signal by ρ ≈ 0.21–0.25**. The two ES signals only moderately agree per cluster (ρ 0.695 / 0.573) |
 | **C1.1** | **Cohen's *d* targeted-vs-random** | **`≈ 0.10`** `[no code, never computed]` | **+1.0028 to +1.2325 at peak**, all four embedder × representation cells | `EXP C1` | **REFUTED, ~10×.** CIs entirely inside the REOPENS band; both embedder spaces agree. The arms are NOT materially identical in embedding space |
 | **C1.2** | *d* at the old package's own budget `B = 1000` | `≈ 0.10` | **+0.655 to +1.024** | `EXP C1` | **REFUTED, 7-10×** at the budget the old package itself proposed |
-| **C1.3** | "the two arms see nearly identical data, so no gain is possible" | asserted | **not supported** — declared threshold `d ≥ 0.5` → VERDICT REOPENS | `EXP C1` | This leg of the argument fails. It does **not** establish that Stage C works — the other legs (A1 bottleneck, D1 exhaustion, B1 moderate signal, C3 noise floor) are untouched |
+| **C1.3** | "the two arms see nearly identical data, so no gain is possible" | asserted | **not supported as stated** — declared threshold `d ≥ 0.5` → VERDICT REOPENS; the arms overlap at exactly the chance rate (0.94-1.05) and are genuinely different sets | `EXP C1` | This leg fails **as stated**. Per C1.5 it does not convert into support for Stage C: the separation is not attributable to targeting. The other legs (A1 bottleneck, D1 exhaustion, B1 moderate signal, C3 noise floor) are untouched |
 | **C1.4** | Held-out Cohen's *d* under a known-zero difference | assumed 0 | **−0.3241** (sd 0.0166) | `EXP C1` | New. The ceiling assertion fired and exposed that the half-split estimator is **negatively biased under the null**, i.e. conservative. Every measured *d* is now read against this reference |
+| **C1.5** | **The measured *d* is caused by ES-targeting** | implied by C1.1-C1.3 | **REFUTED.** Paired over 20 cells: targeted − ES-shuffled = **+0.0073** (sd 0.056, ES wins **13/20**, a coin flip); targeted − arbitrary-cluster = **−0.0649** (ES wins **4/20**); targeted − random-direction = **+0.0479** (ES wins 18/20) | `EXP C1` (4th block) | **New, and it overturns the reading of C1.1.** Any concentrated selection reproduces the headline. The ES signal's contribution is **detectable but negligible** — consistently positive only against a random *direction*, at ~5% of the effect |
+| **C1.6** | C1's own `d_max_possible` is a **targeting** ceiling | `C1_PLAN.md` §2.4 | **REFUTED.** Whole budget to the highest-`target_es` cluster minus whole budget to an **arbitrary** cluster = **+0.0077**, top-ES wins **10/20** | `EXP C1` (4th block) | Cross-check between two independently produced artifacts (`c1_ceiling.csv` from block 3, `c1_attribution.csv` from block 4). The ceiling is a **concentration** ceiling |
+| **C1.7** | Held-out *d* under two independent random draws (the correct null) | never measured | **−0.1328** (range −0.2560 … −0.0109); the **in-sample** estimator on the same data gives **+0.6991**, reaching **+1.4506** | `EXP C1` (4th block) | New. The held-out estimator does not manufacture effects — but the in-sample one **exceeds C1's own headline with no targeting at all**. Had `d_insample` been the headline, REOPENS would have been an artefact. The strongest justification in the rebuild for the held-out choice, and it is a measurement |
+| **C1.8** | The targeted and random arms differ only in centre | limitation logged unconditionally | **They differ in shape too, but not usefully:** effective rank ratio **0.53–0.64** (**20/20** cells narrower), mean top-1 similarity to the target manifold up **+0.096**, but target coverage Δ ≈ 0 (−0.021 … +0.012, **less** in 10/20) | `EXP C1` (4th block) | New. Targeting buys **average proximity at the cost of effective dimensionality, and buys no coverage.** §8.6 of `C1_RESULTS.md` states the resulting hypothesis — that this profile is compatible with zero accuracy gain — as a question for **C3**, not a result |
 | B1.8 | Direction of the wrong-objective claim | "ES predicts pixel, not structure" | **NOT SUPPORTED on the real signal** — ratio 0.5166 / 0.5463, both ≥ 0.5 in both candidate spaces | `EXP B1` (4th block) | A **reversal of direction**. I declared a threshold expecting the boundary to stay unstateable; it failed because the boundary *is* stateable on target ES and lands on the other side. B1's contribution becomes "the allocation signal is moderately predictive at best", not "it points at the wrong error type" |
 
 ## 2. Corrections to the rebuild's own work
@@ -52,6 +62,8 @@ Kept visible because a rebuild that only ever corrects someone else is not audit
 | R9 | B1's `fit_kmeans` cached on `(k, seed)` and `endpoint_emb` on `split` alone, and `step_correlate` / `emit_cluster_es` called `assign_clusters` **without** a tag | B1, before the embedder sweep | Inert with one embedder; would have silently fed dinoL518's k-means fits and endpoint embeddings to the CLIP and dinoL224 runs | Cache keys include the tag; the tag is threaded through; defaults unchanged, verified by reproducing the committed block 7/7 |
 | R11 | C1's ceiling assertion required `d_heldout = 0` at `B = 4447` as well as `‖Δmean‖ = 0` | C1, pre-log | The assertion fired | `‖Δmean‖ = 0` is the correct ceiling check; the held-out *d* there is a **null calibration**, not a bug — reported as a measurement rather than relaxed away |
 | R12 | C1's plan §3.1 specified a `C2_SHAPE_DIVERGENCE` cross-check that the first implementation omitted | C1 blocks 1→2 | Re-reading the approved plan against the code | Implemented — and implementing it revealed the cross-check was a **category error**: C2's pool-shift and C1's *d* are different quantities with legitimately different B-shapes. Recorded, not dropped |
+| R14 | C1's variance/coverage audit declared its spread threshold on **trace-of-covariance**, which is dominated by the isotropic bulk of a 1024-d embedding and moves only 1-2% | C1 block 4 | The threshold FAILED while effective rank (0.53-0.64, 20/20 cells) showed a large shape difference | The declared threshold is reported **FAILED**; effective rank is reported beside it as an **observation, not promoted to a threshold**. Swapping in the metric that agrees after seeing the data is the move this rebuild exists to prevent |
+| R15 | C1 block 4's `ES_SIGNAL_INCREMENT_*` metrics, their two thresholds, and the ceiling cross-check were added **after** an exploratory `--no-log` pass | C1 block 4 | Self-declared | Recorded in the log block's `NOTES` and `C1_RESULTS.md` §8.7. They are **tightenings** — each makes the audit harder to pass, no declared threshold was weakened or removed (5 of 7 still FAIL), and their content was already implied by the pre-declared `SHUFFLED_ES_minus_NULL_max` metric; they only pair cells exactly instead of comparing a max over cells against a min over cells |
 | R13 | C1's first Gate-1 scan flagged its own module docstring | C1, pre-log | The gate failed on a clean tree | Docstrings excluded (prose cannot read a CSV column), matching E0's fix. Gates then **self-tested** with an injected probe: both caught it, both returned to PASS when removed |
 | R10 | B1 correlated **endpoint** ES throughout, and shipped C1 a cluster CSV with no `target_es` column | B1 completions I and II | Reading `CLS.py:81-82` — the loader is built on the target root with `gt_root=None`, so the allocation signal is GT-free and target-side | Target ES computed for all 4040 images × 5 architectures; `target_es` added to all three cluster CSVs; the faithful correlation measured. **Changed the direction of B1's headline claim** — see B1.8 |
 
@@ -100,8 +112,17 @@ runnable in both spaces (cutouts 4447×1024, row-aligned to the raw pool).
 The old package's cross-run ρ(ES, MAE) = +0.893 ± 0.059 (n=5 runs) is **UNVERIFIED-DEFERRED**: it is a
 seed-variance claim, and retraining is deferred. B1 substitutes a cross-architecture axis instead.
 
-**The highest-value next measurement is C1's variance/coverage follow-up.** It was *not* triggered —
-the declared rule fires on an AMBIGUOUS band or a straddling CI, and C1 returned a clean REOPENS — but
-it is what would say whether the arms differ in spread and coverage or only in centre, which is what
-determines whether a separation of *d* ≈ 1 could plausibly move a trained model. C1 measures a
-direction-fitted mean shift and nothing more.
+**C1's variance/coverage follow-up has now been run** (4th `EXP C1` block) even though its declared
+trigger never fired, and it changed the interpretation of C1's headline — see C1.5-C1.8. The general
+lesson is recorded here because it generalises past C1: *a threshold that PASSES deserves an audit as
+much as one that fails.* The pre-audit draft of `C1_RESULTS.md` named this exact failure mode in its
+own limitations section and then flagged the follow-up as the highest-value next measurement; running
+it confirmed the limitation was decisive rather than formal.
+
+**The highest-value next measurement is now C3.** C1.8 leaves a specific, testable hypothesis: the
+targeted arm is more proximal to the target manifold on average but spans roughly half the effective
+dimensionality and covers no more of it. Whether that profile trains worse, better, or identically is
+exactly what C3 measures and what C1 structurally cannot. **A2 and B3 are the next most valuable**:
+A2 because the 48-scalar conditioning bottleneck bounds how much of any selected difference can reach
+a render at all, and B3 because C1's in-sample/held-out gap (C1.7) is the same estimator issue B3 was
+designed to expose, now with a measured magnitude to check against.
