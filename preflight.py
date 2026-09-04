@@ -286,8 +286,11 @@ def check_data_presence(opt):
         ("source images", os.path.join(opt.source_root, "Image"), (".jpg", ".png"), 4447),
         ("source GT", os.path.join(opt.source_root, "GT"), (".tif", ".png"), 4447),
         ("target images", os.path.join(opt.target_root, "Image"), (".jpg", ".png"), 4040),
-        ("test images", "./Dataset/Test/Image", (".jpg", ".png"), 2026),
-        ("test GT", "./Dataset/Test/GT", (".jpg", ".png"), 2026),
+        # MyTest.py now takes --dataset and reads Dataset/Test/<name>/{Imgs,GT}; the flat
+        # Dataset/Test/{Image,GT} was a COD10K copy and no longer exists, so these two rows
+        # reported 3 permanent FAILs for paths nothing reads. See rebuild/ABC/ABC_PLAN.md A.7 P5.
+        ("test images", "./Dataset/Test/COD10K/Imgs", (".jpg", ".png"), 2026),
+        ("test GT", "./Dataset/Test/COD10K/GT", (".jpg", ".png"), 2026),
         ("val images", os.path.join(opt.val_root, "Imgs"), (".jpg", ".png"), 250),
         ("val GT", os.path.join(opt.val_root, "GT"), (".jpg", ".png"), 250),
     ]

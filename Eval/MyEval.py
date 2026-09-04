@@ -137,12 +137,16 @@ if __name__ == '__main__':
     parser.add_argument(
         '--gpu_id', type=str, help='gpu device',
         default='0')
+    # type=list explodes a string argument into characters; the committed commands only ever
+    # worked because the defaults are ['']. '' is kept in choices so those still resolve.
+    # CAMO and CHAMELEON are dropped: CAMO is the checkpoint-selection set and CHAMELEON is
+    # withdrawn (D2, 53.9% contamination). See rebuild/ABC/ABC_PLAN.md A.7 P4.
     parser.add_argument(
-        '--data_lst', type=list, help='test dataset',
+        '--data_lst', type=str, nargs='+', help='test dataset',
         default=[''],
-        choices=['CAMO', 'CHAMELEON', 'COD10K', 'NC4K'])
+        choices=['', 'COD10K', 'NC4K'])
     parser.add_argument(
-        '--model_lst', type=list, help='candidate competitors',
+        '--model_lst', type=str, nargs='+', help='candidate competitors',
         default=[''])
         # choices=['2018-CVPR-PiCANet', '2019-CVPR-CPD-Ours', '2019-CVPR-PoolNet', '2019-ICCV-EGNet-new', 
         # '2019-ICCV-SCRN', '2020-ECCV-CSNet', '2020-AAAI-F3Net', '2020-CVPR-UCNet', '2020-CVPR-ITSD', 

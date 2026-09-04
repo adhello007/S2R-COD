@@ -216,9 +216,13 @@ if __name__ == "__main__":
     parser.add_argument('--b', type=float, default=0.3, help='EdgeAwareLoss hyperparameter b')
     parser.add_argument('--c', type=float, default=0.5, help='EdgeAwareLoss hyperparameter c')
     parser.add_argument('--save_model', type=str, default='./Snapshot/SINet/test/')
-    parser.add_argument('--source_root', type=str, default='./Dataset/Source/CNC/')
+    parser.add_argument('--source_root', type=str, default=None,
+                        help='source pool root; if omitted, --task chooses the default '
+                             '(C2C -> ./Dataset/Source/CNC/, S2C -> ./Dataset/Source/HKU-IS/)')
     parser.add_argument('--target_root', type=str, default='./Dataset/Target/')
     parser.add_argument('--val_root', type=str, default='./Dataset/Val/CAMO/', help='the test rgb images root')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='RNG seed (was hardcoded 42 at MyTrain.py:242)')
     opt = parser.parse_args()
 
     # Override hyperparameters for S2C
@@ -229,7 +233,16 @@ if __name__ == "__main__":
         opt.a = 0.9
         opt.b = 0.3
         opt.c = 0.5
-        opt.source_root = './Dataset/Source/HKU-IS/'
+        # An explicitly passed --source_root now wins, so each A/B/C arm can point at its own
+        # pool. Omitting the flag resolves exactly as before, for either task -- verified.
+        # CLS.py:16 derives its round-2 directory from source_root ALONE, so a per-arm
+        # source_root is also what stops the arms rmtree'ing each other's pseudo-label pool.
+        # See rebuild/ABC/ABC_PLAN.md A.2 and A.7 P0.
+        if opt.source_root is None:
+            opt.source_root = './Dataset/Source/HKU-IS/'
+
+    if opt.source_root is None:
+        opt.source_root = './Dataset/Source/CNC/'
 
     # CLS and the cyclic round are part of 'ours'; the baselines are single-round by
     # definition, so don't let a stray --iteration silently turn a baseline into CSRDA.
@@ -239,7 +252,14 @@ if __name__ == "__main__":
 
     torch.cuda.set_device(opt.gpu)
 
-    set_random_seed(42)  
+    set_random_seed(opt.seed)
+    # Disclosed deviation from released code. Upstream leaves cuDNN nondeterministic
+    # (preflight.py:198-199 reports it). Three archived runs at the SAME seed 42 differ by
+    # sd(Sa) = 0.002287, i.e. 64% of the across-seed sd of 0.003555 -- so without this the
+    # arms are not seed-paired in any useful sense. This REDUCES, and is not claimed to
+    # eliminate, kernel nondeterminism. See rebuild/ABC/ABC_PLAN.md A.6.
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
     # Cycling
     for i in range(1, opt.iteration + 1):

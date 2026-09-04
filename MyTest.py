@@ -19,6 +19,10 @@ parser.add_argument('--model_path', type=str,
 parser.add_argument('--test_save', type=str,
                     default='./Result/SINet-v2/test/')
 parser.add_argument('--gpu', type=int, default=0, help='choose which gpu you use')
+# CHAMELEON is deliberately absent: 41/76 of it is training data (D2, 53.9%), so it is
+# withdrawn as an endpoint. CAMO is the checkpoint-selection set, never an endpoint.
+parser.add_argument('--dataset', type=str, default='COD10K', choices=['COD10K', 'NC4K'],
+                    help='endpoint to score, from Dataset/Test/<name>/{Imgs,GT}')
 opt = parser.parse_args()
 
 torch.cuda.set_device(opt.gpu)
@@ -44,12 +48,14 @@ assert copied == len(state_dict), (
 model.eval()
 
 
-for dataset in ['COD10K']:
+for dataset in [opt.dataset]:
     save_path = opt.test_save + '/'
     os.makedirs(save_path, exist_ok=True)
 
-    test_loader = test_dataset(image_root='./Dataset/Test/Image/'.format(dataset),
-                               gt_root='./Dataset/Test/GT/'.format(dataset),
+    # Dataset/Test/{Image,GT} were a flat COD10K copy and no longer exist; the .format()
+    # on those literals had no placeholder to fill. See rebuild/ABC/ABC_PLAN.md A.7 P3.
+    test_loader = test_dataset(image_root='./Dataset/Test/{}/Imgs/'.format(dataset),
+                               gt_root='./Dataset/Test/{}/GT/'.format(dataset),
                                testsize=opt.testsize,
                                mode='test')
     img_count = 1
