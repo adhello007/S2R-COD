@@ -3,10 +3,10 @@
 Which evaluation columns can be reported as independent measurements, and which
 cannot, with the contamination rate measured for each.
 
-Every figure here comes from log block `EXP D2R` in a measurement log; each was
-produced by a committed script, not transcribed. Method and limitations are stated
-below so a reader can decide whether they accept the measurement rather than take
-it on trust.
+Every figure here comes from a log block in a measurement log — `EXP D2R` for the
+CHAMELEON rows, `EXP D2_NC4K` for the NC4K/COD10K-test rows — and each was produced by
+a committed script, not transcribed. Method and limitations are stated below so a
+reader can decide whether they accept the measurement rather than take it on trust.
 
 ---
 
@@ -32,7 +32,7 @@ membership is measured here; the direction is inference from release chronology.
 | Endpoint | Contaminated vs training | Unchecked | Nearest-neighbour gap | Verification status | Verdict |
 |---|---|---|---|---|---|
 | **COD10K-test** | **2 / 2026 (0.1 %)** | 524 / 2026 | none — continuous | on-disk copies; **not author-verified** | Reportable, with the caveat below |
-| **NC4K** | **1 / 4121 (0.0 %)** | 2406 / 4121 | none — continuous | on-disk copies; **not author-verified** | Reportable, with the caveat below |
+| **NC4K** | **1 / 4121 (0.0 %)** vs the training pool; **0 / 4121** vs COD10K-test | 2406 / 4121 (vs training); 3039 / 4121 (vs COD10K-test) | none — continuous, both axes | on-disk copies; **not author-verified** | Reportable, with the caveat below |
 | **CHAMELEON** | **41 / 76 (53.9 %)** | 25 / 76 | **41 below 5.51, next at 40.58** (**7.36**×) | **author-sourced release, re-audited** | **Not reportable** |
 | **CAMO** | 4 / 250 (1.6 %) | 155 / 250 | none — continuous | on-disk copies; **not author-verified** | Never an endpoint — it is the checkpoint-selection set in this protocol |
 
@@ -52,6 +52,56 @@ discontinuity at all — a continuous distribution is what a clean set looks lik
    author-sourced ones.* That is the same weakness the CHAMELEON re-audit exists to
    close, and it is marked rather than hidden: **the same author-sourced re-audit is
    owed for those three.** Until it is done, treat their rates as provisional.
+
+---
+
+## NC4K and the COD10K test split — a clean null (`EXP D2_NC4K`)
+
+Checked separately because the S2R-COD paper's Task Setup, **Case 3**, describes the
+NC4K evaluation as additionally introducing synthetic images derived from the **COD10K
+test set** into the **source** domain (Table 3, `CAMO + CHAM. + COD10K → NC4K`). Were
+NC4K to overlap COD10K-test, that injection would put synthetic renderings of NC4K's
+own test photographs into supervision — a *source-side* collision, distinct from the
+target-side CHAMELEON finding above.
+
+**It does not. The overlap is empty at every level measured.**
+
+| Level | NC4K ∩ COD10K-test | NC4K ∩ COD10K-train |
+|---|---|---|
+| File bytes (sha256) | **0** | **0** |
+| Decoded pixels (shape + RGB hash) | **0** | **0** |
+| Same-dimension near-duplicates, mean\|diff\| ≤ 6.0 | **0 / 4121** | **0 / 4121** |
+| — at tolerance 1 / 2 / 3 / 5 / 6 | **0 / 0 / 0 / 0 / 0** | **0 / 0 / 0 / 0 / 0** |
+| Candidate pairs even shortlisted (descriptor RMS ≤ 14) | **1**, which failed full-resolution verification | **0** |
+| Closest approach, mean\|diff\| | **20.610** (**3.44x** the tolerance) | **17.190** (**2.87x**) |
+| Nearest-distance spread (p10/p25/p50/p75/p90) | 43.0 / 50.9 / 59.3 / 68.3 / 79.2 | 41.4 / 48.8 / 56.3 / 65.8 / 74.7 |
+| Nearest-neighbour gap | **none** — continuous | **none** — continuous |
+
+The null has a margin. The closest any NC4K image gets to a same-dimension COD10K-test
+image is **20.610** grey levels — **3.44x** the confirmation tolerance, and far outside
+the 0.603–5.512 range that the 41 confirmed CHAMELEON duplicates occupy. The verdict is
+unchanged at shortlist depth 8, 32, and every same-dimension candidate. The two closest
+pairs were also inspected by eye and are plainly different photographs, adjacent only
+because both are dark, low-contrast frames at identical dimensions.
+
+**So Case 3's described injection is not a source-into-test collision by this measure.**
+The synthetic material it introduces is derived from COD10K-test photographs, and none
+of those photographs is in NC4K. What the paper describes is a legitimate source-domain
+choice, not a leak, and the NC4K column of Table 3 is not compromised by it.
+
+Two caveats, both load-bearing:
+
+- **This is a lower bound, and the unchecked fraction is large.** Only 1082 of NC4K's
+  4121 images share exact dimensions with any COD10K-test image, so **3039** are
+  unchecked, not clean — a **73.7%** share, and **71.7%** on the COD10K-train axis. A
+  rescaled copy is invisible to this method.
+- **The synthetic renderings themselves were not compared.** This measures real NC4K
+  against real COD10K. Whether a *generated* image derived from a COD10K-test photograph
+  can approach an NC4K image is a different question and is not answered here.
+
+Incidentally sharpened: **COD10K-test ∩ COD10K-train = 7** at both hash levels. D2
+measured 7 against the full 4040-image target pool; this locates all 7 in the COD10K
+partition specifically, with none in CAMO.
 
 ---
 
@@ -154,7 +204,8 @@ detected nor claimed.
 For a COD10K-trained camouflaged-object model:
 
 - Report **COD10K-test** and **NC4K**, disclosing that both were audited against
-  on-disk copies and that a fraction of each is unchecked.
+  on-disk copies and that a fraction of each is unchecked. NC4K survives the extra
+  check its Case 3 setup invites: it does not overlap COD10K-test at any level.
 - **Do not report CHAMELEON** as an independent endpoint. If it is reported at all,
   report it on the 35-image uncontaminated subset, name the subset, and state which
   mask release was used.

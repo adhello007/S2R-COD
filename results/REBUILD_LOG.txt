@@ -2002,3 +2002,144 @@ NOTES      s5r-b IS INFERENCE ONLY AND IS NOT A CHAMELEON ENDPOINT RESULT. It lo
            The COD10K-test, NC4K and CAMO contamination rates carried into CLEAN_PROTOCOL.md were measured against ON-DISK copies, not author-sourced ones. That is the same weakness this re-audit exists to close for CHAMELEON, and it is marked in the protocol table rather than papered over: the same author-sourced re-audit is owed for them.
 ================================================================================
 
+================================================================================
+2026-09-07T22:33:41+05:30 | commit ab6e82c (dirty) | EXP D2_NC4K
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_nc4k/d2_nc4k_crosscheck.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  input_NC4K_Imgs                       = 4121 files, agg 6d1f138926b7b1c0    (Dataset/Test/NC4K/Imgs)
+  input_NC4K_GT                         = 4121 files, agg 9273da9477af8dd5    (Dataset/Test/NC4K/GT)
+  input_COD10K_Imgs                     = 2026 files, agg 67fc0c865423bf17    (Dataset/Test/COD10K/Imgs)
+  input_COD10K_GT                       = 2026 files, agg 81e7332ca565f2ee    (Dataset/Test/COD10K/GT)
+  input_cache_cod10k_train              = 3040 files, agg f27c3b40f444d668    (rebuild/D2_nc4k/cache/cod10k_train)
+  images_hashed                         = 9187    (3 sets)
+  unreadable_images                     = 0    (decode failures)
+  NC4K_INTERSECT_COD10Ktest_byte        = 0    (sha256 of file bytes)
+  NC4K_INTERSECT_COD10Ktest_pixel       = 0    (decoded-RGB hash)
+  NC4K_INTERSECT_COD10Ktrain_byte       = 0
+  NC4K_INTERSECT_COD10Ktrain_pixel      = 0
+  COD10Ktest_INTERSECT_COD10Ktrain_byte = 7    (context: D2 measured 7 against the full Target pool)
+  nearvdup_NC4K_matching_COD10Ktest     = 0/4121 (0.0%)    (distinct NC4K images that are exact or same-dimension re-encoded duplicates)
+  near_dup_shortlisted_NC4K_vs_test     = 1    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_confirmed_NC4K_vs_test       = 0    (full-res verified, mean|diff| <= 6.0)
+  epNN_NC4K_vs_test_checkable           = 1082/4121    (has >=1 same-dimension candidate on the other side)
+  epNN_NC4K_vs_test_unchecked           = 3039/4121    (no same-dimension candidate -- UNCHECKED IS NOT CLEAN)
+  epNN_NC4K_vs_test_gap                 = none    (no >5x jump found -- a continuous distribution is what a clean set looks like)
+  epNN_NC4K_vs_test_min_nearest         = 20.610    (the closest any NC4K image gets to the other set, in grey levels)
+  epNN_NC4K_vs_test_nearest_deciles     = 43.0 50.9 59.3 68.3 79.2    (p10 p25 p50 p75 p90 of the nearest-distance distribution)
+  nearvdup_NC4K_vs_test_at_tol_1        = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_2        = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_3        = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_5        = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_6        = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_matching_COD10Ktrain    = 0/4121 (0.0%)    (distinct NC4K images that are exact or same-dimension re-encoded duplicates)
+  near_dup_shortlisted_NC4K_vs_train    = 0    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_confirmed_NC4K_vs_train      = 0    (full-res verified, mean|diff| <= 6.0)
+  epNN_NC4K_vs_train_checkable          = 1166/4121    (has >=1 same-dimension candidate on the other side)
+  epNN_NC4K_vs_train_unchecked          = 2955/4121    (no same-dimension candidate -- UNCHECKED IS NOT CLEAN)
+  epNN_NC4K_vs_train_gap                = none    (no >5x jump found -- a continuous distribution is what a clean set looks like)
+  epNN_NC4K_vs_train_min_nearest        = 17.190    (the closest any NC4K image gets to the other set, in grey levels)
+  epNN_NC4K_vs_train_nearest_deciles    = 41.4 48.8 56.3 65.8 74.7    (p10 p25 p50 p75 p90 of the nearest-distance distribution)
+  nearvdup_NC4K_vs_train_at_tol_1       = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_2       = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_3       = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_5       = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_6       = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  NC4K_train_partner_partition          = no confirmed pairs    (which COD10K partition any collision involves)
+  epNN_NC4K_vs_test_gap_topk_8          = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  epNN_NC4K_vs_test_gap_topk_32         = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  epNN_NC4K_vs_test_gap_topk_all        = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  confirmed_pairs_total                 = 0    (no pair reached mean|diff| <= 6.0 at identical dimensions, so there is no per-pair evidence to report)
+THRESHOLD  T1 every declared input is present with its declared count (NC4K 4121+4121, COD10K-test 2026+2026, COD10K-train 3040) -> PASS
+THRESHOLD  T5 every confirmed pair carries independent re-encoding evidence (vacuously satisfied: there are no confirmed pairs) -> PASS
+THRESHOLD  T2 NC4K INTERSECT COD10K-test is empty at the file-byte level -> PASS
+THRESHOLD  T3 NC4K INTERSECT COD10K-test is empty at the decoded-pixel level -> PASS
+THRESHOLD  T4 no NC4K image is a same-dimension re-encoded duplicate of a COD10K-test image at mean|diff| <= 6.0 -> PASS
+THRESHOLD  T6 the NC4K-vs-COD10K-test gap verdict and minimum nearest distance are invariant across shortlist depth 8 / 32 / all -> PASS
+THRESHOLD  T7 NC4K INTERSECT COD10K-train measured and reported separately (NEW -- no prior value) -> PASS
+THRESHOLD  T8 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/D2_nc4k/out/d2nc4k_sweep_test.json, rebuild/D2_nc4k/out/d2nc4k_nearest_test.csv, rebuild/D2_nc4k/out/d2nc4k_sweep_train.json, rebuild/D2_nc4k/out/d2nc4k_nearest_train.csv, rebuild/D2_nc4k/out/d2nc4k_topk_sensitivity.json
+TRAINS     NO
+NOTES      WHY: the S2R-COD paper's Task Setup Case 3 describes the NC4K evaluation as additionally introducing synthetic images derived from the COD10K TEST set into the SOURCE domain (Table 3, "CAMO + CHAM. + COD10K -> NC4K"). Were NC4K to overlap COD10K-test, that injection would put synthetic renderings of NC4K's own test photographs into supervision -- a SOURCE-INTO-TEST collision, and a different mechanism from D2/D2R's CHAMELEON finding, which was target-side and unlabeled.
+           METHOD IDENTITY IS BY IMPORT, NOT BY COPY. This script imports rebuild/D2_reaudit/detect_contamination.py -- the same module that produced the committed 41/76 CHAMELEON result, which imports nothing from this repository and passes an 8-assertion synthetic known-answer self-test. The descriptor (32x32 greyscale BILINEAR, no contrast normalisation), the shortlist (Gram-matrix RMS <= 14, exhaustive within each exact-dimension group), the confirmation rule (full-resolution mean|A-B| <= 6.0), the 1/2/3/5/6 tolerance sweep and the >5x gap rule are therefore identical by construction rather than by inspection.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that land outside every dimension group, crops, flips, rotations, colour shifts and different photographs of one specimen are NOT detected and are NOT claimed. An NC4K image with no same-dimension candidate on the other side is UNCHECKED, NOT CLEAN, and the unchecked count is reported for both comparisons rather than folded into a clean rate.
+           A NULL IS A RESULT. The thresholds are written so that PASS means NO collision. If they pass, Case 3's described injection does not put COD10K-test photographs into the NC4K test column by this measure, and that is reported as measured -- not strained toward a finding. The minimum nearest distance and the decile spread are logged precisely so a null is quantitative rather than merely an absence.
+           CONTEXT, NOT A CLAIM ABOUT INTENT: D2's committed d2_pair_matrix.csv already recorded NC4K INTERSECT COD10K-test = 0 at both hash levels as part of its 8-split sweep. This experiment re-derives that with the near-duplicate level added, which D2 never ran for this specific pair, and adds the COD10K-train partition. Whether the paper's Case 3 text describes a leak is a question about the measured overlap; this block reports the overlap and does not attribute intent.
+           SCOPE OF THE COD10K-TRAIN SIDE: "COD10K-train" here is the 3040 COD10K-CAM-* files inside Dataset/Target/Image, exposed as a directory of symlinks under rebuild/D2_nc4k/cache/ so the detector can take it as a plain path. That is the published COD10K camouflage train split as this checkout holds it; the other 1000 files in Target/Image are CAMO and are excluded from that side by construction.
+================================================================================
+
+================================================================================
+2026-09-07T22:54:12+05:30 | commit ab6e82c (dirty) | EXP D2_NC4K
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_nc4k/d2_nc4k_crosscheck.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding)
+METRICS
+  input_NC4K_Imgs                         = 4121 files, agg 6d1f138926b7b1c0    (Dataset/Test/NC4K/Imgs)
+  input_NC4K_GT                           = 4121 files, agg 9273da9477af8dd5    (Dataset/Test/NC4K/GT)
+  input_COD10K_Imgs                       = 2026 files, agg 67fc0c865423bf17    (Dataset/Test/COD10K/Imgs)
+  input_COD10K_GT                         = 2026 files, agg 81e7332ca565f2ee    (Dataset/Test/COD10K/GT)
+  input_cache_cod10k_train                = 3040 files, agg f27c3b40f444d668    (rebuild/D2_nc4k/cache/cod10k_train)
+  images_hashed                           = 9187    (3 sets)
+  unreadable_images                       = 0    (decode failures)
+  NC4K_INTERSECT_COD10Ktest_byte          = 0    (sha256 of file bytes)
+  NC4K_INTERSECT_COD10Ktest_pixel         = 0    (decoded-RGB hash)
+  NC4K_INTERSECT_COD10Ktrain_byte         = 0
+  NC4K_INTERSECT_COD10Ktrain_pixel        = 0
+  COD10Ktest_INTERSECT_COD10Ktrain_byte   = 7    (context: D2 measured 7 against the full Target pool)
+  nearvdup_NC4K_matching_COD10Ktest       = 0/4121 (0.0%)    (distinct NC4K images that are exact or same-dimension re-encoded duplicates)
+  near_dup_shortlisted_NC4K_vs_test       = 1    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_confirmed_NC4K_vs_test         = 0    (full-res verified, mean|diff| <= 6.0)
+  epNN_NC4K_vs_test_checkable             = 1082/4121    (has >=1 same-dimension candidate on the other side)
+  epNN_NC4K_vs_test_unchecked             = 3039/4121    (no same-dimension candidate -- UNCHECKED IS NOT CLEAN)
+  epNN_NC4K_vs_test_gap                   = none    (no >5x jump found -- a continuous distribution is what a clean set looks like)
+  epNN_NC4K_vs_test_min_nearest           = 20.610    (the closest any NC4K image gets to the other set, in grey levels)
+  epNN_NC4K_vs_test_nearest_deciles       = 43.0 50.9 59.3 68.3 79.2    (p10 p25 p50 p75 p90 of the nearest-distance distribution)
+  epNN_NC4K_vs_test_min_nearest_over_tol  = 3.44x    (closest approach as a multiple of the 6.0 confirmation tolerance; the margin by which the null holds)
+  epNN_NC4K_vs_test_unchecked_share       = 73.7%    (share of NC4K that cannot be compared at all -- unchecked is not clean)
+  nearvdup_NC4K_vs_test_at_tol_1          = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_2          = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_3          = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_5          = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_test_at_tol_6          = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_matching_COD10Ktrain      = 0/4121 (0.0%)    (distinct NC4K images that are exact or same-dimension re-encoded duplicates)
+  near_dup_shortlisted_NC4K_vs_train      = 0    (exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_confirmed_NC4K_vs_train        = 0    (full-res verified, mean|diff| <= 6.0)
+  epNN_NC4K_vs_train_checkable            = 1166/4121    (has >=1 same-dimension candidate on the other side)
+  epNN_NC4K_vs_train_unchecked            = 2955/4121    (no same-dimension candidate -- UNCHECKED IS NOT CLEAN)
+  epNN_NC4K_vs_train_gap                  = none    (no >5x jump found -- a continuous distribution is what a clean set looks like)
+  epNN_NC4K_vs_train_min_nearest          = 17.190    (the closest any NC4K image gets to the other set, in grey levels)
+  epNN_NC4K_vs_train_nearest_deciles      = 41.4 48.8 56.3 65.8 74.7    (p10 p25 p50 p75 p90 of the nearest-distance distribution)
+  epNN_NC4K_vs_train_min_nearest_over_tol = 2.87x    (closest approach as a multiple of the 6.0 confirmation tolerance; the margin by which the null holds)
+  epNN_NC4K_vs_train_unchecked_share      = 71.7%    (share of NC4K that cannot be compared at all -- unchecked is not clean)
+  nearvdup_NC4K_vs_train_at_tol_1         = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_2         = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_3         = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_5         = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_NC4K_vs_train_at_tol_6         = 0/4121    (post-hoc filter on the tol=6.0 set, as in D2)
+  NC4K_train_partner_partition            = no confirmed pairs    (which COD10K partition any collision involves)
+  epNN_NC4K_vs_test_gap_topk_8            = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  epNN_NC4K_vs_test_gap_topk_32           = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  epNN_NC4K_vs_test_gap_topk_all          = none    (min nearest 20.610; sensitivity, topk=8 is the comparison run)
+  confirmed_pairs_total                   = 0    (no pair reached mean|diff| <= 6.0 at identical dimensions, so there is no per-pair evidence to report)
+THRESHOLD  T1 every declared input is present with its declared count (NC4K 4121+4121, COD10K-test 2026+2026, COD10K-train 3040) -> PASS
+THRESHOLD  T5 every confirmed pair carries independent re-encoding evidence (vacuously satisfied: there are no confirmed pairs) -> PASS
+THRESHOLD  T2 NC4K INTERSECT COD10K-test is empty at the file-byte level -> PASS
+THRESHOLD  T3 NC4K INTERSECT COD10K-test is empty at the decoded-pixel level -> PASS
+THRESHOLD  T4 no NC4K image is a same-dimension re-encoded duplicate of a COD10K-test image at mean|diff| <= 6.0 -> PASS
+THRESHOLD  T6 the NC4K-vs-COD10K-test gap verdict and minimum nearest distance are invariant across shortlist depth 8 / 32 / all -> PASS
+THRESHOLD  T7 NC4K INTERSECT COD10K-train measured and reported separately (NEW -- no prior value) -> PASS
+THRESHOLD  T8 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/D2_nc4k/out/d2nc4k_sweep_test.json, rebuild/D2_nc4k/out/d2nc4k_nearest_test.csv, rebuild/D2_nc4k/out/d2nc4k_sweep_train.json, rebuild/D2_nc4k/out/d2nc4k_nearest_train.csv, rebuild/D2_nc4k/out/d2nc4k_topk_sensitivity.json
+TRAINS     NO
+NOTES      WHY: the S2R-COD paper's Task Setup Case 3 describes the NC4K evaluation as additionally introducing synthetic images derived from the COD10K TEST set into the SOURCE domain (Table 3, "CAMO + CHAM. + COD10K -> NC4K"). Were NC4K to overlap COD10K-test, that injection would put synthetic renderings of NC4K's own test photographs into supervision -- a SOURCE-INTO-TEST collision, and a different mechanism from D2/D2R's CHAMELEON finding, which was target-side and unlabeled.
+           METHOD IDENTITY IS BY IMPORT, NOT BY COPY. This script imports rebuild/D2_reaudit/detect_contamination.py -- the same module that produced the committed 41/76 CHAMELEON result, which imports nothing from this repository and passes an 8-assertion synthetic known-answer self-test. The descriptor (32x32 greyscale BILINEAR, no contrast normalisation), the shortlist (Gram-matrix RMS <= 14, exhaustive within each exact-dimension group), the confirmation rule (full-resolution mean|A-B| <= 6.0), the 1/2/3/5/6 tolerance sweep and the >5x gap rule are therefore identical by construction rather than by inspection.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that land outside every dimension group, crops, flips, rotations, colour shifts and different photographs of one specimen are NOT detected and are NOT claimed. An NC4K image with no same-dimension candidate on the other side is UNCHECKED, NOT CLEAN, and the unchecked count is reported for both comparisons rather than folded into a clean rate.
+           A NULL IS A RESULT. The thresholds are written so that PASS means NO collision. If they pass, Case 3's described injection does not put COD10K-test photographs into the NC4K test column by this measure, and that is reported as measured -- not strained toward a finding. The minimum nearest distance and the decile spread are logged precisely so a null is quantitative rather than merely an absence.
+           TRACEABILITY: this is the second D2_NC4K block. The first ran every step and reached the same verdict, but two figures CLEAN_PROTOCOL.md quotes -- the closest approach as a multiple of the tolerance, and the unchecked share as a percentage -- existed only as arithmetic over logged values rather than as logged metrics. They are promoted here. No measured value changed. Same rule as D2's own blocks 1->2 (R4 in REVISION_TABLE.md) and E0's blocks 3->4.
+           CONTEXT, NOT A CLAIM ABOUT INTENT: D2's committed d2_pair_matrix.csv already recorded NC4K INTERSECT COD10K-test = 0 at both hash levels as part of its 8-split sweep. This experiment re-derives that with the near-duplicate level added, which D2 never ran for this specific pair, and adds the COD10K-train partition. Whether the paper's Case 3 text describes a leak is a question about the measured overlap; this block reports the overlap and does not attribute intent.
+           SCOPE OF THE COD10K-TRAIN SIDE: "COD10K-train" here is the 3040 COD10K-CAM-* files inside Dataset/Target/Image, exposed as a directory of symlinks under rebuild/D2_nc4k/cache/ so the detector can take it as a plain path. That is the published COD10K camouflage train split as this checkout holds it; the other 1000 files in Target/Image are CAMO and are excluded from that side by construction.
+================================================================================
+
