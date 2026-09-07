@@ -1248,3 +1248,235 @@ NOTES      WHY THIS RUNS. C1_PLAN.md §5 committed to logging, regardless of out
            SCOPE. This audit still measures GEOMETRY, not accuracy. It establishes whether the targeted and random arms differ, in what respects, and whether the difference is attributable to the ES signal. It does NOT establish that any of it changes a trained model -- that remains C3's question and is untouched here.
 ================================================================================
 
+================================================================================
+2026-09-04T23:36:25+05:30 | commit 065dac6 (dirty) | EXP ABC
+CMD   .venv/bin/python rebuild/ABC/abc_build_pools.py --arms A0,A2,B,C10
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training pools on disk: authors' pool (R1 full images, object=WHITE masks) + B=1000 LAKE-RED renders selected in R2 (grey-128 cutout) by the target-side signal
+METRICS
+  preflight_gates_passed                      = 6/6    (signal, provenance, one_trainer, endpoints, pools, determinism)
+  arm_pools_assembled                         = 24    (2 arch x 4 arms x 3 seeds)
+  pool_size_A0                                = 4447    (base authors' pool only, unpadded)
+  pool_size_A2_B_C                            = 5447    (base + B=1000, identical in A2/B/C)
+  arm_B_draw_coupling                         = per-seed rng 700000+seed    (ABC_PLAN.md A.4 -- "random" is a distribution over draws, not one draw)
+  pools_counts_ok                             = 24/24
+  pools_stem_sets_identical                   = 24/24
+  pools_SrcDataset_parity_all_i               = 24/24    (REAL SrcDataset, every index, not sampled)
+  pools_total_parity_mismatches               = 0
+  pools_round2_worstcase_parity               = 24/24    (pool UNION all 4040 target names as .png in BOTH dirs; parity on the full union proves it for every subset)
+  pools_round2_simulated_n                    = 8487    (worst case = 4447/5447 + 4040)
+  base_bytes_mismatched_vs_E0_manifest        = 0    (per-file sha256 of the 4447+4447 base subset of every pool)
+  render_mask_equals_raw_gt_C10               = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s42             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s43             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s45             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  armC_reproduces_C1_cell                     = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform/n_displaced vs rebuild/C1/out/c1_cells.csv)
+    armC_clusters_funded                      = 75    (C1 logged 75)
+    armC_max_alloc_share                      = 0.194    (C1 logged 0.194)
+    armC_alloc_entropy_norm                   = 0.78644    (C1 logged 0.78644)
+    armC_tv_from_uniform                      = 0.49253    (C1 logged 0.49253)
+    armC_n_displaced                          = 370    (C1 logged 370)
+  overlap_B_vs_C_s42                          = 226 of 224.9 expected by chance (ratio 1.005, Jaccard 0.1274)
+  overlap_B_vs_C_s43                          = 246 of 224.9 expected by chance (ratio 1.094, Jaccard 0.1403)
+  overlap_B_vs_C_s45                          = 230 of 224.9 expected by chance (ratio 1.023, Jaccard 0.1299)
+  forbidden_path_references                   = 0    (E0.step_independence() CALLED, 16 scripts incl. 4 in rebuild/ABC)
+  provenance_pragma_exemptions                = 4    (reported, not suppressed)
+  manifest_spotcheck                          = 203/203    (random sample across raw/auth/tgt/local, re-hashed)
+  MyTrain_py_copies_in_tree                   = 1
+  MyTest_py_copies_in_tree                    = 1
+  patches_missing                             = {}
+  cudnn_declared                              = deterministic=True benchmark_false=True seed_from_opt=True
+  endpoints                                   = COD10K 2026/2026 (primary), NC4K 4121/4121 (secondary)    (CHAMELEON withdrawn (D2 41/76); CAMO selection-only)
+  allocation_signal                           = target-side, from rebuild/B1/out/b1_cluster_es_dinoL518.csv    (C1 gate_signal + gate_cluster_source called unchanged)
+  pool_content_identical_across_architectures = 12/12 arm x seed pairs    (pool content is architecture-independent by construction)
+  armC_pool_identical_across_seeds            = True    (arm C selection is deterministic -- no RNG)
+THRESHOLD  every arm pool has equal Image/ and GT/ counts at its expected size -> PASS
+THRESHOLD  every arm pool has identical stem sets in Image/ and GT/ -> PASS
+THRESHOLD  the REAL SrcDataset pairs stem(images[i]) == stem(gts[i]) for EVERY i in EVERY arm pool -> PASS
+THRESHOLD  round-2 positional parity holds on the full worst-case CLS union -> PASS
+THRESHOLD  every pool's base subset matches E0's manifest byte for byte -> PASS
+THRESHOLD  every selected render mask is pixel-identical to raw_gt -> PASS
+THRESHOLD  arm C reproduces C1's committed allocation cell exactly -> PASS
+THRESHOLD  arms B and C overlap at the chance rate (0.7-1.3x), so they are genuinely different sets -> PASS
+THRESHOLD  no script under rebuild/ references the archive or a /tmp scratchpad -> PASS
+THRESHOLD  every declared primary input resolves and re-hashes clean -> PASS
+THRESHOLD  exactly one MyTrain.py and one MyTest.py exist, and all six patches are present -> PASS
+THRESHOLD  MyTrain.py declares cudnn determinism and a CLI seed -> PASS
+THRESHOLD  CHAMELEON and CAMO are unreachable as endpoints in code -> PASS
+THRESHOLD  the endpoint-measured signal appears nowhere in ABC, and ABC fits no partition of its own -> PASS
+THRESHOLD  pool content is identical across the two architectures for every (arm, seed) -> PASS
+THRESHOLD  arm C's pool is identical across all three seeds -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/abc_preflight.json, rebuild/ABC/out/abc_pools.json, rebuild/ABC/out/abc_stems_C_a1.0.txt, rebuild/ABC/out/abc_stems_B_s42.txt, rebuild/ABC/out/abc_stems_B_s43.txt, rebuild/ABC/out/abc_stems_B_s45.txt
+TRAINS     NO
+NOTES      BLOCK 1 OF 3, AND THE FIRST ABC BLOCK. Unlike E0-C1, where a later block SUPERSEDED an earlier one, ABC's three blocks are sequential STAGES: #1 is this pre-flight, #2 is run accounting, #3 is the verdict. None supersedes another. This block TRAINS NOTHING; block #2 is the first in the whole rebuild with TRAINS YES.
+           COLLISION IS IMPOSSIBLE BY CONSTRUCTION, not by convention. RUNID is a pure function of (arch, arm, seed); every path a run writes is RUNID-prefixed, INCLUDING the CLS round-2 pool, because CLS.py:16 derives it from source_root alone. Under released code every arm collapses onto Dataset/Source/HKU-IS_iteration2/ and each run rmtree's the previous run's pseudo-label pool (CLS.py:19-23) -- which is also why patch P0 was required before any arm could be built.
+           ROUND-2 PARITY IS PROVED, NOT SAMPLED. CLS appends images as .png (CLS.py:156, via the .jpg->.png rename at Dataloader.py:141-142), so round 2 trains on a MIXED-EXTENSION pool that no prior experiment ever checked. SrcDataset pairs image to mask by sorted-list INDEX, not by name (Dataloader.py:14-17,29-37), and filter_files is not a pairing guard -- it checks only equal lengths and drops positional pairs whose sizes differ, so a mis-pairing between two images of equal dimensions passes silently. Parity is therefore asserted on the union of each pool with ALL 4040 target names; sorted order is preserved under deletion of the same stems from both lists, and CLS writes image and GT together or skips both (CLS.py:151,155-156), so the union case proves every possible subset.
+           ARM-B DRAW COUPLING IS PER-SEED, and this is a decision with a cost. "Random" is a distribution over draws, not one draw -- C1 averaged its random arm over 20 draws for exactly this reason, and REBUILD_PLAN 0.2 discarded "seed 0, single draw" as an inherited defect. The cost: arm B carries selection variance that arms A0 and C do not, so pooled sigma_hat will be INFLATED by arm B, making the pre-registered bar harder rather than easier. Per-arm sds are reported beside the pooled value in block #3.
+           A2-vs-B CARRIES A MASK-PROVENANCE ASYMMETRY, quantified rather than hidden. A2's added masks are the AUTHORS' GT (mean white fraction 0.18557); B's and C's are the render's own output masks, pixel-identical to RAW GT (0.19132). So Delta(B - A2) confounds "LAKE-RED background" with a 0.00575 mean-white-fraction difference on 1000 of 5447 images (18.4%). It is unavoidable under the approved A2 definition: the authors' image was rendered with the authors' mask, and pairing it with the raw mask would mislabel it. Delta(C - B) -- the campaign's actual claim -- is unaffected: B and C share mask provenance, budget and render pool.
+           WHAT ARM C IS AND IS NOT. C1's attribution audit measured the ES signal's contribution at +0.0073 of d paired against its own shuffle (13/20, a coin flip) and -0.0649 against an arbitrary cluster (4/20). So this campaign tests whether a CONCENTRATED, more-proximal, lower-effective-rank arm trains better than a dispersed one. It is NOT a test of whether the uncertainty signal specifically helps, and no result from it may be reported as evidence about that signal.
+           THE agg VALUES IN REBUILD_PLAN 1 ARE NOT AN ASSERTABLE AUTHORITY, found while building the first arm pool and recorded because it is a defect in the rebuild's own work. common.py:248-263 claims dir_digest "Matches the agg values pinned in REBUILD_PLAN.md 1." It does not: measured d7f6de696d5c223e against the pinned b42e5f44b5f2b0db on the authors' Image pool. The pinned values were computed over a listing carrying the FULL RELATIVE PATH; dir_digest hashes the BARE FILENAME. Reproduced exactly: the path-prefixed variant returns b42e5f44b5f2b0db and 95a0b4ed8ce47903. Never caught because no .py in the repo references those values. PRIMARY DATA IS UNCHANGED -- all 4447+4447 verify per-file against E0's manifest. ABC therefore asserts against E0's manifest, and common.py's docstring plus REBUILD_PLAN 1 need correcting (pending REVISION_TABLE R16).
+           PREREGISTRATION.md was committed before this block and is FROZEN. This script neither reads it as an input nor writes it.
+================================================================================
+
+================================================================================
+2026-09-05T22:56:22+05:30 | commit 065dac6 (dirty) | EXP ABC
+CMD   .venv/bin/python rebuild/ABC/abc_train.py --arms A0,A2,B,C10
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training reads each arm's own pool at Dataset/Source/ABC/<RUNID>/{Image,GT}; CLS round 2 reads Dataset/Source/ABC/<RUNID>_iteration2/
+METRICS
+  training_runs_completed        = 24/24
+  runs_abandoned                 = 0
+  runs_discarded_and_rerun       = 0
+  wall_clock_SINet_min           = mean 106.9  range 104.5-108.3  n=12    (reference 104.5 min)
+  wall_clock_SINetv2_min         = mean 127.0  range 121.2-129.7  n=12    (reference 131.0 min)
+  n_appended_SINet_A0_s42        = 1866    (CLS round-2 append; best_epoch 32; wall 104.5m)
+  n_appended_SINet_A0_s43        = 1732    (CLS round-2 append; best_epoch 28; wall 105.7m)
+  n_appended_SINet_A0_s45        = 1796    (CLS round-2 append; best_epoch 27; wall 107.3m)
+  n_appended_SINet_A2_s42        = 1780    (CLS round-2 append; best_epoch 25; wall 105.9m)
+  n_appended_SINet_A2_s43        = 1837    (CLS round-2 append; best_epoch 35; wall 107.7m)
+  n_appended_SINet_A2_s45        = 1761    (CLS round-2 append; best_epoch 21; wall 106.2m)
+  n_appended_SINet_B_s42         = 1902    (CLS round-2 append; best_epoch 32; wall 108.3m)
+  n_appended_SINet_B_s43         = 2103    (CLS round-2 append; best_epoch 28; wall 107.0m)
+  n_appended_SINet_B_s45         = 2019    (CLS round-2 append; best_epoch 21; wall 108.3m)
+  n_appended_SINet_C10_s42       = 1852    (CLS round-2 append; best_epoch 32; wall 106.1m)
+  n_appended_SINet_C10_s43       = 1782    (CLS round-2 append; best_epoch 28; wall 107.7m)
+  n_appended_SINet_C10_s45       = 2163    (CLS round-2 append; best_epoch 22; wall 108.1m)
+  n_appended_SINetv2_A0_s42      = 1967    (CLS round-2 append; best_epoch 92; wall 125.0m)
+  n_appended_SINetv2_A0_s43      = 1911    (CLS round-2 append; best_epoch 99; wall 126.7m)
+  n_appended_SINetv2_A0_s45      = 1978    (CLS round-2 append; best_epoch 62; wall 128.8m)
+  n_appended_SINetv2_A2_s42      = 1999    (CLS round-2 append; best_epoch 30; wall 127.0m)
+  n_appended_SINetv2_A2_s43      = 2104    (CLS round-2 append; best_epoch 70; wall 129.4m)
+  n_appended_SINetv2_A2_s45      = 2023    (CLS round-2 append; best_epoch 31; wall 127.2m)
+  n_appended_SINetv2_B_s42       = 2010    (CLS round-2 append; best_epoch 30; wall 129.7m)
+  n_appended_SINetv2_B_s43       = 2045    (CLS round-2 append; best_epoch 99; wall 126.8m)
+  n_appended_SINetv2_B_s45       = 2005    (CLS round-2 append; best_epoch 62; wall 128.2m)
+  n_appended_SINetv2_C10_s42     = 2140    (CLS round-2 append; best_epoch 34; wall 126.3m)
+  n_appended_SINetv2_C10_s43     = 1904    (CLS round-2 append; best_epoch 22; wall 127.7m)
+  n_appended_SINetv2_C10_s45     = 2020    (CLS round-2 append; best_epoch 62; wall 121.2m)
+  n_appended_mean_range          = mean 1945.8  range 1732-2163  spread 22.2% of mean
+  n_appended_spread_exceeds_5pct = True    (ABC_PLAN.md A.12 item 3 -- the one legitimate place the arms diverge beyond the Stage C injection)
+THRESHOLD  CLS round-2 append counts agree across arms within 5%% of the mean -> FAIL
+THRESHOLD  every completed run logged exactly 2 CSRDA rounds -> PASS
+THRESHOLD  total_step stayed pinned in BOTH rounds of every run (253 SINet / 127 SINet-v2), so added data bought zero extra optimisation -> PASS
+THRESHOLD  every run reached its final epoch and saved Tea_epoch_best.pth -> PASS
+THRESHOLD  every run read the unfiltered 4040-image target set in both rounds -> PASS
+THRESHOLD  no run was abandoned -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/abc_runs.csv, rebuild/ABC/out/abc_commands.txt, rebuild/ABC/out/abc_discards.json
+TRAINS     YES
+NOTES      BLOCK 2 OF 3, AND THE FIRST BLOCK IN THE WHOLE REBUILD WITH TRAINS YES. Every prior block -- E0, D2, D1, B1, C1 -- records TRAINS NO. Block #1 is the pre-flight, this is run accounting, #3 is the verdict. None supersedes another.
+           total_step IS PINNED, MEASURED PER RUN. min(len(source), len(target)) at MyTrain.py:306-307 with zip() truncating at :51,53 means B changes the MIXTURE and not the step count. So arm A0 gives each base image 0.910 exposures per epoch against 0.743 for A2/B/C at B=1000 -- 22% more -- which is exactly why A0 is not a clean control and why A2 exists.
+           n_appended DIFFERS PER ARM BY CONSTRUCTION, and is reported rather than absorbed. CLS selects target images by edge_loss < u*avg_loss (CLS.py:139) using the arm's OWN round-1 model, so each arm appends a different number of differently-pseudo-labelled images. That is legitimately part of "closed-loop", but it is a SECOND place the arms differ beyond the Stage C injection, and it is high-variance. total_step stays pinned for any n_appended, which is asserted above.
+           A DISCARDED RUN NEVER ENTERS THE METRICS. Any run failing an A.8.3 assertion has its snapshot and CLS directories removed and is re-run; discards are in abc_discards.json. CLS falls back to Tea_40/Tea_100.pth if Tea_epoch_best is missing (CLS.py:65-75), so a killed run would silently change which teacher generates pseudo-labels -- hence the assertion rather than a warning.
+           PREREGISTRATION.md was committed before block #1 and is unchanged. This driver neither reads it as an input nor writes it.
+================================================================================
+
+================================================================================
+2026-09-06T13:37:26+05:30 | commit 065dac6 (dirty) | EXP ABC
+CMD   .venv/bin/python rebuild/ABC/abc_evaluate.py --arms A0,A2,B,C10
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  Tea_epoch_best.pth of the final CSRDA round, 352x352 inference, scored from written PNGs with Eval/metrics.py at 6 decimals
+METRICS
+  scorer_reproduces_B1           = Sa 0.717216 (delta 3.77e-07), MAE 0.074463 (delta 2.32e-07)    (validated on the COMMITTED Result/SINet/S2C BEFORE scoring any new run; B1 logged 0.717216 / 0.074463)
+  runs_scored                    = 24
+  endpoint_shape_mismatches      = 0    (pred.shape == gt.shape asserted for every image of every run)
+  SINet_A0_s42_COD10K            = Sa 0.715086  MAE 0.074960  Fbw 0.481153  meanEm 0.741502    (n=2026  adpEm 0.759159  maxEm 0.788751)
+  SINet_A0_s43_COD10K            = Sa 0.681706  MAE 0.077044  Fbw 0.431838  meanEm 0.688856    (n=2026  adpEm 0.765816  maxEm 0.781802)
+  SINet_A0_s45_COD10K            = Sa 0.706058  MAE 0.077347  Fbw 0.459602  meanEm 0.726824    (n=2026  adpEm 0.762161  maxEm 0.788515)
+  SINet_A2_s42_COD10K            = Sa 0.705507  MAE 0.075994  Fbw 0.450597  meanEm 0.721048    (n=2026  adpEm 0.764296  maxEm 0.787472)
+  SINet_A2_s43_COD10K            = Sa 0.708334  MAE 0.078489  Fbw 0.471922  meanEm 0.741395    (n=2026  adpEm 0.751847  maxEm 0.782599)
+  SINet_A2_s45_COD10K            = Sa 0.709196  MAE 0.080858  Fbw 0.446810  meanEm 0.731916    (n=2026  adpEm 0.751752  maxEm 0.785990)
+  SINet_B_s42_COD10K             = Sa 0.711554  MAE 0.076085  Fbw 0.471675  meanEm 0.740832    (n=2026  adpEm 0.750617  maxEm 0.789028)
+  SINet_B_s43_COD10K             = Sa 0.713632  MAE 0.076278  Fbw 0.478008  meanEm 0.745119    (n=2026  adpEm 0.749502  maxEm 0.786634)
+  SINet_B_s45_COD10K             = Sa 0.715155  MAE 0.075917  Fbw 0.463606  meanEm 0.740073    (n=2026  adpEm 0.752423  maxEm 0.794794)
+  SINet_C10_s42_COD10K           = Sa 0.717165  MAE 0.073184  Fbw 0.489664  meanEm 0.751058    (n=2026  adpEm 0.759609  maxEm 0.792598)
+  SINet_C10_s43_COD10K           = Sa 0.723034  MAE 0.075136  Fbw 0.497380  meanEm 0.757392    (n=2026  adpEm 0.761521  maxEm 0.798605)
+  SINet_C10_s45_COD10K           = Sa 0.715243  MAE 0.078355  Fbw 0.475278  meanEm 0.743969    (n=2026  adpEm 0.752674  maxEm 0.787083)
+  SINetv2_A0_s42_COD10K          = Sa 0.688813  MAE 0.091691  Fbw 0.480315  meanEm 0.750740    (n=2026  adpEm 0.755133  maxEm 0.760408)
+  SINetv2_A0_s43_COD10K          = Sa 0.678740  MAE 0.095147  Fbw 0.463586  meanEm 0.738738    (n=2026  adpEm 0.746947  maxEm 0.748461)
+  SINetv2_A0_s45_COD10K          = Sa 0.699883  MAE 0.085756  Fbw 0.491150  meanEm 0.761208    (n=2026  adpEm 0.762059  maxEm 0.775037)
+  SINetv2_A2_s42_COD10K          = Sa 0.691914  MAE 0.089186  Fbw 0.480856  meanEm 0.752826    (n=2026  adpEm 0.754857  maxEm 0.765099)
+  SINetv2_A2_s43_COD10K          = Sa 0.688977  MAE 0.094524  Fbw 0.479300  meanEm 0.752168    (n=2026  adpEm 0.749144  maxEm 0.766635)
+  SINetv2_A2_s45_COD10K          = Sa 0.695414  MAE 0.087455  Fbw 0.483610  meanEm 0.754712    (n=2026  adpEm 0.751927  maxEm 0.768666)
+  SINetv2_B_s42_COD10K           = Sa 0.698340  MAE 0.092242  Fbw 0.480306  meanEm 0.750170    (n=2026  adpEm 0.746399  maxEm 0.771119)
+  SINetv2_B_s43_COD10K           = Sa 0.689481  MAE 0.089883  Fbw 0.478444  meanEm 0.753645    (n=2026  adpEm 0.754123  maxEm 0.765622)
+  SINetv2_B_s45_COD10K           = Sa 0.697385  MAE 0.087132  Fbw 0.490593  meanEm 0.758552    (n=2026  adpEm 0.757126  maxEm 0.770687)
+  SINetv2_C10_s42_COD10K         = Sa 0.692321  MAE 0.093395  Fbw 0.477856  meanEm 0.751285    (n=2026  adpEm 0.740293  maxEm 0.771908)
+  SINetv2_C10_s43_COD10K         = Sa 0.696328  MAE 0.090749  Fbw 0.478677  meanEm 0.751750    (n=2026  adpEm 0.743452  maxEm 0.770018)
+  SINetv2_C10_s45_COD10K         = Sa 0.695360  MAE 0.089182  Fbw 0.486758  meanEm 0.759806    (n=2026  adpEm 0.755022  maxEm 0.773168)
+  SINet_A0_s42_NC4K              = Sa 0.765121  MAE 0.085752  Fbw 0.603699  meanEm 0.786745    (n=4121  adpEm 0.824574  maxEm 0.831747)
+  SINet_A0_s43_NC4K              = Sa 0.751545  MAE 0.088874  Fbw 0.583648  meanEm 0.769559    (n=4121  adpEm 0.823972  maxEm 0.825581)
+  SINet_A0_s45_NC4K              = Sa 0.757700  MAE 0.090228  Fbw 0.586948  meanEm 0.774811    (n=4121  adpEm 0.822000  maxEm 0.827261)
+  SINet_A2_s42_NC4K              = Sa 0.760908  MAE 0.088385  Fbw 0.585164  meanEm 0.774973    (n=4121  adpEm 0.828089  maxEm 0.833443)
+  SINet_A2_s43_NC4K              = Sa 0.762933  MAE 0.087466  Fbw 0.601755  meanEm 0.789875    (n=4121  adpEm 0.822978  maxEm 0.828007)
+  SINet_A2_s45_NC4K              = Sa 0.765789  MAE 0.090892  Fbw 0.584404  meanEm 0.783802    (n=4121  adpEm 0.821945  maxEm 0.831977)
+  SINet_B_s42_NC4K               = Sa 0.764108  MAE 0.087897  Fbw 0.595587  meanEm 0.785252    (n=4121  adpEm 0.820683  maxEm 0.829958)
+  SINet_B_s43_NC4K               = Sa 0.768972  MAE 0.085001  Fbw 0.610683  meanEm 0.795682    (n=4121  adpEm 0.823596  maxEm 0.833602)
+  SINet_B_s45_NC4K               = Sa 0.767632  MAE 0.088175  Fbw 0.594525  meanEm 0.787168    (n=4121  adpEm 0.822234  maxEm 0.833464)
+  SINet_C10_s42_NC4K             = Sa 0.765296  MAE 0.086273  Fbw 0.609419  meanEm 0.793044    (n=4121  adpEm 0.822312  maxEm 0.829203)
+  SINet_C10_s43_NC4K             = Sa 0.771241  MAE 0.085305  Fbw 0.617398  meanEm 0.798453    (n=4121  adpEm 0.826012  maxEm 0.836072)
+  SINet_C10_s45_NC4K             = Sa 0.770503  MAE 0.086622  Fbw 0.606186  meanEm 0.792545    (n=4121  adpEm 0.821971  maxEm 0.831017)
+  SINetv2_A0_s42_NC4K            = Sa 0.745691  MAE 0.092348  Fbw 0.613916  meanEm 0.802714    (n=4121  adpEm 0.816333  maxEm 0.811167)
+  SINetv2_A0_s43_NC4K            = Sa 0.736067  MAE 0.099838  Fbw 0.596856  meanEm 0.788032    (n=4121  adpEm 0.803769  maxEm 0.796864)
+  SINetv2_A0_s45_NC4K            = Sa 0.751473  MAE 0.092634  Fbw 0.615030  meanEm 0.801671    (n=4121  adpEm 0.817075  maxEm 0.813487)
+  SINetv2_A2_s42_NC4K            = Sa 0.747102  MAE 0.093372  Fbw 0.609361  meanEm 0.798161    (n=4121  adpEm 0.814965  maxEm 0.808499)
+  SINetv2_A2_s43_NC4K            = Sa 0.743257  MAE 0.097429  Fbw 0.609297  meanEm 0.797373    (n=4121  adpEm 0.811218  maxEm 0.804650)
+  SINetv2_A2_s45_NC4K            = Sa 0.753292  MAE 0.090255  Fbw 0.617719  meanEm 0.806062    (n=4121  adpEm 0.819831  maxEm 0.818144)
+  SINetv2_B_s42_NC4K             = Sa 0.753317  MAE 0.097475  Fbw 0.606123  meanEm 0.794098    (n=4121  adpEm 0.810381  maxEm 0.811188)
+  SINetv2_B_s43_NC4K             = Sa 0.743653  MAE 0.095901  Fbw 0.606844  meanEm 0.797977    (n=4121  adpEm 0.809729  maxEm 0.806090)
+  SINetv2_B_s45_NC4K             = Sa 0.748868  MAE 0.091476  Fbw 0.615240  meanEm 0.802753    (n=4121  adpEm 0.815830  maxEm 0.812160)
+  SINetv2_C10_s42_NC4K           = Sa 0.748534  MAE 0.096669  Fbw 0.608100  meanEm 0.799932    (n=4121  adpEm 0.808746  maxEm 0.810865)
+  SINetv2_C10_s43_NC4K           = Sa 0.750839  MAE 0.097324  Fbw 0.606013  meanEm 0.797644    (n=4121  adpEm 0.806477  maxEm 0.812606)
+  SINetv2_C10_s45_NC4K           = Sa 0.749305  MAE 0.092402  Fbw 0.616029  meanEm 0.803169    (n=4121  adpEm 0.816270  maxEm 0.811925)
+  sigma_hat_SINet|COD10K         = 0.008966  (2*sigma_hat = 0.017933, df=8)    (pooled within-arm sd of Sa across arms A0,A2,B,C10)
+  per_arm_sd_SINet|COD10K        = A0 0.017266  A2 0.001930  B 0.001807  C10 0.004059    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINet|COD10K      = A0 0.700950 (n=3)  A2 0.707679 (n=3)  B 0.713447 (n=3)  C10 0.718481 (n=3)
+  DELTA_A2->B_SINet|COD10K       = +0.005768  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.006047  s43 +0.005298  s45 +0.005959)
+  DELTA_B->C10_SINet|COD10K      = +0.005034  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.005610  s43 +0.009402  s45 +0.000088)
+  DELTA_A0->B_SINet|COD10K       = +0.012497  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.003531  s43 +0.031926  s45 +0.009096)
+  DELTA_A0->C10_SINet|COD10K     = +0.017530  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.002079  s43 +0.041328  s45 +0.009185)
+  DELTA_A0->A2_SINet|COD10K      = +0.006729  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.009579  s43 +0.026628  s45 +0.003137)
+  sigma_hat_SINet|NC4K           = 0.004155  (2*sigma_hat = 0.008309, df=8)    (pooled within-arm sd of Sa across arms A0,A2,B,C10)
+  per_arm_sd_SINet|NC4K          = A0 0.006798  A2 0.002452  B 0.002512  C10 0.003240    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINet|NC4K        = A0 0.758122 (n=3)  A2 0.763210 (n=3)  B 0.766904 (n=3)  C10 0.769013 (n=3)
+  DELTA_A2->B_SINet|NC4K         = +0.003694  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.003200  s43 +0.006038  s45 +0.001843)
+  DELTA_B->C10_SINet|NC4K        = +0.002110  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.001189  s43 +0.002269  s45 +0.002871)
+  DELTA_A0->B_SINet|NC4K         = +0.008782  sign 2/3  -> INCONCLUSIVE    (paired per seed: s42 -0.001014  s43 +0.017427  s45 +0.009932)
+  DELTA_A0->C10_SINet|NC4K       = +0.010892  sign 3/3  -> REAL EFFECT    (paired per seed: s42 +0.000175  s43 +0.019696  s45 +0.012803)
+  DELTA_A0->A2_SINet|NC4K        = +0.005088  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.004214  s43 +0.011389  s45 +0.008089)
+  sigma_hat_SINetv2|COD10K       = 0.006129  (2*sigma_hat = 0.012257, df=8)    (pooled within-arm sd of Sa across arms A0,A2,B,C10)
+  per_arm_sd_SINetv2|COD10K      = A0 0.010575  A2 0.003222  B 0.004863  C10 0.002091    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINetv2|COD10K    = A0 0.689145 (n=3)  A2 0.692102 (n=3)  B 0.695069 (n=3)  C10 0.694669 (n=3)
+  DELTA_A2->B_SINetv2|COD10K     = +0.002967  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.006425  s43 +0.000503  s45 +0.001971)
+  DELTA_B->C10_SINetv2|COD10K    = -0.000399  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.006019  s43 +0.006847  s45 -0.002026)
+  DELTA_A0->B_SINetv2|COD10K     = +0.005923  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.009527  s43 +0.010740  s45 -0.002497)
+  DELTA_A0->C10_SINetv2|COD10K   = +0.005524  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.003508  s43 +0.017587  s45 -0.004523)
+  DELTA_A0->A2_SINetv2|COD10K    = +0.002957  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.003102  s43 +0.010237  s45 -0.004469)
+  sigma_hat_SINetv2|NC4K         = 0.005267  (2*sigma_hat = 0.010534, df=8)    (pooled within-arm sd of Sa across arms A0,A2,B,C10)
+  per_arm_sd_SINetv2|NC4K        = A0 0.007782  A2 0.005063  B 0.004837  C10 0.001173    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINetv2|NC4K      = A0 0.744411 (n=3)  A2 0.747884 (n=3)  B 0.748613 (n=3)  C10 0.749559 (n=3)
+  DELTA_A2->B_SINetv2|NC4K       = +0.000729  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.006215  s43 +0.000396  s45 -0.004425)
+  DELTA_B->C10_SINetv2|NC4K      = +0.000946  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.004783  s43 +0.007186  s45 +0.000437)
+  DELTA_A0->B_SINetv2|NC4K       = +0.004202  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.007626  s43 +0.007586  s45 -0.002606)
+  DELTA_A0->C10_SINetv2|NC4K     = +0.005148  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.002842  s43 +0.014771  s45 -0.002169)
+  DELTA_A0->A2_SINetv2|NC4K      = +0.003473  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 +0.001411  s43 +0.007190  s45 +0.001819)
+  architectures_agree_on_verdict = A0->A2 YES  A0->B YES  A0->C10 YES  A2->B YES  B->C10 YES    (a null on one architecture is weaker than a null on both)
+THRESHOLD  the eval path reproduces B1's committed Sa and MAE to <1e-5 before producing any new number -> PASS
+THRESHOLD  SINet and SINet-v2 return the same verdict for every gap on the primary endpoint -> PASS
+THRESHOLD  the primary claim Delta(C-B) is decided by the frozen rule, whatever the answer -> PASS
+OLD CLAIM  C3.1 sigma(Sa) all runs n=6 = 0.00356  [no code] -> SUPERSEDED
+OLD CLAIM  C3.2 sigma(Sa) distinct seeds n=4 = 0.00286  [no code] -> SUPERSEDED
+OLD CLAIM  C3.4 predicted Delta Sa = 0.000111  [no code] -> RE-MEASURED
+OLD CLAIM  C3.5 shortfall vs 2sigma = 64x (51x at B=2000)  [no code] -> RE-MEASURED
+OLD CLAIM  C1.1 Cohen's d targeted-vs-random = ~0.10  [no code] -> CROSS-CHECKED against a TRAINED outcome for the first time
+ARTIFACTS  rebuild/ABC/out/abc_metrics.csv, rebuild/ABC/out/abc_verdict.json, rebuild/ABC/out/abc_sigma.json
+TRAINS     NO
+NOTES      BLOCK 3 OF 3 -- THE VERDICT. Applied strictly by rebuild/ABC/PREREGISTRATION.md, committed before block #1 and unchanged since. sigma_hat is the pooled within-arm sd of Sa MEASURED FROM THESE RUNS. The archived 0.003555 (n=6) and 0.002287 (same seed, n=3) were expected scale only, never the bar, and were measured at a different operating point (--iteration 1, Sa ~0.699 against this campaign's ~0.715).
+           WHAT THIS CAMPAIGN TESTS, AND WHAT IT DOES NOT. C1's attribution audit measured the ES signal's own contribution as +0.0073 of d against its own shuffle (13/20 -- a coin flip) and -0.0649 against an arbitrary cluster (4/20, i.e. targeting the highest-signal cluster is WORSE than picking one at random). Arm C differs from arm B by CONCENTRATION: effective rank ratio 0.53-0.64, mean top-1 similarity to the target manifold up to +0.096, target coverage delta ~0. So Delta(C-B) answers whether a concentrated, more-proximal, lower-effective-rank training set beats a dispersed one. It is NOT evidence about the uncertainty signal, and must not be reported as such whichever way it lands.
+           NO p-VALUE AT n=3, and no optional stopping. The rule reports 2*sigma_hat, the paired per-seed differences and the sign-consistency count. Seeds are NOT added to break an INCONCLUSIVE -- PREREGISTRATION.md 1 says so in those words. With n=3 the t-critical value at 95% is 2.92, so 2*sigma_hat is LESS conservative than a formal test; that is disclosed rather than dressed up.
+           PER-ARM sd IS REPORTED BESIDE THE POOLED VALUE. Pooling assumes equal within-arm variance, and arm B violates it by construction: its draw varies per seed, so it carries selection variance arms A0 and C do not. That inflates sigma_hat and makes the bar HARDER, which is the conservative direction. If sd(B) exceeds 2x sd(C) that is itself a finding -- random allocation has materially higher selection variance than targeted -- and the Delta(C-B) reading is caveated accordingly.
+           A0 IS NOT A CLEAN CONTROL and the Delta values against it are for paper-comparability only. total_step is pinned at 253/127, so A0 gives each base image 22% more exposure per epoch than A2/B/C. A2 is the clean control. Delta(B-A2) additionally carries the 0.00575 mask-tightness asymmetry on 18.4% of the pool (block #1). Only Delta(C-B) is free of both.
+           ENDPOINTS. COD10K-test is primary (2/2026 = 0.1% near-duplicate contamination, 7 exact with a measured MAE impact of -1.24e-05). NC4K is secondary and REPORTED ONLY -- it never decides. CHAMELEON is withdrawn (41/76 = 53.9% of it is training data) and CAMO is the checkpoint-selection set, never an endpoint; both are unreachable in code and re-checked by gate G4. Any null inherits D1's scope: it is evidence about targeting under an EXHAUSTED FOREGROUND POOL, and is silent on whether new foregrounds would help.
+================================================================================
+

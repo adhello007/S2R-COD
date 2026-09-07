@@ -57,6 +57,24 @@ Code path for the source pool: `--source_root` default is `./Dataset/Source/CNC/
 `source_root + 'Image/'` / `+ 'GT/'` by `get_srcloader`
 ([MyTrain.py:292-296](../../MyTrain.py#L292-L296)).
 
+> **The `agg` values above are documentation, not an assertable authority — found while building the
+> first arm pool, and recorded because it is a defect in the rebuild's own work.** `REBUILD_PLAN.md` §1
+> defines `agg` as *"first 16 hex of `sha256(sorted per-file "sha256  name" listing)"*, and
+> `common.py:248-263`'s docstring claims `dir_digest` *"Matches the `agg` values pinned in
+> REBUILD_PLAN.md §1."* **It does not.** Measured on `Dataset/Source/HKU-IS/Image`: `dir_digest` returns
+> `d7f6de696d5c223e` against the pinned `b42e5f44b5f2b0db`. The pinned values were computed over a
+> listing carrying the **full relative path** (`Dataset/Source/HKU-IS/Image/0004.jpg`); `dir_digest`
+> hashes the **bare filename** (`0004.jpg`). Reproduced exactly: the full-relative-path variant returns
+> `b42e5f44b5f2b0db` and `95a0b4ed8ce47903` for Image and GT respectively.
+>
+> The claim was never machine-checked because **no `.py` in the repo references those values** — they
+> appear only in `REBUILD_PLAN.md`, `ABC_SCOPING.md` and this file. **Primary data is unchanged:** all
+> 4447 Image and 4447 GT files verify per-file against `rebuild/E0/out/e0_manifest.sha256` (0
+> mismatched, 0 absent from the manifest). **Consequence for ABC:** the authority is E0's manifest, not
+> §1's `agg` — see §A.5 item 7 and §A.8.2 G5. **Consequence for the rebuild:** `common.py`'s docstring
+> is wrong and should be corrected, and `REBUILD_PLAN.md` §1 should state that its `agg` is
+> path-prefixed. Both are pending as `REVISION_TABLE.md` R16, to be written with `EXP ABC` block #1.
+
 > **Citation correction, carried from `ABC_SCOPING.md` §2.1.** The brief cites "MyTrain.py:220,297" for
 > the training source. Those two lines are the **target** loader — `:220` is `--target_root` and `:297`
 > is `get_tarloader`. That citation is correct in `D2_RESULTS.md` §3.0, where it describes the
@@ -294,7 +312,7 @@ the paper's claim were about one specific baseline sample. It is not.
 | 4 | epochs / batch / lr / decay | self-set [:249-272](../../MyTrain.py#L249-L272) | **cannot drift from the CLI** — restated in A.5.1; assert last logged epoch |
 | 5 | α / u / τ / a / b / c | [:225-231](../../MyTrain.py#L225-L231) | overwritten after parsing — structurally safe |
 | 6 | seed → init, shuffle order, augmentation | [:242](../../MyTrain.py#L242) + P1 | `--seed` in the command manifest; determinism measured, §A.6 |
-| 7 | base pool bytes | [:232](../../MyTrain.py#L232) + P0, [:292-293](../../MyTrain.py#L292-L293) | `C.dir_digest` of each arm's base subset == committed agg hashes (§A.1) |
+| 7 | base pool bytes | [:232](../../MyTrain.py#L232) + P0, [:292-293](../../MyTrain.py#L292-L293) | **per-file sha256 of each arm's base subset against `rebuild/E0/out/e0_manifest.sha256`, all 4447 + 4447, not sampled**, plus `C.dir_digest(arm) == C.dir_digest(primary)` for copy-identity. **Not** against §A.1's `agg` values — see §A.1's note on the digest formula |
 | 8 | target pool (4040, unfiltered) | [:297-300](../../MyTrain.py#L297-L300) | assert `[Target Loader] Loaded 4040` in every run log |
 | 9 | `total_step` | [:306-307](../../MyTrain.py#L306-L307) | assert the parsed set == `{253}` (SINet) / `{127}` (SINet-v2) in **both** rounds |
 | 10 | checkpoint-selection set | [:302-304](../../MyTrain.py#L302-L304), [:322-324](../../MyTrain.py#L322-L324) | `--val_root ./Dataset/Val/CAMO/` in the manifest; 250 files asserted |
@@ -657,7 +675,7 @@ There is **no `--force`**.
 | **G2 provenance / freshness** | ★ **ground rule 1, asserted**: `E0.step_independence()`, assert `n_forbidden == 0`; re-hash a random sample of `['raw','raw_gt','tgt','local']` against `rebuild/E0/out/e0_manifest.sha256` | **imports and calls `e0_regenerate.step_independence()`** — which already walks *all* of `rebuild/**/*.py`, so it covers `rebuild/ABC/*.py` automatically. This is the pattern `c1_preflight.gate_freshness` uses: *"E0's own `step_independence()` is imported and called rather than re-implemented, so C1 cannot drift from the gate E0 self-tested."* **Corollary the ABC scripts must respect:** any occurrence of `/tmp/claude-`, `_archive_stageC_old`, `evidence/artifacts` or `/scratchpad` as a non-docstring string literal in `rebuild/ABC/*.py` will make **E0's and C1's gates fail retroactively.** Keep such tokens in module docstrings, or annotate the line `# provenance-ok` — exemptions are reported, never hidden |
 | **G3 one trainer, one eval path** | ★ **ground rule 2, asserted**: exactly one `MyTrain.py` and one `MyTest.py` in the tree (glob `**/MyTrain*.py`, `**/MyTest*.py`, excluding `.venv/`, `LAKE-RED/`, `rebuild/reference/`); no `MyTrain_seed.py`; and all six patches present (grep for `'--seed'`, `cudnn.deterministic`, `opt.source_root is None`, `opt.dataset`, `nargs='+'`, `Test/COD10K/Imgs`) | new; the glob-exclusion list matches E0's gate pruning |
 | **G4 endpoint policy** | `Dataset/Test/CHAMELEON` appears in no scored path; `MyTest.py`'s `--dataset` choices exclude CHAMELEON and CAMO; `--val_root` resolves to `Dataset/Val/CAMO/` (250 + 250) | new |
-| **G5 pool integrity** | §A.8.1 #1–#6 for every arm pool; base-subset `C.dir_digest` == committed agg hashes; the 1000 render masks `maxdiff == 0` vs `raw_gt`; the arm-C reproduction table (§A.3); `overlap(B, C) / 224.9 ∈ [0.7, 1.3]` (expected chance overlap `B²/N = 1000²/4447`), reported with the Jaccard index — C1 measured overlap at the chance rate (0.94–1.05) | new |
+| **G5 pool integrity** | §A.8.1 #1–#6 for every arm pool; base subset verified **per-file against `rebuild/E0/out/e0_manifest.sha256`** (all 4447 + 4447) plus `dir_digest` copy-identity against the primary pool; the 1000 render masks `maxdiff == 0` vs `raw_gt`; the arm-C reproduction table (§A.3); `overlap(B, C) / 224.9 ∈ [0.7, 1.3]` (expected chance overlap `B²/N = 1000²/4447`), reported with the Jaccard index — C1 measured overlap at the chance rate (0.94–1.05) | new |
 | **G6 determinism declared** | parse `MyTrain.py` and assert `cudnn.deterministic = True`, `cudnn.benchmark = False` and `set_random_seed(opt.seed)` are present (the gate runs in a different process, so it reads the source rather than the live flags) | new |
 
 ### A.8.3 Per-run completion assertions
