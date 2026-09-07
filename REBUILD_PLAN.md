@@ -124,6 +124,7 @@ Counts and hashes verified by me in Phase 0. `agg` = first 16 hex of
 | Test, primary | `Dataset/Test/COD10K/{Imgs,GT}` | 2026 + 2026 | `100ac2e5c998ea29` / `2e0a8003194a0c6f` |
 | Val (≡ CAMO test) | `Dataset/Val/CAMO/{Imgs,GT}` | 250 + 250 | `1c70eeb9a90e9088` |
 | Test, secondary | `Dataset/Test/{CHAMELEON,NC4K}/Imgs` | 76 / 4121 | E0 |
+| CHAMELEON, author-sourced — *added by D2R 2026-09-07* | `Dataset/chameleon_new/{animals,masks}` | 76 + 76 | D2R |
 | **Final SINet model** | `Snapshot/SINet/S2C/` | 17 `.pth` + log | E0 |
 | Other primary models (B1's robustness axis) | `Snapshot/{SINet,SINet-v2}/S2C{,_MT,_SO}`, `Snapshot/SegMaR/S2C` | 7 runs | E0 |
 | Primary predictions | `Result/**` (6 dirs) | 2026 each | `dc6d34d306498563` (S2C) |

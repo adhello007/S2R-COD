@@ -4,7 +4,17 @@ Running record, appended as each experiment completes. Every row cites the log b
 measured value. The "old value" column is the frozen record from `REBUILD_PLAN.md` §4 — a claim under
 test, never an input.
 
-Completed so far: **E0, D2, D1, B1, C1, ABC**. Six outstanding: A1, A2, A3, B2, B3, C3. (C2's load-bearing claim is proved by ABC block #2 at scale; it still has no `EXP C2` block of its own.)
+Completed so far: **E0, D2, D2R, D1, B1, C1, ABC**. Six outstanding: A1, A2, A3, B2, B3, C3. (C2's load-bearing claim is proved by ABC block #2 at scale; it still has no `EXP C2` block of its own.)
+
+> **D2R RE-VERIFIES D2's HEADLINE AGAINST AN AUTHOR-SOURCED CHAMELEON AND IT HOLDS EXACTLY.** The
+> author's release is **byte-identical** to the repo copy (76/76 at both hash levels), and all eight
+> D2 CHAMELEON measurements reproduce: 41/76, the same 41 filenames, 323/132/49, the 11/26/37/40/41
+> tolerance sweep, and the 7.36× nearest-neighbour gap at exactly 41 — which is also invariant to
+> shortlist depth 8/32/all. **The three MISMATCHes below are all corrections to our own prior work,
+> not to the data.** Two findings change the claim's shape rather than its size: the contamination is
+> `CHAMELEON ∩ COD10K-train = 40/76`, a fact about **public benchmarks** rather than this repo; and
+> **no difficulty skew is detectable**, so the reportable claim is that the column is not
+> *independent*, never that it is *inflated*.
 
 > **C1 REFUTES THE OLD NUMBER, AND THEN ITS OWN AUDIT REFUTES THE INFERENCE.** The decisive
 > measurement was never computed by the old package. Measured, it refutes `d ~ 0.10` by roughly
@@ -22,6 +32,9 @@ Completed so far: **E0, D2, D1, B1, C1, ABC**. Six outstanding: A1, A2, A3, B2, 
 
 | # | Claim | Old value | Measured | Log block | Why it moved |
 |---|---|---|---|---|---|
+| D2R.1 | Scope of D2's CHAMELEON contamination | *a fact about this repo's Target pool* | **`CHAMELEON ∩ COD10K-train = 40/76`** — 40 of the 41 nearest partners are public COD10K-train images, 1 is CAMO | `EXP D2R` | Changed in KIND, not size. The partners are public benchmark images, so **any** model trained on COD10K-train has seen them. This is what makes the finding a citable resource rather than a note on one endpoint choice |
+| D2R.2 | Impact of the contamination on a CHAMELEON score | *expected to quantify an inflation, mirroring D2's 0.4761 percentile analysis* | **No difficulty skew detectable.** Eight measures put the leaked set at percentile **0.448–0.559** within the clean subset; Mann–Whitney *p* **0.47–0.99**; and the sign of the score gap **flips** between the two mask releases | `EXP D2R` | The data does not support an inflation figure. The reportable claim is that the column is not an *independent* measurement — the compromise is to the evaluation set's identity, not to a measurable score advantage. Mirrors D2's own COD10K null (0.4761) at 20× the rate |
+| D2R.3 | CHAMELEON's ground-truth masks | *unmeasured — D2 explicitly disclaimed any mask claim* | The two releases are **different annotations**: opposite stored polarity, mean IoU **0.6932** after alignment, **27/76** identical. On identical predictions the choice moves MAE by **2.7×** (0.2196 vs 0.0816) | `EXP D2R` | A second, independent reason a CHAMELEON column is not comparable across papers, unrelated to contamination. Polarity was declared **per source**, per `REBUILD_PLAN.md` A2 — trap T2 arriving exactly where §2 predicted it |
 | D1.1 | Distinct foregrounds in the base pool | **4447** | **4443** unique of 4447 files (raw) | `EXP D1` | The old package wrote a *file count* as a *distinctness* claim. Byte-level hashing finds 4 redundant files. Strengthens the conclusion — the pool is more exhausted, not less |
 | E0.1 | Render reproducibility at a fixed seed | *"byte-identity is not expected — cuDNN is nondeterministic"* (my own planned expectation) | **4447/4447 byte-identical**, images and masks | `EXP E0` | The expectation was wrong. Measured bit-exact on this stack. The cluster-agreement threshold I built as a fallback passed at 1.0 trivially |
 | E0.2 | Scope of that reproducibility | *unqualified* | holds only at **fixed shard count over a fixed input listing** | `EXP D2` | D2 s7/s8 found a render depends on position-in-shard. E0's headline needed the qualifier and did not have it |
@@ -74,6 +87,10 @@ Kept visible because a rebuild that only ever corrects someone else is not audit
 | R16 | `common.py:248-263` claims `dir_digest` *"Matches the `agg` values pinned in REBUILD_PLAN.md §1."* **It does not** — measured `d7f6de696d5c223e` against the pinned `b42e5f44b5f2b0db` | ABC, while building the first arm pool | An ABC pool assertion written against §1's `agg` failed on data that was provably intact | The pinned values were computed over a **full-relative-path** listing; `dir_digest` hashes the **bare filename**. The path-prefixed variant reproduces both pinned values exactly. Never caught because **no `.py` references them**. Primary data is unchanged — all 4447+4447 verify per-file against E0's manifest. ABC now asserts against the manifest. **`common.py`'s docstring and `REBUILD_PLAN.md` §1 still need correcting** |
 | R17 | `EXP ABC` #3's provenance annotation on the four `per_arm_sd_*` metrics asserts *"arm B carries selection variance A0 and C do not — pooled sigma_hat is inflated by it"* | ABC block #3, post-log | **The metric's own values refute its annotation**: arm B has among the lowest sds (**0.001807** SINet, **0.004863** SINet-v2); arm A0 is the largest | My prediction in `ABC_PLAN.md` §A.4 / §A.12 item 4 was wrong **in direction**, and I wrote it into the metric's provenance string before the runs. The **values are correct**; the explanation attached to them is not. Recorded rather than quietly corrected. Fixing it in the log needs a block #4 that changes no number |
 | R18 | ABC's first pool-provenance check used the regex `Loaded 4[0-9]*`, which cannot match the 5447-image pools, and reported **18 spurious mismatches** | ABC, pre-evaluation | The "mismatches" were exactly the 18 non-A0 runs | Corrected before any conclusion rested on it; the corrected check returns **24/24** runs reading their own pool in round 1 and their own `_iteration2` in round 2. Recorded because the first number was wrong and it was mine |
+| R19 | `D2_RESULTS.md` §3.0: *"quantization tables differ in **41/41** pairs"* | `EXP D2R`, T5 FAIL | An independent raw-DQT extraction returned **40/41**, not 41/41 | `animal-19.jpg` and `animal-28.jpg` in the CHAMELEON release are **PNG files carrying a `.jpg` extension**, so they have no JPEG quantization table. D2 compared tables with `!=`, scoring a *missing* table as a *differing* one — absence of evidence read as evidence. `animal-19` is one of the leaked 41. Properly **40/41 differing + 1 not applicable**. The pair's conclusion is unaffected and stronger: its container formats differ (413 KB PNG vs 132 KB JPEG of one photograph), so **41/41 still carry independent re-encoding evidence**. T5 is left FAILING against its declared wording; T5b states what survives |
+| R20 | `D2_RESULTS.md` §3.0 cites **`MyTrain.py:220,297`** as feeding `get_tarloader` | `EXP D2R` | Line numbers re-derived from source instead of trusted | Line 220 is the `--source_root` **help string**; line 297 is the **EMA teacher weight copy**. The real call site is **`MyTrain.py:317`**. The *mechanism* D2 described is correct — the target pool enters training unlabeled and `CLS.py` pseudo-labels it from teacher CAMs — only the citation was wrong. Now asserted from source at run time so it cannot drift again |
+| R21 | `REBUILD_PLAN.md` §3: *"primary endpoint COD10K; **secondary endpoints CHAMELEON and NC4K**"* | `EXP D2R`, T13 | Checked against the repo's own README for the first time | `README.md` mentions CHAMELEON **once**, inside the `Source (Synthetic)` CNC bundle, and lists only COD10K-test under `Test (Real)`. `Dataset/Source/CNC/` does not exist on disk; the undocumented `Dataset/Test/CHAMELEON/` does. `REPRODUCE_TABLE1_v2.md` has **0** CHAMELEON mentions and `Result/**` holds **0** CHAMELEON predictions. **We promoted CHAMELEON to an endpoint the repository never sanctioned.** The framing is therefore not "a bug in their evaluation" — CHAMELEON is *source* material in this design |
+| R22 | `rebuild/D2/D2.md:38` records the command as `--steps s1,s2,s3,s4,s5,s6,s7` | `EXP D2R`, while establishing method identity | The authoritative `EXP D2` block ran `--steps s2,s3,s4,s4b,s5,s6,s7,s8` | The setup doc omits **`s4b`** and **`s8`**, the two steps that produced the gap analysis and the controlled seed experiment. Documentation-only; no number depends on it |
 
 **R3 is the only one where a measurement was substantively wrong** rather than untraceable. It was
 found by auditing my own method, not by the method reporting a problem — which is the failure mode
@@ -95,6 +112,13 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | Every added image is a re-render, not a new object | zero foregrounds outside the base pool | 0 outside; bijection both pools | `EXP D1` |
 | ρ(ES, MAE) **per-image** test | +0.751 | **+0.7514** [+0.727, +0.777] | `EXP B1` |
 | Invented background fraction | 80.87 % | 0.8087 (`staging_background_frac`, independent code path) | `EXP E0` |
+| CHAMELEON contaminated by training data | 41/76 (53.9 %) | **41/76 (53.9 %)**, against an **author-sourced** copy | `EXP D2R` |
+| The 41 leaked CHAMELEON filenames | 41 names | identical set, 41/41 | `EXP D2R` |
+| Near-dup candidates shortlisted / confirmed / endpoint↔training | 323 / 132 / 49 | **323 / 132 / 49** | `EXP D2R` |
+| CHAMELEON tolerance sweep | 11/26/37/40/41 | **11/26/37/40/41** | `EXP D2R` |
+| CHAMELEON nearest-neighbour gap | 41 below 5.51, next at 40.58 | **41 below 5.51, next at 40.58** (7.36×), and invariant at shortlist depth 8/32/all | `EXP D2R` |
+| CHAMELEON checkable / unchecked | 51/76 / 25 | **51/76 / 25** | `EXP D2R` |
+| COD10K-test / NC4K / CAMO contamination | 2/2026, 1/4121, 4/250 | **2/2026 (0.1 %)**, **1/4121 (0.0 %)**, **4/250 (1.6 %)**, all three still on-disk copies only | `EXP D2R` |
 
 ## 4. Claims that changed in KIND, not value
 
@@ -108,6 +132,17 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | "ES predicts the wrong objective" | a binary verdict | an **effect size**: ES tracks pixel error ~2× as strongly as structural error (ρ 0.86 vs 0.43 per-cluster). The binary flips with k (ratio 0.4999 at k=75, 0.5825 at k=20), so the label is not k-stable and is not quoted | `EXP B1` |
 
 ## 5. Still outstanding
+
+**Owed by D2R:** the COD10K-test, NC4K and CAMO contamination rates were measured against the copies
+on this disk, not author-sourced ones — the exact weakness the CHAMELEON re-audit closed. The same
+author-sourced re-audit is owed for those three, and `rebuild/D2_reaudit/CLEAN_PROTOCOL.md` marks
+every one of their rows as *not author-verified* rather than leaving the caveat implicit. Also
+`UNVERIFIED`, and not claimable either way: whether the **published** S2R-COD paper reports a
+CHAMELEON column anywhere — the PDF is not in this checkout. Flagged and unanswered: under
+`--task C2C` the CNC bundle (CAMO + NC4K + CHAMELEON) is the **source** pool, so a C2C table
+reporting CHAMELEON as a test set would be a direct source/test collision. Resolving that needs the
+paper.
+
 
 Every §4 row of `REBUILD_PLAN.md` belonging to A1, A2, A3, B2, B3, C2, C3 remains untested. The
 load-bearing one is **C1** (`d ≈ 0.10`), which never had a producing script in the old package; it now

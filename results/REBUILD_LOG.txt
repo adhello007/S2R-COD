@@ -1480,3 +1480,525 @@ NOTES      BLOCK 3 OF 3 -- THE VERDICT. Applied strictly by rebuild/ABC/PREREGIS
            ENDPOINTS. COD10K-test is primary (2/2026 = 0.1% near-duplicate contamination, 7 exact with a measured MAE impact of -1.24e-05). NC4K is secondary and REPORTED ONLY -- it never decides. CHAMELEON is withdrawn (41/76 = 53.9% of it is training data) and CAMO is the checkpoint-selection set, never an endpoint; both are unreachable in code and re-checked by gate G4. Any null inherits D1's scope: it is evidence about targeting under an EXHAUSTED FOREGROUND POOL, and is silent on whether new foregrounds would help.
 ================================================================================
 
+================================================================================
+2026-09-07T14:18:32+05:30 | commit c1cb293 (dirty) | EXP D2R
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_reaudit/d2r_reaudit.py --steps s0,s4r,s4br,s5r,s6r,s7r --splits full
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding) + canonical GT masks for s5r
+METRICS
+  cham_ondisk_n                                = 76    (Dataset/Test/CHAMELEON/Imgs)
+  chamnew_canonical_n                          = 76    (Dataset/chameleon_new/animals, author-sourced)
+  copies_identical_fhash                       = 76/76    (sha256 of file bytes, set-based)
+  copies_identical_phash                       = 76/76    (decoded-RGB hash, set-based)
+  copies_reconcile_outcome                     = a    (boundaries declared in REAUDIT_PLAN.md 1.5)
+  copies_qtables_identical                     = 74/76    (raw DQT parse)
+  d2_measured_copy                             = Dataset/Test/CHAMELEON/Imgs    (git show 17dfbbf:rebuild/common.py)
+  d2_manifest_kb_agrees                        = 41/41    (committed d2_duplicate_pairs.csv endpoint_kb vs cham on disk)
+  d2_manifest_dims_agrees                      = 41/41    (committed d2_duplicate_pairs.csv dims vs cham on disk)
+  masks_join_is_bijection                      = True    (mask-N.png <-> animal-N.png over 1..76)
+  masks_polarity_canonical                     = object_black    (declared per SOURCE from the aggregate white fraction 0.7187)
+  masks_polarity_repo                          = object_white    (aggregate white fraction 0.1400)
+  masks_polarity_agrees                        = False    (trap T2, REBUILD_PLAN.md 2 -- a silent inversion would corrupt s5r)
+  masks_mean_iou_as_stored                     = 0.0    (white-vs-white, before any polarity interpretation)
+  masks_mean_iou_polarity_aligned              = 0.6932    (object-vs-object, both sources aligned to SOD polarity)
+  masks_iou_aligned_above_0.9                  = 40/76
+  masks_canonical_vs_repo_identical            = 27/76    (exact equality after polarity alignment)
+  masks_canonical_is_rgba                      = True    (alpha fg frac mean 1.0 -- alpha carries no mask)
+  nearvdup_chamnew_matching_training           = 41/76 (53.9%)    (distinct canonical images that are re-encodes of training data)
+  nearvdup_cham_matching_training              = 41/76 (53.9%)    (the repo copy, re-measured)
+  partner_pairs_in_cod10k_train                = 41/42    (PAIR level: confirmed canonical-CHAMELEON <-> training pairs whose training side is in the public COD10K-train split)
+  partner_pairs_in_camo                        = 1/42    (PAIR level; one CHAMELEON image can have more than one partner)
+  near_dup_candidate_pairs_shortlisted         = 323    (D2 splits only, exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_shortlisted_involving_chamnew       = 154    (the author-sourced set, counted apart so D2 stays comparable)
+  near_duplicate_pairs_confirmed               = 132    (D2 splits only, full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training                = 49    (D2 splits only)
+  near_duplicate_pairs_confirmed_with_chamnew  = 207    (all 9 splits)
+  nearvdup_chamnew_at_tol_1                    = 11/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_2                    = 26/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_3                    = 37/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_5                    = 40/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_6                    = 41/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  epNN_chamnew_checkable                       = 51/76    (has >=1 same-dimension training candidate)
+  epNN_chamnew_unchecked                       = 25/76    (unchecked is NOT clean)
+  epNN_chamnew_gap                             = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_cham_checkable                          = 51/76    (has >=1 same-dimension training candidate)
+  epNN_cham_unchecked                          = 25/76    (unchecked is NOT clean)
+  epNN_cham_gap                                = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_chamnew_gap_topk_8                      = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_32                     = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_all                    = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  s5r_mask_polarity_used                       = object_black    (canonical masks, declared per source in s0)
+  leaked_pct_object_area_frac                  = 0.5010  [0.029 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.9916852056828893)
+  leaked_pct_boundary_complexity               = 0.4850  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.8267700158060285)
+  leaked_pct_fg_bg_contrast                    = 0.5484  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.47210061575420814)
+  leaked_pct_n_components                      = 0.5589  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.4749752860335906)
+  cham_MAE_all_76                              = 0.219648    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_MAE_clean_35                            = 0.208234    (the uncontaminated subset)
+  cham_MAE_leaked_41                           = 0.229392    (the contaminated subset)
+  cham_column_inflation_MAE                    = -0.011414    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_leaked_percentile                   = 0.4481  [0.000 .. 0.971]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_all_76                               = 0.583363    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_Sa_clean_35                             = 0.601893    (the uncontaminated subset)
+  cham_Sa_leaked_41                            = 0.567545    (the contaminated subset)
+  cham_column_inflation_Sa                     = 0.01853    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_leaked_percentile                    = 0.4606  [0.000 .. 0.943]    (oriented so >0.75 = easier; skew=none)
+  cham_MAE_repoGT_all_76                       = 0.081631    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_MAE_repoGT_clean_35                     = 0.084573    (the uncontaminated subset)
+  cham_MAE_repoGT_leaked_41                    = 0.079119    (the contaminated subset)
+  cham_column_inflation_MAE_repoGT             = 0.002943    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_repoGT_leaked_percentile            = 0.4948  [0.057 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_repoGT_all_76                        = 0.724257    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_Sa_repoGT_clean_35                      = 0.727781    (the uncontaminated subset)
+  cham_Sa_repoGT_leaked_41                     = 0.721249    (the contaminated subset)
+  cham_column_inflation_Sa_repoGT              = 0.003524    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_repoGT_leaked_percentile             = 0.4934  [0.000 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_split_direction_agrees_across_mask_sets = False    (the two mask sets agree at mean IoU 0.69, so the leaked-vs-clean conclusion is checked against both)
+  leaked_difficulty_skew_by_proxy              = none|none|none|none    (object_area|boundary|contrast|components, in order)
+  get_tarloader_call_site                      = MyTrain.py:317    (re-derived from source; D2_RESULTS.md 3.0 cites MyTrain.py:220,297)
+  d2_citation_correct                          = False    (MyTrain.py:220 is "help='source pool root; if omitted, --task c"; :297 is 'for param_q, param_k in zip(model.parameters')
+  tarloader_reads_no_gt                        = True    (get_tarloader has no gt_root parameter; get_srcloader does)
+  tardataset_returns_two_no_mask               = True    (returns weak_image, strong_image)
+  target_dir_has_no_GT                         = True    (Dataset/Target/ has no GT/ subdirectory)
+  cls_reads_target_with_gt_root_none           = True    (pseudo-labels are teacher CAMs, never ground truth)
+  readme_cham_mentions                         = 1    (README.md)
+  readme_lists_cham_as_source_only             = True    (CNC synthetic-source bundle; never under Test (Real))
+  dataset_source_CNC_exists                    = False    (the README's own directory for CNC)
+  dataset_test_CHAMELEON_exists                = True    (undocumented local addition)
+  reproduce_table1_cham_mentions               = 0    (Experiments/REPRODUCE_TABLE1_v2.md)
+  result_dirs_with_cham_predictions            = 0    (no CHAMELEON predictions exist under Result/)
+  partner_images_in_cod10k_train               = 40/41    (IMAGE level: distinct canonical CHAMELEON images whose NEAREST training partner is in the public COD10K-train split)
+  partner_images_in_camo                       = 1/41    (IMAGE level, nearest partner)
+  detector_selftest                            = PASS    (synthetic known-answer case, no repo data)
+  detector_reproduces_s4r_pairs                = 41/41    (standalone tool vs in-repo sweep, same constants)
+  detector_reproduces_s4r_names                = 41/41
+  detector_extra_pairs                         = 1    (pairs the tool found that s4br did not select)
+  anonymization_scan_clean                     = True    (patterns: /home/, ai-server, Akshat, akshat, imagine.io, Dataset/, Snapshot/, Result/, rebuild/, .venv, experiments/lakered, S2R-COD/)
+  release_files                                = README.md, chameleon_contaminated.json, detect_contamination.py    (rebuild/D2_reaudit/release/)
+  qtables_differ_PIL                           = 41/41    (PIL Image.quantization, D2's method)
+  qtables_differ_DQT                           = 40/41    (raw 0xFFDB marker parse, library-independent)
+  qtable_methods_agree                         = 41/41
+  mean_abs_range                               = 0.603 .. 5.512    (confirmed canonical pairs)
+THRESHOLD  T1 both CHAMELEON copies contain exactly 76 images -> PASS
+THRESHOLD  T2 the two copies are pixel-identical at phash level, 76/76 -> PASS
+THRESHOLD  T3 D2 measured the repo copy Dataset/Test/CHAMELEON/Imgs, established from committed artifacts -> PASS
+THRESHOLD  T19 canonical vs repo CHAMELEON masks reconciled, with polarity declared per source (REPORTED; disagreement is itself a finding) -> PASS
+THRESHOLD  T4 canonical CHAMELEON contamination equals D2 41/76 (no value overwritten -- both reported) -> PASS
+THRESHOLD  T7 global s4 metrics reproduce D2 over D2 splits (323 shortlisted, 132 confirmed, 49 endpoint-vs-training) -> PASS
+THRESHOLD  T8 the CHAMELEON tolerance sweep reproduces 11/26/37/40/41 -> PASS
+THRESHOLD  T9 the canonical matched names equal D2 committed name set -> PASS
+THRESHOLD  T10 partner pool decomposition measured (NEW -- no prior value) -> PASS
+THRESHOLD  T6 s4br gap exists with above/below > 5 AND n_below equals the tol=6.0 matched count -> PASS
+THRESHOLD  T11 the gap and n_below are stable across TOPK in {8,32,all} -> PASS
+THRESHOLD  T14 the leaked-set difficulty percentile is reported with its full distribution for every proxy, and skew is declared -> PASS
+THRESHOLD  T15 the inference-based leaked-vs-clean split is computed and the inflation stated numerically -> PASS
+THRESHOLD  T12 every mechanism assertion holds from source, and the MyTrain.py:220,297 citation is recorded as wrong -> PASS
+THRESHOLD  T13 the README lists CHAMELEON only as CNC source, Source/CNC is absent from disk, Test/CHAMELEON is present, and Table 1 has no CHAMELEON column -> PASS
+THRESHOLD  T5 quantization tables differ in every confirmed pair AND the PIL and raw-DQT extractions agree pair-for-pair -> FAIL
+THRESHOLD  T16 the standalone detector passes its self-test and reproduces the in-repo sweep's canonical pair list -> PASS
+THRESHOLD  T17 the release bundle is free of identifying paths and names -> PASS
+THRESHOLD  T18 no /tmp, archive or scratchpad path is read; a missing input fails loudly (common.ipath has no fallback) -> PASS
+THRESHOLD  T20 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  D2 nearvdup_cham_images_matching_training = 41/76 (53.9%) -> MATCH
+OLD CLAIM  D2 near_dup_candidate_pairs_shortlisted = 323 -> MATCH
+OLD CLAIM  D2 near_duplicate_pairs_confirmed = 132 -> MATCH
+OLD CLAIM  D2 near_dup_endpoint_vs_training = 49 -> MATCH
+OLD CLAIM  D2 nearvdup_cham_at_tol_1,2,3,5,6 = 11|26|37|40|41 /76 -> MATCH
+OLD CLAIM  D2 CHAMELEON leaked name set (41 names) = 41 names -> MATCH
+OLD CLAIM  D2 epNN_cham_checkable = 51/76 -> MATCH
+OLD CLAIM  D2 epNN_cham_gap = 41 below 5.51, next at 40.58 -> MATCH
+OLD CLAIM  D2_RESULTS.md 3.0 cites MyTrain.py:220,297 for get_tarloader = MyTrain.py:220,297 -> MISMATCH
+OLD CLAIM  REBUILD_PLAN.md 3 names CHAMELEON a secondary endpoint = secondary endpoint -> MISMATCH
+OLD CLAIM  D2 quantization tables differ in 41/41 pairs = 41/41 -> MISMATCH
+ARTIFACTS  rebuild/D2_reaudit/out/d2r_reconcile.json, rebuild/D2_reaudit/out/d2r_reconcile.csv, rebuild/D2_reaudit/out/d2r_mask_reconcile.csv, rebuild/D2_reaudit/out/d2r_near_duplicates.csv, rebuild/D2_reaudit/out/d2r_endpoint_contamination.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.csv, rebuild/D2_reaudit/out/d2r_topk_sensitivity.json, rebuild/D2_reaudit/out/d2r_difficulty.json, rebuild/D2_reaudit/out/d2r_difficulty.csv, rebuild/D2_reaudit/out/d2r_impact.json, rebuild/D2_reaudit/out/d2r_scope.json, rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv, rebuild/D2_reaudit/out/chameleon_contaminated.json, rebuild/D2_reaudit/out/d2r_comparison.csv
+TRAINS     NO
+NOTES      s5r-b IS INFERENCE ONLY AND IS NOT A CHAMELEON ENDPOINT RESULT. It loads an existing checkpoint, trains nothing, writes no checkpoint, and exists solely to quantify how much a contaminated CHAMELEON column would be inflated. It must never be quoted as a performance number. MyTest.py was not modified: it excludes CHAMELEON deliberately and this does not reopen that door.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that leave every dimension group, crops, flips, colour shifts and different photographs of one specimen are NOT detected and are not claimed. Endpoint images with no same-dimension training candidate are reported as unchecked -- unchecked is not clean.
+           The tolerance sweep is a POST-HOC FILTER on the tol=6.0 result set, exactly as D2 computed it, not five independent sweeps. TOPK=8 is D2's s4b shortlist depth and is the comparison run; the TOPK 32/all runs bound its recall and are reported as sensitivity, never as a substitute.
+           D2's global s4 metrics (323 shortlisted / 132 confirmed / 49 endpoint-vs-training) are recomputed over D2's ORIGINAL 8 SPLITS ONLY, with the author-sourced set counted apart, so the committed figures stay directly comparable. The 9-split totals are reported separately.
+           CITATION CORRECTION: D2_RESULTS.md 3.0 cites MyTrain.py:220,297 as feeding get_tarloader. Line 220 is the --source_root help string and line 297 is the EMA teacher weight copy; the call site is re-derived here from source. The MECHANISM D2 described is correct -- the target pool enters training unlabeled and CLS pseudo-labels it from teacher CAMs -- only the line numbers were wrong. Recorded, not silently fixed.
+           SCOPE: this is a TRANSDUCTIVE PROTOCOL VIOLATION, NOT LABEL LEAKAGE. Test pixels enter training through the unlabeled target pool; CHAMELEON ground-truth masks never enter training. No claim of memorisation is made. It inflates a CHAMELEON evaluation column; it does not by itself invalidate a method whose COD10K-test and NC4K numbers are clean.
+           FRAMING: the contamination is a property of two PUBLIC datasets, not of this repo. The partners live in COD10K-train and CAMO, so any model trained on COD10K-train has seen those CHAMELEON images. Separately, README.md lists CHAMELEON only inside the CNC synthetic-SOURCE bundle and never under Test (Real), and Dataset/Source/CNC does not exist on disk while the undocumented Dataset/Test/CHAMELEON does. REBUILD_PLAN.md 3 -- ours -- adopted CHAMELEON as a secondary endpoint without checking that. Both go to REVISION_TABLE.md.
+           UNVERIFIED: whether the PUBLISHED S2R-COD paper reports a CHAMELEON column anywhere. The PDF is not in this checkout and Experiments/REPRODUCE_TABLE1_v2.md has no such column. Not claimed either way. Flagged and not answered: under --task C2C the CNC bundle (CAMO+NC4K+CHAMELEON) is the SOURCE pool, so for C2C, CHAMELEON is training data by design; a C2C table reporting CHAMELEON as test would be a direct source/test collision. Resolving that needs the paper.
+           PROVENANCE DIRECTION IS INFERENCE, NOT MEASUREMENT: CHAMELEON (2015) predates COD10K (2020), so the parsimonious reading is that COD10K-train absorbed CHAMELEON images during its construction. Only pool membership is measured.
+           The COD10K-test, NC4K and CAMO contamination rates carried into CLEAN_PROTOCOL.md were measured against ON-DISK copies, not author-sourced ones. That is the same weakness this re-audit exists to close for CHAMELEON, and it is marked in the protocol table rather than papered over: the same author-sourced re-audit is owed for them.
+================================================================================
+
+================================================================================
+2026-09-07T14:42:56+05:30 | commit c1cb293 (dirty) | EXP D2R
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_reaudit/d2r_reaudit.py --steps s0,s7r --splits full
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding) + canonical GT masks for s5r
+METRICS
+  cham_ondisk_n                       = 76    (Dataset/Test/CHAMELEON/Imgs)
+  chamnew_canonical_n                 = 76    (Dataset/chameleon_new/animals, author-sourced)
+  copies_identical_fhash              = 76/76    (sha256 of file bytes, set-based)
+  copies_identical_phash              = 76/76    (decoded-RGB hash, set-based)
+  copies_reconcile_outcome            = a    (boundaries declared in REAUDIT_PLAN.md 1.5)
+  copies_qtables_identical            = 74/76    (raw DQT parse)
+  d2_measured_copy                    = Dataset/Test/CHAMELEON/Imgs    (git show 17dfbbf:rebuild/common.py)
+  d2_manifest_kb_agrees               = 41/41    (committed d2_duplicate_pairs.csv endpoint_kb vs cham on disk)
+  d2_manifest_dims_agrees             = 41/41    (committed d2_duplicate_pairs.csv dims vs cham on disk)
+  masks_join_is_bijection             = True    (mask-N.png <-> animal-N.png over 1..76)
+  masks_polarity_canonical            = object_black    (declared per SOURCE from the aggregate white fraction 0.7187)
+  masks_polarity_repo                 = object_white    (aggregate white fraction 0.1400)
+  masks_polarity_agrees               = False    (trap T2, REBUILD_PLAN.md 2 -- a silent inversion would corrupt s5r)
+  masks_mean_iou_as_stored            = 0.0    (white-vs-white, before any polarity interpretation)
+  masks_mean_iou_polarity_aligned     = 0.6932    (object-vs-object, both sources aligned to SOD polarity)
+  masks_iou_aligned_above_0.9         = 40/76
+  masks_canonical_vs_repo_identical   = 27/76    (exact equality after polarity alignment)
+  masks_canonical_is_rgba             = True    (alpha fg frac mean 1.0 -- alpha carries no mask)
+  partner_images_in_cod10k_train      = 40/41    (IMAGE level: distinct canonical CHAMELEON images whose NEAREST training partner is in the public COD10K-train split)
+  partner_images_in_camo              = 1/41    (IMAGE level, nearest partner)
+  detector_selftest                   = PASS    (synthetic known-answer case, no repo data)
+  detector_reproduces_s4r_pairs       = 41/41    (standalone tool vs in-repo sweep, same constants)
+  detector_reproduces_s4r_names       = 41/41
+  detector_extra_pairs                = 1    (pairs the tool found that s4br did not select)
+  anonymization_scan_clean            = True    (patterns: /home/, ai-server, Akshat, akshat, imagine.io, Dataset/, Snapshot/, Result/, rebuild/, .venv, experiments/lakered, S2R-COD/)
+  release_files                       = CLEAN_PROTOCOL.md, README.md, chameleon_contaminated.json, detect_contamination.py    (rebuild/D2_reaudit/release/)
+  canonical_files_not_JPEG            = 2/76    (container format from magic bytes, not extension: JPEG=74, PNG=2)
+  qtables_differ_PIL                  = 41/41    (PIL Image.quantization, D2's method verbatim -- counts a MISSING table as "differing")
+  qtables_differ_DQT                  = 40/41    (raw 0xFFDB marker parse; 1 pair(s) not applicable (a side is not JPEG, so there is no table to compare))
+  qtables_not_applicable              = 1/41    (pairs whose endpoint side is animal-19.jpg)
+  pairs_differing_in_container_format = 1/41    (a PNG/JPEG pair of one photograph is re-encoding evidence in its own right, independent of any quantization table)
+  qtable_methods_agree                = 41/41    (the two extractions return the same differ/same/na verdict)
+  mean_abs_range                      = 0.603 .. 5.512    (confirmed canonical pairs)
+THRESHOLD  T1 both CHAMELEON copies contain exactly 76 images -> PASS
+THRESHOLD  T2 the two copies are pixel-identical at phash level, 76/76 -> PASS
+THRESHOLD  T3 D2 measured the repo copy Dataset/Test/CHAMELEON/Imgs, established from committed artifacts -> PASS
+THRESHOLD  T19 canonical vs repo CHAMELEON masks reconciled, with polarity declared per source (REPORTED; disagreement is itself a finding) -> PASS
+THRESHOLD  T5 quantization tables differ in every confirmed pair AND the PIL and raw-DQT extractions agree pair-for-pair -> FAIL
+THRESHOLD  T5b every confirmed pair carries re-encoding evidence from SOME independent channel: a differing quantization table, or a differing container format -> PASS
+THRESHOLD  T16 the standalone detector passes its self-test and reproduces the in-repo sweep's canonical pair list -> PASS
+THRESHOLD  T17 the release bundle is free of identifying paths and names -> PASS
+THRESHOLD  T18 no /tmp, archive or scratchpad path is read; a missing input fails loudly (common.ipath has no fallback) -> PASS
+THRESHOLD  T20 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  D2 quantization tables differ in 41/41 pairs = 41/41 -> MISMATCH
+ARTIFACTS  rebuild/D2_reaudit/out/d2r_reconcile.json, rebuild/D2_reaudit/out/d2r_reconcile.csv, rebuild/D2_reaudit/out/d2r_mask_reconcile.csv, rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv, rebuild/D2_reaudit/out/chameleon_contaminated.json, rebuild/D2_reaudit/out/d2r_comparison.csv
+TRAINS     NO
+NOTES      s5r-b IS INFERENCE ONLY AND IS NOT A CHAMELEON ENDPOINT RESULT. It loads an existing checkpoint, trains nothing, writes no checkpoint, and exists solely to quantify how much a contaminated CHAMELEON column would be inflated. It must never be quoted as a performance number. MyTest.py was not modified: it excludes CHAMELEON deliberately and this does not reopen that door.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that leave every dimension group, crops, flips, colour shifts and different photographs of one specimen are NOT detected and are not claimed. Endpoint images with no same-dimension training candidate are reported as unchecked -- unchecked is not clean.
+           The tolerance sweep is a POST-HOC FILTER on the tol=6.0 result set, exactly as D2 computed it, not five independent sweeps. TOPK=8 is D2's s4b shortlist depth and is the comparison run; the TOPK 32/all runs bound its recall and are reported as sensitivity, never as a substitute.
+           D2's global s4 metrics (323 shortlisted / 132 confirmed / 49 endpoint-vs-training) are recomputed over D2's ORIGINAL 8 SPLITS ONLY, with the author-sourced set counted apart, so the committed figures stay directly comparable. The 9-split totals are reported separately.
+           CORRECTION TO D2's QUANTIZATION-TABLE EVIDENCE, found by the second extraction. animal-19.jpg and animal-28.jpg in the CHAMELEON release are PNG files carrying a .jpg extension (magic bytes 89504e47), so they have NO JPEG quantization table. D2 compared tables with PIL and `!=`, which reports "the tables differ" when one side has no table at all -- absence of evidence read as evidence. animal-19 is one of the leaked 41, so D2's "quantization tables differ in 41/41 pairs" is properly 40/41 differing plus 1 not-applicable. The CONCLUSION for that pair is unaffected and arguably stronger: its two files differ in CONTAINER FORMAT (PNG vs JPEG), which is re-encoding evidence in its own right. T5 is left FAILING against its declared wording, and T5b states the surviving claim.
+           CITATION CORRECTION: D2_RESULTS.md 3.0 cites MyTrain.py:220,297 as feeding get_tarloader. Line 220 is the --source_root help string and line 297 is the EMA teacher weight copy; the call site is re-derived here from source. The MECHANISM D2 described is correct -- the target pool enters training unlabeled and CLS pseudo-labels it from teacher CAMs -- only the line numbers were wrong. Recorded, not silently fixed.
+           SCOPE: this is a TRANSDUCTIVE PROTOCOL VIOLATION, NOT LABEL LEAKAGE. Test pixels enter training through the unlabeled target pool; CHAMELEON ground-truth masks never enter training. No claim of memorisation is made. It inflates a CHAMELEON evaluation column; it does not by itself invalidate a method whose COD10K-test and NC4K numbers are clean.
+           FRAMING: the contamination is a property of two PUBLIC datasets, not of this repo. The partners live in COD10K-train and CAMO, so any model trained on COD10K-train has seen those CHAMELEON images. Separately, README.md lists CHAMELEON only inside the CNC synthetic-SOURCE bundle and never under Test (Real), and Dataset/Source/CNC does not exist on disk while the undocumented Dataset/Test/CHAMELEON does. REBUILD_PLAN.md 3 -- ours -- adopted CHAMELEON as a secondary endpoint without checking that. Both go to REVISION_TABLE.md.
+           UNVERIFIED: whether the PUBLISHED S2R-COD paper reports a CHAMELEON column anywhere. The PDF is not in this checkout and Experiments/REPRODUCE_TABLE1_v2.md has no such column. Not claimed either way. Flagged and not answered: under --task C2C the CNC bundle (CAMO+NC4K+CHAMELEON) is the SOURCE pool, so for C2C, CHAMELEON is training data by design; a C2C table reporting CHAMELEON as test would be a direct source/test collision. Resolving that needs the paper.
+           PROVENANCE DIRECTION IS INFERENCE, NOT MEASUREMENT: CHAMELEON (2015) predates COD10K (2020), so the parsimonious reading is that COD10K-train absorbed CHAMELEON images during its construction. Only pool membership is measured.
+           NO DIFFICULTY SKEW IS DETECTABLE, so no inflation figure is claimed. All four model-free proxies and all four inference metrics put the leaked set's percentile within the clean set in 0.448-0.559, where 0.5 is indistinguishable, and none of the proxies separates the groups (Mann-Whitney p 0.47-0.99). The SIGN of the score difference even flips with the mask release used: the leaked subset scores worse against the author-sourced masks and marginally better against the repackaged GT, so split_direction_agrees_across_mask_sets is False. The defensible claim is therefore about INDEPENDENCE, not inflation -- the column cannot be read as an independent measurement -- and a specific "inflated by X" figure would be over-reading the data. This mirrors D2's own COD10K result (percentile 0.4761, no memorisation signature) at 20x the contamination rate.
+           THE TWO CHAMELEON MASK RELEASES DISAGREE, which is a second and independent reason to distrust any CHAMELEON column: mean IoU 0.693 after polarity alignment, only 27/76 identical, and OPPOSITE stored polarity (author-sourced object_black at white fraction 0.7187; repackaged object_white at 0.1400). Polarity was declared PER SOURCE from the aggregate, never per image, per REBUILD_PLAN.md A2. On identical predictions that mask-set disagreement alone moves MAE by 2.7x (0.2196 vs 0.0816), so a published CHAMELEON number depends on which mask release was used.
+           The COD10K-test, NC4K and CAMO contamination rates carried into CLEAN_PROTOCOL.md were measured against ON-DISK copies, not author-sourced ones. That is the same weakness this re-audit exists to close for CHAMELEON, and it is marked in the protocol table rather than papered over: the same author-sourced re-audit is owed for them.
+================================================================================
+
+================================================================================
+2026-09-07T14:48:40+05:30 | commit c1cb293 (dirty) | EXP D2R
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_reaudit/d2r_reaudit.py --steps s0,s4r,s4br,s5r,s6r,s7r --splits full
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding) + canonical GT masks for s5r
+METRICS
+  cham_ondisk_n                                = 76    (Dataset/Test/CHAMELEON/Imgs)
+  chamnew_canonical_n                          = 76    (Dataset/chameleon_new/animals, author-sourced)
+  copies_identical_fhash                       = 76/76    (sha256 of file bytes, set-based)
+  copies_identical_phash                       = 76/76    (decoded-RGB hash, set-based)
+  copies_reconcile_outcome                     = a    (boundaries declared in REAUDIT_PLAN.md 1.5)
+  copies_qtables_identical                     = 74/76    (raw DQT parse)
+  d2_measured_copy                             = Dataset/Test/CHAMELEON/Imgs    (git show 17dfbbf:rebuild/common.py)
+  d2_manifest_kb_agrees                        = 41/41    (committed d2_duplicate_pairs.csv endpoint_kb vs cham on disk)
+  d2_manifest_dims_agrees                      = 41/41    (committed d2_duplicate_pairs.csv dims vs cham on disk)
+  masks_join_is_bijection                      = True    (mask-N.png <-> animal-N.png over 1..76)
+  masks_polarity_canonical                     = object_black    (declared per SOURCE from the aggregate white fraction 0.7187)
+  masks_polarity_repo                          = object_white    (aggregate white fraction 0.1400)
+  masks_polarity_agrees                        = False    (trap T2, REBUILD_PLAN.md 2 -- a silent inversion would corrupt s5r)
+  masks_mean_iou_as_stored                     = 0.0    (white-vs-white, before any polarity interpretation)
+  masks_mean_iou_polarity_aligned              = 0.6932    (object-vs-object, both sources aligned to SOD polarity)
+  masks_iou_aligned_above_0.9                  = 40/76
+  masks_canonical_vs_repo_identical            = 27/76    (exact equality after polarity alignment)
+  masks_canonical_is_rgba                      = True    (alpha fg frac mean 1.0 -- alpha carries no mask)
+  nearvdup_chamnew_matching_training           = 41/76 (53.9%)    (distinct canonical images that are re-encodes of training data)
+  nearvdup_cham_matching_training              = 41/76 (53.9%)    (the repo copy, re-measured)
+  partner_pairs_in_cod10k_train                = 41/42    (PAIR level: confirmed canonical-CHAMELEON <-> training pairs whose training side is in the public COD10K-train split)
+  partner_pairs_in_camo                        = 1/42    (PAIR level; one CHAMELEON image can have more than one partner)
+  near_dup_candidate_pairs_shortlisted         = 323    (D2 splits only, exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_shortlisted_involving_chamnew       = 154    (the author-sourced set, counted apart so D2 stays comparable)
+  near_duplicate_pairs_confirmed               = 132    (D2 splits only, full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training                = 49    (D2 splits only)
+  near_duplicate_pairs_confirmed_with_chamnew  = 207    (all 9 splits)
+  nearvdup_chamnew_at_tol_1                    = 11/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_2                    = 26/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_3                    = 37/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_5                    = 40/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_6                    = 41/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  epNN_chamnew_checkable                       = 51/76    (has >=1 same-dimension training candidate)
+  epNN_chamnew_unchecked                       = 25/76    (unchecked is NOT clean)
+  epNN_chamnew_gap                             = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_cham_checkable                          = 51/76    (has >=1 same-dimension training candidate)
+  epNN_cham_unchecked                          = 25/76    (unchecked is NOT clean)
+  epNN_cham_gap                                = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_chamnew_gap_topk_8                      = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_32                     = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_all                    = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  s5r_mask_polarity_used                       = object_black    (canonical masks, declared per source in s0)
+  leaked_pct_object_area_frac                  = 0.5010  [0.029 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.9916852056828893)
+  leaked_pct_boundary_complexity               = 0.4850  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.8267700158060285)
+  leaked_pct_fg_bg_contrast                    = 0.5484  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.47210061575420814)
+  leaked_pct_n_components                      = 0.5589  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.4749752860335906)
+  cham_MAE_all_76                              = 0.219648    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_MAE_clean_35                            = 0.208234    (the uncontaminated subset)
+  cham_MAE_leaked_41                           = 0.229392    (the contaminated subset)
+  cham_column_inflation_MAE                    = -0.011414    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_leaked_percentile                   = 0.4481  [0.000 .. 0.971]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_all_76                               = 0.583363    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_Sa_clean_35                             = 0.601893    (the uncontaminated subset)
+  cham_Sa_leaked_41                            = 0.567545    (the contaminated subset)
+  cham_column_inflation_Sa                     = 0.01853    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_leaked_percentile                    = 0.4606  [0.000 .. 0.943]    (oriented so >0.75 = easier; skew=none)
+  cham_MAE_repoGT_all_76                       = 0.081631    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_MAE_repoGT_clean_35                     = 0.084573    (the uncontaminated subset)
+  cham_MAE_repoGT_leaked_41                    = 0.079119    (the contaminated subset)
+  cham_column_inflation_MAE_repoGT             = 0.002943    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_repoGT_leaked_percentile            = 0.4948  [0.057 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_repoGT_all_76                        = 0.724257    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_Sa_repoGT_clean_35                      = 0.727781    (the uncontaminated subset)
+  cham_Sa_repoGT_leaked_41                     = 0.721249    (the contaminated subset)
+  cham_column_inflation_Sa_repoGT              = 0.003524    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_repoGT_leaked_percentile             = 0.4934  [0.000 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_split_direction_agrees_across_mask_sets = False    (the two mask sets agree at mean IoU 0.69, so the leaked-vs-clean conclusion is checked against both)
+  leaked_difficulty_skew_by_proxy              = none|none|none|none    (object_area|boundary|contrast|components, in order)
+  get_tarloader_call_site                      = MyTrain.py:317    (re-derived from source; D2_RESULTS.md 3.0 cites MyTrain.py:220,297)
+  d2_citation_correct                          = False    (MyTrain.py:220 is "help='source pool root; if omitted, --task c"; :297 is 'for param_q, param_k in zip(model.parameters')
+  tarloader_reads_no_gt                        = True    (get_tarloader has no gt_root parameter; get_srcloader does)
+  tardataset_returns_two_no_mask               = True    (returns weak_image, strong_image)
+  target_dir_has_no_GT                         = True    (Dataset/Target/ has no GT/ subdirectory)
+  cls_reads_target_with_gt_root_none           = True    (pseudo-labels are teacher CAMs, never ground truth)
+  readme_cham_mentions                         = 1    (README.md)
+  readme_lists_cham_as_source_only             = True    (CNC synthetic-source bundle; never under Test (Real))
+  dataset_source_CNC_exists                    = False    (the README's own directory for CNC)
+  dataset_test_CHAMELEON_exists                = True    (undocumented local addition)
+  reproduce_table1_cham_mentions               = 0    (Experiments/REPRODUCE_TABLE1_v2.md)
+  result_dirs_with_cham_predictions            = 0    (no CHAMELEON predictions exist under Result/)
+  partner_images_in_cod10k_train               = 40/41    (IMAGE level: distinct canonical CHAMELEON images whose NEAREST training partner is in the public COD10K-train split)
+  partner_images_in_camo                       = 1/41    (IMAGE level, nearest partner)
+  detector_selftest                            = PASS    (synthetic known-answer case, no repo data)
+  detector_reproduces_s4r_pairs                = 41/41    (standalone tool vs in-repo sweep, same constants)
+  detector_reproduces_s4r_names                = 41/41
+  detector_extra_pairs                         = 1    (pairs the tool found that s4br did not select)
+  anonymization_scan_clean                     = True    (patterns: /home/, ai-server, Akshat, akshat, imagine.io, Dataset/, Snapshot/, Result/, rebuild/, .venv, experiments/lakered, S2R-COD/)
+  release_files                                = CLEAN_PROTOCOL.md, README.md, chameleon_contaminated.json, detect_contamination.py    (rebuild/D2_reaudit/release/)
+  canonical_files_not_JPEG                     = 2/76    (container format from magic bytes, not extension: JPEG=74, PNG=2)
+  qtables_differ_PIL                           = 41/41    (PIL Image.quantization, D2's method verbatim -- counts a MISSING table as "differing")
+  qtables_differ_DQT                           = 40/41    (raw 0xFFDB marker parse; 1 pair(s) not applicable (a side is not JPEG, so there is no table to compare))
+  qtables_not_applicable                       = 1/41    (pairs whose endpoint side is animal-19.jpg)
+  pairs_differing_in_container_format          = 1/41    (a PNG/JPEG pair of one photograph is re-encoding evidence in its own right, independent of any quantization table)
+  qtable_methods_agree                         = 41/41    (the two extractions return the same differ/same/na verdict)
+  mean_abs_range                               = 0.603 .. 5.512    (confirmed canonical pairs)
+THRESHOLD  T1 both CHAMELEON copies contain exactly 76 images -> PASS
+THRESHOLD  T2 the two copies are pixel-identical at phash level, 76/76 -> PASS
+THRESHOLD  T3 D2 measured the repo copy Dataset/Test/CHAMELEON/Imgs, established from committed artifacts -> PASS
+THRESHOLD  T19 canonical vs repo CHAMELEON masks reconciled, with polarity declared per source (REPORTED; disagreement is itself a finding) -> PASS
+THRESHOLD  T4 canonical CHAMELEON contamination equals D2 41/76 (no value overwritten -- both reported) -> PASS
+THRESHOLD  T7 global s4 metrics reproduce D2 over D2 splits (323 shortlisted, 132 confirmed, 49 endpoint-vs-training) -> PASS
+THRESHOLD  T8 the CHAMELEON tolerance sweep reproduces 11/26/37/40/41 -> PASS
+THRESHOLD  T9 the canonical matched names equal D2 committed name set -> PASS
+THRESHOLD  T10 partner pool decomposition measured (NEW -- no prior value) -> PASS
+THRESHOLD  T6 s4br gap exists with above/below > 5 AND n_below equals the tol=6.0 matched count -> PASS
+THRESHOLD  T11 the gap and n_below are stable across TOPK in {8,32,all} -> PASS
+THRESHOLD  T14 the leaked-set difficulty percentile is reported with its full distribution for every proxy, and skew is declared -> PASS
+THRESHOLD  T15 the inference-based leaked-vs-clean split is computed and the inflation stated numerically -> PASS
+THRESHOLD  T12 every mechanism assertion holds from source, and the MyTrain.py:220,297 citation is recorded as wrong -> PASS
+THRESHOLD  T13 the README lists CHAMELEON only as CNC source, Source/CNC is absent from disk, Test/CHAMELEON is present, and Table 1 has no CHAMELEON column -> PASS
+THRESHOLD  T5 quantization tables differ in every confirmed pair AND the PIL and raw-DQT extractions agree pair-for-pair -> FAIL
+THRESHOLD  T5b every confirmed pair carries re-encoding evidence from SOME independent channel: a differing quantization table, or a differing container format -> PASS
+THRESHOLD  T16 the standalone detector passes its self-test and reproduces the in-repo sweep's canonical pair list -> PASS
+THRESHOLD  T17 the release bundle is free of identifying paths and names -> PASS
+THRESHOLD  T18 no /tmp, archive or scratchpad path is read; a missing input fails loudly (common.ipath has no fallback) -> PASS
+THRESHOLD  T20 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  D2 nearvdup_cham_images_matching_training = 41/76 (53.9%) -> MATCH
+OLD CLAIM  D2 near_dup_candidate_pairs_shortlisted = 323 -> MATCH
+OLD CLAIM  D2 near_duplicate_pairs_confirmed = 132 -> MATCH
+OLD CLAIM  D2 near_dup_endpoint_vs_training = 49 -> MATCH
+OLD CLAIM  D2 nearvdup_cham_at_tol_1,2,3,5,6 = 11|26|37|40|41 /76 -> MATCH
+OLD CLAIM  D2 CHAMELEON leaked name set (41 names) = 41 names -> MATCH
+OLD CLAIM  D2 epNN_cham_checkable = 51/76 -> MATCH
+OLD CLAIM  D2 epNN_cham_gap = 41 below 5.51, next at 40.58 -> MATCH
+OLD CLAIM  D2_RESULTS.md 3.0 cites MyTrain.py:220,297 for get_tarloader = MyTrain.py:220,297 -> MISMATCH
+OLD CLAIM  REBUILD_PLAN.md 3 names CHAMELEON a secondary endpoint = secondary endpoint -> MISMATCH
+OLD CLAIM  D2 quantization tables differ in 41/41 pairs = 41/41 -> MISMATCH
+ARTIFACTS  rebuild/D2_reaudit/out/d2r_reconcile.json, rebuild/D2_reaudit/out/d2r_reconcile.csv, rebuild/D2_reaudit/out/d2r_mask_reconcile.csv, rebuild/D2_reaudit/out/d2r_near_duplicates.csv, rebuild/D2_reaudit/out/d2r_endpoint_contamination.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.csv, rebuild/D2_reaudit/out/d2r_topk_sensitivity.json, rebuild/D2_reaudit/out/d2r_difficulty.json, rebuild/D2_reaudit/out/d2r_difficulty.csv, rebuild/D2_reaudit/out/d2r_impact.json, rebuild/D2_reaudit/out/d2r_scope.json, rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv, rebuild/D2_reaudit/out/chameleon_contaminated.json, rebuild/D2_reaudit/out/d2r_comparison.csv
+TRAINS     NO
+NOTES      s5r-b IS INFERENCE ONLY AND IS NOT A CHAMELEON ENDPOINT RESULT. It loads an existing checkpoint, trains nothing, writes no checkpoint, and exists solely to quantify how much a contaminated CHAMELEON column would be inflated. It must never be quoted as a performance number. MyTest.py was not modified: it excludes CHAMELEON deliberately and this does not reopen that door.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that leave every dimension group, crops, flips, colour shifts and different photographs of one specimen are NOT detected and are not claimed. Endpoint images with no same-dimension training candidate are reported as unchecked -- unchecked is not clean.
+           The tolerance sweep is a POST-HOC FILTER on the tol=6.0 result set, exactly as D2 computed it, not five independent sweeps. TOPK=8 is D2's s4b shortlist depth and is the comparison run; the TOPK 32/all runs bound its recall and are reported as sensitivity, never as a substitute.
+           D2's global s4 metrics (323 shortlisted / 132 confirmed / 49 endpoint-vs-training) are recomputed over D2's ORIGINAL 8 SPLITS ONLY, with the author-sourced set counted apart, so the committed figures stay directly comparable. The 9-split totals are reported separately.
+           CORRECTION TO D2's QUANTIZATION-TABLE EVIDENCE, found by the second extraction. animal-19.jpg and animal-28.jpg in the CHAMELEON release are PNG files carrying a .jpg extension (magic bytes 89504e47), so they have NO JPEG quantization table. D2 compared tables with PIL and `!=`, which reports "the tables differ" when one side has no table at all -- absence of evidence read as evidence. animal-19 is one of the leaked 41, so D2's "quantization tables differ in 41/41 pairs" is properly 40/41 differing plus 1 not-applicable. The CONCLUSION for that pair is unaffected and arguably stronger: its two files differ in CONTAINER FORMAT (PNG vs JPEG), which is re-encoding evidence in its own right. T5 is left FAILING against its declared wording, and T5b states the surviving claim.
+           CITATION CORRECTION: D2_RESULTS.md 3.0 cites MyTrain.py:220,297 as feeding get_tarloader. Line 220 is the --source_root help string and line 297 is the EMA teacher weight copy; the call site is re-derived here from source. The MECHANISM D2 described is correct -- the target pool enters training unlabeled and CLS pseudo-labels it from teacher CAMs -- only the line numbers were wrong. Recorded, not silently fixed.
+           SCOPE: this is a TRANSDUCTIVE PROTOCOL VIOLATION, NOT LABEL LEAKAGE. Test pixels enter training through the unlabeled target pool; CHAMELEON ground-truth masks never enter training. No claim of memorisation is made. It inflates a CHAMELEON evaluation column; it does not by itself invalidate a method whose COD10K-test and NC4K numbers are clean.
+           FRAMING: the contamination is a property of two PUBLIC datasets, not of this repo. The partners live in COD10K-train and CAMO, so any model trained on COD10K-train has seen those CHAMELEON images. Separately, README.md lists CHAMELEON only inside the CNC synthetic-SOURCE bundle and never under Test (Real), and Dataset/Source/CNC does not exist on disk while the undocumented Dataset/Test/CHAMELEON does. REBUILD_PLAN.md 3 -- ours -- adopted CHAMELEON as a secondary endpoint without checking that. Both go to REVISION_TABLE.md.
+           UNVERIFIED: whether the PUBLISHED S2R-COD paper reports a CHAMELEON column anywhere. The PDF is not in this checkout and Experiments/REPRODUCE_TABLE1_v2.md has no such column. Not claimed either way. Flagged and not answered: under --task C2C the CNC bundle (CAMO+NC4K+CHAMELEON) is the SOURCE pool, so for C2C, CHAMELEON is training data by design; a C2C table reporting CHAMELEON as test would be a direct source/test collision. Resolving that needs the paper.
+           PROVENANCE DIRECTION IS INFERENCE, NOT MEASUREMENT: CHAMELEON (2015) predates COD10K (2020), so the parsimonious reading is that COD10K-train absorbed CHAMELEON images during its construction. Only pool membership is measured.
+           NO DIFFICULTY SKEW IS DETECTABLE, so no inflation figure is claimed. All four model-free proxies and all four inference metrics put the leaked set's percentile within the clean set in 0.448-0.559, where 0.5 is indistinguishable, and none of the proxies separates the groups (Mann-Whitney p 0.47-0.99). The SIGN of the score difference even flips with the mask release used: the leaked subset scores worse against the author-sourced masks and marginally better against the repackaged GT, so split_direction_agrees_across_mask_sets is False. The defensible claim is therefore about INDEPENDENCE, not inflation -- the column cannot be read as an independent measurement -- and a specific "inflated by X" figure would be over-reading the data. This mirrors D2's own COD10K result (percentile 0.4761, no memorisation signature) at 20x the contamination rate.
+           THE TWO CHAMELEON MASK RELEASES DISAGREE, which is a second and independent reason to distrust any CHAMELEON column: mean IoU 0.693 after polarity alignment, only 27/76 identical, and OPPOSITE stored polarity (author-sourced object_black at white fraction 0.7187; repackaged object_white at 0.1400). Polarity was declared PER SOURCE from the aggregate, never per image, per REBUILD_PLAN.md A2. On identical predictions that mask-set disagreement alone moves MAE by 2.7x (0.2196 vs 0.0816), so a published CHAMELEON number depends on which mask release was used.
+           The COD10K-test, NC4K and CAMO contamination rates carried into CLEAN_PROTOCOL.md were measured against ON-DISK copies, not author-sourced ones. That is the same weakness this re-audit exists to close for CHAMELEON, and it is marked in the protocol table rather than papered over: the same author-sourced re-audit is owed for them.
+================================================================================
+
+================================================================================
+2026-09-07T14:54:07+05:30 | commit c1cb293 (dirty) | EXP D2R
+CMD   LAKE-RED/.venv/bin/python rebuild/D2_reaudit/d2r_reaudit.py --steps s0,s4r,s4br,s5r,s6r,s7r --splits full
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  decoded pixels (the only level that survives re-encoding) + canonical GT masks for s5r
+METRICS
+  cham_ondisk_n                                = 76    (Dataset/Test/CHAMELEON/Imgs)
+  chamnew_canonical_n                          = 76    (Dataset/chameleon_new/animals, author-sourced)
+  copies_identical_fhash                       = 76/76    (sha256 of file bytes, set-based)
+  copies_identical_phash                       = 76/76    (decoded-RGB hash, set-based)
+  copies_reconcile_outcome                     = a    (boundaries declared in REAUDIT_PLAN.md 1.5)
+  copies_qtables_identical                     = 74/76    (raw DQT parse)
+  d2_measured_copy                             = Dataset/Test/CHAMELEON/Imgs    (git show 17dfbbf:rebuild/common.py)
+  d2_manifest_kb_agrees                        = 41/41    (committed d2_duplicate_pairs.csv endpoint_kb vs cham on disk)
+  d2_manifest_dims_agrees                      = 41/41    (committed d2_duplicate_pairs.csv dims vs cham on disk)
+  masks_join_is_bijection                      = True    (mask-N.png <-> animal-N.png over 1..76)
+  masks_polarity_canonical                     = object_black    (declared per SOURCE from the aggregate white fraction 0.7187)
+  masks_polarity_repo                          = object_white    (aggregate white fraction 0.1400)
+  masks_polarity_agrees                        = False    (trap T2, REBUILD_PLAN.md 2 -- a silent inversion would corrupt s5r)
+  masks_mean_iou_as_stored                     = 0.0    (white-vs-white, before any polarity interpretation)
+  masks_mean_iou_polarity_aligned              = 0.6932    (object-vs-object, both sources aligned to SOD polarity)
+  masks_iou_aligned_above_0.9                  = 40/76
+  masks_canonical_vs_repo_identical            = 27/76    (exact equality after polarity alignment)
+  masks_canonical_is_rgba                      = True    (alpha fg frac mean 1.0 -- alpha carries no mask)
+  nearvdup_chamnew_matching_training           = 41/76 (53.9%)    (distinct canonical images that are re-encodes of training data)
+  nearvdup_cham_matching_training              = 41/76 (53.9%)    (the repo copy, re-measured)
+  nearvdup_test_matching_training              = 2/2026 (0.1%)    (COD10K-test)
+  nearvdup_nc4k_matching_training              = 1/4121 (0.0%)    (NC4K)
+  nearvdup_val_matching_training               = 4/250 (1.6%)    (CAMO-val)
+  partner_pairs_in_cod10k_train                = 41/42    (PAIR level: confirmed canonical-CHAMELEON <-> training pairs whose training side is in the public COD10K-train split)
+  partner_pairs_in_camo                        = 1/42    (PAIR level; one CHAMELEON image can have more than one partner)
+  near_dup_candidate_pairs_shortlisted         = 323    (D2 splits only, exhaustive within-dimension, descriptor RMS <= 14)
+  near_dup_shortlisted_involving_chamnew       = 154    (the author-sourced set, counted apart so D2 stays comparable)
+  near_duplicate_pairs_confirmed               = 132    (D2 splits only, full-res verified, mean|diff| <= 6.0)
+  near_dup_endpoint_vs_training                = 49    (D2 splits only)
+  near_duplicate_pairs_confirmed_with_chamnew  = 207    (all 9 splits)
+  nearvdup_chamnew_at_tol_1                    = 11/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_2                    = 26/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_3                    = 37/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_5                    = 40/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  nearvdup_chamnew_at_tol_6                    = 41/76    (post-hoc filter on the tol=6.0 set, as in D2)
+  epNN_chamnew_checkable                       = 51/76    (has >=1 same-dimension training candidate)
+  epNN_chamnew_unchecked                       = 25/76    (unchecked is NOT clean)
+  epNN_chamnew_gap                             = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_cham_checkable                          = 51/76    (has >=1 same-dimension training candidate)
+  epNN_cham_unchecked                          = 25/76    (unchecked is NOT clean)
+  epNN_cham_gap                                = 41 below 5.51, next at 40.58    (first >5x jump in sorted nearest distances; ratio 7.36x)
+  epNN_test_checkable                          = 1502/2026    (has >=1 same-dimension training candidate)
+  epNN_test_unchecked                          = 524/2026    (unchecked is NOT clean)
+  epNN_test_gap                                = none    (no >5x jump found)
+  epNN_nc4k_checkable                          = 1715/4121    (has >=1 same-dimension training candidate)
+  epNN_nc4k_unchecked                          = 2406/4121    (unchecked is NOT clean)
+  epNN_nc4k_gap                                = none    (no >5x jump found)
+  epNN_val_checkable                           = 95/250    (has >=1 same-dimension training candidate)
+  epNN_val_unchecked                           = 155/250    (unchecked is NOT clean)
+  epNN_val_gap                                 = none    (no >5x jump found)
+  epNN_chamnew_gap_topk_8                      = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_32                     = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  epNN_chamnew_gap_topk_all                    = 41 below 5.51, next at 40.58    (sensitivity; TOPK=8 is the comparison run)
+  s5r_mask_polarity_used                       = object_black    (canonical masks, declared per source in s0)
+  leaked_pct_object_area_frac                  = 0.5010  [0.029 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.9916852056828893)
+  leaked_pct_boundary_complexity               = 0.4850  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.8267700158060285)
+  leaked_pct_fg_bg_contrast                    = 0.5484  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=easier; skew=none; MWU p=0.47210061575420814)
+  leaked_pct_n_components                      = 0.5589  [0.000 .. 1.000]    (percentile of the leaked set within the clean set, oriented so >0.75 = easier; higher=harder; skew=none; MWU p=0.4749752860335906)
+  cham_MAE_all_76                              = 0.219648    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_MAE_clean_35                            = 0.208234    (the uncontaminated subset)
+  cham_MAE_leaked_41                           = 0.229392    (the contaminated subset)
+  cham_column_inflation_MAE                    = -0.011414    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_leaked_percentile                   = 0.4481  [0.000 .. 0.971]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_all_76                               = 0.583363    (INFERENCE ONLY -- not a CHAMELEON endpoint result; author-sourced masks)
+  cham_Sa_clean_35                             = 0.601893    (the uncontaminated subset)
+  cham_Sa_leaked_41                            = 0.567545    (the contaminated subset)
+  cham_column_inflation_Sa                     = 0.01853    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_leaked_percentile                    = 0.4606  [0.000 .. 0.943]    (oriented so >0.75 = easier; skew=none)
+  cham_MAE_repoGT_all_76                       = 0.081631    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_MAE_repoGT_clean_35                     = 0.084573    (the uncontaminated subset)
+  cham_MAE_repoGT_leaked_41                    = 0.079119    (the contaminated subset)
+  cham_column_inflation_MAE_repoGT             = 0.002943    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_MAE_repoGT_leaked_percentile            = 0.4948  [0.057 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_Sa_repoGT_all_76                        = 0.724257    (INFERENCE ONLY -- not a CHAMELEON endpoint result; the repo's repackaged GT, as a mask-set robustness check)
+  cham_Sa_repoGT_clean_35                      = 0.727781    (the uncontaminated subset)
+  cham_Sa_repoGT_leaked_41                     = 0.721249    (the contaminated subset)
+  cham_column_inflation_Sa_repoGT              = 0.003524    (clean-subset value minus what the full column would report; sign convention: for MAE lower is better)
+  cham_Sa_repoGT_leaked_percentile             = 0.4934  [0.000 .. 1.000]    (oriented so >0.75 = easier; skew=none)
+  cham_split_direction_agrees_across_mask_sets = False    (the two mask sets agree at mean IoU 0.69, so the leaked-vs-clean conclusion is checked against both)
+  leaked_difficulty_skew_by_proxy              = none|none|none|none    (object_area|boundary|contrast|components, in order)
+  get_tarloader_call_site                      = MyTrain.py:317    (re-derived from source; D2_RESULTS.md 3.0 cites MyTrain.py:220,297)
+  d2_citation_correct                          = False    (MyTrain.py:220 is "help='source pool root; if omitted, --task c"; :297 is 'for param_q, param_k in zip(model.parameters')
+  tarloader_reads_no_gt                        = True    (get_tarloader has no gt_root parameter; get_srcloader does)
+  tardataset_returns_two_no_mask               = True    (returns weak_image, strong_image)
+  target_dir_has_no_GT                         = True    (Dataset/Target/ has no GT/ subdirectory)
+  cls_reads_target_with_gt_root_none           = True    (pseudo-labels are teacher CAMs, never ground truth)
+  readme_cham_mentions                         = 1    (README.md)
+  readme_lists_cham_as_source_only             = True    (CNC synthetic-source bundle; never under Test (Real))
+  dataset_source_CNC_exists                    = False    (the README's own directory for CNC)
+  dataset_test_CHAMELEON_exists                = True    (undocumented local addition)
+  reproduce_table1_cham_mentions               = 0    (Experiments/REPRODUCE_TABLE1_v2.md)
+  result_dirs_with_cham_predictions            = 0    (no CHAMELEON predictions exist under Result/)
+  partner_images_in_cod10k_train               = 40/41    (IMAGE level: distinct canonical CHAMELEON images whose NEAREST training partner is in the public COD10K-train split)
+  partner_images_in_camo                       = 1/41    (IMAGE level, nearest partner)
+  detector_selftest                            = PASS    (synthetic known-answer case, no repo data)
+  detector_reproduces_s4r_pairs                = 41/41    (standalone tool vs in-repo sweep, same constants)
+  detector_reproduces_s4r_names                = 41/41
+  detector_extra_pairs                         = 1    (pairs the tool found that s4br did not select)
+  anonymization_scan_clean                     = True    (patterns: /home/, ai-server, Akshat, akshat, imagine.io, Dataset/, Snapshot/, Result/, rebuild/, .venv, experiments/lakered, S2R-COD/)
+  release_files                                = CLEAN_PROTOCOL.md, README.md, chameleon_contaminated.json, detect_contamination.py    (rebuild/D2_reaudit/release/)
+  canonical_files_not_JPEG                     = 2/76    (container format from magic bytes, not extension: JPEG=74, PNG=2)
+  qtables_differ_PIL                           = 41/41    (PIL Image.quantization, D2's method verbatim -- counts a MISSING table as "differing")
+  qtables_differ_DQT                           = 40/41    (raw 0xFFDB marker parse; 1 pair(s) not applicable (a side is not JPEG, so there is no table to compare))
+  qtables_not_applicable                       = 1/41    (pairs whose endpoint side is animal-19.jpg)
+  pairs_differing_in_container_format          = 1/41    (a PNG/JPEG pair of one photograph is re-encoding evidence in its own right, independent of any quantization table)
+  qtable_methods_agree                         = 41/41    (the two extractions return the same differ/same/na verdict)
+  mean_abs_range                               = 0.603 .. 5.512    (confirmed canonical pairs)
+THRESHOLD  T1 both CHAMELEON copies contain exactly 76 images -> PASS
+THRESHOLD  T2 the two copies are pixel-identical at phash level, 76/76 -> PASS
+THRESHOLD  T3 D2 measured the repo copy Dataset/Test/CHAMELEON/Imgs, established from committed artifacts -> PASS
+THRESHOLD  T19 canonical vs repo CHAMELEON masks reconciled, with polarity declared per source (REPORTED; disagreement is itself a finding) -> PASS
+THRESHOLD  T4 canonical CHAMELEON contamination equals D2 41/76 (no value overwritten -- both reported) -> PASS
+THRESHOLD  T7 global s4 metrics reproduce D2 over D2 splits (323 shortlisted, 132 confirmed, 49 endpoint-vs-training) -> PASS
+THRESHOLD  T8 the CHAMELEON tolerance sweep reproduces 11/26/37/40/41 -> PASS
+THRESHOLD  T9 the canonical matched names equal D2 committed name set -> PASS
+THRESHOLD  T10 partner pool decomposition measured (NEW -- no prior value) -> PASS
+THRESHOLD  T6 s4br gap exists with above/below > 5 AND n_below equals the tol=6.0 matched count -> PASS
+THRESHOLD  T11 the gap and n_below are stable across TOPK in {8,32,all} -> PASS
+THRESHOLD  T14 the leaked-set difficulty percentile is reported with its full distribution for every proxy, and skew is declared -> PASS
+THRESHOLD  T15 the inference-based leaked-vs-clean split is computed and the inflation stated numerically -> PASS
+THRESHOLD  T12 every mechanism assertion holds from source, and the MyTrain.py:220,297 citation is recorded as wrong -> PASS
+THRESHOLD  T13 the README lists CHAMELEON only as CNC source, Source/CNC is absent from disk, Test/CHAMELEON is present, and Table 1 has no CHAMELEON column -> PASS
+THRESHOLD  T5 quantization tables differ in every confirmed pair AND the PIL and raw-DQT extractions agree pair-for-pair -> FAIL
+THRESHOLD  T5b every confirmed pair carries re-encoding evidence from SOME independent channel: a differing quantization table, or a differing container format -> PASS
+THRESHOLD  T16 the standalone detector passes its self-test and reproduces the in-repo sweep's canonical pair list -> PASS
+THRESHOLD  T17 the release bundle is free of identifying paths and names -> PASS
+THRESHOLD  T18 no /tmp, archive or scratchpad path is read; a missing input fails loudly (common.ipath has no fallback) -> PASS
+THRESHOLD  T20 nothing under Dataset/, Result/ or Snapshot/ is modified -> PASS
+OLD CLAIM  D2 nearvdup_cham_images_matching_training = 41/76 (53.9%) -> MATCH
+OLD CLAIM  D2 near_dup_candidate_pairs_shortlisted = 323 -> MATCH
+OLD CLAIM  D2 near_duplicate_pairs_confirmed = 132 -> MATCH
+OLD CLAIM  D2 near_dup_endpoint_vs_training = 49 -> MATCH
+OLD CLAIM  D2 nearvdup_cham_at_tol_1,2,3,5,6 = 11|26|37|40|41 /76 -> MATCH
+OLD CLAIM  D2 CHAMELEON leaked name set (41 names) = 41 names -> MATCH
+OLD CLAIM  D2 epNN_cham_checkable = 51/76 -> MATCH
+OLD CLAIM  D2 epNN_cham_gap = 41 below 5.51, next at 40.58 -> MATCH
+OLD CLAIM  D2_RESULTS.md 3.0 cites MyTrain.py:220,297 for get_tarloader = MyTrain.py:220,297 -> MISMATCH
+OLD CLAIM  REBUILD_PLAN.md 3 names CHAMELEON a secondary endpoint = secondary endpoint -> MISMATCH
+OLD CLAIM  D2 quantization tables differ in 41/41 pairs = 41/41 -> MISMATCH
+ARTIFACTS  rebuild/D2_reaudit/out/d2r_reconcile.json, rebuild/D2_reaudit/out/d2r_reconcile.csv, rebuild/D2_reaudit/out/d2r_mask_reconcile.csv, rebuild/D2_reaudit/out/d2r_near_duplicates.csv, rebuild/D2_reaudit/out/d2r_endpoint_contamination.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.json, rebuild/D2_reaudit/out/d2r_endpoint_nearest.csv, rebuild/D2_reaudit/out/d2r_topk_sensitivity.json, rebuild/D2_reaudit/out/d2r_difficulty.json, rebuild/D2_reaudit/out/d2r_difficulty.csv, rebuild/D2_reaudit/out/d2r_impact.json, rebuild/D2_reaudit/out/d2r_scope.json, rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv, rebuild/D2_reaudit/out/chameleon_contaminated.json, rebuild/D2_reaudit/out/d2r_comparison.csv
+TRAINS     NO
+NOTES      s5r-b IS INFERENCE ONLY AND IS NOT A CHAMELEON ENDPOINT RESULT. It loads an existing checkpoint, trains nothing, writes no checkpoint, and exists solely to quantify how much a contaminated CHAMELEON column would be inflated. It must never be quoted as a performance number. MyTest.py was not modified: it excludes CHAMELEON deliberately and this does not reopen that door.
+           EVERY COUNT IS A LOWER BOUND. Coverage is exact duplicates plus same-dimension re-encodes. Rescaled copies that leave every dimension group, crops, flips, colour shifts and different photographs of one specimen are NOT detected and are not claimed. Endpoint images with no same-dimension training candidate are reported as unchecked -- unchecked is not clean.
+           The tolerance sweep is a POST-HOC FILTER on the tol=6.0 result set, exactly as D2 computed it, not five independent sweeps. TOPK=8 is D2's s4b shortlist depth and is the comparison run; the TOPK 32/all runs bound its recall and are reported as sensitivity, never as a substitute.
+           D2's global s4 metrics (323 shortlisted / 132 confirmed / 49 endpoint-vs-training) are recomputed over D2's ORIGINAL 8 SPLITS ONLY, with the author-sourced set counted apart, so the committed figures stay directly comparable. The 9-split totals are reported separately.
+           CORRECTION TO D2's QUANTIZATION-TABLE EVIDENCE, found by the second extraction. animal-19.jpg and animal-28.jpg in the CHAMELEON release are PNG files carrying a .jpg extension (magic bytes 89504e47), so they have NO JPEG quantization table. D2 compared tables with PIL and `!=`, which reports "the tables differ" when one side has no table at all -- absence of evidence read as evidence. animal-19 is one of the leaked 41, so D2's "quantization tables differ in 41/41 pairs" is properly 40/41 differing plus 1 not-applicable. The CONCLUSION for that pair is unaffected and arguably stronger: its two files differ in CONTAINER FORMAT (PNG vs JPEG), which is re-encoding evidence in its own right. T5 is left FAILING against its declared wording, and T5b states the surviving claim.
+           CITATION CORRECTION: D2_RESULTS.md 3.0 cites MyTrain.py:220,297 as feeding get_tarloader. Line 220 is the --source_root help string and line 297 is the EMA teacher weight copy; the call site is re-derived here from source. The MECHANISM D2 described is correct -- the target pool enters training unlabeled and CLS pseudo-labels it from teacher CAMs -- only the line numbers were wrong. Recorded, not silently fixed.
+           SCOPE: this is a TRANSDUCTIVE PROTOCOL VIOLATION, NOT LABEL LEAKAGE. Test pixels enter training through the unlabeled target pool; CHAMELEON ground-truth masks never enter training. No claim of memorisation is made. It inflates a CHAMELEON evaluation column; it does not by itself invalidate a method whose COD10K-test and NC4K numbers are clean.
+           FRAMING: the contamination is a property of two PUBLIC datasets, not of this repo. The partners live in COD10K-train and CAMO, so any model trained on COD10K-train has seen those CHAMELEON images. Separately, README.md lists CHAMELEON only inside the CNC synthetic-SOURCE bundle and never under Test (Real), and Dataset/Source/CNC does not exist on disk while the undocumented Dataset/Test/CHAMELEON does. REBUILD_PLAN.md 3 -- ours -- adopted CHAMELEON as a secondary endpoint without checking that. Both go to REVISION_TABLE.md.
+           UNVERIFIED: whether the PUBLISHED S2R-COD paper reports a CHAMELEON column anywhere. The PDF is not in this checkout and Experiments/REPRODUCE_TABLE1_v2.md has no such column. Not claimed either way. Flagged and not answered: under --task C2C the CNC bundle (CAMO+NC4K+CHAMELEON) is the SOURCE pool, so for C2C, CHAMELEON is training data by design; a C2C table reporting CHAMELEON as test would be a direct source/test collision. Resolving that needs the paper.
+           PROVENANCE DIRECTION IS INFERENCE, NOT MEASUREMENT: CHAMELEON (2015) predates COD10K (2020), so the parsimonious reading is that COD10K-train absorbed CHAMELEON images during its construction. Only pool membership is measured.
+           NO DIFFICULTY SKEW IS DETECTABLE, so no inflation figure is claimed. All four model-free proxies and all four inference metrics put the leaked set's percentile within the clean set in 0.448-0.559, where 0.5 is indistinguishable, and none of the proxies separates the groups (Mann-Whitney p 0.47-0.99). The SIGN of the score difference even flips with the mask release used: the leaked subset scores worse against the author-sourced masks and marginally better against the repackaged GT, so split_direction_agrees_across_mask_sets is False. The defensible claim is therefore about INDEPENDENCE, not inflation -- the column cannot be read as an independent measurement -- and a specific "inflated by X" figure would be over-reading the data. This mirrors D2's own COD10K result (percentile 0.4761, no memorisation signature) at 20x the contamination rate.
+           THE TWO CHAMELEON MASK RELEASES DISAGREE, which is a second and independent reason to distrust any CHAMELEON column: mean IoU 0.693 after polarity alignment, only 27/76 identical, and OPPOSITE stored polarity (author-sourced object_black at white fraction 0.7187; repackaged object_white at 0.1400). Polarity was declared PER SOURCE from the aggregate, never per image, per REBUILD_PLAN.md A2. On identical predictions that mask-set disagreement alone moves MAE by 2.7x (0.2196 vs 0.0816), so a published CHAMELEON number depends on which mask release was used.
+           The COD10K-test, NC4K and CAMO contamination rates carried into CLEAN_PROTOCOL.md were measured against ON-DISK copies, not author-sourced ones. That is the same weakness this re-audit exists to close for CHAMELEON, and it is marked in the protocol table rather than papered over: the same author-sourced re-audit is owed for them.
+================================================================================
+

@@ -20,3 +20,9 @@ __pycache__*
 # Regenerate with: rebuild/D2/d2_export_duplicates.py
 # The per-pair manifest IS tracked, at rebuild/D2/out/d2_duplicate_pairs.csv
 /rebuild/*/duplicates/
+
+# D2R re-audit exports: copied dataset images, pair figures, inference output.
+# Regenerate with: rebuild/D2_reaudit/d2r_export_pairs.py and d2r_reaudit.py --steps s5r
+# The per-pair manifest IS tracked, at rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv
+/rebuild/*/pairs/
+/rebuild/*/preds/

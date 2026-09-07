@@ -1,0 +1,20 @@
+{
+  "topk_32": {
+    "above": 40.577,
+    "below": 5.512,
+    "n_below": 41,
+    "ratio": 7.36
+  },
+  "topk_8": {
+    "above": 40.577,
+    "below": 5.512,
+    "n_below": 41,
+    "ratio": 7.36
+  },
+  "topk_all": {
+    "above": 40.577,
+    "below": 5.512,
+    "n_below": 41,
+    "ratio": 7.36
+  }
+}

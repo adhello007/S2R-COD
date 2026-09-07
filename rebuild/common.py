@@ -63,6 +63,12 @@ INPUTS = {
     # --- secondary test sets (D2 leakage sweep) ---
     'cham':  dict(path='Dataset/Test/CHAMELEON/Imgs', n=76,   repr='R1-full', pool=None),
     'nc4k':  dict(path='Dataset/Test/NC4K/Imgs',      n=4121, repr='R1-full', pool=None),
+    # --- author-sourced CHAMELEON (D2R re-audit). The 'cham' rows above are the
+    # repo's own repackaged copy; these are the canonical release, declared so the
+    # re-audit measures against a set with stated provenance rather than a copy of
+    # unknown origin. Path declarations only -- no measured value lives here.
+    'chamnew':    dict(path='Dataset/chameleon_new/animals', n=76, repr='R1-full', pool=None),
+    'chamnew_gt': dict(path='Dataset/chameleon_new/masks',   n=76, repr='mask',    pool=None),
     # --- LAKE-RED staging inputs (mask polarity is INVERTED here; trap T2) ---
     'lr_in_img':  dict(path='Dataset/LAKERED/input/HKU-IS/validation/images', n=4447, repr='R1-full',      pool=None),
     'lr_in_mask': dict(path='Dataset/LAKERED/input/HKU-IS/validation/masks',  n=4447, repr='mask-INVERTED', pool=None),

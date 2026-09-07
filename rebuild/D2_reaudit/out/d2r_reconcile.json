@@ -1,0 +1,37 @@
+{
+  "cham": {
+    "agg": "b6d2c07481a0309d",
+    "n": 76,
+    "path": "Dataset/Test/CHAMELEON/Imgs"
+  },
+  "chamnew": {
+    "agg": "b6d2c07481a0309d",
+    "n": 76,
+    "path": "Dataset/chameleon_new/animals"
+  },
+  "d2_manifest_dims_agrees": "41/41",
+  "d2_manifest_kb_agrees": "41/41",
+  "d2_measured_copy": "Dataset/Test/CHAMELEON/Imgs",
+  "filename_join": 76,
+  "identical_fhash": 76,
+  "identical_phash": 76,
+  "masks": {
+    "alpha_fg_frac_mean": 1.0,
+    "canonical_is_rgba": true,
+    "join_bijection": true,
+    "mean_iou_as_stored": 0.0,
+    "mean_iou_polarity_aligned": 0.6932,
+    "n_identical": 27,
+    "n_iou_above_0_9": 40,
+    "n_joined": 76,
+    "polarity_agrees": false,
+    "polarity_canonical": "object_black",
+    "polarity_repo": "object_white",
+    "white_frac_canonical": 0.7187,
+    "white_frac_repo": 0.14
+  },
+  "only_in_cham_phash": 0,
+  "only_in_chamnew_phash": 0,
+  "outcome": "a",
+  "qtables_equal": 74
+}
