@@ -1,0 +1,16 @@
+key,value
+bg_b_shift,-13.488345
+bg_g_shift,-22.887969
+bg_lum_auth,98.529343
+bg_lum_gen,98.63953
+bg_lum_real,117.876384
+bg_lum_shift,-19.236854
+bg_r_shift,-21.334249
+corr_auth,0.399463
+corr_gen,0.396659
+corr_real,-0.190784
+n,4447
+n_auth,4447
+r2_auth,0.159571
+r2_gen,0.157338
+r2_real,0.036399

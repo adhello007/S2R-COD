@@ -1,0 +1,42 @@
+{
+  "align": {
+    "auth": {
+      "index_wise": 4447,
+      "n": 4447,
+      "same_set": true
+    },
+    "local": {
+      "index_wise": 4447,
+      "n": 4447,
+      "same_set": true
+    }
+  },
+  "digest_bad": [],
+  "digest_checked": [
+    "tgt",
+    "raw",
+    "auth",
+    "local",
+    "test",
+    "nc4k"
+  ],
+  "leaked_resolved": 7,
+  "n_leaked": 7,
+  "n_tgt": 4040,
+  "names_agree": true,
+  "nc4k": {
+    "contaminated": 0,
+    "n_cod_train": 3040,
+    "n_nc4k": 4121,
+    "shortlisted": 0,
+    "sweep": {
+      "1.0": 0,
+      "2.0": 0,
+      "3.0": 0,
+      "5.0": 0,
+      "6.0": 0
+    }
+  },
+  "repr_bad": [],
+  "shape_bad": []
+}

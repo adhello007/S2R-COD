@@ -1,0 +1,81 @@
+{
+  "T1": true,
+  "auth": {
+    "cells": [
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.933168351650238,
+        "clears_margin": true,
+        "embedder": "dinoL224",
+        "recall": 0.4829207956790924,
+        "recall_raw": 0.7472772598266602,
+        "rel_loss": 0.35375954596676523
+      },
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.943069338798523,
+        "clears_margin": true,
+        "embedder": "dinoL518",
+        "recall": 0.4834158420562744,
+        "recall_raw": 0.7096534967422485,
+        "rel_loss": 0.3188001689902831
+      },
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.893069326877594,
+        "clears_margin": true,
+        "embedder": "clipL224",
+        "recall": 0.12772276997566223,
+        "recall_raw": 0.747029721736908,
+        "rel_loss": 0.8290258523065241
+      }
+    ],
+    "n_below_ceiling": 3,
+    "n_below_raw": 3,
+    "n_clearing": 3,
+    "passes": true,
+    "signs_agree": true
+  },
+  "local": {
+    "cells": [
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.933168351650238,
+        "clears_margin": true,
+        "embedder": "dinoL224",
+        "recall": 0.46683168411254883,
+        "recall_raw": 0.7472772598266602,
+        "rel_loss": 0.3752898566445927
+      },
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.943069338798523,
+        "clears_margin": true,
+        "embedder": "dinoL518",
+        "recall": 0.5420792102813721,
+        "recall_raw": 0.7096534967422485,
+        "rel_loss": 0.23613536356848347
+      },
+      {
+        "below_ceiling": true,
+        "below_raw": true,
+        "ceiling": 0.893069326877594,
+        "clears_margin": true,
+        "embedder": "clipL224",
+        "recall": 0.1349009871482849,
+        "recall_raw": 0.747029721736908,
+        "rel_loss": 0.8194168408257859
+      }
+    ],
+    "n_below_ceiling": 3,
+    "n_below_raw": 3,
+    "n_clearing": 3,
+    "passes": true,
+    "signs_agree": true
+  }
+}

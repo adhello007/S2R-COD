@@ -4,7 +4,18 @@ Running record, appended as each experiment completes. Every row cites the log b
 measured value. The "old value" column is the frozen record from `REBUILD_PLAN.md` §4 — a claim under
 test, never an input.
 
-Completed so far: **E0, D2, D2R, D1, B1, C1, ABC**. Six outstanding: A1, A2, A3, B2, B3, C3. (C2's load-bearing claim is proved by ABC block #2 at scale; it still has no `EXP C2` block of its own.)
+Completed so far: **E0, D2, D2R, D1, B1, C1, ABC, A3**. Five outstanding: A1, A2, B2, B3, C3. (C2's load-bearing claim is proved by ABC block #2 at scale; it still has no `EXP C2` block of its own.)
+
+> **A3 REPRODUCES THE OLD PACKAGE ALMOST ENTIRELY — AND THEN THE VACUITY FLAG FIRES.** Eighteen of
+> the old A3's pinned values re-test clean, including the headline AUC 0.9989, the JPEG-75 floor
+> 0.4117, the recall pair 0.4662/0.7461 and every pixel statistic to six decimals. **But the quality
+> sweep the original never ran shows the AUC framing itself is vacuous:** re-encoding the *identical*
+> target images at JPEG-30 separates them from themselves at **0.9928** in `clipL224` — above
+> `REBUILD_PLAN`'s declared 0.90 vacuity trigger, above *both* genuine real-vs-real controls, and
+> within 0.007 of the real-vs-LAKE-RED headline. On those same floors MMD² is **≈ 0**, so AUC was
+> never measuring distributional distance. **The coverage delta, declared as the decision before the
+> run, passes in 3 of 3 embedder spaces for both synthetic pools** at 24–83 % relative loss. The
+> finding survives; the metric that used to carry it does not. See A3.1-A3.8 below.
 
 > **D2R RE-VERIFIES D2's HEADLINE AGAINST AN AUTHOR-SOURCED CHAMELEON AND IT HOLDS EXACTLY.** The
 > author's release is **byte-identical** to the repo copy (76/76 at both hash levels), and all eight
@@ -61,6 +72,8 @@ Completed so far: **E0, D2, D2R, D1, B1, C1, ABC**. Six outstanding: A1, A2, A3,
 | **ABC.3** | "Uncertainty-guided closed-loop Stage C improves COD accuracy" | asserted | **WITHIN NOISE** on both architectures and both endpoints. `architectures_agree_on_verdict` = YES on all five gaps | `EXP ABC` #3 | The first time Stage C was **trained**. Per `ABC_PLAN.md` §A.12 item 7 this is a result about **concentration**, not about the ES signal, whose own contribution C1 measured at ~0.6% of *d*. The null must be reported **with** the power statement in ABC.1 |
 | **ABC.4** | Arm A0 as a usable baseline | assumed usable, flagged only for the 22% exposure confound | **A0 is the most VARIABLE arm in both architectures** — sd **0.017266** (SINet) and **0.010575** (SINet-v2) on COD10K, against **0.001807** and **0.004863** for arm B | `EXP ABC` #3 | **New, and it sets the detection bar for comparisons A0 is not part of.** A0 contributes 2 of the 8 df in the pooled σ̂. Reproducible across 2 architectures × 2 endpoints, so not one unlucky run. Mechanism **unexplained** |
 | **ABC.5** | CLS round-2 append count as an arm-invariant | never examined | mean **1945.8**, range **1732–2163**, **spread 22.2%** — declared 5% threshold **FAILS** | `EXP ABC` #2 | Reported, not absorbed: it is the one legitimate place the arms diverge beyond the Stage C injection, because CLS selects with the arm's own round-1 model (`CLS.py:139`). The one arm-level pattern (render-carrying arms append more) appears on SINet and **not** on SINet-v2, so it is not architecture-robust |
+| **A3.5** | **Cohen's *d*, real vs LAKE-RED** | **4.67 / 4.61 / 4.33** — in-sample logistic axis | held-out **+3.103 / +2.709 / +4.267** (C1's imported estimator); **4.428 / 4.068 / 5.421** on that same logistic axis held out. The old estimator itself reproduces at **4.658** | `EXP A3` | **SUPERSEDED, not refuted.** The old figure is arithmetically correct and inferentially unusable. Run on a **true null** — two random halves of one dataset — that same estimator returns **0.687 / 0.681 / 0.485** against **0.032 / 0.022 / 0.089** for the held-out version of itself, reproducing C1's independently measured +0.6991 to two decimals. It manufactures ~0.65 of *d* from nothing. The effect is large and real in all three spaces; only the estimator changes |
+| **A3.3** | Whether an identity-preserving control can rival the headline | **0.4117** at JPEG-75 — the original's single setting, read as "one control, sufficient but not two" | **JPEG-30 reaches 0.9928** (`clipL224`; 0.8509 `dinoL224`, 0.7969 `dinoL518`), and in **2 of 3** spaces the floor **exceeds** the cross-dataset NC4K control | `EXP A3` | **The declared vacuity flag FIRED** (`REBUILD_PLAN.md` §3-A3: vacuity if any identity-preserving control exceeds AUC 0.90). Only the *sweep* reveals it; the original pinned one quality and concluded the floor was harmless. Two encodings of one photograph are separable at 0.99 while their distributions are identical — MMD² **≈ 0** on those floors against **0.00051** for the headline. The old package's own doubt about R-f was better founded than it knew |
 
 ## 2. Corrections to the rebuild's own work
 
@@ -95,6 +108,7 @@ Kept visible because a rebuild that only ever corrects someone else is not audit
 **R3 is the only one where a measurement was substantively wrong** rather than untraceable. It was
 found by auditing my own method, not by the method reporting a problem — which is the failure mode
 this rebuild is most exposed to.
+| R23 | A3's `T8` was declared on C1's **imported mean-difference** estimator, but the figure `T8` exists to disqualify (4.67) came from the **logistic probe axis** | A3, threshold fixed in `A3.md` before the run | `T8` **FAILED**: the mean-difference in-sample null lands at **0.4015 / 0.4024 / 0.3031**, below the declared 0.50 — while the logistic-axis in-sample null, the one that actually matters, lands at **0.687 / 0.681 / 0.485** | **`T8` is left FAILING rather than relaxed or re-pointed**, per C1 R14. The logistic-axis null is reported beside it as an **observation**, never promoted to a replacement threshold. The disqualification of 4.67 does not depend on `T8`. Sample size explains the gap: C1's +0.6991 was measured over subsets of B = 250–3000, whereas A3's null splits 4040 into halves of ~2020, where in-sample bias is smallest — and C1's own range reached down to +0.2144 |
 
 ## 3. Old values that RE-TESTED CLEAN
 
@@ -119,6 +133,19 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | CHAMELEON nearest-neighbour gap | 41 below 5.51, next at 40.58 | **41 below 5.51, next at 40.58** (7.36×), and invariant at shortlist depth 8/32/all | `EXP D2R` |
 | CHAMELEON checkable / unchecked | 51/76 / 25 | **51/76 / 25** | `EXP D2R` |
 | COD10K-test / NC4K / CAMO contamination | 2/2026, 1/4121, 4/250 | **2/2026 (0.1 %)**, **1/4121 (0.0 %)**, **4/250 (1.6 %)**, all three still on-disk copies only | `EXP D2R` |
+| Probe AUC real-vs-LAKE-RED | 0.9989 | **0.9988** (`dinoL224`, local pool) | `EXP A3` |
+| Probe AUC true null | 0.4781 | **0.5052**, and chance-level in all three spaces | `EXP A3` |
+| Probe AUC JPEG-75 | 0.4117 | **0.4156** | `EXP A3` |
+| Probe AUC sorted-filename split | 0.8888 | **0.8975** | `EXP A3` |
+| Probe AUC real vs raw HKU-IS | 0.9831 | **0.9794** | `EXP A3` |
+| Probe AUC darkened-20 | 0.3469 | **0.3501** | `EXP A3` |
+| Cohen's *d*, under the old in-sample estimator | 4.67 | **4.658** | `EXP A3` |
+| Recall, LAKE-RED / raw HKU-IS | 0.4662 / 0.7461 | **0.4668 / 0.7473** | `EXP A3` |
+| Precision, LAKE-RED / raw HKU-IS | 0.6906 / 0.6494 | **0.6886 / 0.6490** | `EXP A3` |
+| Generation recall delta | −0.2799 (−37.5 %) | **−0.2804 (−37.5 %)** | `EXP A3` |
+| Corrected precision/recall ceiling | 0.9405 / 0.9370 | **0.9376 / 0.9332** | `EXP A3` |
+| Background luminance shift, real → generated | −19.24 | **−19.236854** | `EXP A3` |
+| fg→bg colour correlation, real / local / authors' | −0.191 / +0.397 / +0.399 | **−0.190784 / +0.396659 / +0.399463** — all three to six decimals | `EXP A3` |
 
 ## 4. Claims that changed in KIND, not value
 
@@ -130,6 +157,11 @@ Being unverifiable is not the same as being wrong, and the rebuild has to be abl
 | "The HKU-IS foreground fraction" | one number | **set-dependent** — `raw_gt` 0.19132 vs `auth_gt` 0.18557 | `EXP D1` |
 | Cluster membership | a stable label | an unjustified preprocessing choice reassigns **5.4 %** of images (E0); silhouette peaks at only 0.1465 / 0.1600 / 0.0568 across the three embedder spaces, and CLIP has no interior peak at all — the unit of allocation is soft in **every** space | `EXP E0`, `EXP B1` |
 | "ES predicts the wrong objective" | a binary verdict | an **effect size**: ES tracks pixel error ~2× as strongly as structural error (ρ 0.86 vs 0.43 per-cluster). The binary flips with k (ratio 0.4999 at k=75, 0.5825 at k=20), so the label is not k-stable and is not quoted | `EXP B1` |
+| A3.4, the "sorted-split bug" | a **defect** in A3's own null control, AUC 0.8888 | a **measurement of the target set's heterogeneity**. Reproduced deliberately as a labelled control (**0.8975 / 0.9110 / 0.8928**) beside the clean split it conflated | `EXP A3` |
+| "The real target distribution" | COD10K-train, one homogeneous set | a **two-dataset mixture** — 3040 COD10K + 1000 CAMO — whose two halves separate from each other at **0.8648 / 0.8592 / 0.9225**. That, not chance, is the bar a 0.999 headline has to clear. The old sorted split conflated dataset origin with COD10K's taxonomic filename order (2020 COD10K vs 1020 COD10K + 1000 CAMO); the clean 3040-vs-1000 probe had never been computed | `EXP A3` |
+| The decision metric for "synthetic sits far from real" | a linear-probe **AUC** | the **paired coverage delta**, declared before the run. AUC is reported as description and decides nothing — it is saturated at the top of its own ladder (floors reaching 0.99, real-vs-real controls 0.80–0.94, headline 0.998–0.9995) | `EXP A3` |
+| Which generated pool was probed | only the **local** re-generation | **both**, and they are indistinguishable: headline AUC 0.9986/0.9982/0.9993 (authors') vs 0.9988/0.9980/0.9995 (local); coverage loss 35.4/31.9/82.9 % vs 37.5/23.6/81.9 %. The pool `MyTrain.py` actually reads is probed here for the first time | `EXP A3` |
+| The precision/recall ceiling | 0.8934 / 0.8710 | **0.9376 / 0.9332** from random halves, with the sorted-split ceiling reproduced at **0.8931 / 0.8738** beside it. The old package corrected this itself; the **coverage direction never reversed**, only its denominator moved | `EXP A3` |
 
 ## 5. Still outstanding
 

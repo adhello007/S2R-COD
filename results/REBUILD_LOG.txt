@@ -2143,3 +2143,151 @@ NOTES      WHY: the S2R-COD paper's Task Setup Case 3 describes the NC4K evaluat
            SCOPE OF THE COD10K-TRAIN SIDE: "COD10K-train" here is the 3040 COD10K-CAM-* files inside Dataset/Target/Image, exposed as a directory of symlinks under rebuild/D2_nc4k/cache/ so the detector can take it as a plain path. That is the published COD10K camouflage train split as this checkout holds it; the other 1000 files in Target/Image are CAMO and are excluded from that side by construction.
 ================================================================================
 
+================================================================================
+2026-09-08T10:34:47+05:30 | commit 8a7a15d (dirty) | EXP A3
+CMD   LAKE-RED/.venv/bin/python rebuild/A3/a3_appearance_signature.py --steps s1,s2,s3,s4,s5,s6
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  R1-full whole images for every set (E0 cache for tgt/raw/auth/local/test, rebuild/A3/cache for NC4K + JPEG sweep + darkening); CLS token, L2 at use time; the R2 grey-128 cutout cache is NEVER read
+METRICS
+  e0_cache_shape_mismatches               = 0    (all 15 embedder x set caches A3 reads, against e0_cache_summary.csv)
+  e0_cache_names_agree_across_embedders   = True    (a per-tag index mask would be invalid otherwise)
+  input_digests_verified                  = 6 checked, 0 mismatched    (aggregate sha256 per directory vs e0_input_digests.csv)
+  target_set_composition                  = 3040 COD10K + 1000 CAMO = 4040    (Dataset/Target/Image is a TWO-DATASET MIXTURE -- the R1 repair)
+  d2_leaked_names_resolved                = 7/7    (read from D2 s output; A3 carries no name list)
+  leaked_all_inside_COD10K                = True    (so the 4033 row only shrinks the COD10K side)
+  pool_alignment_raw_vs_auth              = 4447/4447    (index-wise stem identity -- the paired coverage delta compares row i of raw with row i of auth)
+  pool_alignment_raw_vs_local             = 4447/4447    (index-wise stem identity -- the paired coverage delta compares row i of raw with row i of local)
+  nc4k_overlap_with_COD10K_train          = 0/4121 contaminated, 0 pairs shortlisted    (CONSUMED from D2_NC4K, not recomputed; its axis was NC4K vs the 3040 COD10K-train images)
+  control_sets_embedded                   = 6    (nc4k, tgt_dark20, tgt_jpeg30, tgt_jpeg50, tgt_jpeg75, tgt_jpeg90)
+  fresh_embeddings_computed               = 0    (the rest read from rebuild/A3/cache/ (18 reused))
+  AUC_authpool_dinoL224                   = 0.9986    (n 4040 vs 4447; role headline)
+  AUC_local_dinoL224                      = 0.9988    (n 4040 vs 4447; role headline)
+  AUC_rawinput_dinoL224                   = 0.9794    (n 4040 vs 4447; role paired-baseline)
+  AUC_SELFSEP_cod_vs_camo_dinoL224        = 0.8648    (n 3040 vs 1000; role self-separation)
+  AUC_null_random_dinoL224                = 0.5052    (n 2020 vs 2020; role null)
+  AUC_old_sorted_defect_dinoL224          = 0.8975    (n 2020 vs 2020; role old-defect)
+  AUC_crossdataset_nc4k_dinoL224          = 0.8040    (n 4040 vs 4121; role cross-dataset)
+  AUC_floor_jpeg75_dinoL224               = 0.4156    (n 4040 vs 4040; role floor)
+  AUC_floor_dark20_dinoL224               = 0.3501    (n 4040 vs 4040; role floor)
+  AUC_authpool_dinoL518                   = 0.9982    (n 4040 vs 4447; role headline)
+  AUC_local_dinoL518                      = 0.9980    (n 4040 vs 4447; role headline)
+  AUC_rawinput_dinoL518                   = 0.9802    (n 4040 vs 4447; role paired-baseline)
+  AUC_SELFSEP_cod_vs_camo_dinoL518        = 0.8592    (n 3040 vs 1000; role self-separation)
+  AUC_null_random_dinoL518                = 0.5122    (n 2020 vs 2020; role null)
+  AUC_old_sorted_defect_dinoL518          = 0.9110    (n 2020 vs 2020; role old-defect)
+  AUC_crossdataset_nc4k_dinoL518          = 0.8243    (n 4040 vs 4121; role cross-dataset)
+  AUC_floor_jpeg75_dinoL518               = 0.5564    (n 4040 vs 4040; role floor)
+  AUC_floor_dark20_dinoL518               = 0.3108    (n 4040 vs 4040; role floor)
+  AUC_authpool_clipL224                   = 0.9993    (n 4040 vs 4447; role headline)
+  AUC_local_clipL224                      = 0.9995    (n 4040 vs 4447; role headline)
+  AUC_rawinput_clipL224                   = 0.9899    (n 4040 vs 4447; role paired-baseline)
+  AUC_SELFSEP_cod_vs_camo_clipL224        = 0.9225    (n 3040 vs 1000; role self-separation)
+  AUC_null_random_clipL224                = 0.4717    (n 2020 vs 2020; role null)
+  AUC_old_sorted_defect_clipL224          = 0.8928    (n 2020 vs 2020; role old-defect)
+  AUC_crossdataset_nc4k_clipL224          = 0.9381    (n 4040 vs 4121; role cross-dataset)
+  AUC_floor_jpeg75_clipL224               = 0.8548    (n 4040 vs 4040; role floor)
+  AUC_floor_dark20_clipL224               = 0.7690    (n 4040 vs 4040; role floor)
+  AUC_LADDER_dinoL224                     = floors 0.2826-0.8509 < self-separation 0.8648 < cross-dataset 0.8040 < LAKE-RED 0.9986/0.9988    (JPEG+dark floors | COD10K-vs-CAMO inside the target | NC4K | authors/local. SATURATED at the top -- describes, decides nothing)
+  AUC_LADDER_dinoL518                     = floors 0.3108-0.7969 < self-separation 0.8592 < cross-dataset 0.8243 < LAKE-RED 0.9982/0.9980    (JPEG+dark floors | COD10K-vs-CAMO inside the target | NC4K | authors/local. SATURATED at the top -- describes, decides nothing)
+  AUC_LADDER_clipL224                     = floors 0.6266-0.9928 < self-separation 0.9225 < cross-dataset 0.9381 < LAKE-RED 0.9993/0.9995    (JPEG+dark floors | COD10K-vs-CAMO inside the target | NC4K | authors/local. SATURATED at the top -- describes, decides nothing)
+  D_headline_local_dinoL224               = meandiff held-out +3.103 | meandiff in-sample +3.144 | probe-axis held-out 4.428 | probe-axis in-sample 4.658    (R3. The old 4.67 was the probe-axis IN-SAMPLE estimator)
+  D_null_random_dinoL224                  = meandiff held-out -0.0783 | meandiff in-sample +0.4015    (C1 measured -0.1328 held-out and up to +1.4506 in-sample)
+  D_null_OLD_ESTIMATOR_dinoL224           = probe-axis in-sample 0.6867 | same axis held out 0.0318    (THE disqualifying measurement: this is the estimator that produced 4.67, run on a TRUE NULL. Whatever it reports here it manufactured from nothing)
+  D_null_insample_inflation_dinoL224      = probe-axis +0.6550 | meandiff +0.4798    (in-sample minus held-out on a true null -- an OBSERVATION, not promoted to a threshold (C1 R14))
+  D_headline_local_dinoL518               = meandiff held-out +2.709 | meandiff in-sample +2.729 | probe-axis held-out 4.068 | probe-axis in-sample 4.300    (R3. The old 4.67 was the probe-axis IN-SAMPLE estimator)
+  D_null_random_dinoL518                  = meandiff held-out -0.0716 | meandiff in-sample +0.4024    (C1 measured -0.1328 held-out and up to +1.4506 in-sample)
+  D_null_OLD_ESTIMATOR_dinoL518           = probe-axis in-sample 0.6805 | same axis held out 0.0224    (THE disqualifying measurement: this is the estimator that produced 4.67, run on a TRUE NULL. Whatever it reports here it manufactured from nothing)
+  D_null_insample_inflation_dinoL518      = probe-axis +0.6581 | meandiff +0.4741    (in-sample minus held-out on a true null -- an OBSERVATION, not promoted to a threshold (C1 R14))
+  D_headline_local_clipL224               = meandiff held-out +4.267 | meandiff in-sample +4.255 | probe-axis held-out 5.421 | probe-axis in-sample 5.639    (R3. The old 4.67 was the probe-axis IN-SAMPLE estimator)
+  D_null_random_clipL224                  = meandiff held-out -0.0951 | meandiff in-sample +0.3031    (C1 measured -0.1328 held-out and up to +1.4506 in-sample)
+  D_null_OLD_ESTIMATOR_clipL224           = probe-axis in-sample 0.4854 | same axis held out 0.0889    (THE disqualifying measurement: this is the estimator that produced 4.67, run on a TRUE NULL. Whatever it reports here it manufactured from nothing)
+  D_null_insample_inflation_clipL224      = probe-axis +0.3966 | meandiff +0.3982    (in-sample minus held-out on a true null -- an OBSERVATION, not promoted to a threshold (C1 R14))
+  C1_null_calibration_cited               = held-out -0.1328 | in-sample max 1.4506    (from C1, for scale beside A3 s own null -- not recomputed here)
+  VACUITY_floor_vs_real_controls_dinoL224 = worst floor "JPEG-30" 0.8509 vs cross-dataset NC4K 0.8040 vs self-separation 0.8648 -> floor EXCEEDS the cross-dataset control    (the sharpest form of the vacuity argument, and only the quality SWEEP reveals it -- the old single setting missed it)
+  VACUITY_floor_vs_real_controls_dinoL518 = worst floor "JPEG-30" 0.7969 vs cross-dataset NC4K 0.8243 vs self-separation 0.8592 -> floor stays below the cross-dataset control    (the sharpest form of the vacuity argument, and only the quality SWEEP reveals it -- the old single setting missed it)
+  VACUITY_floor_vs_real_controls_clipL224 = worst floor "JPEG-30" 0.9928 vs cross-dataset NC4K 0.9381 vs self-separation 0.9225 -> floor EXCEEDS the cross-dataset control    (the sharpest form of the vacuity argument, and only the quality SWEEP reveals it -- the old single setting missed it)
+  COVERAGE_auth_dinoL224                  = recall 0.4829 vs raw 0.7473 -> delta -0.2644, relative loss 35.4% (ceiling 0.9332)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_auth_dinoL518                  = recall 0.4834 vs raw 0.7097 -> delta -0.2262, relative loss 31.9% (ceiling 0.9431)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_auth_clipL224                  = recall 0.1277 vs raw 0.7470 -> delta -0.6193, relative loss 82.9% (ceiling 0.8931)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_RULE_auth                      = 3/3 spaces clear the 15% margin -> PASS    (T1 requires >= 2 of 3)
+  COVERAGE_local_dinoL224                 = recall 0.4668 vs raw 0.7473 -> delta -0.2804, relative loss 37.5% (ceiling 0.9332)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_local_dinoL518                 = recall 0.5421 vs raw 0.7097 -> delta -0.1676, relative loss 23.6% (ceiling 0.9431)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_local_clipL224                 = recall 0.1349 vs raw 0.7470 -> delta -0.6121, relative loss 81.9% (ceiling 0.8931)    (k=5, paired: same foregrounds, same masks, only the background regenerated)
+  COVERAGE_RULE_local                     = 3/3 spaces clear the 15% margin -> PASS    (T1 requires >= 2 of 3)
+  COVERAGE_k_sweep_auth_dinoL224          = k3 -35.5% | k5 -35.4% | k10 -34.2% | k20 -30.2%    (relative loss vs raw at every k -- the anchor is k=5)
+  COVERAGE_k_sweep_auth_dinoL518          = k3 -28.6% | k5 -31.9% | k10 -32.5% | k20 -28.6%    (relative loss vs raw at every k -- the anchor is k=5)
+  COVERAGE_k_sweep_auth_clipL224          = k3 -89.3% | k5 -82.9% | k10 -77.2% | k20 -68.7%    (relative loss vs raw at every k -- the anchor is k=5)
+  COVERAGE_k_sweep_local_dinoL224         = k3 -38.8% | k5 -37.5% | k10 -34.3% | k20 -25.2%    (relative loss vs raw at every k -- the anchor is k=5)
+  COVERAGE_k_sweep_local_dinoL518         = k3 -20.3% | k5 -23.6% | k10 -24.6% | k20 -21.7%    (relative loss vs raw at every k -- the anchor is k=5)
+  COVERAGE_k_sweep_local_clipL224         = k3 -88.4% | k5 -81.9% | k10 -71.6% | k20 -60.6%    (relative loss vs raw at every k -- the anchor is k=5)
+  ceiling_random_split_dinoL224           = precision 0.9376 / recall 0.9332    (the CORRECTED ceiling -- real vs real, random halves)
+  ceiling_SORTED_split_dinoL224           = precision 0.8931 / recall 0.8738    (the old defect s ceiling, reproduced so the 0.871 -> 0.937 correction is visible)
+  MMD2_LADDER_dinoL224                    = floors -0.00000-0.00000 | self-separation 0.00005 | cross-dataset 0.00002 | raw input 0.00013 | authors 0.00033 | local 0.00030    (unbiased polynomial-kernel MMD^2, degree 3. UNSATURATED, unlike AUC. Descriptive -- no threshold declared)
+  SPREAD_vs_target_dinoL224               = auth eff-rank 188.1 vs 106.9 (ratio 1.761) | local eff-rank 193.2 vs 106.9 (ratio 1.808) | raw eff-rank 243.3 vs 106.9 (ratio 2.276)    (C1 s spread_stats, imported. Descriptive, no threshold -- C1 found that promoting an agreeing metric post hoc is the move the rebuild exists to prevent)
+  MMD2_LADDER_dinoL518                    = floors -0.00000-0.00000 | self-separation 0.00004 | cross-dataset 0.00002 | raw input 0.00010 | authors 0.00023 | local 0.00019    (unbiased polynomial-kernel MMD^2, degree 3. UNSATURATED, unlike AUC. Descriptive -- no threshold declared)
+  SPREAD_vs_target_dinoL518               = auth eff-rank 209.5 vs 114.5 (ratio 1.830) | local eff-rank 229.4 vs 114.5 (ratio 2.004) | raw eff-rank 301.1 vs 114.5 (ratio 2.630)    (C1 s spread_stats, imported. Descriptive, no threshold -- C1 found that promoting an agreeing metric post hoc is the move the rebuild exists to prevent)
+  MMD2_LADDER_clipL224                    = floors 0.00000-0.00005 | self-separation 0.00011 | cross-dataset 0.00006 | raw input 0.00029 | authors 0.00051 | local 0.00049    (unbiased polynomial-kernel MMD^2, degree 3. UNSATURATED, unlike AUC. Descriptive -- no threshold declared)
+  SPREAD_vs_target_clipL224               = auth eff-rank 88.2 vs 54.4 (ratio 1.620) | local eff-rank 99.0 vs 54.4 (ratio 1.819) | raw eff-rank 111.3 vs 54.4 (ratio 2.045)    (C1 s spread_stats, imported. Descriptive, no threshold -- C1 found that promoting an agreeing metric post hoc is the move the rebuild exists to prevent)
+  bg_luminance_real                       = 117.88    (mask-restricted, n=4447)
+  bg_luminance_local_render               = 98.64    (same images)
+  bg_luminance_authors_pool               = 98.53    (n=4447)
+  bg_luminance_shift                      = -19.24    (local - real)
+  bg_channel_shift_rgb                    = -21.33 -22.89 -13.49    (local - real)
+  fg_bg_colour_corr_real                  = -0.191    (R2 0.036)
+  fg_bg_colour_corr_local                 = 0.397    (R2 0.157)
+  fg_bg_colour_corr_authors               = 0.399    (R2 0.160 -- an INDEPENDENT generator run, so this is a replication rather than a repeat)
+THRESHOLD  every E0 cache A3 reads matches its declared shape -> PASS
+THRESHOLD  E0 cache names are identical across all embedder spaces -> PASS
+THRESHOLD  every input directory still matches its E0 aggregate digest -> PASS
+THRESHOLD  T9 raw/auth/local are index-wise aligned 4447/4447 (the paired coverage delta depends on it) -> PASS
+THRESHOLD  all 7 D2 leaked names resolve against E0 s target listing -> PASS
+THRESHOLD  T3 the true null is genuine, |AUC - 0.5| <= 0.05 in every space -> PASS
+THRESHOLD  T4 the old sorted-split defect reproduces, AUC > 0.75 -> PASS
+THRESHOLD  T5 the clean COD10K-vs-CAMO self-separation probe is computed and reported beside the headline -> PASS
+THRESHOLD  T6 VACUITY FLAG: some identity-preserving control exceeds AUC 0.90 -> PASS
+THRESHOLD  T7 the held-out d on random halves is a genuine null, |d| < 0.30 -> PASS
+THRESHOLD  T8 the in-sample d on random halves exceeds 0.50 -- reproducing C1 s demonstration in A3 s own data, which is what disqualifies the old 4.67 -> FAIL
+THRESHOLD  T1 PRIMARY: recall(generated) falls >= 15% below recall(raw HKU-IS) in >= 2 of 3 embedder spaces, for BOTH synthetic pools -> PASS
+THRESHOLD  T2 recall(generated) is below the random-split ceiling in every cell -> PASS
+THRESHOLD  T10 the coverage-delta sign is identical in all three embedder spaces (embedder-robustness) -> PASS
+THRESHOLD  the foreground->background colour correlation flips sign from the real photographs to BOTH generated pools -> PASS
+OLD CLAIM  A3.1 Probe AUC real-vs-LAKE-RED (local pool, dinoL224) = 0.9989 -> MATCH
+OLD CLAIM  A3.1 same claim, AUTHORS pool (never probed before) = 0.9989 -> NEW
+OLD CLAIM  A3.2 Probe AUC true null (exact value is a property of the draw) = 0.4781 -> MATCH
+OLD CLAIM  A3.2 restated as the property that matters, |AUC-0.5| <= 0.05 = 0.5 -> MATCH
+OLD CLAIM  A3.3 Probe AUC JPEG-75 = 0.4117 -> MATCH
+OLD CLAIM  A3.4 Probe AUC sorted-split bug -- reproduced here as a LABELLED control = 0.8888 -> MATCH
+OLD CLAIM  A3.4 the CLEAN split it conflated: COD10K 3040 vs CAMO 1000 = never computed -> NEW
+OLD CLAIM  A3.5 Cohen's d probe axis -- REPRODUCED with the old in-sample estimator = 4.67 (L/224 arm) -> MATCH
+OLD CLAIM  A3.5 Cohen's d probe axis -- as a FINDING, in-sample logistic axis = 4.67 / 4.61 / 4.33 -> SUPERSEDED
+OLD CLAIM  A3.5 sub-value 4.61 was dinoB/224 = 4.61 -> NOT-REPRODUCIBLE
+OLD CLAIM  old-log probe AUC real vs raw HKU-IS = 0.9831 -> MATCH
+OLD CLAIM  old-log probe AUC darkened-20 = 0.3469 -> MATCH
+OLD CLAIM  A3.6 Recall, LAKE-RED = 0.4662 -> MATCH
+OLD CLAIM  A3.6 same claim, AUTHORS pool (never probed before) = 0.4662 -> NEW
+OLD CLAIM  A3.7 Recall, raw HKU-IS = 0.7461 -> MATCH
+OLD CLAIM  A3.8 Generation recall delta = -0.2799 (-37.5%) -> MATCH
+OLD CLAIM  old-log ceiling, random split (precision/recall) = 0.9405 / 0.9370 -> MATCH
+OLD CLAIM  old-log precision, LAKE-RED = 0.6906 -> MATCH
+OLD CLAIM  old-log precision, raw HKU-IS = 0.6494 -> MATCH
+OLD CLAIM  old-log bg luminance shift = -19.24 -> MATCH
+OLD CLAIM  old-log fg->bg corr, real = -0.191 -> MATCH
+OLD CLAIM  old-log fg->bg corr, local render = 0.397 -> MATCH
+OLD CLAIM  old-log fg->bg corr, authors pool = 0.399 -> MATCH
+ARTIFACTS  rebuild/A3/out/a3_preflight.json, rebuild/A3/out/a3_probe_table.csv, rebuild/A3/out/a3_coverage.csv, rebuild/A3/out/a3_decision.json, rebuild/A3/out/a3_distance.csv, rebuild/A3/out/a3_pixel_stats.csv, rebuild/A3/out/a3_pixel_per_image.csv
+TRAINS     NO
+NOTES      WHAT A3 IS. A characterization of the synthetic-vs-real DISTRIBUTION. It is NOT a training-utility bound and must not be read as one: a distant or low-coverage synthetic set can still improve a model, and the ABC arm means in fact rose monotonically in all four architecture x endpoint cells. A3 supplies a candidate mechanism CONSISTENT WITH the absence of a resolvable gain; it does not demonstrate that no gain exists.
+           WHY IT CARRIES WEIGHT ANYWAY. A3 is deterministic over fixed vectors -- there is no seed spread and no sigma-hat. The ABC campaign is underpowered against its own pre-registered statement (2 sigma-hat = 0.017933 on the primary endpoint, larger than the 0.0142 gap the design declared it could half-resolve), so a null from ABC cannot stand alone. A3 is the only measurement in the rebuild that speaks to synthetic-vs-real distance and does not depend on power.
+           THE DECISION RESTS ON COVERAGE, NOT AUC. Read the AUC ladder as description only. It is SATURATED at the top: the identity-preserving floors sit near chance, the cross-dataset and self-separation controls and the headline all crowd into the top few hundredths of the scale, and the ceiling is 1.0. No margin is stateable there, which is why T1 was declared on the paired coverage delta before the run.
+           WHY THE PAIRED DELTA IS NOT APPLES-TO-ORANGES. The objection is that raw HKU-IS is salient-object photography while LAKE-RED output is camouflage-style renders, so their recalls measure different manifolds. It does not apply, and the reason is measured rather than argued: the comparison is a WITHIN-CONTENT INTERVENTION. The same 4447 foregrounds in bijection (T9 asserts index-wise alignment); the same masks (D1 measured raw_gt and local_msk both at 0.19132 white fraction, agreeing to five decimals); the same single target manifold on both sides; and only the background regenerated (E0 measured the isReplace split at object-region error 6.245 vs background 71.676, a 11.5x ratio, re-derived independently by D2 s7 at 0.962 vs 41.667). One manipulated variable, one fixed manifold.
+           THE TARGET SET IS A MIXTURE, AND THAT IS THE R1 REPAIR. Dataset/Target/Image is 3040 COD10K + 1000 CAMO. The headline is reported against all 4040 because that is what CSRDA adapts to and what every ABC run read, but the COD10K-vs-CAMO self-separation probe is reported in the SAME table, because a real-vs-real comparison inside the target set is the bar the headline has to clear. The old package computed a version of this number, got 0.8888, and filed it as a bug in its own null control instead of recognising it as a measurement of the target set s heterogeneity. Its split was also not clean -- sorted order gave 2020 COD10K against 1020 COD10K + 1000 CAMO, and COD10K filenames are ordered taxonomically, so dataset origin and taxonomy were conflated. The clean 3040-vs-1000 probe here is new.
+           BOTH SYNTHETIC POOLS, ALWAYS. The authors pool is what MyTrain.py reads (its S2C default source_root, plus Image/); the local renders are what the ABC campaign actually added on top of it. E0 measured the two as genuinely different samples of one generator -- 0 of 200 identical, mean maxdiff 232.3 of 255 -- so agreement between them is an independent replication, not a repeat. Every old A3 number came from the local pool alone; the authors pool is probed here for the first time.
+           MANIFOLD-ESTIMATION CAVEATS, STATED. k-NN precision/recall is an estimate whose value depends on k, so k is swept over 3/5/10/20 and the anchor k=5 is declared rather than chosen after the fact. It also depends on L2 normalisation, which is applied here and is OUR STATED CHOICE -- the original sources never said whether they normalised. Recall of a manifold is a distributional statement and is not a bound on supervision value. MMD is kernel-dependent (degree-3 polynomial, the KID kernel) and is reported without a threshold. A Frechet distance was considered and declined: at n ~ 4000 with d = 1024 the covariance rests on about four samples per dimension.
+           SCOPE OF THE NC4K CONTROL. D2_NC4K measured NC4K against the 3040 COD10K-train images and found the overlap empty at every level, so the cross-dataset row carries no leakage confound on that axis. The CAMO 1000 side of the target set was NOT part of that check, so the cleanliness claim is scoped to the COD10K axis. NC4K is also not in E0 s cache; it is embedded here into rebuild/A3/cache/ with E0 s declared pipeline, not a re-derived one.
+           THE 7 LEAKED NAMES. Read from D2 s output, never typed here. The headline uses all 4040 and a 4033 row is reported beside it; the exclusion is immaterial there (7 of 4040, and D2 measured that removing them moves MAE by 1.242e-05). It is MANDATORY on the COD10K-test row, where those 7 are exact duplicates of test images and would otherwise place identical rows on both sides of a real-vs-real control.
+           T8 IS LEFT FAILING RATHER THAN RELAXED. T8 was declared on C1 s IMPORTED mean-difference estimator, for commensurability with C1 s published null. On A3 s true null that estimator reports in-sample +0.4015 / +0.4024 / +0.3031 -- below the declared 0.50, so T8 FAILS. The reason is sample size, not a contradiction: C1 measured its +0.6991 mean over subsets of B = 250..3000 and its own range reached down to +0.2144, whereas A3 s null splits 4040 into two halves of ~2020, at the large end where the in-sample bias is smallest. CRUCIALLY, THE DISQUALIFICATION OF 4.67 DOES NOT DEPEND ON T8. The old figure came from the LOGISTIC probe axis, not the mean-difference axis, and that estimator reports 0.6867 / 0.6805 / 0.4854 on the same true null against 0.0318 / 0.0224 / 0.0889 for the held-out version of itself. A number near 0.7 manufactured from two random halves of one dataset is what makes 4.67 uninterpretable. Following C1 R14, the declared threshold is reported FAILED and the agreeing measurement is reported beside it as an OBSERVATION, not swapped in as a replacement threshold.
+           THE IDENTITY-PRESERVING FLOORS CAN SIT BELOW CHANCE, and that is the correct behaviour rather than a defect. When two sets carry the same content the probe has no separable signal to find, so it fits noise in the training half and generalises worse than chance on the held-out half. An AUC below 0.5 on a floor row therefore reads as "no signal", not as "inverted signal".
+           THREE REPORTING METRICS WERE ADDED AFTER AN EXPLORATORY --no-log PASS on one embedder space: the old estimator s behaviour on the true null, the in-sample inflation gap, and the floor-versus-real-control comparison. Disclosed here per C1 R15. All three are METRICS, not thresholds -- no declared threshold was added, weakened or removed after seeing data, and all three are recomputable from the committed probe table.
+           WHAT REPLACES THE OLD 4.67. The old Cohen s d fitted a logistic axis on the training half, then projected EVERY row onto it and took the absolute value. C1 measured that estimator: with no real effect at all the in-sample d reaches +1.4506, against a held-out null of -0.1328. So the old figure is superseded rather than merely disputed. Four d s are reported per row -- the old estimator (so the 4.67 is reproduced, not asserted away), the same logistic axis held out, and C1 s imported mean-difference estimator in both variants. T8 requires the in-sample null to exceed 0.5 inside A3 s own data, which makes the supersession a measurement.
+================================================================================
+

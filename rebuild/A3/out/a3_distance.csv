@@ -1,0 +1,52 @@
+comparison,eff_rank_pool,eff_rank_ratio,eff_rank_target,embedder,mmd2,role,trace_ratio
+real target vs AUTHORS pool (what MyTrain reads),,,,dinoL224,0.00033219484122248844,headline,
+real target vs LOCAL renders (what ABC added),,,,dinoL224,0.0003014214371299673,headline,
+real target vs raw HKU-IS (LAKE-RED's OWN INPUT),,,,dinoL224,0.00013145768581734885,paired-baseline,
+real target minus 7 leaked vs AUTHORS pool,,,,dinoL224,0.000332250782068666,leak-sensitivity,
+COD10K 3040 vs CAMO 1000 -- INSIDE the target set,,,,dinoL224,4.978101032682147e-05,self-separation,
+"real vs real, RANDOM halves (true null)",,,,dinoL224,-3.838867925765044e-07,null,
+"real vs real, SORTED halves (the old defect)",,,,dinoL224,0.00012645669574951057,old-defect,
+real vs same images JPEG-90,,,,dinoL224,-1.3437633685775552e-06,floor,
+real vs same images JPEG-75,,,,dinoL224,-9.483154452816223e-07,floor,
+real vs same images JPEG-50,,,,dinoL224,2.145330869396389e-06,floor,
+real vs same images JPEG-30,,,,dinoL224,4.863536612997876e-06,floor,
+real vs same images darkened 20,,,,dinoL224,-1.1513876843061155e-06,floor,
+COD10K-train minus 7 vs COD10K-test (second null),,,,dinoL224,2.7826356325810764e-06,null,
+real target vs NC4K (cross-dataset real-vs-real),,,,dinoL224,2.4460496081513128e-05,cross-dataset,
+SPREAD auth vs target,188.13350974372136,1.7605072141117055,106.86324272669759,dinoL224,,spread,0.9343264707797461
+SPREAD local vs target,193.23921376088003,1.8082851393073363,106.86324272669759,dinoL224,,spread,0.9466274959131536
+SPREAD raw vs target,243.25177033945747,2.276290370128231,106.86324272669759,dinoL224,,spread,1.0347495191170286
+real target vs AUTHORS pool (what MyTrain reads),,,,dinoL518,0.00023288739510851642,headline,
+real target vs LOCAL renders (what ABC added),,,,dinoL518,0.00018878241347852764,headline,
+real target vs raw HKU-IS (LAKE-RED's OWN INPUT),,,,dinoL518,0.00010168865400395077,paired-baseline,
+real target minus 7 leaked vs AUTHORS pool,,,,dinoL518,0.00023300062841702385,leak-sensitivity,
+COD10K 3040 vs CAMO 1000 -- INSIDE the target set,,,,dinoL518,4.4884903069419835e-05,self-separation,
+"real vs real, RANDOM halves (true null)",,,,dinoL518,-4.969875022631243e-07,null,
+"real vs real, SORTED halves (the old defect)",,,,dinoL518,0.00012471969609118005,old-defect,
+real vs same images JPEG-90,,,,dinoL518,-1.266517271947265e-06,floor,
+real vs same images JPEG-75,,,,dinoL518,-4.0425277347821975e-07,floor,
+real vs same images JPEG-50,,,,dinoL518,1.0669992880352197e-06,floor,
+real vs same images JPEG-30,,,,dinoL518,2.082503614442288e-06,floor,
+real vs same images darkened 20,,,,dinoL518,-1.300037221430017e-06,floor,
+COD10K-train minus 7 vs COD10K-test (second null),,,,dinoL518,3.0585409960259824e-06,null,
+real target vs NC4K (cross-dataset real-vs-real),,,,dinoL518,2.495303225025225e-05,cross-dataset,
+SPREAD auth vs target,209.53708071265524,1.8304941764924874,114.47022525587107,dinoL518,,spread,0.9617457808299421
+SPREAD local vs target,229.40085954596753,2.004022085509103,114.47022525587107,dinoL518,,spread,0.9802346217342934
+SPREAD raw vs target,301.0552577637766,2.629987466966531,114.47022525587107,dinoL518,,spread,1.0229550819300872
+real target vs AUTHORS pool (what MyTrain reads),,,,clipL224,0.0005090490622827737,headline,
+real target vs LOCAL renders (what ABC added),,,,clipL224,0.00048785545662433094,headline,
+real target vs raw HKU-IS (LAKE-RED's OWN INPUT),,,,clipL224,0.0002940614003366093,paired-baseline,
+real target minus 7 leaked vs AUTHORS pool,,,,clipL224,0.0005088544759117575,leak-sensitivity,
+COD10K 3040 vs CAMO 1000 -- INSIDE the target set,,,,clipL224,0.0001134830249314156,self-separation,
+"real vs real, RANDOM halves (true null)",,,,clipL224,-4.7605110564674646e-07,null,
+"real vs real, SORTED halves (the old defect)",,,,clipL224,8.221697167209996e-05,old-defect,
+real vs same images JPEG-90,,,,clipL224,1.6043766346562904e-06,floor,
+real vs same images JPEG-75,,,,clipL224,1.69558831850658e-05,floor,
+real vs same images JPEG-50,,,,clipL224,3.5855363811343466e-05,floor,
+real vs same images JPEG-30,,,,clipL224,5.392157025685407e-05,floor,
+real vs same images darkened 20,,,,clipL224,8.150782972116133e-06,floor,
+COD10K-train minus 7 vs COD10K-test (second null),,,,clipL224,6.343339970182882e-06,null,
+real target vs NC4K (cross-dataset real-vs-real),,,,clipL224,6.165654382828123e-05,cross-dataset,
+SPREAD auth vs target,88.15201352120067,1.6195835017900027,54.42881668266745,clipL224,,spread,0.8467850198885262
+SPREAD local vs target,98.98722937056019,1.818654811984588,54.42881668266745,clipL224,,spread,0.9040491561340482
+SPREAD raw vs target,111.28896122623154,2.044669864404215,54.42881668266745,clipL224,,spread,1.2161670784226986
