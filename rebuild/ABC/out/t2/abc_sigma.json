@@ -1,0 +1,12 @@
+{
+  "SINet|COD10K": {
+    "df": 0,
+    "per_arm_sd": {},
+    "sigma_hat": NaN
+  },
+  "SINet|NC4K": {
+    "df": 0,
+    "per_arm_sd": {},
+    "sigma_hat": NaN
+  }
+}

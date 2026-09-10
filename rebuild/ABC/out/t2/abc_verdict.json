@@ -1,0 +1,36 @@
+{
+  "commit": "617a2e1 (dirty)",
+  "generated": "2026-09-10T15:10:36+05:30",
+  "rule": "rebuild/ABC/PREREGISTRATION.md (frozen)",
+  "scorer_validation": {
+    "MAE": 0.07446323197740462,
+    "Sm": 0.7172156230064066,
+    "passed": true
+  },
+  "verdicts": {
+    "SINet|COD10K": {
+      "arm_means": {
+        "CSHUF": 0.7186018709058768
+      },
+      "arm_n": {
+        "CSHUF": 1
+      },
+      "df": 0,
+      "gaps": {},
+      "per_arm_sd": {},
+      "sigma_hat": NaN
+    },
+    "SINet|NC4K": {
+      "arm_means": {
+        "CSHUF": 0.7667131116196173
+      },
+      "arm_n": {
+        "CSHUF": 1
+      },
+      "df": 0,
+      "gaps": {},
+      "per_arm_sd": {},
+      "sigma_hat": NaN
+    }
+  }
+}

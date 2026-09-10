@@ -1,0 +1,2 @@
+runid,arch,arm,seed,rounds,total_step_set,last_epoch,wall_min,tea_best,pool_r1,pool_r2,n_appended,target_loaded_4040,best_epoch,returncode,failed_checks
+SINet_CSHUF_s42,SINet,CSHUF,42,2,0253,039/040,104.8,True,5447,7439,1992,2,28,0,

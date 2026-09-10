@@ -148,6 +148,11 @@ def main():
     ap.add_argument('--retries', type=int, default=1)
     ap.add_argument('--no-log', action='store_true')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--only', default='',
+                    help='comma list of RUNIDs to consider, e.g. the single '
+                         'sanity run. Pure scheduling filter: it selects WHICH of '
+                         'the already-defined runs this invocation drives and '
+                         'changes no pool, no command and no number.')
     args = ap.parse_args()
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
     global OUT, EXP
@@ -156,10 +161,13 @@ def main():
     os.makedirs(OUT, exist_ok=True)
 
     # SINet first (including its A0_s42 sanity run, already done), then SINet-v2
+    only = {x.strip() for x in args.only.split(',') if x.strip()}
     todo, done_already = [], []
     for arch in ('SINet', 'SINetv2'):
         for arm in arms:
             for seed in A.SEEDS:
+                if only and A.runid(arch, arm, seed) not in only:
+                    continue
                 ok, _ = verify_run(arch, arm, seed)
                 (done_already if ok else todo).append((arch, arm, seed))
     _p('already complete: %d  -> %s' % (len(done_already),

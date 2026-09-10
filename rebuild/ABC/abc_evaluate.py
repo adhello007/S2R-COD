@@ -47,6 +47,18 @@ METRIC_KEYS = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm'
 # bare re-run of A/B/C is bit-identical; 't2' is PREREGISTRATION_T2.md, additive.
 GAPS = {'abc': (('A2', 'B'), ('B', 'C10'), ('A0', 'B'), ('A0', 'C10'), ('A0', 'A2')),
         't2':  (('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF'))}
+# What T2 cross-checks. C1 measured these in embedding-distance space only.
+OLD_CLAIMS_T2 = [
+    ('C1.4 ES contribution vs its own shuffle',
+     '+0.0073 of d, 13/20 cells  [C1_RESULTS 8.2]',
+     'CROSS-CHECKED on TRAINED ACCURACY for the first time'),
+    ('C1.5 top-ES cluster vs an arbitrary cluster',
+     '-0.0649 of d, worse in 16/20 cells  [C1_RESULTS 8.2]',
+     'CROSS-CHECKED on TRAINED ACCURACY'),
+    ('paper 6(v) the ES signal is uninformative',
+     'asserted on embedding geometry alone',
+     'TESTED on accuracy, in both directions'),
+]
 
 
 def _p(m):
@@ -348,11 +360,15 @@ def main():
         thresholds.append(('SINet and SINet-v2 return the same verdict for every gap '
                            'on the primary endpoint', all(agree.values())))
     if prim:
-        thresholds.append(('the primary claim Delta(C-B) is decided by the frozen '
-                           'rule, whatever the answer',
-                           'B->C10' in prim['gaps']))
-    artifacts += ['rebuild/ABC/out/abc_metrics.csv', 'rebuild/ABC/out/abc_verdict.json',
-                  'rebuild/ABC/out/abc_sigma.json']
+        need = (('CSHUF->C10', 'CINV->C10') if args.gaps == 't2' else ('B->C10',))
+        thresholds.append((
+            'the primary claim%s decided by the frozen rule, whatever the answer'
+            % (' Delta(C10-CSHUF) and Delta(C10-CINV) are' if args.gaps == 't2'
+               else ' Delta(C-B) is'),
+            all(g in prim['gaps'] for g in need)))
+    relout = os.path.relpath(OUT, C.REPO)
+    artifacts += [os.path.join(relout, f) for f in
+                  ('abc_metrics.csv', 'abc_verdict.json', 'abc_sigma.json')]
     notes.append(
         'BLOCK 3 OF 3 -- THE VERDICT. Applied strictly by rebuild/ABC/'
         'PREREGISTRATION.md, committed before block #1 and unchanged since. '
@@ -401,10 +417,51 @@ def main():
         'EXHAUSTED FOREGROUND POOL, and is silent on whether new foregrounds would '
         'help.')
 
+    if args.gaps == 't2':
+        notes = []
+        notes.append(
+            'BLOCK 3 OF 3 OF THE T2 EXTENSION -- THE VERDICT. Applied strictly by '
+            'rebuild/ABC/PREREGISTRATION_T2.md, committed before T2 block #1 and '
+            'unchanged since. ADDITIVE: rebuild/ABC/PREREGISTRATION.md and every '
+            'committed A/B/C number are untouched by this block, which writes only '
+            'under rebuild/ABC/out/t2/.')
+        notes.append(
+            'SIGMA_HAT IS MEASURED FROM THE T2 COMPARISON SET -- arms '
+            '{B, C10, CSHUF, CINV}, df = 4 x 2 = 8 -- so the bar is estimated on the '
+            'runs the gaps are actually taken between, not inherited from A/B/C. If '
+            'it comes out larger than A/B/C\'s, the bar rises with it: the bar is '
+            '2*sigma_hat, never a fixed number.')
+        notes.append(
+            'B AND C10 WERE RE-SCORED, NOT RE-TRAINED. Their committed predictions '
+            'were scored by this same scorer in this same process and had to '
+            'reproduce rebuild/ABC/out/abc_metrics.csv to <1e-9 before any T2 gap '
+            'was computed. That both builds the noise pool through one code path and '
+            're-proves nothing drifted between the campaigns.')
+        notes.append(
+            'WHAT A "WITHIN NOISE" RESULT DOES AND DOES NOT MEAN. At A/B/C\'s '
+            'committed COD10K sigma_hat the bar is ~0.0179 (SINet) and ~0.0123 '
+            '(SINet-v2) -- comparable to the paper\'s ENTIRE MT->Ours gap of 0.0142. '
+            'C1\'s +0.0073 of a Cohen\'s d is a geometric quantity and predicts no '
+            'accuracy difference at all. So a null here means "NO EFFECT RESOLVABLE '
+            'AT THIS SENSITIVITY", never "no effect". This sentence was committed '
+            'before any T2 number existed precisely so it could not be softened '
+            'after one.')
+        notes.append(
+            'THE ARMS SHARE IMAGES BY CONSTRUCTION, AND THAT ATTENUATES EVERY GAP. '
+            'All three C-family arms fund all 75 clusters, so they overlap above '
+            'chance even at a permuted allocation: 452 to 511 of 1000 images differ '
+            '(Jaccard 0.32-0.38, gated below 0.50 before training). Read every '
+            'Delta against that effective contrast, reported in T2 block #1.')
+        notes.append(
+            'PREREGISTRATION_T2.md was committed before T2 block #1 and is FROZEN. '
+            'This script neither reads it as an input nor writes it, and contains no '
+            'tunable threshold of its own.')
+
     block = C.log_block(
         EXP, '.venv/bin/python rebuild/ABC/abc_evaluate.py --arms %s --gaps %s%s'
         % (args.arms, args.gaps, ' --tag ' + args.tag if args.tag else ''),
         metrics, thresholds,
+        OLD_CLAIMS_T2 if args.gaps == 't2' else
         [('C3.1 sigma(Sa) all runs n=6', '0.00356  [no code]', 'SUPERSEDED'),
          ('C3.2 sigma(Sa) distinct seeds n=4', '0.00286  [no code]', 'SUPERSEDED'),
          ('C3.4 predicted Delta Sa', '0.000111  [no code]', 'RE-MEASURED'),
