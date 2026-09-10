@@ -1,13 +1,30 @@
 # A1 — Pre-planning scoping audit: the conditioning channel of the LAKE-RED generator
 
-code executed was two read-only inspections (a `torch.load` of `LAKE-RED/ckpt/LAKERED.ckpt` to read
-one 18-parameter tensor, and a polarity read of three staged mask files). Nothing was written
-outside this file. No number below enters `results/REBUILD_LOG.txt`; that happens only when A1 runs.
+> **Outcome, decided 2026-09-10.** Resolved by **static citation only — no experiment run.** The
+> refutation in §3.3 is settled by source reading, so **A1-S** was taken and **A1-T / A1-P** (§4.1)
+> were not run. `rebuild/PAPER/main.tex` was updated accordingly: §6(ii) records the withdrawal, and
+> the abstract, the contributions list, `tab:causes`, `tab:trace`, the conclusion's fourth
+> requirement and the unverified-claims ledger were brought into line. The A1 rows of §4 of
+> `REBUILD_PLAN.md` are filled, including a new row A1.5 for the U-Net route.
+>
+> Two claims were **deliberately kept out** of the paper as unsupported by static reading: that the
+> generator is *"not the binding constraint"*, and that it is *steerable*. Static reading shows the
+> channel is not narrow; it does not show the capacity is used (§4.3(2)), and the generator still has
+> no port through which a deficiency could be named (§3.3 note). The paper says only the former.
+>
+> Still open: decisions (d)(3)–(d)(6) in §6, and whether §3 (A1) of `REBUILD_PLAN.md` receives a
+> dated amendment for its unsatisfiable pre-registered confirm condition.
+
+**Status of this document.** Scoping audit; superseded on its decision points by the box above. No
+experiment was written and none was run. The only code executed was read-only: a `torch.load` of
+`LAKE-RED/ckpt/LAKERED.ckpt` to read one 18-parameter tensor, a polarity read of three staged mask
+files, and `sha256sum` over the cited generator sources. No number in this document enters
+`results/REBUILD_LOG.txt`.
 
 **Generator source location.** `LAKE-RED/` is untracked in this repository (`git status`: `?? LAKE-RED/`).
 Every `file:line` below is therefore a citation into a working-tree file, not a committed artifact —
-the same caveat `main.tex:610-611` already records for §6(ii). A1's plan must hash the generator
-sources it reads so the citations are pinned.
+the caveat the paper carries in the source comments of §6(ii). Those sources are now pinned:
+`rebuild/A1/out/a1_source_manifest.sha256` records a SHA256 for each of the nine files cited here.
 
 **Line numbers** are as of this audit against the working tree. Paths are relative to the repo root
 unless prefixed, in which case they are relative to `LAKE-RED/`.

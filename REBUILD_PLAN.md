@@ -333,10 +333,11 @@ expectation.** `[no code]` = no producing script ever existed — the seven neve
 
 | # | Claim | Old value | Measured | Verdict |
 |---|---|---|---|---|
-| A1.1 | Conditioning width | 48 (16 × 3) | | |
-| A1.2 | Live `vec_fg` shape | (1, 16, 3) | | |
-| A1.3 | Effective width, 20 samples | 45.75 | | |
-| A1.4 | `fg` under mask is zero | *never tested* | | **NEW** |
+| A1.1 | Conditioning width | 48 (16 × 3) | 48 nominal, by source reading: `n_super_pix: 16` × `embed_dim: 3` | **CONFIRMED for the BKRA branch only.** Not the width of the generator's conditioning channel — see A1.5 |
+| A1.2 | Live `vec_fg` shape | (1, 16, 3) | `(b, 16, 3)` by construction (`ddpm.py:1548-1564`, fixed-length loop with zero-fill); not observed live | **CONSISTENT by source reading**; runtime check not run |
+| A1.3 | Effective width, 20 samples | 45.75 | not run | **UNVERIFIED-DEFERRED** — needs a runtime trace (SLIC occupancy); no static substitute exists |
+| A1.4 | `fg` under mask is zero | *never tested* | cannot be zero: the first-stage encoder normalises over the whole spatial extent (`GroupNorm`, `model.py:38-39`) and its convolutions are biased | **REFUTED by source reading.** The pre-registered *confirm* condition in §3 (A1) is unsatisfiable as written, and also insufficient — see A1.5 |
+| A1.5 | Full-resolution foreground→background path | *never posited* | exists and is architecturally active: `new_fg` retains the foreground latent over the object region (`ddpm.py:1590`), is concatenated to the U-Net input (`ddpm.py:1467`, `in_channels: 7`), and the U-Net's self-attention is unmasked and global (`openaimodel.py:318-324`, instantiated `:541`/`:606`) | **NEW.** This, not A1.4, is what refutes the narrow-channel account; it bypasses the tensor A1.4 inspects. Static; no log entry. Sources hashed in `rebuild/A1/out/a1_source_manifest.sha256` |
 | A2.1 | Mean fg fraction | 0.1913 | | |
 | A2.2 | Invented background | 80.87 % | | |
 | A2.3 | Same, authors' GT | 81.44 % | | |

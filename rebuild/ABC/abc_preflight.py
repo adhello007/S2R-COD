@@ -26,6 +26,7 @@ TRAINS NOTHING.
 
 import ast
 import glob
+import itertools
 import json
 import os
 import random
@@ -272,10 +273,18 @@ def gate_pools(runs):
                     if exp is None or C.sha256(os.path.join(pool, sub, nm)) != exp:
                         nb += 1
             base_ok.append((rid, nb))
+    # every distinct C-family arm actually in this run set
+    cfam = [m for m in dict.fromkeys(m for _, m, _ in runs) if m in A.ARM_ALPHA]
+    # C10 is ALWAYS a reference set even when it is not in this run set: its full
+    # cell must still reproduce (which is what anchors the signal's provenance),
+    # and it is the arm every T2 gap is measured against, so its overlap with each
+    # new arm has to be gated too (PREREGISTRATION_T2.md T2.7, T2.8).
+    cref = list(dict.fromkeys(cfam + ['C10']))
     # the 1000 render masks equal raw_gt, for every distinct arm-B/C stem set
     import numpy as np
     from PIL import Image
-    for label, stems in [('C10', A.arm_c_stems(1.0)[0])] + \
+    for label, stems in [(m, A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0])
+                         for m in cfam] + \
                         [('B_s%d' % s, A.arm_b_stems(s)) for s in A.SEEDS]:
         nb = 0
         for st in stems:
@@ -284,28 +293,42 @@ def gate_pools(runs):
             if a.shape != b.shape or int(np.abs(a.astype(int) - b.astype(int)).max()) != 0:
                 nb += 1
         mask_ok.append((label, len(stems), nb))
-    # arm-C reproduction of C1's committed cell
+    # C-family reproduction. C10 must reproduce C1's committed cell in FULL. A T2
+    # permutation arm must reproduce its SHAPE keys exactly -- the same-shape
+    # assertion (PREREGISTRATION_T2.md T2.4). n_displaced is a consequence of the
+    # allocation, so it is REPORTED and never asserted for a permuted arm.
     repro = {}
-    for arm, alpha in (('C10', 1.0),):
-        _, cell = A.arm_c_stems(alpha)
-        repro[arm] = dict(measured=cell, c1=A.C1_CELL[alpha],
-                          match=all(cell[k] == A.C1_CELL[alpha][k] for k in A.C1_CELL[alpha]))
-    # overlap(B, C) against chance
-    sc = set(A.arm_c_stems(1.0)[0])
+    for arm in cref:
+        alpha = A.ARM_ALPHA[arm]
+        _, cell = A.arm_c_stems(alpha, A.ARM_ES_PERM[arm])
+        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
+        repro[arm] = dict(measured=cell, c1=A.C1_CELL[alpha], asserted=list(keys),
+                          match=all(cell[k] == A.C1_CELL[alpha][k] for k in keys))
+    # pairwise overlap against chance over every distinct selected set in play
     chance = A.BUDGET * A.BUDGET / 4447.0
+    sets = {m: set(A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0]) for m in cref}
+    sets.update({'B_s%d' % s: set(A.arm_b_stems(s)) for s in A.SEEDS})
     ov = {}
-    for s in A.SEEDS:
-        sb = set(A.arm_b_stems(s))
-        ov['s%d' % s] = dict(overlap=len(sb & sc), chance=round(chance, 1),
-                             ratio=round(len(sb & sc) / chance, 3),
-                             jaccard=round(len(sb & sc) / len(sb | sc), 4))
+    for a, b in itertools.combinations(sorted(sets), 2):
+        x, y = sets[a], sets[b]
+        kind = ('CxC' if a in A.ARM_ALPHA and b in A.ARM_ALPHA
+                else ('BxB' if a not in A.ARM_ALPHA and b not in A.ARM_ALPHA else 'BxC'))
+        ov['%s|%s' % (a, b)] = dict(overlap=len(x & y), chance=round(chance, 1),
+                                    ratio=round(len(x & y) / chance, 3),
+                                    jaccard=round(len(x & y) / len(x | y), 4),
+                                    n_differing=A.BUDGET - len(x & y), kind=kind)
     ok = bool(all(r['a1_counts'] and r['a2_stem_sets'] and r['a3_no_dup_stem']
                   and r['a3_no_tif'] and r['a4_parity_all_i'] and r['a5_spotcheck']
                   and r['a6_round2_parity'] for r in per)
               and all(n == 0 for _, n in base_ok)
               and all(n == 0 for _, _, n in mask_ok)
               and all(v['match'] for v in repro.values())
-              and all(0.7 <= v['ratio'] <= 1.3 for v in ov.values()))
+              and all(0.7 <= v['ratio'] <= 1.3
+                      for v in ov.values() if v['kind'] == 'BxC')
+              # T2.7 distinctness: two C-family arms sharing most of their images
+              # cannot test the claim -- a null would be mechanical.
+              and all(v['jaccard'] <= A.T2_MAX_JACCARD
+                      for v in ov.values() if v['kind'] == 'CxC'))
     return dict(gate='pools', passed=ok, n_pools=len(per), per_pool=per,
                 base_bytes_bad=base_ok, render_mask_bad=mask_ok,
                 armC_reproduces_C1=repro, overlap_B_vs_C=ov,
@@ -352,6 +375,6 @@ def run_preflight(runs, skip=()):
         report['gates'].append(r)
         _p('  gate %-14s %s' % (name, 'PASS' if r['passed'] else 'FAIL'))
     report['all_passed'] = all(g['passed'] for g in report['gates'])
-    os.makedirs(OUT, exist_ok=True)
-    C.save_json(os.path.join(OUT, 'abc_preflight.json'), report)
+    os.makedirs(A.OUT, exist_ok=True)                        # A.set_out() moves both
+    C.save_json(os.path.join(A.OUT, 'abc_preflight.json'), report)
     return report

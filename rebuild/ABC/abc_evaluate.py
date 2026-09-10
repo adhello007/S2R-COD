@@ -43,6 +43,10 @@ PY = '.venv/bin/python'
 B1_SA, B1_MAE, TOL = 0.717216, 0.074463, 1e-5
 REF_SA, GATE = 0.7172, 0.0107          # committed SINet/S2C; 3*sigma_prior
 METRIC_KEYS = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm', 'maxFm')
+# The frozen gap sets. 'abc' is PREREGISTRATION.md and stays the default so a
+# bare re-run of A/B/C is bit-identical; 't2' is PREREGISTRATION_T2.md, additive.
+GAPS = {'abc': (('A2', 'B'), ('B', 'C10'), ('A0', 'B'), ('A0', 'C10'), ('A0', 'A2')),
+        't2':  (('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF'))}
 
 
 def _p(m):
@@ -124,8 +128,15 @@ def main():
                          'two directories, so this changes throughput and no number.')
     ap.add_argument('--gpus', default='0', help='comma list for inference')
     ap.add_argument('--no-log', action='store_true')
+    ap.add_argument('--gaps', default='abc', choices=sorted(GAPS),
+                    help='which FROZEN gap set to apply; "t2" is '
+                         'PREREGISTRATION_T2.md, additive')
+    ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
     args = ap.parse_args()
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
+    global OUT, EXP
+    OUT = A.set_out(args.tag)
+    EXP = 'T2' if args.tag == 't2' else A.EXP
     os.makedirs(OUT, exist_ok=True)
 
     _p('=== s1 scorer validation against B1\'s committed values ===')
@@ -209,6 +220,23 @@ def main():
             w.writerow({k: ('%.6f' % r[k] if k in METRIC_KEYS else r[k])
                         for k in w.fieldnames})
 
+    # T2 re-scores the COMMITTED B and C10 predictions to build the sigma_hat
+    # pool through this same code path. They must reproduce abc_metrics.csv or
+    # something drifted between the campaigns.
+    ref = os.path.join(C.exp_dir(A.EXP, 'out'), 'abc_metrics.csv')   # A/B/C's own path
+    if args.tag and os.path.isfile(ref):
+        ref_sa = {(r['runid'], r['endpoint']): float(r['Sm'])
+                  for r in csv.DictReader(open(ref))}
+        shared = [r for r in rows if (r['runid'], r['endpoint']) in ref_sa]
+        bad = [(r['runid'], r['endpoint'], r['Sm'], ref_sa[(r['runid'], r['endpoint'])])
+               for r in shared
+               if abs(r['Sm'] - ref_sa[(r['runid'], r['endpoint'])]) > 1e-9]
+        if bad:
+            raise SystemExit('T2 HALTED: reference arms do not reproduce '
+                             'abc_metrics.csv: %s' % bad[:5])
+        _p('  reference arms reproduce abc_metrics.csv: %d cells, max delta < 1e-9'
+           % len(shared))
+
     _p('=== s3 sigma_hat and the gaps, per the FROZEN rule ===')
     verdicts = {}
     for arch in ('SINet', 'SINetv2'):
@@ -231,7 +259,7 @@ def main():
                 per_arm_sd[m] = sd(xs)
             sigma = math.sqrt(ss / df) if df else float('nan')
             gaps = {}
-            for lo, hi in (('A2', 'B'), ('B', 'C10'), ('A0', 'B'), ('A0', 'C10'), ('A0', 'A2')):
+            for lo, hi in GAPS[args.gaps]:
                 if lo not in byarm or hi not in byarm:
                     continue
                 seeds = sorted(set(byarm[lo]) & set(byarm[hi]))
@@ -374,7 +402,8 @@ def main():
         'help.')
 
     block = C.log_block(
-        EXP, '.venv/bin/python rebuild/ABC/abc_evaluate.py --arms %s' % args.arms,
+        EXP, '.venv/bin/python rebuild/ABC/abc_evaluate.py --arms %s --gaps %s%s'
+        % (args.arms, args.gaps, ' --tag ' + args.tag if args.tag else ''),
         metrics, thresholds,
         [('C3.1 sigma(Sa) all runs n=6', '0.00356  [no code]', 'SUPERSEDED'),
          ('C3.2 sigma(Sa) distinct seeds n=4', '0.00286  [no code]', 'SUPERSEDED'),

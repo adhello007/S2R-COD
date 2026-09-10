@@ -1,0 +1,687 @@
+{
+  "all_passed": true,
+  "commit": "8077730 (dirty)",
+  "gates": [
+    {
+      "c1_cluster_source": true,
+      "c1_signal": true,
+      "exempted": [],
+      "gate": "signal",
+      "note": "C1 gate_signal + gate_cluster_source called unchanged; ABC sources scanned with C1's own banned-token declarations",
+      "passed": true,
+      "scanned": 6,
+      "violations": []
+    },
+    {
+      "abc_scripts_seen": 6,
+      "gate": "provenance",
+      "inputs_missing": [],
+      "inputs_resolved": 17,
+      "manifest_bad": [],
+      "manifest_checked": 203,
+      "n_exempted": 4,
+      "n_forbidden": 0,
+      "note": "E0.step_independence() imported and CALLED, not re-implemented; it walks all of rebuild/ so it covers ABC",
+      "passed": true,
+      "scripts_scanned": 25
+    },
+    {
+      "gate": "one_trainer",
+      "mytest": [
+        "./MyTest.py"
+      ],
+      "mytrain": [
+        "./MyTrain.py"
+      ],
+      "note": "ground rule 2: arms differ only by data dir and seed, so a second trainer anywhere in the tree is a FAIL",
+      "passed": true,
+      "patches_missing": {}
+    },
+    {
+      "COD10K_gt": 2026,
+      "COD10K_imgs": 2026,
+      "NC4K_gt": 4121,
+      "NC4K_imgs": 4121,
+      "camo_gt_n": 250,
+      "camo_n": 250,
+      "endpoints": [
+        "COD10K",
+        "NC4K"
+      ],
+      "gate": "endpoints",
+      "myeval_excludes_chameleon": true,
+      "mytest_excludes_camo": true,
+      "mytest_excludes_chameleon": true,
+      "note": "CHAMELEON withdrawn on D2 (41/76 = 53.9% is training data); CAMO is the checkpoint-selection set and can never be an endpoint",
+      "passed": true,
+      "val_root_is_camo": true
+    },
+    {
+      "armC_reproduces_C1": {
+        "C10": {
+          "asserted": [
+            "clusters_funded",
+            "max_alloc_share",
+            "alloc_entropy_norm",
+            "tv_from_uniform",
+            "n_displaced"
+          ],
+          "c1": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "tv_from_uniform": 0.49253
+          },
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "es_perm": "identity",
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "perm_fixed_points": 75,
+            "perm_rho": 1.0,
+            "perm_seed": null,
+            "tv_from_uniform": 0.49253
+          }
+        },
+        "CINV": {
+          "asserted": [
+            "clusters_funded",
+            "max_alloc_share",
+            "alloc_entropy_norm",
+            "tv_from_uniform"
+          ],
+          "c1": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "tv_from_uniform": 0.49253
+          },
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "es_perm": "rank_reversed",
+            "max_alloc_share": 0.194,
+            "n_displaced": 367,
+            "perm_fixed_points": 1,
+            "perm_rho": -1.0,
+            "perm_seed": null,
+            "tv_from_uniform": 0.49253
+          }
+        },
+        "CSHUF": {
+          "asserted": [
+            "clusters_funded",
+            "max_alloc_share",
+            "alloc_entropy_norm",
+            "tv_from_uniform"
+          ],
+          "c1": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "tv_from_uniform": 0.49253
+          },
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "es_perm": "shuffled",
+            "max_alloc_share": 0.194,
+            "n_displaced": 404,
+            "perm_fixed_points": 0,
+            "perm_rho": -0.03351,
+            "perm_seed": 910004,
+            "tv_from_uniform": 0.49253
+          }
+        }
+      },
+      "base_bytes_bad": [
+        [
+          "SINet_CSHUF_s42",
+          0
+        ],
+        [
+          "SINet_CSHUF_s43",
+          0
+        ],
+        [
+          "SINet_CSHUF_s45",
+          0
+        ],
+        [
+          "SINet_CINV_s42",
+          0
+        ],
+        [
+          "SINet_CINV_s43",
+          0
+        ],
+        [
+          "SINet_CINV_s45",
+          0
+        ],
+        [
+          "SINetv2_CSHUF_s42",
+          0
+        ],
+        [
+          "SINetv2_CSHUF_s43",
+          0
+        ],
+        [
+          "SINetv2_CSHUF_s45",
+          0
+        ],
+        [
+          "SINetv2_CINV_s42",
+          0
+        ],
+        [
+          "SINetv2_CINV_s43",
+          0
+        ],
+        [
+          "SINetv2_CINV_s45",
+          0
+        ]
+      ],
+      "gate": "pools",
+      "n_pools": 12,
+      "note": "parity asserted on the REAL SrcDataset for every index, and round-2 parity proved on the full worst-case union",
+      "overlap_B_vs_C": {
+        "B_s42|B_s43": {
+          "chance": 224.9,
+          "jaccard": 0.1403,
+          "kind": "BxB",
+          "n_differing": 754,
+          "overlap": 246,
+          "ratio": 1.094
+        },
+        "B_s42|B_s45": {
+          "chance": 224.9,
+          "jaccard": 0.1287,
+          "kind": "BxB",
+          "n_differing": 772,
+          "overlap": 228,
+          "ratio": 1.014
+        },
+        "B_s42|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1274,
+          "kind": "BxC",
+          "n_differing": 774,
+          "overlap": 226,
+          "ratio": 1.005
+        },
+        "B_s42|CINV": {
+          "chance": 224.9,
+          "jaccard": 0.1136,
+          "kind": "BxC",
+          "n_differing": 796,
+          "overlap": 204,
+          "ratio": 0.907
+        },
+        "B_s42|CSHUF": {
+          "chance": 224.9,
+          "jaccard": 0.1268,
+          "kind": "BxC",
+          "n_differing": 775,
+          "overlap": 225,
+          "ratio": 1.001
+        },
+        "B_s43|B_s45": {
+          "chance": 224.9,
+          "jaccard": 0.1357,
+          "kind": "BxB",
+          "n_differing": 761,
+          "overlap": 239,
+          "ratio": 1.063
+        },
+        "B_s43|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1403,
+          "kind": "BxC",
+          "n_differing": 754,
+          "overlap": 246,
+          "ratio": 1.094
+        },
+        "B_s43|CINV": {
+          "chance": 224.9,
+          "jaccard": 0.1377,
+          "kind": "BxC",
+          "n_differing": 758,
+          "overlap": 242,
+          "ratio": 1.076
+        },
+        "B_s43|CSHUF": {
+          "chance": 224.9,
+          "jaccard": 0.1383,
+          "kind": "BxC",
+          "n_differing": 757,
+          "overlap": 243,
+          "ratio": 1.081
+        },
+        "B_s45|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1299,
+          "kind": "BxC",
+          "n_differing": 770,
+          "overlap": 230,
+          "ratio": 1.023
+        },
+        "B_s45|CINV": {
+          "chance": 224.9,
+          "jaccard": 0.1167,
+          "kind": "BxC",
+          "n_differing": 791,
+          "overlap": 209,
+          "ratio": 0.929
+        },
+        "B_s45|CSHUF": {
+          "chance": 224.9,
+          "jaccard": 0.1223,
+          "kind": "BxC",
+          "n_differing": 782,
+          "overlap": 218,
+          "ratio": 0.969
+        },
+        "C10|CINV": {
+          "chance": 224.9,
+          "jaccard": 0.3236,
+          "kind": "CxC",
+          "n_differing": 511,
+          "overlap": 489,
+          "ratio": 2.175
+        },
+        "C10|CSHUF": {
+          "chance": 224.9,
+          "jaccard": 0.3774,
+          "kind": "CxC",
+          "n_differing": 452,
+          "overlap": 548,
+          "ratio": 2.437
+        },
+        "CINV|CSHUF": {
+          "chance": 224.9,
+          "jaccard": 0.3755,
+          "kind": "CxC",
+          "n_differing": 454,
+          "overlap": 546,
+          "ratio": 2.428
+        }
+      },
+      "passed": true,
+      "per_pool": [
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CSHUF_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CSHUF_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CSHUF_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CINV_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CINV_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CINV_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CSHUF_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CSHUF_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CSHUF",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CSHUF_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CINV_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CINV_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CINV",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CINV_s45",
+          "seed": 45
+        }
+      ],
+      "render_mask_bad": [
+        [
+          "CSHUF",
+          1000,
+          0
+        ],
+        [
+          "CINV",
+          1000,
+          0
+        ],
+        [
+          "B_s42",
+          1000,
+          0
+        ],
+        [
+          "B_s43",
+          1000,
+          0
+        ],
+        [
+          "B_s45",
+          1000,
+          0
+        ]
+      ]
+    },
+    {
+      "benchmark_false": true,
+      "deterministic_true": true,
+      "gate": "determinism",
+      "hardcoded_42_gone": true,
+      "note": "read from source, not from live flags: the gate runs in a different process than training. REDUCES, does not eliminate, kernel nondeterminism (ABC_PLAN.md A.6)",
+      "passed": true,
+      "seed_from_opt": true
+    }
+  ],
+  "generated": "2026-09-10T11:50:03+05:30",
+  "runs": [
+    "SINet_CSHUF_s42",
+    "SINet_CSHUF_s43",
+    "SINet_CSHUF_s45",
+    "SINet_CINV_s42",
+    "SINet_CINV_s43",
+    "SINet_CINV_s45",
+    "SINetv2_CSHUF_s42",
+    "SINetv2_CSHUF_s43",
+    "SINetv2_CSHUF_s45",
+    "SINetv2_CINV_s42",
+    "SINetv2_CINV_s43",
+    "SINetv2_CINV_s45"
+  ]
+}

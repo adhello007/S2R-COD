@@ -147,8 +147,12 @@ def main():
     ap.add_argument('--arms', default=','.join(A.ARMS))
     ap.add_argument('--retries', type=int, default=1)
     ap.add_argument('--no-log', action='store_true')
+    ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
     args = ap.parse_args()
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
+    global OUT, EXP
+    OUT = A.set_out(args.tag)
+    EXP = 'T2' if args.tag == 't2' else A.EXP
     os.makedirs(OUT, exist_ok=True)
 
     # SINet first (including its A0_s42 sanity run, already done), then SINet-v2
@@ -308,7 +312,8 @@ def main():
         'driver neither reads it as an input nor writes it.')
 
     block = C.log_block(
-        EXP, '.venv/bin/python rebuild/ABC/abc_train.py --arms %s' % args.arms,
+        EXP, '.venv/bin/python rebuild/ABC/abc_train.py --arms %s%s'
+        % (args.arms, ' --tag ' + args.tag if args.tag else ''),
         metrics, thresholds, [], artifacts,
         representation=('training reads each arm\'s own pool at '
                         'Dataset/Source/ABC/<RUNID>/{Image,GT}; CLS round 2 reads '

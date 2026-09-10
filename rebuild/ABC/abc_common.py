@@ -39,7 +39,20 @@ ARCHS = {
                     last_epoch='099/100', ref_min=131.0, cls_stu='Stu_100.pth'),
 }
 ARMS = ('A0', 'A2', 'B', 'C10')          # C05 is the pre-registered secondary
-ARM_ALPHA = {'C10': 1.0, 'C05': 0.5}
+T2_ARMS = ('CSHUF', 'CINV')              # PREREGISTRATION_T2.md -- additive, dated
+ARM_ALPHA = {'C10': 1.0, 'C05': 0.5, 'CSHUF': 1.0, 'CINV': 1.0}
+# T2: how each C-family arm permutes the COMMITTED target_es vector before the
+# softmax. None is C10's identity. BOTH T2 transforms are PERMUTATIONS, so the
+# allocation SHAPE is preserved exactly and only the cluster->budget assignment
+# changes (PREREGISTRATION_T2.md T2.4).
+ARM_ES_PERM = {'C10': None, 'C05': None,
+               'CSHUF': 'shuffled', 'CINV': 'rank_reversed'}
+SHAPE_KEYS = ('clusters_funded', 'max_alloc_share',
+              'alloc_entropy_norm', 'tv_from_uniform')   # n_displaced EXCLUDED
+SHUF_NS = 910_000        # T2 C-shuffled permutation namespace
+SHUF_MAX_RHO = 0.10      # |Spearman(es[sigma], es)| acceptance bound
+SHUF_TRIES = 64          # declared before the draw; exhausting it is a HALT
+T2_MAX_JACCARD = 0.50    # C-vs-C distinctness gate (PREREGISTRATION_T2.md T2.7)
 SEEDS = (42, 43, 45)
 BUDGET = 1000
 EMBEDDER = 'dinoL518'
@@ -61,6 +74,15 @@ C1_CELL = {
     0.5: dict(clusters_funded=40, max_alloc_share=0.509,
               alloc_entropy_norm=0.36203, tv_from_uniform=0.85906, n_displaced=115),
 }
+
+
+def set_out(tag=''):
+    """Point OUT at a subdirectory so an additive campaign cannot overwrite a
+    committed one. tag='' is A/B/C's own path, unchanged. Every ABC script
+    rebinds its own OUT from this in main(), so one switch moves all of them."""
+    global OUT
+    OUT = os.path.join(C.exp_dir(EXP, 'out'), tag) if tag else C.exp_dir(EXP, 'out')
+    return OUT
 
 
 def runid(arch, arm, seed):
@@ -109,17 +131,86 @@ def arm_b_stems(seed):
     return [stems[i] for i in idx]
 
 
-def arm_c_stems(alpha):
-    """Reuse C1's committed selection. Returns (stems, measured_cell)."""
+def _spearman_perm(es, sigma):
+    """Spearman rho between the permuted ES vector es[sigma] and es itself.
+    +1 identity (C10), -1 rank-reversing (CINV), ~0 a random permutation (CSHUF).
+    THIS -- not index order -- is what says whether an arm still targets what the
+    real signal targets; cluster indices are arbitrary k-means labels. target_es
+    has 75 distinct floats, so ranks are an exact argsort-of-argsort and scipy is
+    not needed."""
+    r = np.argsort(np.argsort(es, kind='stable'), kind='stable').astype(np.float64)
+    a, b = r[sigma] - r.mean(), r - r.mean()
+    return float(a @ b / np.sqrt((a @ a) * (b @ b)))
+
+
+def es_permutation(es, kind):
+    """The T2 cluster permutation sigma, with es_used = es[sigma].
+
+    A permutation leaves softmax_alloc's p a permutation of C10's p, so
+    alloc_entropy_norm, tv_from_uniform, max_alloc_share and clusters_funded are
+    preserved EXACTLY -- same shape, different target. Only the cluster->budget
+    assignment, hence the selected image set and n_displaced, change.
+
+      None            identity; arm_c_stems reproduces C10 bit for bit.
+      'rank_reversed' the unique rank-reversing map: the cluster with the r-th
+                      largest ES is served the allocation the (k+1-r)-th largest
+                      would have received, so budget flows to the LOWEST-
+                      deficiency clusters. rho = -1 exactly. No RNG.
+      'shuffled'      the FIRST offset in 0..SHUF_TRIES-1 whose
+                      default_rng(SHUF_NS + offset) permutation has no fixed point
+                      and |rho| <= SHUF_MAX_RHO. The acceptance rule is declared in
+                      PREREGISTRATION_T2.md BEFORE the draw, so the permutation is
+                      chosen by a rule and never by inspection.
+
+    Deterministic in every branch: no seed argument, so the arm is identical
+    across the three TRAINING seeds, exactly like C10.
+    """
+    k = len(es)
+    if kind is None:
+        return np.arange(k), dict(es_perm='identity', perm_rho=1.0,
+                                  perm_fixed_points=k, perm_seed=None)
+    if kind == 'rank_reversed':
+        asc = np.argsort(es, kind='stable')
+        sigma = np.empty(k, dtype=np.int64)
+        sigma[asc] = asc[::-1]
+        return sigma, dict(es_perm='rank_reversed',
+                           perm_rho=round(_spearman_perm(es, sigma), 5),
+                           perm_fixed_points=int((sigma == np.arange(k)).sum()),
+                           perm_seed=None)
+    if kind == 'shuffled':
+        for off in range(SHUF_TRIES):
+            sigma = np.random.default_rng(SHUF_NS + off).permutation(k)
+            fx = int((sigma == np.arange(k)).sum())
+            rho = _spearman_perm(es, sigma)
+            if fx == 0 and abs(rho) <= SHUF_MAX_RHO:
+                return sigma, dict(es_perm='shuffled', perm_rho=round(rho, 5),
+                                   perm_fixed_points=fx, perm_seed=int(SHUF_NS + off))
+        raise RuntimeError('T2 HALT: no permutation in %d draws from %d met the '
+                           'declared rule (no fixed point, |rho| <= %.2f)'
+                           % (SHUF_TRIES, SHUF_NS, SHUF_MAX_RHO))
+    raise ValueError('unknown es_perm %r' % kind)
+
+
+def arm_c_stems(alpha, es_perm=None):
+    """Reuse C1's committed selection. Returns (stems, measured_cell).
+
+    es_perm=None reproduces C10 EXACTLY -- same call, same numbers, byte-identical
+    stem list. Any other value permutes the COMMITTED target_es vector before the
+    softmax and changes NOTHING else: same alpha, same budget, same R2 centroid
+    ranking, same desc_nc serving, same greedy distinct selection. That single
+    substitution is the whole T2 intervention.
+    """
     import c1_space
     from c1_targeted_vs_random import (softmax_alloc, largest_remainder,
                                        rank_by_centroid, serving_orders,
                                        greedy_select)
     sp = c1_space.load_space(EMBEDDER)
-    p = softmax_alloc(sp.es, alpha)
+    sigma, info = es_permutation(sp.es, es_perm)
+    es = sp.es if es_perm is None else sp.es[sigma]
+    p = softmax_alloc(es, alpha)
     alloc = largest_remainder(p, BUDGET)
     _, order = rank_by_centroid(sp)
-    serving = serving_orders(alloc, sp.es)[SERVING]
+    serving = serving_orders(alloc, es)[SERVING]      # desc_nc reads alloc only
     idx, disp = greedy_select(alloc, order, serving)
     cell = dict(
         clusters_funded=int((alloc > 0).sum()),
@@ -128,6 +219,7 @@ def arm_c_stems(alpha):
                                        / np.log(sp.k)), 5),
         tv_from_uniform=round(float(0.5 * np.abs(p - 1.0 / sp.k).sum()), 5),
         n_displaced=int(disp))
+    cell.update(info)
     return [sp.names[i] for i in idx], cell
 
 
@@ -147,6 +239,6 @@ def arm_added(arm, seed):
         return 'SOD_', 'SOD_', arm_b_stems(seed), \
                (REN_IMG, '.jpg'), (REN_MSK, '.png')
     if arm in ARM_ALPHA:
-        return 'SOD_', 'SOD_', arm_c_stems(ARM_ALPHA[arm])[0], \
+        return 'SOD_', 'SOD_', arm_c_stems(ARM_ALPHA[arm], ARM_ES_PERM[arm])[0], \
                (REN_IMG, '.jpg'), (REN_MSK, '.png')
     raise ValueError('unknown arm %r' % arm)
