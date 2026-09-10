@@ -26,3 +26,6 @@ __pycache__*
 # The per-pair manifest IS tracked, at rebuild/D2_reaudit/out/d2r_duplicate_pairs.csv
 /rebuild/*/pairs/
 /rebuild/*/preds/
+
+/iclr2027*
+/rebuild/PAPER*
