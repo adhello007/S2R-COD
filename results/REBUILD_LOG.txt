@@ -2546,3 +2546,65 @@ NOTES      BLOCK 3 OF 3 OF THE T2 EXTENSION -- THE VERDICT. Applied strictly by 
            PREREGISTRATION_T2.md was committed before T2 block #1 and is FROZEN. This script neither reads it as an input nor writes it, and contains no tunable threshold of its own.
 ================================================================================
 
+================================================================================
+2026-09-11T19:17:38+05:30 | commit 6efde9f (dirty) | EXP T2C
+CMD   LAKE-RED/.venv/bin/python rebuild/T2C/t2c_measure.py --steps s2 --archs SINet/S2C,SINet-v2/S2C
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timm1.0.28 numpy2.5.2 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  signals on the UNLABELED TARGET set at 352x352 + ImageNet norm on the RAW sigmoid; error from B1's committed COD10K-test per-image CSV; joined ONLY through the committed dinoL518 k=75 seed=0 partition
+METRICS
+  harness_reproduces_B1_bitwise              = MAE +0.6284273709483794 | 1-Sa +0.3432893157262905 | 1-IoU +0.2612725090036014    (50 clusters, 3428 target images; BIT-IDENTICAL to b1_faithful_correlation.json)
+  scorer_reproduces_B1                       = Sa 0.717216 (delta 3.77e-07), MAE 0.074463 (delta 2.32e-07)    (abc_evaluate.score unchanged on the COMMITTED predictions, BEFORE any new number; B1 logged 0.717216 / 0.074463)
+  signal_checkpoints_hashed                  = 16    (8 per architecture; 0 duplicate ensemble members (a duplicate would mean an arm is <3 distinct networks))
+  c1_literal_ban_also_passes                 = True    (T2-C never reads the endpoint ES column at all, so the allocation-signal ban passes even though it is not the operative rule -- the departure is narrower than PREREGISTRATION_T2C.md T2C.2.3 anticipated)
+  target_clustered                           = 4033    (of 4040; 7 leaked names dropped, read from rebuild/D2/out/d2_leaked_names.json)
+  band_empty_SINet-S2C                       = 131/4040 (0.0324), mean band frac 0.0228    (empty band -> the image contributes no boundary value; >5%% would be a HALT)
+  es_map_identity_SINet-S2C                  = 4.199e-08    (max |es_map.mean() - ESLoss.forward| over all 4040 images (G4, tol 1e-6))
+  G7_not_applicable_SINet-v2-S2C             = no committed per-cluster reference    (b1_cluster_es_dinoL518.csv target_es is SINet/S2C's ES for every arch (b1_allocation_signal.py:283); no committed per-cluster reference exists for SINet-v2/S2C. G6 carries the reproduction burden and is per-architecture.)
+  band_empty_SINet-v2-S2C                    = 22/4040 (0.0054), mean band frac 0.0350    (empty band -> the image contributes no boundary value; >5%% would be a HALT)
+  es_map_identity_SINet-v2-S2C               = 1.178e-07    (max |es_map.mean() - ESLoss.forward| over all 4040 images (G4, tol 1e-6))
+  SINet-S2C_es_whole                         = MAE +0.6284+-0.0381 | 1-Sa +0.3433+-0.0301 | 1-IoU +0.2613+-0.0383    (ordering PASS (10/10 seeds); ratio 0.5463+-0.0541, -0.0000 vs ES 0.5463; 50 clusters)
+  SINet-S2C_es_boundary                      = MAE -0.0012+-0.0481 | 1-Sa -0.0567+-0.0500 | 1-IoU -0.0554+-0.0479    (ordering FAIL (8/10 seeds); ratio 47.2400+-32.5544, +46.6937 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ent_whole                        = MAE +0.5892+-0.0368 | 1-Sa +0.4267+-0.0277 | 1-IoU +0.3588+-0.0351    (ordering PASS (10/10 seeds); ratio 0.7242+-0.0571, +0.1779 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ent_boundary                     = MAE +0.2434+-0.0414 | 1-Sa +0.2492+-0.0540 | 1-IoU +0.2432+-0.0563    (ordering FAIL (6/10 seeds); ratio 1.0237+-0.1741, +0.4774 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ens_a0_whole                     = MAE +0.6028+-0.0466 | 1-Sa +0.2698+-0.0487 | 1-IoU +0.1491+-0.0560    (ordering PASS (10/10 seeds); ratio 0.4476+-0.0586, -0.0987 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ens_a0_boundary                  = MAE +0.3633+-0.0605 | 1-Sa +0.2910+-0.0509 | 1-IoU +0.2215+-0.0513    (ordering PASS (10/10 seeds); ratio 0.8012+-0.0828, +0.2549 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ens_cshuf_whole                  = MAE +0.5212+-0.0564 | 1-Sa +0.4006+-0.0459 | 1-IoU +0.3361+-0.0447    (ordering PASS (10/10 seeds); ratio 0.7687+-0.1062, +0.2224 vs ES 0.5463; 50 clusters)
+  SINet-S2C_ens_cshuf_boundary               = MAE +0.3175+-0.0637 | 1-Sa +0.3857+-0.0381 | 1-IoU +0.3770+-0.0322    (ordering FAIL (2/10 seeds); ratio 1.2151+-0.2763, +0.6688 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_es_whole                      = MAE +0.7070+-0.0404 | 1-Sa +0.5628+-0.0359 | 1-IoU +0.4591+-0.0315    (ordering PASS (10/10 seeds); ratio 0.7961+-0.0523, +0.2498 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_es_boundary                   = MAE -0.5485+-0.0745 | 1-Sa -0.1146+-0.0675 | 1-IoU +0.0537+-0.0558    (ordering FAIL (0/10 seeds); ratio 0.2090+-0.1381, -0.3373 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ent_whole                     = MAE +0.7393+-0.0309 | 1-Sa +0.5404+-0.0408 | 1-IoU +0.4070+-0.0395    (ordering PASS (10/10 seeds); ratio 0.7310+-0.0572, +0.1847 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ent_boundary                  = MAE +0.4208+-0.0356 | 1-Sa +0.4182+-0.0455 | 1-IoU +0.3605+-0.0470    (ordering PASS (8/10 seeds); ratio 0.9938+-0.0774, +0.4475 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ens_a0_whole                  = MAE +0.6191+-0.0675 | 1-Sa +0.5483+-0.0409 | 1-IoU +0.4540+-0.0451    (ordering PASS (9/10 seeds); ratio 0.8857+-0.1119, +0.3394 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ens_a0_boundary               = MAE -0.1960+-0.0524 | 1-Sa +0.0425+-0.0410 | 1-IoU +0.0933+-0.0396    (ordering FAIL (0/10 seeds); ratio -0.2169+-0.9569, -0.7632 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ens_cshuf_whole               = MAE +0.5576+-0.0690 | 1-Sa +0.4488+-0.0580 | 1-IoU +0.3370+-0.0577    (ordering PASS (10/10 seeds); ratio 0.8049+-0.0711, +0.2586 vs ES 0.5463; 50 clusters)
+  SINet-v2-S2C_ens_cshuf_boundary            = MAE -0.2527+-0.0668 | 1-Sa -0.0591+-0.0609 | 1-IoU -0.0011+-0.0579    (ordering FAIL (0/10 seeds); ratio 0.2339+-0.2682, -0.3124 vs ES 0.5463; 50 clusters)
+  ORDERING_whole                             = 8/8 rows PASS    (the frozen criterion: rho(MAE) > rho(1-Sa) > rho(1-IoU) at seed 0, per signal x architecture)
+  ORDERING_boundary                          = 2/8 rows PASS    (the frozen criterion: rho(MAE) > rho(1-Sa) > rho(1-IoU) at seed 0, per signal x architecture)
+  ENSEMBLE_sensitivity_SINet-S2C_whole       = A0 PASS / CSHUF PASS -> AGREE    (A0 arm sd 0.017266 (SINet) / 0.010575 (SINetv2) vs CSHUF 0.001655 / 0.003523; a finding only in A0 is not a result)
+  ENSEMBLE_sensitivity_SINet-S2C_boundary    = A0 PASS / CSHUF FAIL -> DISAGREE -- possible weak-member artifact    (A0 arm sd 0.017266 (SINet) / 0.010575 (SINetv2) vs CSHUF 0.001655 / 0.003523; a finding only in A0 is not a result)
+  ENSEMBLE_sensitivity_SINet-v2-S2C_whole    = A0 PASS / CSHUF PASS -> AGREE    (A0 arm sd 0.017266 (SINet) / 0.010575 (SINetv2) vs CSHUF 0.001655 / 0.003523; a finding only in A0 is not a result)
+  ENSEMBLE_sensitivity_SINet-v2-S2C_boundary = A0 FAIL / CSHUF FAIL -> AGREE    (A0 arm sd 0.017266 (SINet) / 0.010575 (SINetv2) vs CSHUF 0.001655 / 0.003523; a finding only in A0 is not a result)
+THRESHOLD  G-signal: correlation study: the allocation-signal literal ban is not the operat -> PASS
+THRESHOLD  G-escfg: a/b/c from the --task S2C override block; unweighted BCE is a property -> PASS
+THRESHOLD  G-partition: seed-0 refit is label-identical to the committed partition, so the in- -> PASS
+THRESHOLD  G-harness: harness -> PASS
+THRESHOLD  G-scorer: abc_evaluate.score unchanged, on Result/SINet/S2C vs COD10K GT; B1 log -> PASS
+THRESHOLD  G-provenance: provenance -> PASS
+THRESHOLD  G-checkpoints: a duplicate pair inside an ensemble arm would mean that arm is fewer t -> PASS
+THRESHOLD  G6 SINet/S2C: re-derived ES reproduces the committed per-image ES (max < 1e-5, mean < 1e-6) -> PASS
+THRESHOLD  G7 SINet/S2C: re-derived ES reproduces the committed per-cluster target_es (<= 5e-6) -> PASS
+THRESHOLD  G6 SINet-v2/S2C: re-derived ES reproduces the committed per-image ES (max < 1e-5, mean < 1e-6) -> PASS
+THRESHOLD  PRE-REGISTERED: every WHOLE-IMAGE signal keeps ES's ordering rho(MAE) > rho(1-Sa) > rho(1-IoU) at seed 0 -- the gap is NOT ES-specific -> PASS
+THRESHOLD  PRE-REGISTERED: every BOUNDARY-RESTRICTED signal keeps the same ordering -> FAIL
+THRESHOLD  ENSEMBLE sensitivity SINet/S2C whole: the A0 finding survives the tight CSHUF ensemble -> PASS
+THRESHOLD  ENSEMBLE sensitivity SINet/S2C boundary: the A0 finding survives the tight CSHUF ensemble -> FAIL
+THRESHOLD  ENSEMBLE sensitivity SINet-v2/S2C whole: the A0 finding survives the tight CSHUF ensemble -> PASS
+THRESHOLD  ENSEMBLE sensitivity SINet-v2/S2C boundary: the A0 finding survives the tight CSHUF ensemble -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/T2C/out/t2c_correlations.json, rebuild/T2C/out/t2c_preflight.json, rebuild/T2C/out/t2c_table.csv
+TRAINS     NO
+NOTES      T2-C is CORRELATIONAL. It establishes a strong prior that uncertainty-guided allocation fails for COD; it is NOT proof that every signal fails in training. COD10K-test is the SOLE endpoint (NC4K has no DINOv2 cache, is not a B1 split, and has no per-cluster error columns). rho differences below ~0.06 between signals are NOT interpreted: the committed 10-seed sds at k=75 are +-0.0264 / 0.0461 / 0.0564, so two independent rho(1-Sa) values differ with sd ~0.065. The ratio is DESCRIPTIVE ONLY, benchmarked against ES's committed 0.5463 and never against 0.5 -- B1 itself froze a threshold declaring the 0.5 boundary "still not stateable" and logged VERDICT_binary_is_k_stable=False.
+           Ensemble rows are the WEAKEST evidence here: 3 members (a 3-sample variance has ~70% relative standard error), A0 members differ by 0.0334 Sa (SINet), only the training seed differs so this is optimisation-stochasticity disagreement rather than epistemic uncertainty, and the members are NOT the model whose error is the endpoint column (S2C teacher Sa 0.717216 matches no A0 member). A null from the ensemble is weaker than a null from entropy.
+           ONE shared boundary band per image, from the S2C teacher, used by all three signals, so "boundary-restricted" names the same region in every row. A per-signal band would make each row a different region and confound the comparison invisibly; it is reported for the ensemble as the ens_*_ownband robustness row only.
+================================================================================
+

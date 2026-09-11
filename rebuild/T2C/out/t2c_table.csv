@@ -1,0 +1,41 @@
+arch,signal,aggregation,n_images,clusters_used,rho_mae,sd_mae,rho_one_minus_sa,sd_one_minus_sa,rho_one_minus_iou,sd_one_minus_iou,ordering_pass,ordering_seeds,ratio,ratio_sd,ratio_delta_vs_es,primary
+SINet/S2C,ES (re-derived),whole,4040,50,0.6284,0.0381,0.3433,0.0301,0.2613,0.0383,True,10/10,0.5463,0.0541,-0.0000,1
+SINet/S2C,ES (re-derived),boundary,3909,50,-0.0012,0.0481,-0.0567,0.0500,-0.0554,0.0479,False,8/10,47.2400,32.5544,+46.6937,1
+SINet/S2C,entropy,whole,4040,50,0.5892,0.0368,0.4267,0.0277,0.3588,0.0351,True,10/10,0.7242,0.0571,+0.1779,1
+SINet/S2C,entropy,boundary,3909,50,0.2434,0.0414,0.2492,0.0540,0.2432,0.0563,False,6/10,1.0237,0.1741,+0.4774,1
+SINet/S2C,ensemble A0,whole,4040,50,0.6028,0.0466,0.2698,0.0487,0.1491,0.0560,True,10/10,0.4476,0.0586,-0.0987,1
+SINet/S2C,ensemble A0,boundary,3909,50,0.3633,0.0605,0.2910,0.0509,0.2215,0.0513,True,10/10,0.8012,0.0828,+0.2549,1
+SINet/S2C,ensemble CSHUF,whole,4040,50,0.5212,0.0564,0.4006,0.0459,0.3361,0.0447,True,10/10,0.7687,0.1062,+0.2224,1
+SINet/S2C,ensemble CSHUF,boundary,3909,50,0.3175,0.0637,0.3857,0.0381,0.3770,0.0322,False,2/10,1.2151,0.2763,+0.6688,1
+SINet/S2C,entropy clamp 1e-12,whole,4040,50,0.5892,,0.4267,,0.3588,,True,1/1,0.7242,,+0.1779,0
+SINet/S2C,entropy clamp 1e-12,boundary,3909,50,0.2434,,0.2492,,0.2432,,False,0/1,1.0237,,+0.4774,0
+SINet/S2C,ES (re-derived),boundary 2px,3909,50,-0.0371,,-0.0884,,-0.0785,,False,0/1,2.3816,,+1.8353,0
+SINet/S2C,entropy,boundary 2px,3909,50,0.2230,,0.2049,,0.1974,,True,1/1,0.9190,,+0.3727,0
+SINet/S2C,ensemble A0,boundary 2px,3909,50,0.3421,,0.2835,,0.2168,,True,1/1,0.8285,,+0.2822,0
+SINet/S2C,ensemble CSHUF,boundary 2px,3909,50,0.3046,,0.3625,,0.3538,,False,0/1,1.1901,,+0.6438,0
+SINet/S2C,ensemble A0 mean(sd),whole,4040,50,0.6330,,0.2902,,0.1733,,True,1/1,0.4584,,-0.0879,0
+SINet/S2C,ensemble A0 mean(sd),boundary,3909,50,0.3254,,0.2736,,0.2187,,True,1/1,0.8406,,+0.2943,0
+SINet/S2C,ensemble CSHUF mean(sd),whole,4040,50,0.5823,,0.4144,,0.3412,,True,1/1,0.7116,,+0.1653,0
+SINet/S2C,ensemble CSHUF mean(sd),boundary,3909,50,0.3397,,0.4415,,0.4377,,False,0/1,1.2996,,+0.7533,0
+SINet/S2C,ensemble A0 own band,boundary,3829,50,0.2110,,0.2671,,0.2151,,False,0/1,1.2658,,+0.7195,0
+SINet/S2C,ensemble CSHUF own band,boundary,3899,50,0.3258,,0.4642,,0.4411,,False,0/1,1.4248,,+0.8785,0
+SINet-v2/S2C,ES (re-derived),whole,4040,50,0.7070,0.0404,0.5628,0.0359,0.4591,0.0315,True,10/10,0.7961,0.0523,+0.2498,1
+SINet-v2/S2C,ES (re-derived),boundary,4018,50,-0.5485,0.0745,-0.1146,0.0675,0.0537,0.0558,False,0/10,0.2090,0.1381,-0.3373,1
+SINet-v2/S2C,entropy,whole,4040,50,0.7393,0.0309,0.5404,0.0408,0.4070,0.0395,True,10/10,0.7310,0.0572,+0.1847,1
+SINet-v2/S2C,entropy,boundary,4018,50,0.4208,0.0356,0.4182,0.0455,0.3605,0.0470,True,8/10,0.9938,0.0774,+0.4475,1
+SINet-v2/S2C,ensemble A0,whole,4040,50,0.6191,0.0675,0.5483,0.0409,0.4540,0.0451,True,9/10,0.8857,0.1119,+0.3394,1
+SINet-v2/S2C,ensemble A0,boundary,4018,50,-0.1960,0.0524,0.0425,0.0410,0.0933,0.0396,False,0/10,-0.2169,0.9569,-0.7632,1
+SINet-v2/S2C,ensemble CSHUF,whole,4040,50,0.5576,0.0690,0.4488,0.0580,0.3370,0.0577,True,10/10,0.8049,0.0711,+0.2586,1
+SINet-v2/S2C,ensemble CSHUF,boundary,4018,50,-0.2527,0.0668,-0.0591,0.0609,-0.0011,0.0579,False,0/10,0.2339,0.2682,-0.3124,1
+SINet-v2/S2C,entropy clamp 1e-12,whole,4040,50,0.7393,,0.5404,,0.4070,,True,1/1,0.7310,,+0.1847,0
+SINet-v2/S2C,entropy clamp 1e-12,boundary,4018,50,0.4208,,0.4182,,0.3605,,True,1/1,0.9938,,+0.4475,0
+SINet-v2/S2C,ES (re-derived),boundary 2px,4018,50,-0.5734,,-0.1427,,0.0291,,False,0/1,0.2488,,-0.2975,0
+SINet-v2/S2C,entropy,boundary 2px,4018,50,0.4196,,0.4175,,0.3630,,True,1/1,0.9950,,+0.4487,0
+SINet-v2/S2C,ensemble A0,boundary 2px,4018,50,-0.3088,,-0.0368,,0.0328,,False,0/1,0.1193,,-0.4270,0
+SINet-v2/S2C,ensemble CSHUF,boundary 2px,4018,50,-0.3321,,-0.1585,,-0.0974,,False,0/1,0.4772,,-0.0691,0
+SINet-v2/S2C,ensemble A0 mean(sd),whole,4040,50,0.6728,,0.5600,,0.4569,,True,1/1,0.8323,,+0.2860,0
+SINet-v2/S2C,ensemble A0 mean(sd),boundary,4018,50,0.0124,,0.1393,,0.1552,,False,0/1,11.2008,,+10.6545,0
+SINet-v2/S2C,ensemble CSHUF mean(sd),whole,4040,50,0.6118,,0.4829,,0.3605,,True,1/1,0.7893,,+0.2430,0
+SINet-v2/S2C,ensemble CSHUF mean(sd),boundary,4018,50,-0.0904,,0.0429,,0.0688,,False,0/1,-0.4742,,-1.0205,0
+SINet-v2/S2C,ensemble A0 own band,boundary,4011,50,-0.2228,,0.0298,,0.0896,,False,0/1,-0.1339,,-0.6802,0
+SINet-v2/S2C,ensemble CSHUF own band,boundary,4016,50,-0.3316,,-0.0381,,0.0360,,False,0/1,0.1148,,-0.4315,0

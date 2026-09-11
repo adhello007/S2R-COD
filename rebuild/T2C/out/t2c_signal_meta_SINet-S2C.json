@@ -1,0 +1,20 @@
+{
+  "es_live": {
+    "a": 0.9,
+    "b": 0.3,
+    "c": 0.5,
+    "use_weighted_bce": false
+  },
+  "max_es_map_identity_dev": 4.1991923993567326e-08,
+  "mean_band1_frac": 0.011449599993735168,
+  "mean_band_frac": 0.0227955845566801,
+  "n": 4040,
+  "n_band1_empty": 131,
+  "n_band_empty": 131,
+  "target_side": {
+    "endpoint_key_clash": 0,
+    "n_joined": 4033,
+    "n_signal": 4040,
+    "target_root": "Dataset/Target/Image"
+  }
+}
