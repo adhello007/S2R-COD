@@ -288,8 +288,9 @@ def main():
          all(r['target_loaded_4040'] == 2 for r in good)),
         ('no run was abandoned', not any(r.get('abandoned') for r in results)),
     ]
-    artifacts += ['rebuild/ABC/out/abc_runs.csv', 'rebuild/ABC/out/abc_commands.txt',
-                  'rebuild/ABC/out/abc_discards.json']
+    relout = os.path.relpath(OUT, C.REPO)
+    artifacts += [os.path.join(relout, f) for f in
+                  ('abc_runs.csv', 'abc_commands.txt', 'abc_discards.json')]
     notes.append(
         'BLOCK 2 OF 3, AND THE FIRST BLOCK IN THE WHOLE REBUILD WITH TRAINS YES. '
         'Every prior block -- E0, D2, D1, B1, C1 -- records TRAINS NO. Block #1 is '
@@ -318,6 +319,47 @@ def main():
     notes.append(
         'PREREGISTRATION.md was committed before block #1 and is unchanged. This '
         'driver neither reads it as an input nor writes it.')
+
+    if args.tag == 't2':
+        # A/B/C's narrative does not describe T2: this is not the rebuild's first
+        # TRAINS YES block, and the A0-vs-A2 exposure note concerns arms T2 does
+        # not have. Keep the two notes that are facts about the machinery.
+        notes = [x for x in notes
+                 if x.startswith(('n_appended DIFFERS', 'A DISCARDED RUN'))]
+        notes.insert(0,
+            'BLOCK 2 OF 3 OF THE T2 EXTENSION -- RUN ACCOUNTING. 12 runs = 2 '
+            'architectures x 2 new arms x 3 seeds, additive to the frozen A/B/C '
+            'campaign, written under rebuild/ABC/out/t2/. The committed A/B/C runs '
+            'were NOT retrained and are untouched; B and C10 enter T2 only as '
+            'RE-SCORED reference arms in block #3.')
+        notes.append(
+            'total_step IS PINNED, MEASURED PER RUN, and that is what makes the T2 '
+            'comparison clean: min(len(source), len(target)) at MyTrain.py:326-327 '
+            'with zip() truncating means the permuted allocation changes WHICH '
+            '1000 renders enter the mixture and never how many optimisation steps '
+            'are taken. All three C-family arms add exactly B=1000 to the same 4447 '
+            'base pool, so unlike A/B/C\'s A0 the arms here are exposure-matched by '
+            'construction.')
+        notes.append(
+            'THE n_appended THRESHOLD FAILS, AS IT DID IN A/B/C, AND IS DISCLOSED '
+            'RATHER THAN RETUNED. T2 spread is 17.6% of mean (1914-2278) against '
+            'A/B/C\'s committed 22.2% (1732-2163) -- smaller, as expected when all '
+            'arms share the C-family construction, but still far above the 5% bar. '
+            'Per architecture: SINet 7.2%, SINet-v2 14.4%. CLS pseudo-labels with '
+            'each arm\'s OWN round-1 model, so this is a genuine second channel by '
+            'which the arms differ beyond the permutation, and it is high-variance. '
+            'The 5% threshold is A/B/C\'s and is left exactly as frozen: moving it '
+            'after seeing the number would be retuning a bar to pass it.')
+        notes.append(
+            'best_epoch RANGES 21-99 ACROSS THE 12 RUNS, reported because it bears '
+            'on the noise the verdict is measured against. SINetv2_CINV_s43 selected '
+            'its teacher at epoch 99 of 100 -- the final epoch -- so that run was '
+            'still improving when training stopped. No A.8.3 assertion covers '
+            'best_epoch and none is added here; it is disclosed so sigma_hat is read '
+            'with it in view.')
+        notes.append(
+            'PREREGISTRATION_T2.md was committed before T2 block #1 and is FROZEN. '
+            'This driver neither reads it as an input nor writes it.')
 
     block = C.log_block(
         EXP, '.venv/bin/python rebuild/ABC/abc_train.py --arms %s%s'

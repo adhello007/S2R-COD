@@ -299,3 +299,48 @@ byte-identical C10 stem list. That regression check is part of the T2 build, not
 No p-value, no bootstrap, no multiple-comparison correction, at n = 3. Three gaps are reported
 per architecture per endpoint, each against the same `2σ̂` bar, with paired per-seed differences and
 a sign-consistency count.
+
+---
+
+## Addendum A1 — 2026-09-11: an unsatisfiable tolerance in §T2.1, corrected in form, not in substance
+
+**§T2.1 above is left EXACTLY as frozen. Nothing in it is edited, deleted or reinterpreted.** This
+addendum records a specification defect in one clause and the strictest satisfiable form in which that
+clause was applied, so a reader can audit the substitution rather than discover it.
+
+**The defect.** §T2.1 requires that the re-scored reference arms "must reproduce
+`rebuild/ABC/out/abc_metrics.csv` to **< 1e-9**". That threshold cannot be met by any correct
+computation. `abc_metrics.csv` records Sα at **6 decimal places** (`PREREGISTRATION.md` §2.4,
+`abc_evaluate.py:209`), so comparing a full-precision in-memory float against the stored string admits
+a deviation of up to **5e-7** from rounding alone — roughly 500× the stated tolerance. The clause
+tests the storage format, not reproducibility.
+
+**How it surfaced.** The first full T2 evaluation (2026-09-11) **halted** at this check, exactly as
+written, reporting deviations of 3.4e-08 to 4.3e-07 — all inside the 5e-7 rounding bound. The halt was
+the check misfiring, not drift.
+
+**The form applied instead.** Equality of the recorded values at the precision both files record them,
+i.e. `'%.6f' % fresh == '%.6f' % committed`. This is **exact equality, and therefore stricter than a
+1e-6 tolerance** — it admits no deviation whatsoever at the recorded precision.
+
+**Measured, on all 24 reference cells (arms B and C10 × 2 architectures × 3 seeds × 2 endpoints):**
+
+```
+cells compared                      24 / 24
+cells differing at 6 dp             0
+max |fresh - committed| at 6 dp     0.000e+00
+```
+
+The reference arms reproduce their committed values **exactly**. The substantive requirement — that
+T2's scorer, run in T2's own process, returns A/B/C's committed numbers before any T2 gap is computed
+— is met with zero deviation.
+
+**Timing, stated plainly.** This was found after T2's 48 per-run metric rows existed on disk and
+**before** any σ̂, any gap, any verdict or any architecture comparison had been computed: the run
+halted at the check, upstream of the verdict stage. No verdict quantity existed when this was written.
+
+**What was NOT changed.** The endpoints, the seeds, the arms, the σ̂ definition and its df = 8, the
+three gaps, the four verdict bands, the 2σ̂ bar, the interpretation clauses, and the no-optional-stopping
+and no-p-value rules are all untouched. The only change is the numerical form of a
+reproducibility *cross-check*, which gates nothing about the hypothesis and whose strictest
+satisfiable form is now in force.

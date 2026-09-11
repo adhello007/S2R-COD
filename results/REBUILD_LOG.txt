@@ -2405,3 +2405,144 @@ NOTES      COLLISION IS IMPOSSIBLE BY CONSTRUCTION, not by convention. RUNID is 
            PREREGISTRATION_T2.md was committed before this block and is FROZEN. This script neither reads it as an input nor writes it.
 ================================================================================
 
+================================================================================
+2026-09-11T11:12:24+05:30 | commit 80d2e0f (dirty) | EXP T2
+CMD   .venv/bin/python rebuild/ABC/abc_train.py --arms CSHUF,CINV --tag t2
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training reads each arm's own pool at Dataset/Source/ABC/<RUNID>/{Image,GT}; CLS round 2 reads Dataset/Source/ABC/<RUNID>_iteration2/
+METRICS
+  training_runs_completed        = 12/12
+  runs_abandoned                 = 0
+  runs_discarded_and_rerun       = 0
+  wall_clock_SINet_min           = mean 106.3  range 104.8-107.2  n=6    (reference 104.5 min)
+  wall_clock_SINetv2_min         = mean 125.5  range 120.6-127.5  n=6    (reference 131.0 min)
+  n_appended_SINet_CINV_s42      = 1949    (CLS round-2 append; best_epoch 22; wall 106.1m)
+  n_appended_SINet_CINV_s43      = 2010    (CLS round-2 append; best_epoch 29; wall 106.9m)
+  n_appended_SINet_CINV_s45      = 2057    (CLS round-2 append; best_epoch 27; wall 107.2m)
+  n_appended_SINet_CSHUF_s42     = 1992    (CLS round-2 append; best_epoch 28; wall 104.8m)
+  n_appended_SINet_CSHUF_s43     = 2014    (CLS round-2 append; best_epoch 28; wall 106.3m)
+  n_appended_SINet_CSHUF_s45     = 1914    (CLS round-2 append; best_epoch 21; wall 106.6m)
+  n_appended_SINetv2_CINV_s42    = 2137    (CLS round-2 append; best_epoch 23; wall 126.7m)
+  n_appended_SINetv2_CINV_s43    = 2116    (CLS round-2 append; best_epoch 99; wall 127.5m)
+  n_appended_SINetv2_CINV_s45    = 2183    (CLS round-2 append; best_epoch 38; wall 120.6m)
+  n_appended_SINetv2_CSHUF_s42   = 2254    (CLS round-2 append; best_epoch 23; wall 123.6m)
+  n_appended_SINetv2_CSHUF_s43   = 2278    (CLS round-2 append; best_epoch 34; wall 127.0m)
+  n_appended_SINetv2_CSHUF_s45   = 1967    (CLS round-2 append; best_epoch 62; wall 127.3m)
+  n_appended_mean_range          = mean 2072.6  range 1914-2278  spread 17.6% of mean
+  n_appended_spread_exceeds_5pct = True    (ABC_PLAN.md A.12 item 3 -- the one legitimate place the arms diverge beyond the Stage C injection)
+THRESHOLD  CLS round-2 append counts agree across arms within 5%% of the mean -> FAIL
+THRESHOLD  every completed run logged exactly 2 CSRDA rounds -> PASS
+THRESHOLD  total_step stayed pinned in BOTH rounds of every run (253 SINet / 127 SINet-v2), so added data bought zero extra optimisation -> PASS
+THRESHOLD  every run reached its final epoch and saved Tea_epoch_best.pth -> PASS
+THRESHOLD  every run read the unfiltered 4040-image target set in both rounds -> PASS
+THRESHOLD  no run was abandoned -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/t2/abc_runs.csv, rebuild/ABC/out/t2/abc_commands.txt, rebuild/ABC/out/t2/abc_discards.json
+TRAINS     YES
+NOTES      BLOCK 2 OF 3 OF THE T2 EXTENSION -- RUN ACCOUNTING. 12 runs = 2 architectures x 2 new arms x 3 seeds, additive to the frozen A/B/C campaign, written under rebuild/ABC/out/t2/. The committed A/B/C runs were NOT retrained and are untouched; B and C10 enter T2 only as RE-SCORED reference arms in block #3.
+           n_appended DIFFERS PER ARM BY CONSTRUCTION, and is reported rather than absorbed. CLS selects target images by edge_loss < u*avg_loss (CLS.py:139) using the arm's OWN round-1 model, so each arm appends a different number of differently-pseudo-labelled images. That is legitimately part of "closed-loop", but it is a SECOND place the arms differ beyond the Stage C injection, and it is high-variance. total_step stays pinned for any n_appended, which is asserted above.
+           A DISCARDED RUN NEVER ENTERS THE METRICS. Any run failing an A.8.3 assertion has its snapshot and CLS directories removed and is re-run; discards are in abc_discards.json. CLS falls back to Tea_40/Tea_100.pth if Tea_epoch_best is missing (CLS.py:65-75), so a killed run would silently change which teacher generates pseudo-labels -- hence the assertion rather than a warning.
+           total_step IS PINNED, MEASURED PER RUN, and that is what makes the T2 comparison clean: min(len(source), len(target)) at MyTrain.py:326-327 with zip() truncating means the permuted allocation changes WHICH 1000 renders enter the mixture and never how many optimisation steps are taken. All three C-family arms add exactly B=1000 to the same 4447 base pool, so unlike A/B/C's A0 the arms here are exposure-matched by construction.
+           THE n_appended THRESHOLD FAILS, AS IT DID IN A/B/C, AND IS DISCLOSED RATHER THAN RETUNED. T2 spread is 17.6% of mean (1914-2278) against A/B/C's committed 22.2% (1732-2163) -- smaller, as expected when all arms share the C-family construction, but still far above the 5% bar. Per architecture: SINet 7.2%, SINet-v2 14.4%. CLS pseudo-labels with each arm's OWN round-1 model, so this is a genuine second channel by which the arms differ beyond the permutation, and it is high-variance. The 5% threshold is A/B/C's and is left exactly as frozen: moving it after seeing the number would be retuning a bar to pass it.
+           best_epoch RANGES 21-99 ACROSS THE 12 RUNS, reported because it bears on the noise the verdict is measured against. SINetv2_CINV_s43 selected its teacher at epoch 99 of 100 -- the final epoch -- so that run was still improving when training stopped. No A.8.3 assertion covers best_epoch and none is added here; it is disclosed so sigma_hat is read with it in view.
+           PREREGISTRATION_T2.md was committed before T2 block #1 and is FROZEN. This driver neither reads it as an input nor writes it.
+================================================================================
+
+================================================================================
+2026-09-11T11:52:48+05:30 | commit 80d2e0f (dirty) | EXP T2
+CMD   .venv/bin/python rebuild/ABC/abc_evaluate.py --arms B,C10,CSHUF,CINV --gaps t2 --tag t2
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  Tea_epoch_best.pth of the final CSRDA round, 352x352 inference, scored from written PNGs with Eval/metrics.py at 6 decimals
+METRICS
+  scorer_reproduces_B1             = Sa 0.717216 (delta 3.77e-07), MAE 0.074463 (delta 2.32e-07)    (validated on the COMMITTED Result/SINet/S2C BEFORE scoring any new run; B1 logged 0.717216 / 0.074463)
+  runs_scored                      = 24
+  endpoint_shape_mismatches        = 0    (pred.shape == gt.shape asserted for every image of every run)
+  SINet_B_s42_COD10K               = Sa 0.711554  MAE 0.076085  Fbw 0.471675  meanEm 0.740832    (n=2026  adpEm 0.750617  maxEm 0.789028)
+  SINet_B_s43_COD10K               = Sa 0.713632  MAE 0.076278  Fbw 0.478008  meanEm 0.745119    (n=2026  adpEm 0.749502  maxEm 0.786634)
+  SINet_B_s45_COD10K               = Sa 0.715155  MAE 0.075917  Fbw 0.463606  meanEm 0.740073    (n=2026  adpEm 0.752423  maxEm 0.794794)
+  SINet_C10_s42_COD10K             = Sa 0.717165  MAE 0.073184  Fbw 0.489664  meanEm 0.751058    (n=2026  adpEm 0.759609  maxEm 0.792598)
+  SINet_C10_s43_COD10K             = Sa 0.723034  MAE 0.075136  Fbw 0.497380  meanEm 0.757392    (n=2026  adpEm 0.761521  maxEm 0.798605)
+  SINet_C10_s45_COD10K             = Sa 0.715243  MAE 0.078355  Fbw 0.475278  meanEm 0.743969    (n=2026  adpEm 0.752674  maxEm 0.787083)
+  SINet_CINV_s42_COD10K            = Sa 0.722612  MAE 0.073910  Fbw 0.487237  meanEm 0.756737    (n=2026  adpEm 0.753551  maxEm 0.796301)
+  SINet_CINV_s43_COD10K            = Sa 0.717343  MAE 0.077323  Fbw 0.476461  meanEm 0.750188    (n=2026  adpEm 0.745751  maxEm 0.791954)
+  SINet_CINV_s45_COD10K            = Sa 0.718084  MAE 0.073607  Fbw 0.486938  meanEm 0.748577    (n=2026  adpEm 0.760605  maxEm 0.793940)
+  SINet_CSHUF_s42_COD10K           = Sa 0.718602  MAE 0.074840  Fbw 0.488405  meanEm 0.754978    (n=2026  adpEm 0.756040  maxEm 0.795872)
+  SINet_CSHUF_s43_COD10K           = Sa 0.716974  MAE 0.077678  Fbw 0.482244  meanEm 0.747869    (n=2026  adpEm 0.750945  maxEm 0.787015)
+  SINet_CSHUF_s45_COD10K           = Sa 0.715291  MAE 0.079340  Fbw 0.460755  meanEm 0.739053    (n=2026  adpEm 0.745467  maxEm 0.789163)
+  SINetv2_B_s42_COD10K             = Sa 0.698340  MAE 0.092242  Fbw 0.480306  meanEm 0.750170    (n=2026  adpEm 0.746399  maxEm 0.771119)
+  SINetv2_B_s43_COD10K             = Sa 0.689481  MAE 0.089883  Fbw 0.478444  meanEm 0.753645    (n=2026  adpEm 0.754123  maxEm 0.765622)
+  SINetv2_B_s45_COD10K             = Sa 0.697385  MAE 0.087132  Fbw 0.490593  meanEm 0.758552    (n=2026  adpEm 0.757126  maxEm 0.770687)
+  SINetv2_C10_s42_COD10K           = Sa 0.692321  MAE 0.093395  Fbw 0.477856  meanEm 0.751285    (n=2026  adpEm 0.740293  maxEm 0.771908)
+  SINetv2_C10_s43_COD10K           = Sa 0.696328  MAE 0.090749  Fbw 0.478677  meanEm 0.751750    (n=2026  adpEm 0.743452  maxEm 0.770018)
+  SINetv2_C10_s45_COD10K           = Sa 0.695360  MAE 0.089182  Fbw 0.486758  meanEm 0.759806    (n=2026  adpEm 0.755022  maxEm 0.773168)
+  SINetv2_CINV_s42_COD10K          = Sa 0.697008  MAE 0.088438  Fbw 0.469542  meanEm 0.750055    (n=2026  adpEm 0.736393  maxEm 0.774657)
+  SINetv2_CINV_s43_COD10K          = Sa 0.696331  MAE 0.087293  Fbw 0.486681  meanEm 0.758193    (n=2026  adpEm 0.754167  maxEm 0.772670)
+  SINetv2_CINV_s45_COD10K          = Sa 0.697605  MAE 0.090189  Fbw 0.485232  meanEm 0.756550    (n=2026  adpEm 0.746353  maxEm 0.778013)
+  SINetv2_CSHUF_s42_COD10K         = Sa 0.701269  MAE 0.087506  Fbw 0.485308  meanEm 0.760038    (n=2026  adpEm 0.747563  maxEm 0.782774)
+  SINetv2_CSHUF_s43_COD10K         = Sa 0.694490  MAE 0.087305  Fbw 0.479123  meanEm 0.755060    (n=2026  adpEm 0.749230  maxEm 0.771906)
+  SINetv2_CSHUF_s45_COD10K         = Sa 0.696218  MAE 0.089485  Fbw 0.481721  meanEm 0.756482    (n=2026  adpEm 0.751271  maxEm 0.773657)
+  SINet_B_s42_NC4K                 = Sa 0.764108  MAE 0.087897  Fbw 0.595587  meanEm 0.785252    (n=4121  adpEm 0.820683  maxEm 0.829958)
+  SINet_B_s43_NC4K                 = Sa 0.768972  MAE 0.085001  Fbw 0.610683  meanEm 0.795682    (n=4121  adpEm 0.823596  maxEm 0.833602)
+  SINet_B_s45_NC4K                 = Sa 0.767632  MAE 0.088175  Fbw 0.594525  meanEm 0.787168    (n=4121  adpEm 0.822234  maxEm 0.833464)
+  SINet_C10_s42_NC4K               = Sa 0.765296  MAE 0.086273  Fbw 0.609419  meanEm 0.793044    (n=4121  adpEm 0.822312  maxEm 0.829203)
+  SINet_C10_s43_NC4K               = Sa 0.771241  MAE 0.085305  Fbw 0.617398  meanEm 0.798453    (n=4121  adpEm 0.826012  maxEm 0.836072)
+  SINet_C10_s45_NC4K               = Sa 0.770503  MAE 0.086622  Fbw 0.606186  meanEm 0.792545    (n=4121  adpEm 0.821971  maxEm 0.831017)
+  SINet_CINV_s42_NC4K              = Sa 0.774697  MAE 0.083144  Fbw 0.615555  meanEm 0.800923    (n=4121  adpEm 0.827395  maxEm 0.838721)
+  SINet_CINV_s43_NC4K              = Sa 0.774114  MAE 0.084030  Fbw 0.612549  meanEm 0.800162    (n=4121  adpEm 0.825126  maxEm 0.837994)
+  SINet_CINV_s45_NC4K              = Sa 0.768136  MAE 0.084570  Fbw 0.609711  meanEm 0.789885    (n=4121  adpEm 0.826873  maxEm 0.833547)
+  SINet_CSHUF_s42_NC4K             = Sa 0.766713  MAE 0.085734  Fbw 0.611015  meanEm 0.794289    (n=4121  adpEm 0.824451  maxEm 0.831468)
+  SINet_CSHUF_s43_NC4K             = Sa 0.767983  MAE 0.085825  Fbw 0.610660  meanEm 0.792698    (n=4121  adpEm 0.824793  maxEm 0.831563)
+  SINet_CSHUF_s45_NC4K             = Sa 0.767229  MAE 0.089734  Fbw 0.590895  meanEm 0.786077    (n=4121  adpEm 0.818692  maxEm 0.830227)
+  SINetv2_B_s42_NC4K               = Sa 0.753317  MAE 0.097475  Fbw 0.606123  meanEm 0.794098    (n=4121  adpEm 0.810381  maxEm 0.811188)
+  SINetv2_B_s43_NC4K               = Sa 0.743653  MAE 0.095901  Fbw 0.606844  meanEm 0.797977    (n=4121  adpEm 0.809729  maxEm 0.806090)
+  SINetv2_B_s45_NC4K               = Sa 0.748868  MAE 0.091476  Fbw 0.615240  meanEm 0.802753    (n=4121  adpEm 0.815830  maxEm 0.812160)
+  SINetv2_C10_s42_NC4K             = Sa 0.748534  MAE 0.096669  Fbw 0.608100  meanEm 0.799932    (n=4121  adpEm 0.808746  maxEm 0.810865)
+  SINetv2_C10_s43_NC4K             = Sa 0.750839  MAE 0.097324  Fbw 0.606013  meanEm 0.797644    (n=4121  adpEm 0.806477  maxEm 0.812606)
+  SINetv2_C10_s45_NC4K             = Sa 0.749305  MAE 0.092402  Fbw 0.616029  meanEm 0.803169    (n=4121  adpEm 0.816270  maxEm 0.811925)
+  SINetv2_CINV_s42_NC4K            = Sa 0.752956  MAE 0.095453  Fbw 0.600124  meanEm 0.796246    (n=4121  adpEm 0.806932  maxEm 0.815196)
+  SINetv2_CINV_s43_NC4K            = Sa 0.753600  MAE 0.089466  Fbw 0.622025  meanEm 0.808481    (n=4121  adpEm 0.817224  maxEm 0.817549)
+  SINetv2_CINV_s45_NC4K            = Sa 0.753833  MAE 0.094549  Fbw 0.616887  meanEm 0.803723    (n=4121  adpEm 0.811890  maxEm 0.814584)
+  SINetv2_CSHUF_s42_NC4K           = Sa 0.754154  MAE 0.093821  Fbw 0.612460  meanEm 0.804854    (n=4121  adpEm 0.812362  maxEm 0.819615)
+  SINetv2_CSHUF_s43_NC4K           = Sa 0.750543  MAE 0.094270  Fbw 0.611327  meanEm 0.800040    (n=4121  adpEm 0.810799  maxEm 0.810530)
+  SINetv2_CSHUF_s45_NC4K           = Sa 0.749500  MAE 0.095273  Fbw 0.611780  meanEm 0.798264    (n=4121  adpEm 0.812031  maxEm 0.807914)
+  sigma_hat_SINet|COD10K           = 0.002767  (2*sigma_hat = 0.005533, df=8)    (pooled within-arm sd of Sa across arms B,C10,CINV,CSHUF)
+  per_arm_sd_SINet|COD10K          = B 0.001807  C10 0.004059  CINV 0.002853  CSHUF 0.001655    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINet|COD10K        = B 0.713447 (n=3)  C10 0.718481 (n=3)  CINV 0.719346 (n=3)  CSHUF 0.716956 (n=3)
+  DELTA_CSHUF->C10_SINet|COD10K    = +0.001525  sign 1/3  -> WITHIN NOISE    (paired per seed: s42 -0.001437  s43 +0.006059  s45 -0.000048)
+  DELTA_CINV->C10_SINet|COD10K     = -0.000866  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.005448  s43 +0.005691  s45 -0.002841)
+  DELTA_CINV->CSHUF_SINet|COD10K   = -0.002390  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 -0.004010  s43 -0.000368  s45 -0.002793)
+  sigma_hat_SINet|NC4K             = 0.002757  (2*sigma_hat = 0.005514, df=8)    (pooled within-arm sd of Sa across arms B,C10,CINV,CSHUF)
+  per_arm_sd_SINet|NC4K            = B 0.002512  C10 0.003240  CINV 0.003632  CSHUF 0.000639    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINet|NC4K          = B 0.766904 (n=3)  C10 0.769013 (n=3)  CINV 0.772315 (n=3)  CSHUF 0.767308 (n=3)
+  DELTA_CSHUF->C10_SINet|NC4K      = +0.001705  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.001417  s43 +0.003258  s45 +0.003274)
+  DELTA_CINV->C10_SINet|NC4K       = -0.003302  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.009400  s43 -0.002873  s45 +0.002367)
+  DELTA_CINV->CSHUF_SINet|NC4K     = -0.005007  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 -0.007983  s43 -0.006131  s45 -0.000907)
+  sigma_hat_SINetv2|COD10K         = 0.003195  (2*sigma_hat = 0.006390, df=8)    (pooled within-arm sd of Sa across arms B,C10,CINV,CSHUF)
+  per_arm_sd_SINetv2|COD10K        = B 0.004863  C10 0.002091  CINV 0.000637  CSHUF 0.003523    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINetv2|COD10K      = B 0.695069 (n=3)  C10 0.694669 (n=3)  CINV 0.696981 (n=3)  CSHUF 0.697326 (n=3)
+  DELTA_CSHUF->C10_SINetv2|COD10K  = -0.002656  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.008948  s43 +0.001838  s45 -0.000858)
+  DELTA_CINV->C10_SINetv2|COD10K   = -0.002312  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 -0.004687  s43 -0.000004  s45 -0.002245)
+  DELTA_CINV->CSHUF_SINetv2|COD10K = +0.000344  sign 1/3  -> WITHIN NOISE    (paired per seed: s42 +0.004261  s43 -0.001842  s45 -0.001387)
+  sigma_hat_SINetv2|NC4K           = 0.002781  (2*sigma_hat = 0.005563, df=8)    (pooled within-arm sd of Sa across arms B,C10,CINV,CSHUF)
+  per_arm_sd_SINetv2|NC4K          = B 0.004837  C10 0.001173  CINV 0.000454  CSHUF 0.002443    (arm B carries selection variance A0 and C do not (ABC_PLAN.md A.4) -- pooled sigma_hat is inflated by it)
+  arm_means_Sa_SINetv2|NC4K        = B 0.748613 (n=3)  C10 0.749559 (n=3)  CINV 0.753463 (n=3)  CSHUF 0.751399 (n=3)
+  DELTA_CSHUF->C10_SINetv2|NC4K    = -0.001840  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 -0.005621  s43 +0.000296  s45 -0.000195)
+  DELTA_CINV->C10_SINetv2|NC4K     = -0.003904  sign 3/3  -> WITHIN NOISE    (paired per seed: s42 -0.004422  s43 -0.002761  s45 -0.004528)
+  DELTA_CINV->CSHUF_SINetv2|NC4K   = -0.002064  sign 2/3  -> WITHIN NOISE    (paired per seed: s42 +0.001198  s43 -0.003057  s45 -0.004333)
+  architectures_agree_on_verdict   = CINV->C10 YES  CINV->CSHUF YES  CSHUF->C10 YES    (a null on one architecture is weaker than a null on both)
+THRESHOLD  the eval path reproduces B1's committed Sa and MAE to <1e-5 before producing any new number -> PASS
+THRESHOLD  SINet and SINet-v2 return the same verdict for every gap on the primary endpoint -> PASS
+THRESHOLD  the primary claim Delta(C10-CSHUF) and Delta(C10-CINV) are decided by the frozen rule, whatever the answer -> PASS
+OLD CLAIM  C1.4 ES contribution vs its own shuffle = +0.0073 of d, 13/20 cells  [C1_RESULTS 8.2] -> CROSS-CHECKED on TRAINED ACCURACY for the first time
+OLD CLAIM  C1.5 top-ES cluster vs an arbitrary cluster = -0.0649 of d, worse in 16/20 cells  [C1_RESULTS 8.2] -> CROSS-CHECKED on TRAINED ACCURACY
+OLD CLAIM  paper 6(v) the ES signal is uninformative = asserted on embedding geometry alone -> TESTED on accuracy, in both directions
+ARTIFACTS  rebuild/ABC/out/t2/abc_metrics.csv, rebuild/ABC/out/t2/abc_verdict.json, rebuild/ABC/out/t2/abc_sigma.json
+TRAINS     NO
+NOTES      BLOCK 3 OF 3 OF THE T2 EXTENSION -- THE VERDICT. Applied strictly by rebuild/ABC/PREREGISTRATION_T2.md, committed before T2 block #1 and unchanged since. ADDITIVE: rebuild/ABC/PREREGISTRATION.md and every committed A/B/C number are untouched by this block, which writes only under rebuild/ABC/out/t2/.
+           SIGMA_HAT IS MEASURED FROM THE T2 COMPARISON SET -- arms {B, C10, CSHUF, CINV}, df = 4 x 2 = 8 -- so the bar is estimated on the runs the gaps are actually taken between, not inherited from A/B/C. If it comes out larger than A/B/C's, the bar rises with it: the bar is 2*sigma_hat, never a fixed number.
+           B AND C10 WERE RE-SCORED, NOT RE-TRAINED. Their committed predictions were scored by this same scorer in this same process and had to reproduce rebuild/ABC/out/abc_metrics.csv to <1e-9 before any T2 gap was computed. That both builds the noise pool through one code path and re-proves nothing drifted between the campaigns.
+           WHAT A "WITHIN NOISE" RESULT DOES AND DOES NOT MEAN. At A/B/C's committed COD10K sigma_hat the bar is ~0.0179 (SINet) and ~0.0123 (SINet-v2) -- comparable to the paper's ENTIRE MT->Ours gap of 0.0142. C1's +0.0073 of a Cohen's d is a geometric quantity and predicts no accuracy difference at all. So a null here means "NO EFFECT RESOLVABLE AT THIS SENSITIVITY", never "no effect". This sentence was committed before any T2 number existed precisely so it could not be softened after one.
+           THE ARMS SHARE IMAGES BY CONSTRUCTION, AND THAT ATTENUATES EVERY GAP. All three C-family arms fund all 75 clusters, so they overlap above chance even at a permuted allocation: 452 to 511 of 1000 images differ (Jaccard 0.32-0.38, gated below 0.50 before training). Read every Delta against that effective contrast, reported in T2 block #1.
+           PREREGISTRATION_T2.md was committed before T2 block #1 and is FROZEN. This script neither reads it as an input nor writes it, and contains no tunable threshold of its own.
+================================================================================
+

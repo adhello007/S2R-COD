@@ -237,17 +237,24 @@ def main():
     # something drifted between the campaigns.
     ref = os.path.join(C.exp_dir(A.EXP, 'out'), 'abc_metrics.csv')   # A/B/C's own path
     if args.tag and os.path.isfile(ref):
-        ref_sa = {(r['runid'], r['endpoint']): float(r['Sm'])
+        # abc_metrics.csv records Sa at 6 dp (PREREGISTRATION.md 2.4), so the
+        # comparison is made at THAT precision: exact equality of the recorded
+        # values. The raw-float-vs-rounded-string test at 1e-9 that T2.1
+        # literally specifies cannot be satisfied by ANY correct computation --
+        # 6-dp rounding alone admits up to 5e-7. Exact equality at the recorded
+        # precision is STRICTER than a 1e-6 tolerance, not looser.
+        # See PREREGISTRATION_T2.md addendum A1 (2026-09-11).
+        ref_sa = {(r['runid'], r['endpoint']): r['Sm']
                   for r in csv.DictReader(open(ref))}
         shared = [r for r in rows if (r['runid'], r['endpoint']) in ref_sa]
-        bad = [(r['runid'], r['endpoint'], r['Sm'], ref_sa[(r['runid'], r['endpoint'])])
-               for r in shared
-               if abs(r['Sm'] - ref_sa[(r['runid'], r['endpoint'])]) > 1e-9]
+        bad = [(r['runid'], r['endpoint'], '%.6f' % r['Sm'],
+                ref_sa[(r['runid'], r['endpoint'])]) for r in shared
+               if '%.6f' % r['Sm'] != '%.6f' % float(ref_sa[(r['runid'], r['endpoint'])])]
         if bad:
             raise SystemExit('T2 HALTED: reference arms do not reproduce '
-                             'abc_metrics.csv: %s' % bad[:5])
-        _p('  reference arms reproduce abc_metrics.csv: %d cells, max delta < 1e-9'
-           % len(shared))
+                             'abc_metrics.csv at 6 dp: %s' % bad[:5])
+        _p('  reference arms reproduce abc_metrics.csv EXACTLY at the recorded '
+           '6 dp: %d/%d cells' % (len(shared) - len(bad), len(shared)))
 
     _p('=== s3 sigma_hat and the gaps, per the FROZEN rule ===')
     verdicts = {}
