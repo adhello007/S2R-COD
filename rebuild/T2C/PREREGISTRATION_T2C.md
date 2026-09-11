@@ -278,3 +278,57 @@ artifacts (`:216`, `:349`, `:415`, `:429`; `:867`). Leaf functions only. `augmen
 never called. No T2-C file contains a `/tmp/…`, `/scratchpad`, `evidence/artifacts` or
 `_archive_stageC_old` literal, since `E0.step_independence()` walks all of `rebuild/` and such a
 literal would fail C1 gate 6 and ABC G2 for every other experiment.
+
+---
+
+## Addendum A1 — 2026-09-11: G7 is unsatisfiable off the primary architecture, corrected in scope, not in substance
+
+**§T2C.1 above is left EXACTLY as frozen. Nothing in it is edited, deleted or reinterpreted.** This
+addendum records a specification defect in one **cross-check** and the strictest satisfiable form in
+which that check was applied, so a reader can audit the substitution rather than discover it.
+
+**The defect.** §T2C.2.4 requires the re-derived ES to reproduce the committed per-cluster
+`target_es` in `b1_cluster_es_dinoL518.csv` to `<= 5e-6`, and states that requirement for every
+architecture. That column can only ever hold **one** architecture's ES: it is written by
+`augment_cluster_csv(tag, prim)` with `prim = tgt_es['SINet/S2C']`
+(`b1_allocation_signal.py:283, 307`). Applied to SINet-v2, G7 therefore compares **SINet-v2's ES
+against SINet/S2C's** — a comparison no correct computation can pass.
+
+**How it surfaced.** The first full s2 run **halted** at this check, exactly as written, reporting a
+per-cluster deviation of **8.754e-02** for SINet-v2 while the per-image gate G6 passed for the same
+architecture at **1.178e-07**. Those two numbers cannot both describe a reproduction failure; the
+halt was the check misfiring, not drift.
+
+**Verified, not assumed.** Feeding B1's **own committed** `b1_target_es_SINet-v2-S2C.csv` through the
+identical per-cluster aggregation reproduces the **same 8.754e-02** deviation against that column
+(SINet/S2C reproduces it at 4.921e-07). The deviation is entirely an artifact of the reference, and
+is independent of anything T2-C computed. Mean target ES is 0.0363 for SINet/S2C against 0.0630 for
+SINet-v2, which is the scale of the discrepancy.
+
+**The form applied instead.** G7 runs **only where a committed per-cluster reference for that
+architecture exists** — i.e. where `B1.ARCHS[arch]['primary']` is True, which is `SINet/S2C` alone.
+On every other architecture it is recorded as **NOT APPLICABLE with its reason** and gates nothing.
+It is not widened, not relaxed to a looser tolerance, and not silently skipped.
+
+**What carries the reproduction burden instead.** **G6 is per-architecture and unchanged**: it
+compares the re-derived per-image ES against `b1_target_es_<arch>.csv`, the committed artifact that
+does exist for every architecture, at `max < 1e-5` and `mean < 1e-6`. Measured:
+
+```
+SINet/S2C      G6 max 4.199e-08  mean 1.968e-09   G7 max 4.942e-07  (both PASS)
+SINet-v2/S2C   G6 max 1.178e-07  mean 4.455e-09   G7 NOT APPLICABLE
+```
+
+G4 — the unreduced-ES identity, checked on **every** image rather than sampled — is also unchanged
+and passed on both architectures (max deviation 4.199e-08 and 1.178e-07 against a 1e-6 tolerance).
+
+**What was NOT changed.** The signals, the aggregations, the boundary band, the structure, the
+endpoint, the floors, the statistic, the seeds, the ordering decision rule, the ratio's benchmark,
+the resolution limit, the ensemble sensitivity condition, the three-way boundary interpretation and
+the scope statement are all untouched. The only change is the **scope** of a reproduction
+*cross-check*, which gates nothing about the hypothesis.
+
+**Timing, stated plainly.** This was found when s2 halted at the check, **before** any SINet-v2
+correlation existed and before any cross-architecture comparison or verdict had been computed. The
+SINet/S2C rows that already existed at that moment were recomputed unchanged on the re-run, since
+nothing in their path was touched.

@@ -61,6 +61,9 @@
     "rebuild/B1/b1_es_error_correlation.py",
     "rebuild/A3/a3_appearance_signature.py",
     "rebuild/E0/e0_regenerate.py",
+    "rebuild/T2C/t2c_measure.py",
+    "rebuild/T2C/t2c_preflight.py",
+    "rebuild/T2C/t2c_signals.py",
     "rebuild/D1/d1_foreground_exhaustion.py"
   ]
 }

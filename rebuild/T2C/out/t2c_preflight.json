@@ -1,0 +1,210 @@
+{
+  "all_passed": true,
+  "commit": "6efde9f (dirty)",
+  "gates": [
+    {
+      "banned_cluster_calls": [
+        "AgglomerativeClustering",
+        "DBSCAN",
+        "KMeans",
+        "MiniBatchKMeans",
+        "SpectralClustering"
+      ],
+      "banned_sameside": "step_correlate",
+      "c1_data_half": true,
+      "c1_literal_ban_also_passes": true,
+      "c1_literal_violations": [],
+      "exempted": [],
+      "gate": "signal",
+      "note": "correlation study: the allocation-signal literal ban is not the operative rule, but it is evaluated and passes because T2-C never reads the endpoint ES column. No T2-C output is ever used to allocate.",
+      "passed": true,
+      "scanned": 3,
+      "violations": []
+    },
+    {
+      "a": 0.9,
+      "b": 0.3,
+      "c": 0.5,
+      "cls_calls_on_sigmoid": true,
+      "gate": "escfg",
+      "myTrain_line": 306,
+      "note": "a/b/c from the --task S2C override block; unweighted BCE is a property of the PGT_Loss instance (MyTrain.py:306), not of that block",
+      "passed": true,
+      "pgt_call": "a=opt.a, b=opt.b, c=opt.c, use_weighted_bce=False",
+      "pgt_is_unweighted": true
+    },
+    {
+      "embedder": "dinoL518",
+      "gate": "partition",
+      "k": 75,
+      "n_target_labels": 4033,
+      "note": "seed-0 refit is label-identical to the committed partition, so the in-memory seeds 1-9 refits are comparable",
+      "passed": true,
+      "seed": 0
+    },
+    {
+      "clusters_used": 50,
+      "gate": "harness",
+      "n_target_in_used": 3428,
+      "ordering_pass": true,
+      "passed": true,
+      "ratio": 0.5462672881485443,
+      "rho": {
+        "mae": 0.6284273709483794,
+        "one_minus_iou": 0.26127250900360144,
+        "one_minus_sa": 0.3432893157262905
+      }
+    },
+    {
+      "MAE": 0.07446323197740462,
+      "Sm": 0.7172156230064066,
+      "d_MAE": 2.3197740461888827e-07,
+      "d_Sa": 3.7699359334286697e-07,
+      "gate": "scorer",
+      "n": 2026,
+      "note": "abc_evaluate.score unchanged, on Result/SINet/S2C vs COD10K GT; B1 logged 0.717216 / 0.074463",
+      "passed": true,
+      "tol": 1e-05
+    },
+    {
+      "forbidden": [],
+      "gate": "provenance",
+      "inputs_missing": [],
+      "inputs_resolved": 17,
+      "n_exempted": 4,
+      "n_forbidden": 0,
+      "passed": true,
+      "scripts_scanned": 28,
+      "side_effect": "rewrites rebuild/E0/out/e0_independence.json",
+      "t2c_in_scan": [
+        "rebuild/T2C/t2c_measure.py",
+        "rebuild/T2C/t2c_preflight.py",
+        "rebuild/T2C/t2c_signals.py"
+      ]
+    },
+    {
+      "checkpoints": [
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/SINet/S2C/Tea_epoch_best.pth",
+          "role": "S2C_teacher",
+          "sha256": "58ed759bb4853468c2d325fd400ed43413de45a090581ad0c55d37ebb6dac07d"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196623555,
+          "path": "Snapshot/SINet/S2C/Stu_40.pth",
+          "role": "S2C_student",
+          "sha256": "27ab5c161a4a60058d237e953f6db163fe996f4739138443e723b4a0c6d7dea1"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_A0_s42/Tea_epoch_best.pth",
+          "role": "A0_s42",
+          "sha256": "7902923839f26cfbbe5f8705b69b9221565cb0877adcb72bd9b32e15a1142646"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_A0_s43/Tea_epoch_best.pth",
+          "role": "A0_s43",
+          "sha256": "391c62df5f5996f7c731c111fa7ed86e2d14fd02e0a3c573e21b161ee4af3907"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_A0_s45/Tea_epoch_best.pth",
+          "role": "A0_s45",
+          "sha256": "8c868b4ef2dcd6abf7d314b2ee7cc432480d92149126be62ac5b25bca20fde79"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_CSHUF_s42/Tea_epoch_best.pth",
+          "role": "CSHUF_s42",
+          "sha256": "c571d9c4c59c79a0a449481c8600ba4ada4ba438fa5b677efc0ae2629aaffc00"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_CSHUF_s43/Tea_epoch_best.pth",
+          "role": "CSHUF_s43",
+          "sha256": "22ee184a6cfeec68e1ef5b432a1b4be9e77fd917e1d8321b837a2c60c447860b"
+        },
+        {
+          "arch": "SINet/S2C",
+          "bytes": 196638699,
+          "path": "Snapshot/ABC/SINet_CSHUF_s45/Tea_epoch_best.pth",
+          "role": "CSHUF_s45",
+          "sha256": "568b6c81e34830010ce1b1637ce38b9355625609843e3db73129a6a9376ddc3f"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/SINet-v2/S2C/Tea_epoch_best.pth",
+          "role": "S2C_teacher",
+          "sha256": "1258b9dd2e3a5d67c33362ea305418e12aac723856e1caee9c8fce02f40237a8"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108454047,
+          "path": "Snapshot/SINet-v2/S2C/Stu_100.pth",
+          "role": "S2C_student",
+          "sha256": "13c43f3d0c9ec190c8d7a687b1bafa8bc06cb210560ff881d2f81d3440b5ccb5"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_A0_s42/Tea_epoch_best.pth",
+          "role": "A0_s42",
+          "sha256": "ec2bc90311dda6c71f1fdb36c83e0ab732e9cc43b89972b7dc445bee3c3cae8d"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_A0_s43/Tea_epoch_best.pth",
+          "role": "A0_s43",
+          "sha256": "065ebe6124de1c1ae15c8839a1a3958f7f14eec00b0276f86e061d87246c6e2d"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_A0_s45/Tea_epoch_best.pth",
+          "role": "A0_s45",
+          "sha256": "e2a2404160af380fe5f4ccd560733e09769409dd5b342e21d371e4f43edf7379"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_CSHUF_s42/Tea_epoch_best.pth",
+          "role": "CSHUF_s42",
+          "sha256": "bd2ddce3f71234db91f8b995727235f1f546d270c1066dc1931f323a90634c8c"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_CSHUF_s43/Tea_epoch_best.pth",
+          "role": "CSHUF_s43",
+          "sha256": "82c4e06de15909ca5066ad5f6c8a88e4df89f2aee0c68c8a0cc08a5fe79210d0"
+        },
+        {
+          "arch": "SINet-v2/S2C",
+          "bytes": 108460761,
+          "path": "Snapshot/ABC/SINetv2_CSHUF_s45/Tea_epoch_best.pth",
+          "role": "CSHUF_s45",
+          "sha256": "25517a1ae668681d2082c03c2c8b10013308b3606a17cbc1d7e0ff730b58a2b4"
+        }
+      ],
+      "duplicate_ensemble_members": 0,
+      "gate": "checkpoints",
+      "mismatched": [],
+      "missing": [],
+      "n": 16,
+      "note": "a duplicate pair inside an ensemble arm would mean that arm is fewer than 3 distinct networks",
+      "passed": true
+    }
+  ],
+  "generated": "2026-09-11T19:12:15+05:30"
+}
