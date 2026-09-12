@@ -1,0 +1,116 @@
+% fig_method.tex -- METHODOLOGY, main text. Body only.
+% Requires figures/s2rcod_style.tex in the preamble. Defines NO styles.
+%
+% This draws the system UNDER TEST, with each measured constraint annotated at
+% the stage where it was measured. Two structural facts the drawing must not
+% misrepresent, both established in figures/METHOD_SPEC.md section 3:
+%   (1) the generator is OFFLINE and runs ONCE, before training. It is never
+%       invoked from MyTrain.py / CLS.py / Src/** -- the arms hard-link a
+%       fixed pre-generated directory (rebuild/ABC/abc_common.py:64-65).
+%   (2) there is NO stopping criterion. --iteration is a hardcoded 2
+%       (MyTrain.py:203), and round 2 REBUILDS both networks from ImageNet
+%       weights (MyTrain.py:269-294). The only returning edge is CLS
+%       pseudo-labelling, and it carries target images, not generated ones.
+\begin{tikzpicture}[x=1mm, y=1mm]
+
+  % =============== STAGE 1 -- the generator, offline and frozen ===========
+  \node[s2grouplabel, anchor=north west] at (1.5,-1.0)
+       {STAGE 1 \textnormal{--- GENERATION: runs ONCE, before training}};
+  \node[s2data, text width=19mm, anchor=north west] (raw) at (2,-5)
+       {raw HKU-IS\\4447};
+  \node[s2frozen, text width=22mm, anchor=north west] (lr) at (27,-5)
+       {LAKE-RED\\\texttt{-{}-isReplace}};
+  \node[s2data, text width=19mm, anchor=north west] (ren) at (56,-5)
+       {render pool\\4447};
+  \draw[s2fwd] (raw) -- (lr);
+  \draw[s2fwd] (lr) -- (ren);
+  \node[s2hyper, anchor=north west] at (27,-14.2) {50 DDIM steps  seed 0};
+  \node[s2verdictcon, text width=50mm, anchor=north west] at (81,-5)
+       {0 of 8885 objects regenerated\\
+        \textnormal{\scriptsize a bijection onto the 4447 foregrounds --- the
+        object is \textbf{copied}, only the background is generated}};
+
+  % =============== STAGE 2 -- allocation, deterministic ===================
+  \draw[s2rule] (0,-20) -- (139,-20);
+  \node[s2grouplabel, anchor=north west] at (1.5,-20.6)
+       {STAGE 2 \textnormal{--- ALLOCATION: deterministic, from an unlabelled signal}};
+  \node[s2data, text width=16mm, anchor=north west] (tgt) at (2,-24.5)
+       {target 4040\\\textbf{no GT}};
+  \node[s2op, text width=16mm, anchor=north west] (es) at (22,-24.5)
+       {ES$(\mathrm{stu},\mathrm{tea})$};
+  \node[s2op, text width=14mm, anchor=north west] (km) at (42,-24.5)
+       {$k$-means\\$k{=}75$};
+  \node[s2op, text width=16mm, anchor=north west] (sm) at (60,-24.5)
+       {softmax\\$T{=}\alpha\,\mathrm{sd}(es)$};
+  \node[s2op, text width=14mm, anchor=north west] (bg) at (80,-24.5)
+       {budget\\$B{=}1000$};
+  \node[s2op, text width=16mm, anchor=north west] (sel) at (98,-24.5)
+       {rank +\\select};
+  \foreach \a/\b in {tgt/es, es/km, km/sm, sm/bg, bg/sel} \draw[s2fwd] (\a) -- (\b);
+  \node[s2hyper, anchor=north west] at (22,-33.4) {a=0.9 b=0.3};
+  \node[s2hyper, anchor=north west] at (42,-33.4) {dinoL518};
+  \node[s2hyper, anchor=north west] at (60,-33.4) {alpha=1.0};
+  % The render pool joins the SELECTED subset. Routed at y=-18.2, i.e. BELOW
+  % the Stage-1 annotation box, so it crosses nothing.
+  \draw[s2offline] (ren.south) -- (65.5,-18.2) -- (106,-18.2) -- (106,-24.5);
+  \node[s2edgelabel, anchor=south] at (88,-18.0) {the 1000 chosen renders};
+
+  % =============== STAGE 3 -- training, two rounds, no criterion =========
+  \draw[s2rule] (0,-37.5) -- (139,-37.5);
+  \node[s2grouplabel, anchor=north west] at (1.5,-38.1)
+       {STAGE 3 \textnormal{--- TRAINING: CSRDA, two rounds, no stopping criterion}};
+  \node[s2data, text width=20mm, anchor=north west] (pool) at (2,-42)
+       {arm pool 5447\\\textnormal{\scriptsize 4447 base $+$ 1000}};
+  \node[s2trained, text width=23mm, anchor=north west] (r1) at (32,-42)
+       {\textbf{ROUND 1}\\student $+$ EMA teacher};
+  \node[s2gate, text width=21mm, anchor=north west] (cls) at (65,-42)
+       {CLS gate\\\texttt{edge<0.8*avg}};
+  \node[s2trained, text width=23mm, anchor=north west] (r2) at (95,-42)
+       {\textbf{ROUND 2}\\\textnormal{\scriptsize rebuilt from ImageNet}};
+  \draw[s2fwd] (pool) -- (r1);
+  \draw[s2fwd] (r1) -- (cls);
+  \draw[s2fwd] (cls) -- (r2);
+  % the selected renders enter the pool, routed above the Stage-3 nodes
+  \draw[s2offline] (106,-31.5) -- (106,-35.6) -- (12,-35.6) -- (12,-42);
+  \node[s2hyper, anchor=north west] at (32,-55.0) {lambda=0.996};
+  \node[s2hyper, anchor=north west] at (65,-55.0) {tau=0.4};
+  % THE feedback edge. It is the ONLY returning edge in the system, and it
+  % carries pseudo-labelled TARGET images -- never generated ones.
+  \draw[s2feedback] (cls.south) -- (75.5,-60.5) -- (12,-60.5) -- (12,-53.5);
+  \node[s2edgelabel, anchor=south] at (44,-60.3)
+       {\textbf{the only feedback edge} --- pseudo-labelled \emph{target}
+        images, not renders};
+  \node[s2gate, text width=48mm, anchor=north west] at (87,-56)
+       {\texttt{total\_step} pinned \textbf{253}/\textbf{127} --- added data
+        buys \textbf{0} gradient steps};
+
+  % =============== STAGE 4 -- selection, gate, endpoints =================
+  \draw[s2rule] (0,-68) -- (139,-68);
+  \node[s2grouplabel, anchor=north west] at (1.5,-68.6)
+       {STAGE 4 \textnormal{--- SELECTION AND ENDPOINTS}};
+  \node[s2op, text width=23mm, anchor=north west] (ck) at (2,-73.5)
+       {\texttt{Tea\_epoch\_best}\\\textnormal{\scriptsize min MAE, CAMO 250}};
+  \node[s2gate, text width=26mm, anchor=north west] (gate) at (35,-73.5)
+       {\textbf{contamination gate}\\
+        \textnormal{\scriptsize same-dimension near-duplicate, tol 6.0}};
+  % endpoints in one column, so the gate can accept two and reject one
+  \node[s2data, text width=24mm, anchor=north west, minimum height=5.4mm]
+       (ep1) at (76,-72.5) {COD10K-test 2026};
+  \node[s2data, text width=24mm, anchor=north west, minimum height=5.4mm]
+       (ep2) at (76,-79.5) {NC4K 4121};
+  \node[s2op, s2unavailable, text width=24mm, anchor=north west,
+        minimum height=5.4mm] (ep3) at (76,-86.5) {CHAMELEON 76};
+  \draw[s2fwd] (ck) -- (gate);
+  \draw[s2fwd] (gate.east) -- ++(2.5,0) |- (ep1.west);
+  \draw[s2fwd] (gate.east) -- ++(2.5,0) |- (ep2.west);
+  \draw[s2rejected] (gate.east) -- ++(2.5,0) |- (ep3.west);
+  \foreach \n/\lab in {ep1/{primary endpoint}, ep2/{secondary endpoint}}
+    \node[s2tiny, anchor=west, font=\tiny] at ($(\n.east)+(2,0)$) {\lab};
+  \node[s2tiny, anchor=west, font=\tiny, text width=32mm] at ($(ep3.east)+(2,0)$)
+       {\textbf{WITHDRAWN} --- 41 of 76 are re-encoded training data};
+  \node[s2tiny, anchor=north west, text width=30mm, align=left] at (2,-85.5)
+       {CAMO is the \emph{selection} set, so it can never be an endpoint.};
+
+  \coordinate (lg) at (1.5,-97);
+  \scodlegend{lg}
+\end{tikzpicture}

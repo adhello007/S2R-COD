@@ -1,0 +1,10 @@
+% Isolated compilation:
+%   cd figures && latexmk -pdf -output-directory=. fig_method_standalone.tex
+\documentclass[crop,tikz,border=2pt]{standalone}
+\usepackage{times}
+\input{s2rcod_style.tex}
+% \ref targets do not exist in isolation; make them print harmlessly.
+\makeatletter\renewcommand{\ref}[1]{\textsc{fig}}\makeatother
+\begin{document}
+\input{fig_method.tex}
+\end{document}

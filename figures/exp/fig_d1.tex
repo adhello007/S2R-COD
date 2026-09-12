@@ -1,0 +1,64 @@
+% fig_d1.tex -- EXP D1, foreground exhaustion. Body only; \input into a figure.
+% Requires figures/s2rcod_style.tex in the preamble. Defines NO styles.
+% All numerics carry  % from figure_data.json :: <key>
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/D1/D1.md:15 (Objective), NOT from the results doc
+  \scodcardhead{139}{EXP D1 \textnormal{--- foreground exhaustion}}{\scodgen}{%
+    What may any null result be scoped to? If every image Stage C can add is a
+    re-render of a foreground already in the base pool, a null reads
+    ``targeting does not help \emph{once the foreground pool is exhausted}''.}
+
+  % ---------------- SETUP: the pool triangle ------------------------------
+  % src: LAKE-RED/test.py:159-166 (--isReplace), :96,:121-122 (frozen)
+  \node[s2data, text width=19mm, anchor=north west] (raw) at (2.5,-21)
+       {raw HKU-IS\\4447 foregrounds};
+  \node[s2frozen, text width=20mm, right=4mm of raw] (lr)
+       {LAKE-RED\\\texttt{-{}-isReplace}};
+  \node[s2data, text width=17mm, anchor=south west] (auth) at ($(lr.east)+(5,0.7)$)
+       {authors' pool\\4447};
+  \node[s2data, text width=17mm, anchor=north west] (loc) at ($(lr.east)+(5,-0.7)$)
+       {local renders\\4447};
+  \draw[s2fwd] (raw) -- (lr);
+  \draw[s2offline] (lr.east) -- ++(2.5,0) |- (auth.west);
+  \draw[s2offline] (lr.east) -- ++(2.5,0) |- (loc.west);
+  \node[s2hyper, anchor=north] at ($(lr.south)+(0,-1.2)$) {frozen, seed 0};
+  \node[s2tiny, anchor=north west, text width=72mm, align=left] at (2.5,-38)
+       {held fixed: the same 4447 masks feed both pools
+        (\texttt{raw\_gt} $\equiv$ \texttt{local\_msk})};
+
+  % ---------------- MEASUREMENT -------------------------------------------
+  \scodmeaslabel{81}
+  \draw[s2rule] (79,-15) -- (79,-44);
+  \node[s2textbox, text width=50mm, anchor=north west] (m1) at (81,-21)
+       {\textbf{bijection:} does every render trace to a base foreground,
+        and is every base foreground rendered?};
+  \node[s2textbox, text width=50mm, anchor=north west] (m2) at (81,-33)
+       {\textbf{literalness:} object-interior vs background mean $|$diff$|$,
+        every object, both pools};
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-44) -- (139,-44);
+  \node[s2zonelabel, anchor=north west] at (1.8,-44.6) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=80mm, align=left] at (2.5,-49)
+       {bijection \textbf{4447/4447} $\cdot$ 0 renders outside the base pool
+        $\cdot$ 0 base foregrounds unrendered\\[1pt]
+        object interior \textbf{5.60} (local) / \textbf{9.63} (authors')
+        \quad vs \quad background \textbf{70.80} / \textbf{70.55}
+        \quad ratio \textbf{12.6$\times$} / \textbf{7.3$\times$}};
+        % 4447 from figure_data.json :: d1.base_foregrounds
+        % 0    from figure_data.json :: d1.auth_outside_base, d1.base_without_local
+        % 5.60 from figure_data.json :: d1.local.obj_interior_mean
+        % 9.63 from figure_data.json :: d1.authors.obj_interior_mean
+        % 70.80/70.55 :: d1.local.bg_mean, d1.authors.bg_mean
+        % 12.6/7.3    :: d1.local.ratio, d1.authors.ratio
+  \node[s2verdictcon, text width=50mm, anchor=north west] at (81,-48.6)
+       {0 of 8885 objects regenerated\\
+        \textnormal{\scriptsize the foreground is \textbf{copied}, not generated}};
+        % 0 of 8885 from figure_data.json :: d1.objects_regenerated
+  \node[s2tiny, anchor=north west, text width=80mm, align=left] at (2.5,-57.5)
+       {\textbf{Consequence:} every null in this paper is scoped to an
+        \emph{exhausted} foreground pool, and is silent on whether new
+        foregrounds would change it.};
+
+  \scodcardframe{139}{-62}
+\end{tikzpicture}

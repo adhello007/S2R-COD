@@ -1,0 +1,12 @@
+% VERIFICATION ARTIFACT ONLY -- not a deliverable figure.
+\documentclass[10pt]{article}
+\usepackage[paperwidth=170mm,paperheight=420mm,margin=4mm]{geometry}
+\usepackage{graphicx}\usepackage{times}
+\pagestyle{empty}\setlength{\parindent}{0pt}
+\begin{document}
+\newcommand{\sheet}[1]{\par\smallskip\texttt{\footnotesize #1}\par
+  \includegraphics[width=150mm]{#1}\par\smallskip\hrule}
+\sheet{exp/fig_d1.pdf}\sheet{exp/fig_b1.pdf}\sheet{exp/fig_c1.pdf}
+\sheet{exp/fig_abc.pdf}\sheet{exp/fig_t2.pdf}\sheet{exp/fig_t2c.pdf}
+\sheet{exp/fig_d2.pdf}\sheet{exp/fig_a3.pdf}
+\end{document}

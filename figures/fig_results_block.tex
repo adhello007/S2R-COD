@@ -1,0 +1,103 @@
+% fig_results_block.tex -- CONSOLIDATED RESULTS, main text. Body only.
+% Requires figures/s2rcod_style.tex in the preamble. Defines NO styles.
+%
+% Structure: option (B), an ABLATION FLOW. Arms branch from one trunk and
+% terminate in their measured outcome on a COMMON, TO-SCALE S_alpha axis, with
+% both pre-registered decision bars drawn at the same scale. There is no
+% "selected configuration" to instantiate, because no arm separated from the
+% others -- so the falsification arms ARE the argument and are drawn at equal
+% visual rank with the real one.
+%
+% Axis: S_alpha 0.698 at x=72, 0.722 at x=128 (1mm = 0.0004286).
+% Every arm position and bar half-width is computed from figure_data.json.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % ---------------- trunk and the design choices it carries ---------------
+  \node[s2data, text width=22mm, anchor=north west] (base) at (1.5,-13)
+       {base pool\\4447 pairs};
+  \node[s2hyper, anchor=north west] at (1.5,-22)
+       {2 archs x 3 seeds\\B=1000  k=75  a=1.0};
+  \node[s2gate, text width=32mm, anchor=north west] (q1) at (1.5,-31)
+       {\textbf{B1:} which embedder?\\
+        \textnormal{\scriptsize dinoL518 --- but the best silhouette is only
+        \textbf{0.1600}: a weak partition}};
+  \node[s2gate, text width=32mm, anchor=north west] (q2) at (1.5,-46)
+       {\textbf{C1:} targeting, or concentration?\\
+        \textnormal{\scriptsize destroying the signal costs \textbf{+0.0073}
+        of a $d$ (targeted wins \textbf{13/20}) --- a coin flip}};
+       % 0.1600  from figure_data.json :: b1.silhouette.dinoL518
+       % +0.0073 from figure_data.json :: c1.increment.shuffled_es
+
+  % ---------------- the two decision bars, to scale ------------------------
+  % drawn first, on the background, so the arm rows sit on top of them
+  \begin{scope}[on background layer]
+    % ABC bar: B +/- 2*sigma_hat = 0.017933  -> half-width 23.9mm about x=107.2
+    \fill[s2greyfill] (87.1,-15.5) rectangle (128.9,-32.5);
+    % T2 bar: C10 +/- 2*sigma_hat = 0.005533 -> half-width 7.4mm about x=120.6
+    \fill[s2orangefill] (113.4,-33.5) rectangle (126.3,-51.5);
+  \end{scope}
+  \draw[s2unresolved, draw=s2grey] (87.1,-15.5) rectangle (128.9,-32.5);
+  \draw[s2unresolved, draw=s2orange] (113.4,-33.5) rectangle (126.3,-51.5);
+  \node[s2tiny, font=\tiny, anchor=west] at (87.6,-17.4)
+       {\textsc{exp abc} bar: $B \pm 2\hat{\sigma} = 0.017933$};
+  \node[s2tiny, font=\tiny, anchor=east, text=s2orange] at (112.8,-35.4)
+       {\textsc{exp t2} bar $\pm 0.005533$};
+
+  % ---------------- the six arms -------------------------------------------
+  % y per row; x from the committed arm means (see header for the scale)
+  \foreach \r/\nm/\desc/\x/\val/\sty in {%
+      0/A0/{unpadded --- \textbf{unclean} control}/78.9/0.7010/s2op,
+      1/A2/{authors' duplicates --- clean control}/94.6/0.7077/s2op,
+      2/B/{random 1000 renders}/108.0/0.7134/s2op,
+      3/C10/{\textbf{ES-targeted --- ``Ours''}}/119.8/0.7185/s2opsel,
+      4/CSHUF/{signal \textbf{destroyed}}/116.2/0.7170/s2op,
+      5/CINV/{signal \textbf{reversed}}/121.8/0.7193/s2op}{
+    \node[\sty, text width=13mm, anchor=west, minimum height=5mm,
+          font=\scriptsize] (arm\r) at (38,{-19-\r*6.2}) {\nm};
+    \node[s2tiny, font=\tiny, anchor=west, text width=17mm]
+         at (53,{-19-\r*6.2}) {\desc};
+    \draw[s2fwd, draw=s2lightgrey] (base.east) -- (arm\r.west);
+    \draw[draw=s2grey, line width=0.4pt, dotted] (71,{-19-\r*6.2}) -- (\x,{-19-\r*6.2});
+    % values in a fixed column so they never collide with a bar edge
+    \node[s2tiny, font=\tiny\bfseries, anchor=west] at (130,{-19-\r*6.2}) {\val};}
+  % mark the real-signal arm and its two falsifications at equal visual rank
+  \fill[s2orange] (119.8,-37.6) circle (0.9);
+  \fill[s2grey]   (116.2,-43.8) circle (0.9);
+  \fill[s2grey]   (121.8,-50.0) circle (0.9);
+  \foreach \r/\x in {0/78.9, 1/94.6, 2/108.0}
+    \fill[s2grey] (\x,{-19-\r*6.2}) circle (0.9);
+
+  % ---------------- axis ----------------------------------------------------
+  \draw[draw=s2grey, line width=0.5pt] (72,-55) -- (128,-55);
+  \foreach \v/\x in {0.700/76.7, 0.705/88.4, 0.710/100.0, 0.715/111.7, 0.720/123.4}{
+    \draw[draw=s2grey, line width=0.4pt] (\x,-55) -- (\x,-56.2);
+    \node[s2tiny, font=\tiny, anchor=north] at (\x,-56.4) {\v};}
+  \node[s2tiny, font=\tiny, anchor=north] at (100,-59.8)
+       {$S_\alpha$ on COD10K-test (primary endpoint), SINet, mean of 3 seeds};
+
+  % ---------------- verdict -------------------------------------------------
+  \draw[s2rule] (0,-63) -- (139,-63);
+  \node[s2tiny, anchor=north west, text width=80mm, align=left] at (1.5,-65)
+       {\textbf{Every arm lies inside its own bar.}
+        $\Delta(\mathrm{C}{-}\mathrm{B})=+0.005034$ against $0.017933$
+        (\textsc{exp abc}, \S\ref{fig:exp:abc}), and with the allocation shape
+        held exactly fixed the real, destroyed and reversed arms are
+        indistinguishable in \textbf{12 of 12} cells against a bar
+        $3.24\times$ tighter (\textsc{exp t2}, \S\ref{fig:exp:t2}).\\[2pt]
+        \textbf{SINet-v2 agrees on every verdict}, and reverses the sign of
+        $\Delta(\mathrm{C}{-}\mathrm{B})$ to $-0.000399$.};
+       % +0.005034 :: abc.SINet.COD10K.gap.B->C10
+       % -0.000399 :: abc.SINetv2.COD10K.gap.B->C10
+  \node[s2verdictnull, text width=50mm, anchor=north west] at (81,-65)
+       {no effect resolvable at this sensitivity\\[1pt]
+        \textnormal{\scriptsize a null bounded by power, on an \emph{exhausted}
+        foreground pool (\S\ref{fig:exp:d1}) --- not a demonstration of
+        absence}};
+  \node[s2tiny, anchor=north west, text width=52mm, align=left] at (81,-78)
+       {What does travel: the pixel-over-structure ordering holds for
+        \textbf{every} uncertainty signal tested, \textbf{8/8}
+        (\S\ref{fig:exp:t2c}).};
+
+  % \scodlegend takes a coordinate NAME, not a literal coordinate
+  \coordinate (lg) at (1.5,-88);
+  \scodlegend{lg}
+\end{tikzpicture}

@@ -1,0 +1,263 @@
+% ============================================================================
+% s2rcod_style.tex -- THE single style file for the S2R-COD figure set.
+%
+% \input THIS IN THE PREAMBLE, after \usepackage{tikz}.
+% Every figure body (fig_method, fig_results_block, exp/fig_*) uses only the
+% styles defined here and defines ZERO styles of its own. A \definecolor,
+% \tikzset or \newcommand anywhere else in figures/ is a defect.
+%
+% Design rules enforced here:
+%   * COLOUR IS NEVER THE ONLY CHANNEL. Every distinction is carried first by
+%     shape or line style, and colour only reinforces it. The figures remain
+%     readable in greyscale and to a colour-blind reader. This preserves the
+%     discipline already declared in figures/methodology.tex:8-9.
+%   * Palette is Okabe-Ito (colour-blind safe), used as dark strokes over very
+%     light fills so that black \scriptsize text stays legible on every node.
+%   * No gradients, no blur, no drop shadows, no bitmaps.
+%
+% Two independent marking axes (see figures/METHOD_SPEC.md sections 0 and 8):
+%   SCOPE      -- from rebuild/TIER_SEGREGATION.md section 1. Written as a word
+%                 (gen / signal+data / indep), NEVER as a bare tier digit,
+%                 because T1/T2/T3 is overloaded four ways in this repository
+%                 (rebuild/FINAL_RESULTS.md:42-53).
+%   CONFIDENCE -- solid fill   = has an EXP block AND a pre-registered threshold
+%                 hatched fill = has an EXP block, but the reading is post-hoc
+%                 dashed border= no EXP block  (barred from both main figures)
+% ============================================================================
+%
+% NOTE: macro names are letters-only (\scod...), because a TeX control sequence
+% cannot contain a digit -- \s2foo tokenizes as \s followed by the text '2foo'.
+% The tikzset KEY names keep the s2 prefix; keys are not control sequences.
+% ============================================================================
+
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,
+                shapes.multipart,shapes.misc,chains,matrix,
+                decorations.pathreplacing,decorations.pathmorphing,
+                patterns,patterns.meta,quotes,intersections}
+
+% ---------------------------------------------------------------- palette ---
+% Okabe-Ito base hues (strokes).
+\definecolor{s2blue}{HTML}{0072B2}   % data objects
+\definecolor{s2green}{HTML}{009E73}  % trained modules
+\definecolor{s2purple}{HTML}{CC79A7} % frozen / offline modules
+\definecolor{s2orange}{HTML}{D55E00} % THE accent: feedback + selected path
+\definecolor{s2amber}{HTML}{E69F00}  % decisions / gates
+\definecolor{s2grey}{HTML}{595959}   % deterministic operators, rules, frames
+\definecolor{s2lightgrey}{HTML}{8C8C8C}
+% Very light fills (kept above 88% lightness so black text stays legible).
+\definecolor{s2bluefill}{HTML}{DEEDF7}
+\definecolor{s2greenfill}{HTML}{DCF0EA}
+\definecolor{s2purplefill}{HTML}{F7E6F0}
+\definecolor{s2orangefill}{HTML}{FBE5D8}
+\definecolor{s2amberfill}{HTML}{FCF1DA}
+\definecolor{s2greyfill}{HTML}{EFEFEF}
+\definecolor{s2zonefill}{HTML}{F7F7F7}
+
+% ------------------------------------------------------------ base metrics --
+\tikzset{
+  s2base/.style={
+    line width=0.6pt, rounded corners=2pt, align=center,
+    font=\scriptsize, inner sep=2.4pt, minimum height=6.6mm,
+    % Hyphenation off: node text is short and ragged reads better than "ev-ery".
+    % execute at begin node runs INSIDE the node box, which is where the
+    % penalties must be set; /utils/exec would run during option parsing.
+    execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000},
+  },
+  % ---- NODE CLASSES.  Shape and border carry the meaning; colour reinforces.
+  % data object: ROUNDED rectangle, thin border.
+  s2data/.style   ={s2base, draw=s2blue,   fill=s2bluefill,   text width=20mm},
+  % deterministic operator: SHARP rectangle.
+  s2op/.style     ={s2base, draw=s2grey,   fill=s2greyfill,   text width=20mm,
+                    sharp corners},
+  % a deterministic operator on the SELECTED path (the arm under test).
+  % Accent border only -- the shape is unchanged, so the distinction survives
+  % greyscale as a line-weight difference rather than a hue difference.
+  s2opsel/.style  ={s2base, draw=s2orange, fill=s2greyfill, text width=20mm,
+                    sharp corners, line width=1.1pt},
+  % trained module: SHARP rectangle, THICK border.
+  s2trained/.style={s2base, draw=s2green,  fill=s2greenfill,  text width=22mm,
+                    sharp corners, line width=1.1pt},
+  % frozen module: SHARP rectangle, DOUBLE border.
+  s2frozen/.style ={s2base, draw=s2purple, fill=s2purplefill, text width=22mm,
+                    sharp corners, double, double distance=0.9pt},
+  % gate / decision: CHAMFERED rectangle.
+  s2gate/.style   ={s2base, draw=s2amber!85!black, fill=s2amberfill,
+                    text width=20mm, chamfered rectangle,
+                    chamfered rectangle xsep=3pt, chamfered rectangle corners={north west,south east}},
+  % outcome: rounded rectangle, thick border, white ground.
+  s2outcome/.style={s2base, draw=s2grey, fill=white, text width=24mm,
+                    line width=1.0pt},
+  % left-aligned prose box (MEASUREMENT zone, notes). Ragged right, no hyphens.
+  s2textbox/.style={s2base, draw=s2grey, fill=s2greyfill, sharp corners,
+                    align=left},
+  % small annotation, no frame
+  s2note/.style   ={font=\scriptsize, align=center, inner sep=1.2pt, text=s2grey,
+                    execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}},
+  s2tiny/.style   ={font=\tiny, align=center, inner sep=1.0pt, text=s2grey,
+                    execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}},
+  % monospace hyperparameter annotation (brief: "small monospace annotation")
+  s2hyper/.style  ={font=\ttfamily\tiny, align=center, inner sep=1.2pt,
+                    text=s2grey},
+%
+  % ---- CONFIDENCE OVERLAYS (applied on top of a node class) ----------------
+  % pre-registered: the default, nothing added.
+  s2prereg/.style ={},
+  % post-hoc reading: hatched. Hatching is a texture, so it survives greyscale.
+  s2posthoc/.style={pattern={Lines[angle=45,distance=1.5pt,line width=0.28pt]},
+                    pattern color=s2lightgrey},
+  % no EXP block: dashed border. Barred from fig:method and fig:results.
+  s2noexp/.style  ={dashed, draw=s2lightgrey, fill=white},
+  % A path or quantity that EXISTS but the pipeline cannot use at the point of
+  % decision (e.g. an endpoint-measured signal at allocation time). Distinct
+  % from s2unresolved, which is reserved for |Delta| <= 2*sigma_hat.
+  s2unavailable/.style={draw=s2lightgrey, fill=white, dotted, text=s2grey},
+  % a quantity that is NOT resolved at the stated bar -- never drawn as a win.
+  s2unresolved/.style={draw=s2grey, fill=s2greyfill, dash pattern=on 2pt off 1.2pt},
+%
+  % ---- EDGE CLASSES --------------------------------------------------------
+  s2fwd/.style      ={draw=s2grey, line width=0.6pt,
+                      -{Stealth[length=1.8mm,width=1.3mm]}},
+  % THE contribution edge: dashed + accent + thicker. Dash carries it alone.
+  s2feedback/.style ={draw=s2orange, line width=0.9pt, dashed,
+                      -{Stealth[length=1.8mm,width=1.3mm]}},
+  s2selected/.style ={draw=s2orange, line width=1.0pt,
+                      -{Stealth[length=1.8mm,width=1.3mm]}},
+  s2rejected/.style ={draw=s2lightgrey, line width=0.5pt, dotted,
+                      -{Stealth[length=1.6mm,width=1.1mm]}},
+  % an offline / out-of-loop path: long dash, no accent.
+  s2offline/.style  ={draw=s2purple, line width=0.6pt, dash pattern=on 3pt off 1.6pt,
+                      -{Stealth[length=1.8mm,width=1.3mm]}},
+  s2edgelabel/.style={font=\tiny, text=s2grey, inner sep=1.4pt,
+                      fill=white, fill opacity=0.85, text opacity=1},
+%
+  % ---- GROUPING ------------------------------------------------------------
+  s2group/.style    ={draw=s2lightgrey, line width=0.5pt, dash pattern=on 1.6pt off 1.4pt,
+                      rounded corners=2.5pt, inner sep=3.2pt, fill=s2zonefill},
+  s2grouplabel/.style={font=\tiny\bfseries, text=s2grey, anchor=north west,
+                      inner sep=1.4pt},
+%
+  % ---- EXPERIMENT CARD (the four-zone per-experiment template) -------------
+  % Zone 1 QUESTION, zone 2 SETUP, zone 3 MEASUREMENT, zone 4 OUTCOME.
+  % fill=none is deliberate: the frame is drawn LAST so its border sits on top
+  % of the content, and any fill would paint over the whole card.
+  s2card/.style     ={draw=s2grey, line width=0.7pt, rounded corners=2.5pt,
+                      inner sep=0pt, fill=none},
+  s2question/.style ={font=\scriptsize\itshape, align=left, text=black,
+                      inner sep=2.4pt, anchor=north west,
+                      execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}},
+  s2zonelabel/.style={font=\tiny\bfseries, text=s2grey, anchor=north west,
+                      inner sep=0pt},
+  s2rule/.style     ={draw=s2lightgrey, line width=0.4pt},
+  % outcome banners. REFUTED/NULL must never look like a success.
+  s2verdictnull/.style={s2base, draw=s2grey, line width=1.0pt, fill=s2greyfill,
+                      font=\scriptsize\bfseries, text=black, sharp corners},
+  s2verdictpos/.style ={s2base, draw=s2green, line width=1.0pt, fill=s2greenfill,
+                      font=\scriptsize\bfseries, text=black, sharp corners},
+  s2verdictref/.style ={s2base, draw=s2orange, line width=1.0pt, fill=s2orangefill,
+                      font=\scriptsize\bfseries, text=black, sharp corners},
+  % A finding that CONSTRAINS the method. Deliberately not green: a scoping
+  % limit must never be drawn in the colour a success would use.
+  s2verdictcon/.style ={s2base, draw=s2grey, line width=1.0pt, fill=s2greyfill,
+                      font=\scriptsize\bfseries, text=black, sharp corners},
+}
+
+% ------------------------------------------------------------- text macros --
+% Scope badge. Always a WORD, never a bare tier digit.
+\newcommand{\scodscope}[1]{{\tiny\sffamily\bfseries\textcolor{s2grey}{[#1]}}}
+\newcommand{\scodgen}{\scodscope{scope:\,generator}}
+\newcommand{\scodsig}{\scodscope{scope:\,signal+data}}
+\newcommand{\scodind}{\scodscope{scope:\,method-independent}}
+% Seed-count marker. A single-seed number must be visibly single-seed.
+\newcommand{\scodseeds}[1]{{\tiny\textcolor{s2grey}{$n{=}#1$ seeds}}}
+\newcommand{\scodsingle}{{\tiny\bfseries\textcolor{s2orange}{single seed}}}
+% Metric names, spelled exactly as Eval/metrics.py computes them.
+\newcommand{\scodSa}{$S_\alpha$}
+\newcommand{\scodMAE}{\textsc{mae}}
+\newcommand{\scodsigmahat}{$\hat{\sigma}$}
+\newcommand{\scodbar}{$2\hat{\sigma}$}
+\newcommand{\scodrho}{$\rho$}
+\newcommand{\scoddelta}[1]{$\Delta(#1)$}
+% "within noise" / "not resolved" -- the phrase the repo uses, used verbatim.
+\newcommand{\scodwithinnoise}{\textsc{within noise}}
+
+% ------------------------------------------------------------------ legend --
+% \scodlegend{<anchor coordinate>} -- the standard legend block, top-left
+% anchored at <anchor coordinate>. ONE macro, so the legend is identical in
+% content, order and geometry in every figure that carries it.
+% Layout: 4 columns x 3 rows, column pitch 34mm, row pitch 5mm. The last
+% label must END inside 139mm = 394.02bp, which is < the ICLR \textwidth of
+% 5.5in = 396bp (iclr2027_conference.sty:49). Verified by pdfinfo in Phase 3.
+% Positions are explicit offsets from the anchor, never a relative chain, so
+% the block cannot drift onto the diagram.
+\newcommand{\scodlegitem}[5]{% #1=xmm #2=ymm #3=style #4=anchor #5=label
+  % anchor=west, not the default centre: a centred glyph would hang half its
+  % width to the LEFT of the anchor and push the picture's bounding box past
+  % the ICLR \textwidth. Verified with a current-bounding-box probe.
+  \node[#3, text width=0pt, minimum width=5.2mm, minimum height=3.0mm,
+        inner sep=0pt, rounded corners=1pt, anchor=west]
+       (scodlg#1#2) at ($(#4)+(#1mm,#2mm)$) {};
+  \node[s2tiny, anchor=west] at ($(scodlg#1#2.east)+(1.2mm,0)$) {#5};}
+\newcommand{\scodlegedge}[5]{% #1=xmm #2=ymm #3=style #4=anchor #5=label
+  \draw[#3] ($(#4)+(#1mm,#2mm)$) -- ++(5.2mm,0);
+  \node[s2tiny, anchor=west] at ($(#4)+(#1mm+6.4mm,#2mm)$) {#5};}
+\newcommand{\scodlegend}[1]{%
+  \begin{scope}
+    % row 1 -- node classes (shape and border carry the distinction)
+    \scodlegitem{0}{0}{s2data}{#1}{data object}
+    \scodlegitem{34}{0}{s2op}{#1}{deterministic op.}
+    \scodlegitem{68}{0}{s2trained}{#1}{trained}
+    \scodlegitem{102}{0}{s2frozen}{#1}{frozen / offline}
+    % row 2 -- confidence axis + the uncertainty convention
+    \scodlegitem{0}{-5}{s2outcome}{#1}{pre-registered}
+    \scodlegitem{34}{-5}{s2outcome, s2posthoc}{#1}{post-hoc reading}
+    \scodlegitem{68}{-5}{s2outcome, s2unresolved}{#1}{$|\Delta|\le2\hat{\sigma}$: unresolved}
+    \scodlegitem{102}{-5}{s2gate}{#1}{gate / decision}
+    % row 3 -- edge classes
+    \scodlegedge{0}{-10}{s2fwd}{#1}{forward}
+    \scodlegedge{34}{-10}{s2feedback}{#1}{feedback (contribution)}
+    \scodlegedge{68}{-10}{s2offline}{#1}{offline, out of loop}
+    \scodlegedge{102}{-10}{s2rejected}{#1}{rejected path}
+  \end{scope}}
+
+% ------------------------------------------------- per-experiment card head --
+% \scodcardhead{<width mm>}{<EXP id>}{<scope macro>}{<question>}
+% Drawn with the card's TOP-LEFT corner at (0,0) in a picture using x=1mm,y=1mm.
+% The question box has a FIXED height, so the question line and the rule beneath
+% it sit at the same y in every card -- which is what makes the library read as
+% one system. Keep the question to at most two lines.
+% Zone geometry, shared by every per-experiment figure:
+%     y =   0      card top
+%     y =  -4.6    EXP id / scope row baseline
+%     y =  -6.0    question box top
+%     y = -15.0    rule under the question   (\scodcardqbot)
+%     y = -17.0    SETUP / MEASUREMENT zone top
+%   outcome banner is placed by each figure and closed with \scodcardframe
+\newcommand{\scodcardqbot}{-15}
+\newcommand{\scodcardhead}[4]{%
+  \node[font=\scriptsize\bfseries, anchor=north west, inner sep=0pt]
+       at (1.8,-1.2) {#2};
+  \node[anchor=north east, inner sep=0pt] at (#1-1.8,-1.2) {#3};
+  \draw[s2rule] (0,-5.4) -- (#1,-5.4);
+  \node[s2question, text width=#1mm-4mm, minimum height=8mm, anchor=north west]
+       at (1.8,-6.0) {#4};
+  \draw[s2rule] (0,\scodcardqbot) -- (#1,\scodcardqbot);
+  \node[s2zonelabel, anchor=north west] at (1.8,\scodcardqbot-0.6) {SETUP};}
+% \scodcardheadp{<width mm>}{<EXP id>}{<scope macro>}{<question>}
+% Same head, but WITHOUT the SETUP zone label -- for a MERGED figure whose
+% body is split into labelled panels (a)/(b)/(c) instead of SETUP/MEASUREMENT.
+% The question line and both rules sit at identical y, so a paneled card still
+% lines up with a four-zone card in a contact sheet.
+\newcommand{\scodcardheadp}[4]{%
+  \node[font=\scriptsize\bfseries, anchor=north west, inner sep=0pt]
+       at (1.8,-1.2) {#2};
+  \node[anchor=north east, inner sep=0pt] at (#1-1.8,-1.2) {#3};
+  \draw[s2rule] (0,-5.4) -- (#1,-5.4);
+  \node[s2question, text width=#1mm-4mm, minimum height=8mm, anchor=north west]
+       at (1.8,-6.0) {#4};
+  \draw[s2rule] (0,\scodcardqbot) -- (#1,\scodcardqbot);}
+% \scodcardframe{<width mm>}{<bottom y mm>} -- the outer card border, drawn last.
+\newcommand{\scodcardframe}[2]{%
+  \draw[s2card] (0,0) rectangle (#1,#2);}
+% \scodmeaslabel{<x mm>} -- the MEASUREMENT zone label, aligned with SETUP.
+\newcommand{\scodmeaslabel}[1]{%
+  \node[s2zonelabel, anchor=north west] at (#1,\scodcardqbot-0.6) {MEASUREMENT};}

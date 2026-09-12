@@ -1,0 +1,83 @@
+% fig_d2.tex -- EXP D2 + D2R + D2_NC4K, the contamination audit. Body only.
+% MERGED: D2_NC4K has no results markdown and is structurally D2's negative
+% control, so it is panel (c) rather than a figure of its own.
+% Requires figures/s2rcod_style.tex. Defines NO styles.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/D2/D2.md and rebuild/D2_reaudit/REAUDIT_PLAN.md:1-11
+  \scodcardheadp{139}{EXP D2 + D2R + D2\_NC4K \textnormal{--- benchmark contamination}}{\scodind}{%
+    Is the CHAMELEON evaluation set re-encoded copies of the data these models
+    train on? And does the detector find contamination \emph{everywhere} it
+    looks, or can it return a clean answer?}
+
+  % ================= PANEL (a) -- the detection cascade ====================
+  \node[s2zonelabel, anchor=north west] at (1.8,-15.6)
+       {(a) THE DETECTOR \textnormal{--- exact hashing is the wrong instrument}};
+  % src: rebuild/D2_reaudit/detect_contamination.py:64-69
+  \node[s2op, text width=20mm, anchor=north west] (h1) at (2.5,-19.6)
+       {byte hash\\\textbf{0} found};
+  \node[s2op, text width=20mm, anchor=north west] (h2) at (25,-19.6)
+       {pixel hash\\\textbf{0} found};
+  \node[s2op, s2selected, draw=s2orange, text width=22mm, anchor=north west]
+       (h3) at (48,-19.6) {same-dimension\\near-duplicate};
+  \draw[s2fwd] (h1) -- (h2);
+  \draw[s2fwd] (h2) -- (h3);
+  \node[s2hyper, anchor=north west] at (2.5,-28.0)
+       {DESC=32  RMS<=14  TOL=6.0};
+  \node[s2verdictref, text width=32mm, anchor=north west] at (73,-19.6)
+       {\textbf{41 / 76} \normalfont(53.9\%)};
+       % from figure_data.json :: d2r.cham.contaminated
+  \node[s2tiny, anchor=north west, text width=58mm, align=left] at (73,-27.2)
+       {exact hashing calls CHAMELEON \emph{perfectly clean} while 53.9\% of it
+        is re-encoded training data};
+
+  % ================= PANEL (b) -- two independent instruments ==============
+  \draw[s2rule] (0,-32.5) -- (139,-32.5);
+  \node[s2zonelabel, anchor=north west] at (1.8,-33.1)
+       {(b) 41 IS A PROPERTY OF THE DATA, NOT OF THE CUTOFF};
+  \node[s2tiny, anchor=north west] at (2.5,-37.4) {tolerance sweep saturates:};
+  % src: figure_data.json :: d2r.sweep.tol_*.cham
+  \foreach \i/\t/\v in {0/1.0/11, 1/2.0/26, 2/3.0/37, 3/5.0/40, 4/6.0/41}{
+    \node[s2outcome, text width=7mm, align=center, minimum width=9mm,
+          minimum height=4.6mm, inner sep=0.8pt, font=\tiny]
+         (sw\i) at ({8+\i*10},-42.8) {\v};
+    \node[s2tiny, font=\tiny, anchor=north] at ({8+\i*10},-45.9) {\t};}
+  \node[s2tiny, anchor=north west, text width=22mm, align=left] at (2.5,-48.8)
+       {tolerance};
+  \node[s2textbox, text width=58mm, anchor=north west] at (60,-37.0)
+       {a \emph{second, independent} instrument agrees on the same integer:
+        the sorted nearest-distance list has \textbf{41 below 5.51} and the
+        next at \textbf{40.58} --- a \textbf{7.36$\times$} jump, and the
+        author-sourced copy is byte-identical (76/76).};
+
+  % ================= PANEL (c) -- the negative control =====================
+  \draw[s2rule] (0,-51.5) -- (139,-51.5);
+  \node[s2zonelabel, anchor=north west] at (1.8,-52.1)
+       {(c) THE NEGATIVE CONTROL \textnormal{--- the same detector, imported unchanged}};
+  \node[s2data, text width=24mm, anchor=north west] (nc) at (2.5,-56.4)
+       {NC4K 4121\\vs COD10K-test};
+  \node[s2verdictcon, text width=26mm, anchor=north west] at (30,-56.4)
+       {\textbf{0 / 4121}};
+       % from figure_data.json :: d2nc4k.vs_COD10K-test.contaminated
+  \draw[s2fwd] (nc) -- (30,-59.7);
+  \node[s2textbox, text width=76mm, anchor=north west] at (60,-56.4)
+       {\textbf{and the honesty bound:} \textbf{3039 of 4121} NC4K images
+        (\textbf{73.7\%}) have no same-dimension candidate at all, so they are
+        \textbf{unchecked, not clean}. Every rate here is a \emph{lower bound}.};
+       % from figure_data.json :: d2nc4k.vs_COD10K-test.unchecked
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-66.5) -- (139,-66.5);
+  \node[s2zonelabel, anchor=north west] at (1.8,-67.1) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-71.1)
+       {CHAMELEON is \textbf{not an independent endpoint} for COD10K-trained
+        models --- and that is the whole claim.\\[1pt]
+        D2R measured for a score-inflation figure and \textbf{found none}
+        (all eight percentiles in 0.448--0.559, and the sign flips with the
+        mask release), so none is reported.};
+  \node[s2verdictcon, text width=54mm, anchor=north west] at (80,-70.7)
+       {independence, \textbf{not} inflation\\[1pt]
+        \textnormal{\scriptsize a protocol violation does not need a score
+        advantage to be disqualifying}};
+
+  \scodcardframe{139}{-83}
+\end{tikzpicture}

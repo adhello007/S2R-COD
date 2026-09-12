@@ -1,0 +1,8 @@
+% Isolated compilation:
+%   cd figures && latexmk -pdf -output-directory=exp exp/fig_t2c_standalone.tex
+\documentclass[crop,tikz,border=2pt]{standalone}
+\usepackage{times}
+\input{../s2rcod_style.tex}
+\begin{document}
+\input{fig_t2c.tex}
+\end{document}

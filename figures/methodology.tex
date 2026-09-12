@@ -1,0 +1,157 @@
+% ---------------------------------------------------------------------------
+% S2R-COD Stage C -- methodology and test design
+% Single-column figure, drawn to ~80mm (fits \linewidth in a two-column paper).
+%
+% Requires in the preamble ONLY:
+%   \usepackage{tikz}
+%   \usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+% (no amsmath, no external packages, no colour -- greyscale-safe by design:
+%  every distinction is carried by fill lightness or line style, never hue.)
+%
+% Use as:
+%   \begin{figure}[t]\centering\input{figures/methodology}\caption{...}\end{figure}
+%
+% All styles are local to this picture; nothing leaks into the document.
+% Geometry: all coordinates are in mm on an 80mm-wide canvas. To rescale,
+% add `scale=0.9` to the tikzpicture options (fonts stay at document size).
+%
+% Suggested caption:
+%   \caption{\textbf{Method and test design.} (a) CSRDA trains a mean-teacher pair
+%   on a labelled synthetic source pool (LAKE-RED backgrounds behind real HKU-IS
+%   foregrounds) and an unlabelled real target set; \texttt{zip} truncation fixes
+%   the per-epoch step budget, and CLS expands the pool once for a second round.
+%   Stage C, the contribution under test, closes an outer loop: the model's
+%   per-cluster error signal steers where the next $B{=}1000$ generations are
+%   spent. (b) The four arms isolate that steering. All arms share a
+%   byte-identical base pool and an identical optimisation budget, so
+%   $\Delta(\mathrm{C}-\mathrm{B})$ compares targeted against uniform allocation
+%   at matched pool size, budget and mask provenance.}
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[
+    x=1mm, y=1mm,
+    font=\scriptsize,
+    every node/.style={align=center, inner sep=2pt},
+    %% ---- box styles -------------------------------------------------------
+    stage/.style={draw, rounded corners=1.2pt, fill=black!4},
+    gen/.style  ={draw, rounded corners=1.2pt, fill=black!10},
+    train/.style={draw, rounded corners=1.2pt, fill=black!7, line width=0.6pt},
+    data/.style ={draw, dashed, rounded corners=1.2pt, fill=white},
+    arm/.style  ={draw, rounded corners=1.2pt, fill=black!5, font=\tiny},
+    armhi/.style={draw, rounded corners=1.2pt, fill=black!12, font=\tiny,
+                  line width=0.6pt},
+    %% ---- arrow styles -----------------------------------------------------
+    flow/.style ={-{Latex[length=1.4mm, width=1.1mm]}, line width=0.5pt},
+    feed/.style ={-{Latex[length=1.4mm, width=1.1mm]}, line width=0.5pt, dashed},
+    tick/.style ={line width=0.4pt},
+    lbl/.style  ={font=\tiny, inner sep=1pt},
+    panel/.style={font=\footnotesize\bfseries, inner sep=1pt},
+    /tikz/execute at begin picture={\hyphenpenalty=10000\exhyphenpenalty=10000\relax},
+  ]
+
+%% =========================== PANEL (a) ====================================
+\node[panel, anchor=west] at (0,4)
+     {(a) Method: CSRDA, with Stage C as an outer loop};
+
+% --- source stream: left column, x 8..44 ----------------------------------
+\node[data,  minimum width=36mm, text width=33mm] (src)  at (26,-3)
+     {\textbf{HKU-IS} source\\{\tiny 4447 photographs $+$ SOD masks}};
+\node[gen,   minimum width=36mm, text width=33mm] (lake) at (26,-16)
+     {\textbf{LAKE-RED}\\{\tiny background synthesis;\\object pixels composited back,\\only the background generated}};
+\node[stage, minimum width=36mm, text width=33mm] (pool) at (26,-31)
+     {\textbf{Synthetic source pool}\\{\tiny 4447 labelled pairs}};
+
+% --- target stream + Stage C: right column, x 48..76 ----------------------
+\node[data, minimum width=28mm, text width=25mm] (tgt) at (62,-3)
+     {\textbf{Target domain}\\{\tiny 4040 real, \emph{unlabelled}\\3040 COD10K-train\\$+$ 1000 CAMO}};
+\node[gen,  minimum width=28mm, text width=25mm] (stagec) at (62,-19)
+     {\textbf{Stage C}\\{\tiny \emph{the contribution under test}\\per-cluster ES\\(DINOv2-L/518, $k{=}75$)\\$\to$ softmax allocation\\$\to$ $B{=}1000$ re-renders}};
+
+% --- training block: full width, x 8..76 ----------------------------------
+\node[train, minimum width=68mm, text width=65mm] (csrda) at (42,-46)
+     {\textbf{CSRDA} --- mean teacher, 2 rounds\\[1pt]
+      {\tiny student $\to$ teacher by EMA ($\lambda{=}0.996$); teacher never back-propagated\\
+       $\mathcal{L}=\mathcal{L}_{\mathrm{sup}}+\mathcal{L}_{\mathrm{ES}}$,\;
+       $\mathcal{L}_{\mathrm{ES}}=0.9\,\mathcal{L}_{\mathrm{EA}}+0.3\,\mathcal{L}_{\mathrm{SW}}$\; (Eq.\ 6--8)\\
+       \texttt{zip(source,target)} truncates $\Rightarrow$ \texttt{total\_step} $=253/127$, \emph{pinned}}};
+
+\node[stage, minimum width=68mm, text width=65mm] (cls) at (42,-60)
+     {\textbf{CLS} --- round-2 pool expansion\\
+      {\tiny target images with $\mathrm{edge\_loss}<0.8\cdot\mathrm{avg}$;\;
+       teacher CAM ($\tau{=}0.4$) $\to$ pseudo-label $\to$ appended}};
+
+\node[stage, minimum width=68mm, text width=65mm] (ckpt) at (42,-71)
+     {\textbf{Checkpoint selection}\\
+      {\tiny \texttt{Tea\_epoch\_best} $=$ min val MAE on CAMO (250); held out, never an endpoint}};
+
+\node[stage, minimum width=68mm, text width=65mm] (eval) at (42,-82)
+     {\textbf{Endpoints}\\
+      {\tiny COD10K-test 2026 (primary) $\cdot$ NC4K 4121 (secondary)\\
+       CHAMELEON \emph{withdrawn}: 41/76 ($53.9\%$) are re-encodes of\\
+       images already seen (40 in COD10K-train, 1 in CAMO)}};
+
+% --- flows ----------------------------------------------------------------
+\draw[flow] (src)   -- (lake);
+\draw[flow] (lake)  -- (pool);
+\draw[flow] (pool.south) -- (csrda.north -| pool.south);
+\draw[flow] (csrda) -- (cls);
+\draw[flow] (cls)   -- (ckpt);
+\draw[flow] (ckpt)  -- (eval);
+
+% target enters the training block down the right-hand channel
+\draw[flow] (tgt.east) -- ++(2,0) |- (csrda.east);
+
+% Stage C outer loop.  Down-leg: the trained model's error signal.
+\draw[feed] (csrda.north -| stagec.south) -- (stagec.south)
+      node[lbl, midway, xshift=2.2mm, rotate=90, anchor=south]{model ES};
+% Up-leg: the targeted renders enter the pool, routed in the 4mm channel
+% between the two columns so it never crosses the LAKE-RED box.
+\draw[feed] (stagec.west) -- ++(-1,0) |- (pool.east);
+\node[lbl, rotate=90, anchor=south] at (45.6,-25) {$+1000$};
+
+% CLS round-2 loop back into the pool, routed in the left-hand channel
+\draw[feed] (cls.west) -- ++(-4,0) |- (pool.west)
+      node[lbl, midway, xshift=-2.2mm, rotate=90, anchor=south]{round 2};
+
+%% =========================== PANEL (b) ====================================
+\node[panel, anchor=west] at (0,-92)
+     {(b) Test design: what varies, what is held identical};
+
+\node[stage, minimum width=68mm, text width=65mm] (base) at (42,-99)
+     {\textbf{Base pool 4447} --- byte-identical across arms\\
+      {\tiny per-file SHA-256 against the E0 manifest, not sampled}};
+
+\node[arm,   minimum width=16mm, text width=13mm] (a0)  at (16,-113)
+     {\textbf{A0}\\$+0$\\\emph{4447}};
+\node[arm,   minimum width=16mm, text width=13mm] (a2)  at (33.3,-113)
+     {\textbf{A2}\\$+1000$ dup.\\authors' bg\\\emph{5447}};
+\node[armhi, minimum width=16mm, text width=13mm] (bb)  at (50.7,-113)
+     {\textbf{B}\\$+1000$\\uniform\\re-renders\\\emph{5447}};
+\node[armhi, minimum width=16mm, text width=13mm] (c10) at (68,-113)
+     {\textbf{C10}\\$+1000$\\ES-targeted\\$\alpha{=}1.0$\\\emph{5447}};
+
+\draw[flow] (base.south) -- ++(0,-2) -| (a0.north);
+\draw[flow] (base.south) -- ++(0,-2) -| (a2.north);
+\draw[flow] (base.south) -- ++(0,-2) -| (bb.north);
+\draw[flow] (base.south) -- ++(0,-2) -| (c10.north);
+
+% contrast brackets under the arms
+\draw[tick] ([yshift=-1.5mm]a2.south)  -- ++(0,-2) coordinate (a2d);
+\draw[tick] ([yshift=-1.5mm]bb.south)  -- ++(0,-2) coordinate (bbd);
+\draw[tick] ([yshift=-1.5mm]c10.south) -- ++(0,-2) coordinate (c10d);
+\draw[tick] (a2d) -- (bbd);
+\draw[tick] (bbd) -- (c10d);
+\node[lbl, below=0.5pt, text width=17mm] at ($(a2d)!0.5!(bbd)$)
+     {$\Delta(\mathrm{A2}\!-\!\mathrm{B})$};
+\node[lbl, below=0.5pt, text width=17mm] at ($(bbd)!0.5!(c10d)$)
+     {$\Delta(\mathrm{C}\!-\!\mathrm{B})$};
+
+\node[lbl, text width=65mm, anchor=north] at (42,-126)
+     {$\Delta(\mathrm{A2}\!-\!\mathrm{B})$ isolates the generated background;
+      $\Delta(\mathrm{C}\!-\!\mathrm{B})$ is \textbf{the pre-registered claim} --- targeted vs.\
+      uniform at equal pool size, budget and mask provenance.\\[1.5pt]
+      $\times$ \{SINet, SINet-v2\} $\times$ seeds \{42,\,43,\,45\} $=$ \textbf{24 runs}.
+      A0 is \emph{not} a clean control: with \texttt{total\_step} pinned, its smaller pool gives
+      each image 22\% more exposure per epoch --- which is why A2 exists. Added data
+      \emph{dilutes} per-epoch exposure; it can never extend the budget.};
+
+\end{tikzpicture}

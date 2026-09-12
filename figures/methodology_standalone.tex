@@ -1,0 +1,9 @@
+% Compile-and-preview wrapper. The figure itself is figures/methodology.tex,
+% which is what you \input into the paper.
+%   pdflatex -output-directory=figures figures/methodology_standalone.tex
+\documentclass[border=3pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+\begin{document}
+\input{methodology}
+\end{document}

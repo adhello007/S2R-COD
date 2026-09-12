@@ -1,0 +1,85 @@
+% fig_a3.tex -- EXP A3, where the synthetic images sit vs the real target.
+% Body only. Requires figures/s2rcod_style.tex. Defines NO styles.
+% Two panels: (a) the coverage ladder, (b) the AUC vacuity exhibit.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/A3/A3.md:16 (Objective)
+  \scodcardheadp{139}{EXP A3 \textnormal{--- synthetic vs real}}{\scodgen\ \scodind}{%
+    How far do LAKE-RED's renders sit from the real target distribution --
+    and does the metric that was used to say so survive an honest control?}
+
+  % ================= PANEL (a) -- the coverage ladder ======================
+  \node[s2zonelabel, anchor=north west] at (1.8,-15.6)
+       {(a) MANIFOLD COVERAGE \textnormal{--- $k$-NN recall vs the real target set, dinoL518, $k{=}5$}};
+  % bar axis: 0.0 at x=30, 1.0 at x=70  (40mm per unit)
+  \draw[s2rule] (42,-19.8) -- (42,-41.5);
+  \foreach \v/\x in {0/42, 0.5/60, 1.0/78}
+    \node[s2tiny, font=\tiny, anchor=north] at (\x,-41.8) {\v};
+  % src: figure_data.json :: a3.coverage.dinoL518.*
+  \foreach \r/\lab/\v/\st in {%
+      0/{ceiling (real vs real)}/0.9431/s2greenfill,
+      1/{NC4K -- a different real set}/0.8995/s2greenfill,
+      2/{raw HKU-IS: its OWN input pool}/0.7097/s2bluefill,
+      3/{authors' synthetic pool}/0.4834/s2orangefill}{
+    \fill[\st] (42,{-21.2-\r*5.4}) rectangle ({42+\v*36},{-25.2-\r*5.4});
+    \draw[draw=s2grey, line width=0.5pt]
+         (42,{-21.2-\r*5.4}) rectangle ({42+\v*36},{-25.2-\r*5.4});
+    \node[s2tiny, font=\tiny, anchor=east] at (41,{-23.2-\r*5.4}) {\lab};
+    \node[s2tiny, font=\tiny\bfseries, anchor=west]
+         at ({43+\v*36},{-23.2-\r*5.4}) {\v};}
+  \node[s2verdictcon, text width=49mm, anchor=north west] at (88,-20.5)
+       {synthetic covers \textbf{0.4834} where its \emph{own input pool}
+        covers \textbf{0.7097}\\[1pt]
+        \textnormal{\scriptsize a paired within-content loss of
+        \textbf{$-31.9\%$}; the render moves the pool \emph{away} from
+        the target}};
+       % -0.319 from figure_data.json ::
+       %   a3.coverage.dinoL518.authors_pool (delta_vs_baseline)
+  \node[s2tiny, anchor=north west, text width=49mm, align=left] at (88,-35.5)
+       {the comparison that matters is against LAKE-RED's own input, not
+        against the ceiling --- it is the only one that holds content fixed};
+
+  % ================= PANEL (b) -- the vacuity exhibit ======================
+  \draw[s2rule] (0,-44.5) -- (139,-44.5);
+  \node[s2zonelabel, anchor=north west] at (1.8,-45.1)
+       {(b) BUT THE METRIC THAT USED TO CARRY THIS IS NEAR-VACUOUS \textnormal{--- clipL224}};
+  % same axis geometry as panel (a), so the two read on one scale
+  \draw[s2rule] (42,-49.3) -- (42,-66.0);
+  \foreach \v/\x in {0/42, 0.5/60, 1.0/78}
+    \node[s2tiny, font=\tiny, anchor=north] at (\x,-66.3) {\v};
+  % src: figure_data.json :: a3.auc.clipL224.*
+  \foreach \r/\lab/\v/\st in {%
+      0/{real vs LAKE-RED (the headline)}/0.9995/s2orangefill,
+      1/{real vs THE SAME images, JPEG-30}/0.9928/s2greyfill,
+      2/{real vs real, random halves (true null)}/0.4717/s2bluefill}{
+    \fill[\st] (42,{-50.7-\r*5.4}) rectangle ({42+\v*36},{-54.7-\r*5.4});
+    \draw[draw=s2grey, line width=0.5pt]
+         (42,{-50.7-\r*5.4}) rectangle ({42+\v*36},{-54.7-\r*5.4});
+    \node[s2tiny, font=\tiny, anchor=east] at (41,{-52.7-\r*5.4}) {\lab};
+    \node[s2tiny, font=\tiny\bfseries, anchor=west]
+         at ({43+\v*36},{-52.7-\r*5.4}) {\v};}
+  \node[s2verdictref, text width=49mm, anchor=north west] at (88,-50)
+       {re-encoding the \emph{identical} images separates them from themselves
+        at \textbf{0.9928}\\[1pt]
+        \textnormal{\scriptsize within \textbf{0.0067} of the headline, on
+        content that is identical by construction}};
+  \node[s2tiny, anchor=north west, text width=49mm, align=left] at (88,-64.5)
+       {and the estimator manufactures effects: on a \emph{true null} the
+        in-sample $d$ is \textbf{+0.6867} while held-out it is
+        \textbf{+0.0318}};
+       % from figure_data.json :: a3.truenull.d_insample.dinoL224
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-69.5) -- (139,-69.5);
+  \node[s2zonelabel, anchor=north west] at (1.8,-70.1) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-74.1)
+       {\textbf{The finding survives; the metric that used to carry it does
+        not.} The coverage loss is real and passes 3/3 embedders. The AUC
+        framing is withdrawn --- a near-1.0 separation is not evidence that two
+        image sets differ distributionally.};
+  \node[s2verdictcon, text width=54mm, anchor=north west] at (80,-73.7)
+       {a distributional characterisation, \textbf{not} a training-utility
+        bound\\[1pt]
+        \textnormal{\scriptsize ``far, therefore useless'' is a non-sequitur}};
+
+  \scodcardframe{139}{-86}
+\end{tikzpicture}

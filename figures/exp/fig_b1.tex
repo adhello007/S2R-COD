@@ -1,0 +1,75 @@
+% fig_b1.tex -- EXP B1, is the allocation signal valid WHERE IT IS AVAILABLE?
+% Body only. Requires figures/s2rcod_style.tex. Defines NO styles.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/B1/B1.md:15 (Objective)
+  \scodcardhead{139}{EXP B1 \textnormal{--- the allocation signal}}{\scodsig}{%
+    Does student--teacher ES-disagreement -- the signal that would drive
+    targeted allocation -- predict the error type that matters for camouflaged
+    object detection (structure), or only pixel-average error?}
+
+  % ---------------- SETUP: the provenance split ---------------------------
+  % src: CLS.py:81-105 is where the pipeline actually computes ES (gt_root=None)
+  %      mirrored at rebuild/B1/b1_allocation_signal.py:94-106
+  \node[s2data, text width=21mm, anchor=north west] (tgt) at (2.5,-20)
+       {target 4040\\\textbf{no ground truth}};
+  \node[s2op, text width=19mm, anchor=north west] (es) at (27,-20)
+       {ES$(\mathrm{stu},\mathrm{tea})$\\per image};
+  \node[s2op, text width=19mm, anchor=north west] (clu) at (49,-20)
+       {$k$-means\\$k{=}75$};
+  \draw[s2fwd] (tgt) -- (es);
+  \draw[s2fwd] (es) -- (clu);
+  \node[s2hyper, anchor=north west] at (27,-28.5) {a=0.9 b=0.3};
+  \node[s2hyper, anchor=north west] at (49,-28.5) {dinoL518};
+
+  % the WRONG provenance, kept visible because it is what B1 first measured
+  % The endpoint path is drawn because it is what B1 FIRST measured, and it is
+  % marked unavailable rather than merged into the real path -- the two are
+  % compared in MEASUREMENT, not silently joined here.
+  \node[s2data, text width=21mm, anchor=north west, s2unavailable] (ep) at (2.5,-34)
+       {COD10K-test\\\emph{has} ground truth};
+  \node[s2op, text width=19mm, anchor=north west, s2unavailable] (epes) at (27,-34)
+       {ES on the\\\textbf{endpoint}};
+  \draw[s2rejected] (ep) -- (epes);
+  \node[s2note, anchor=west, text width=24mm] (na) at (56,-37.3)
+       {\textbf{not available}\\at allocation time};
+  \draw[s2rejected] (epes.east) -- (na.west);
+  \node[s2tiny, anchor=north west, text width=72mm, align=left] at (2.5,-43.5)
+       {the pipeline has no target labels, so the real signal is the
+        \emph{target}-measured one (\texttt{CLS.py:81-105})};
+
+  % ---------------- MEASUREMENT -------------------------------------------
+  \scodmeaslabel{81}
+  \draw[s2rule] (79,-15) -- (79,-48);
+  \node[s2textbox, text width=50mm, anchor=north west] at (81,-20)
+       {per-cluster Spearman $\rho$ of ES against each error type, over
+        50 clusters / 3428 target images:\\
+        \textsc{mae} $\cdot$ $1-S_\alpha$ $\cdot$ $1-\mathrm{IoU}$};
+  \node[s2textbox, text width=50mm, anchor=north west] at (81,-34)
+       {and the same correlation computed from the \emph{endpoint}-measured
+        signal, to size how much that overstates it};
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-48) -- (139,-48);
+  \node[s2zonelabel, anchor=north west] at (1.8,-48.6) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-53)
+       {$\rho(\textsc{mae})$ \textbf{+0.8754} on the endpoint
+        $\rightarrow$ \textbf{+0.6284} where it is available
+        (drop \textbf{+0.2470})\\[1pt]
+        the two agree only at $\rho$ \textbf{+0.5732} per cluster\\[1pt]
+        ratio $\rho(1{-}S_\alpha)/\rho(\textsc{mae})$:
+        \textbf{0.4352} $\rightarrow$ \textbf{0.5463} --- it crosses B1's own
+        declared 0.5 boundary, in the opposite direction};
+        % +0.8754 from figure_data.json :: b1.endpointES.rho_MAE
+        % +0.6284 from figure_data.json :: b1.targetES.rho_MAE
+        % +0.2470 from figure_data.json :: b1.rho_drop_MAE
+        % 0.5732  from figure_data.json :: b1.target_vs_endpoint_ES
+        % 0.4352 / 0.5463 :: b1.ratio.endpointES, b1.ratio.targetES
+  \node[s2verdictref, text width=50mm, anchor=north west] at (81,-52.6)
+       {the signal is materially weaker\\where the method can use it
+        \\[1pt]\textnormal{\scriptsize and the cluster structure it allocates
+        over is weak: best silhouette \textbf{0.1600}}};
+        % 0.1600 from figure_data.json :: b1.silhouette.dinoL518
+  % NOTE: the target_es cross-architecture caveat lives in the figure
+  % CAPTION, not the card, so the card stays under 0.30\textheight.
+  \scodcardframe{139}{-65}
+\end{tikzpicture}

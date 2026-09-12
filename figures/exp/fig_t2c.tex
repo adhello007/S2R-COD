@@ -1,0 +1,86 @@
+% fig_t2c.tex -- EXP T2C, is the pixel-over-structure gap specific to ES?
+% Body only. Requires figures/s2rcod_style.tex. Defines NO styles.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/T2C/T2C_PLAN.md:1, criterion frozen in
+  %      rebuild/T2C/PREREGISTRATION_T2C.md before any T2-C code existed
+  \scodcardhead{139}{EXP T2C \textnormal{--- is the gap specific to ES?}}{\scodsig}{%
+    B1 found that uncertainty predicts pixel error far better than structural
+    error. Is that a property of \emph{ES}, or of uncertainty signals for
+    camouflaged object detection in general?}
+
+  % ---------------- SETUP --------------------------------------------------
+  % src: rebuild/T2C/t2c_signals.py:63-74 entropy, :77-91 ensemble variance,
+  %      :94-123 ES re-derived unreduced, :141-187 shared boundary band
+  \node[s2data, text width=20mm, anchor=north west] (tgt) at (2.5,-25)
+       {target 4040\\unlabelled};
+  \node[s2op, text width=22mm, anchor=north west] (s1) at (26,-18.5)
+       {ES disagreement};
+  \node[s2op, text width=22mm, anchor=north west] (s2) at (26,-25.5)
+       {predictive entropy};
+  \node[s2op, text width=22mm, anchor=north west] (s3) at (26,-32.5)
+       {ensemble variance};
+  \foreach \n in {s1,s2,s3} \draw[s2fwd] (tgt.east) -- (\n.west);
+  \node[s2gate, text width=24mm, anchor=north west] (band) at (53,-25.5)
+       {one \emph{shared} boundary band};
+  \foreach \n in {s1,s2,s3} \draw[s2fwd] (\n.east) -- (band.west);
+  \node[s2tiny, anchor=north, text width=30mm] at ($(band.south)+(0,-1.4)$)
+       {from the S2C teacher, so ``boundary'' names the same region in
+        every row};
+  \node[s2tiny, anchor=north west, text width=82mm, align=left] at (2.5,-42.5)
+       {\textbf{the pre-registered criterion}, frozen before any T2-C number
+        existed: each signal must keep
+        $\rho(\textsc{mae}) > \rho(1{-}S_\alpha) > \rho(1{-}\mathrm{IoU})$
+        over B1's committed 50-cluster partition.};
+  \node[s2textbox, text width=82mm, anchor=north west] at (2.5,-49.5)
+       {\textbf{instrument check:} the ES / SINet / whole cell reproduces B1's
+        committed $\rho(\textsc{mae})$ \textbf{+0.6284} \emph{bitwise},
+        before any new number is read.};
+        % +0.6284 cross-checked B1 vs T2C by figures/collect_figure_data.py
+        % self-test "T2C reproduces B1 rho(MAE)" -- PASS
+
+  % ---------------- MEASUREMENT: the 4x2 x 2 lattice -----------------------
+  \scodmeaslabel{90}
+  \draw[s2rule] (88,-15) -- (88,-58);
+  \node[s2tiny, anchor=north west] at (90,-18.2) {ordering held? (seed 0)};
+  \foreach \blk/\xa/\lab in {0/105/{WHOLE-IMAGE}, 1/123/{BOUNDARY}}
+    \node[s2tiny, anchor=south, font=\tiny\bfseries] at (\xa+5,-23.0) {\lab};
+  \foreach \c/\dx in {0/0, 1/10} \foreach \blk/\xa in {0/105, 1/123}
+    \node[s2tiny, anchor=south, font=\tiny] at (\xa+\dx,-26.4)
+         {\ifcase\c SINet\or v2\fi};
+  \foreach \r/\lab in {0/{ES}, 1/{entropy}, 2/{ens.\ A0}, 3/{ens.\ CSHUF}}
+    \node[s2tiny, anchor=west, font=\tiny] at (89.5,{-29.4-\r*5.9}) {\lab};
+  % WHOLE-IMAGE: 8 of 8 pass. src: figure_data.json :: t2c.*.whole.*
+  \foreach \r/\c in {0/0,0/1,1/0,1/1,2/0,2/1,3/0,3/1}
+    \node[s2verdictpos, text width=7.4mm, align=center, minimum width=9mm,
+          minimum height=4.6mm, inner sep=0.8pt, font=\tiny]
+         at ({105+\c*10},{-29.4-\r*5.9}) {\textsc{pass}};
+  % BOUNDARY: only 2 of 8 pass, and four rows go NEGATIVE.
+  \foreach \r/\c/\v in {0/0/{\textsc{fail}}, 0/1/{\textsc{fail}}, 1/0/{\textsc{fail}},
+                        1/1/{\textsc{pass}}, 2/0/{\textsc{pass}}, 2/1/{\textsc{fail}},
+                        3/0/{\textsc{fail}}, 3/1/{\textsc{fail}}}
+    \node[s2verdictnull, text width=7.4mm, align=center, minimum width=9mm,
+          minimum height=4.6mm, inner sep=0.8pt, font=\tiny]
+         at ({123+\c*10},{-29.4-\r*5.9}) {\v};
+  \node[s2tiny, anchor=north west, text width=48mm, align=left] at (90,-53.5)
+       {whole-image \textbf{8/8}, 7 of them at 10/10 $k$-means seeds.
+        Boundary \textbf{2/8}, and \emph{four} rows go negative.};
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-58) -- (139,-58);
+  \node[s2zonelabel, anchor=north west] at (1.8,-58.6) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-62.6)
+       {The ordering is \textbf{not} a property of ES: it holds for predictive
+        entropy and ensemble disagreement too.\\[1pt]
+        But the \emph{strong} reading fails. $\rho(1{-}S_\alpha)$ reaches
+        \textbf{+0.5628} on SINet-v2, so ``uncertainty carries no localisation
+        information'' is \textbf{false as stated}. The claim is
+        \textbf{ordinal and comparative only}.};
+        % +0.5628 from figure_data.json ::
+        %   t2c.SINet-v2_S2C.ES_re-derived.whole.rho_1_minus_Sa
+  \node[s2verdictcon, text width=54mm, anchor=north west] at (80,-62.2)
+       {the gap generalises; the strong reading does not\\[1pt]
+        \textnormal{\scriptsize correlational, one endpoint --- it cannot
+        become ``uncertainty guidance fails in training''}};
+
+  \scodcardframe{139}{-75}
+\end{tikzpicture}

@@ -1,0 +1,93 @@
+% fig_abc.tex -- EXP ABC, the A/B/C training campaign. Body only.
+% Requires figures/s2rcod_style.tex. Defines NO styles.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/ABC/PREREGISTRATION.md section 1 (the frozen rule)
+  \scodcardhead{139}{EXP ABC \textnormal{--- the A/B/C campaign}}{\scodgen}{%
+    Does a concentrated, ES-targeted Stage-C budget train better than a random
+    one of the same size? Decided by a rule frozen before run 1:
+    $\Delta > 2\hat{\sigma}$ \emph{and} sign consistent 3/3 seeds.}
+
+  % ---------------- SETUP: arm construction -------------------------------
+  % src: rebuild/ABC/abc_common.py:229-243 (arms), :56 (seeds), :35-40 (archs)
+  \node[s2data, text width=21mm, anchor=north west] (base) at (2.5,-24)
+       {base pool\\4447 pairs};
+  \node[s2op, text width=17mm, anchor=north west] (a0) at (29,-18.0)
+       {\textbf{A0} $+0$};
+  \node[s2op, text width=17mm, anchor=north west] (a2) at (29,-24.4)
+       {\textbf{A2} $+1000$};
+  \node[s2op, text width=17mm, anchor=north west] (bb) at (29,-30.8)
+       {\textbf{B} $+1000$};
+  \node[s2op, s2selected, draw=s2orange, text width=17mm, anchor=north west]
+       (c10) at (29,-37.2) {\textbf{C10} $+1000$};
+  \foreach \n in {a0,a2,bb,c10} \draw[s2fwd] (base.east) -- (\n.west);
+  \node[s2tiny, anchor=north west, text width=28mm, align=left] at (50,-18.0)
+       {unpadded baseline\\\textbf{unclean:} $+22.5\%$ exposure};
+  \node[s2tiny, anchor=north west, text width=28mm, align=left] at (50,-24.7)
+       {authors' originals\\the clean control};
+  \node[s2tiny, anchor=north west, text width=28mm, align=left] at (50,-31.1)
+       {random renders\\redrawn per seed};
+  \node[s2tiny, anchor=north west, text width=28mm, align=left] at (50,-37.5)
+       {ES-targeted renders\\\textbf{``Ours''}, $\alpha{=}1.0$};
+  \node[s2hyper, anchor=north west] at (2.5,-31)
+       {2 archs x 3 seeds\\= 24 runs};
+
+  % the budget ceiling -- the measured constraint on what any arm could do
+  \node[s2gate, text width=68mm, anchor=north west] at (2.5,-44.6)
+       {\texttt{total\_step} pinned \textbf{253} / \textbf{127} in both rounds of
+        every run --- added data buys \textbf{0} gradient steps};
+        % 253 from figure_data.json :: abc.SINet.total_step
+        % 127 from figure_data.json :: abc.SINetv2.total_step
+
+  % ---------------- MEASUREMENT: the gaps against the bar ------------------
+  \scodmeaslabel{81}
+  \draw[s2rule] (79,-15) -- (79,-56.0);
+  \node[s2tiny, anchor=north west] at (81,-18.5)
+       {SINet $\mid$ COD10K-test (primary), \scodSa{} arm means:};
+  % The 2-sigma band, drawn TO SCALE and centred on B -- because the
+  % pre-registered claim is Delta(C-B), so the bar is an interval around B.
+  % Scale: 1mm = 0.001 of S_alpha. B sits at x=105.
+  % offsets from figure_data.json :: abc.SINet.COD10K.gap.*
+  %   A0  = B - 0.012497 -> 92.5      A2  = B - 0.005768 -> 99.2
+  %   B   =                105.0      C10 = B + 0.005034 -> 110.0
+  %   2*sigma_hat = 0.017933          -> half-width 17.9mm
+  \fill[s2greyfill] (87.1,-25.5) rectangle (122.9,-30.5);
+  \draw[s2unresolved, draw=s2grey] (87.1,-25.5) rectangle (122.9,-30.5);
+  \node[s2tiny, anchor=north] at (105,-31.0) {$B \pm 2\hat{\sigma}$, to scale};
+  \foreach \x/\lab in {92.5/A0, 99.2/A2, 110.0/C10}{
+    \draw[draw=s2grey, line width=0.5pt] (\x,-25.0) -- (\x,-31.0);
+    \node[s2tiny, anchor=south] at (\x,-24.8) {\lab};}
+  \draw[s2selected, draw=s2orange, line width=1.0pt, -]
+       (105,-24.6) -- (105,-31.4);
+  \node[s2tiny, anchor=south, text=s2orange, font=\tiny\bfseries]
+       at (105,-24.4) {B};
+  \node[s2tiny, anchor=north west, text width=54mm, align=left] at (81,-35)
+       {A0 \textbf{0.7010} $\cdot$ A2 \textbf{0.7077} $\cdot$
+        B \textbf{0.7134} $\cdot$ C10 \textbf{0.7185} --- every arm lies
+        \emph{inside} the bar, and the whole A0$\rightarrow$C10 span
+        (\textbf{0.0175}) is narrower than the bar itself};
+       % arm means from figure_data.json :: abc.SINet.COD10K.<arm>.Sm_mean
+  \node[s2textbox, text width=54mm, anchor=north west] at (81,-44)
+       {\textbf{the pre-registered claim}\\
+        $\Delta(\mathrm{C}{-}\mathrm{B}) = \mathbf{+0.005034}$, sign 3/3,
+        against a bar of $\mathbf{0.017933}$};
+       % from figure_data.json :: abc.SINet.COD10K.gap.B->C10
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-56.0) -- (139,-56.0);
+  \node[s2zonelabel, anchor=north west] at (1.8,-56.6) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-60.6)
+       {$\Delta(\mathrm{C}{-}\mathrm{B})$ is \textsc{within noise} in
+        \textbf{all four} arch $\times$ endpoint cells, and the two
+        architectures \textbf{disagree on its sign}
+        (SINet $+0.005034$, SINet-v2 $-0.000399$).\\[1pt]
+        The bar $2\hat{\sigma}=\mathbf{0.017933}$ is \emph{larger} than the
+        entire reference improvement of $0.0142$ this design set out to
+        half-resolve.};
+       % -0.000399 from figure_data.json :: abc.SINetv2.COD10K.gap.B->C10
+  \node[s2verdictnull, text width=54mm, anchor=north west] at (80,-60.2)
+       {no effect resolvable at this sensitivity\\[1pt]
+        \textnormal{\scriptsize a null bounded by power --- \textbf{not} a
+        demonstration of absence}};
+
+  \scodcardframe{139}{-71}
+\end{tikzpicture}

@@ -1,0 +1,73 @@
+% fig_c1.tex -- EXP C1, the attribution ladder. Body only.
+% Requires figures/s2rcod_style.tex. Defines NO styles.
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % src: question from rebuild/C1/C1.md:16 (Objective)
+  \scodcardhead{139}{EXP C1 \textnormal{--- targeted vs random allocation}}{\scodsig}{%
+    How different is targeted training data from random? And if it \emph{is}
+    different, is that difference attributable to the uncertainty signal --
+    or to something the signal is merely correlated with?}
+
+  % ---------------- SETUP: one rule, five controls ------------------------
+  % src: rebuild/C1/c1_targeted_vs_random.py:75-81 softmax, :84-94 budget,
+  %      :125-134 centroid-cosine rank, :153-177 greedy distinct select
+  \node[s2data, text width=24mm, anchor=north west] (sig) at (2.5,-20)
+       {\texttt{target\_es}\\over $k{=}75$ clusters};
+  \node[s2op, text width=26mm, anchor=north west] (rule) at (31,-20)
+       {softmax $T{=}\alpha\,\mathrm{sd}(es)$\\budget, rank, select};
+  \draw[s2fwd] (sig) -- (rule);
+  \node[s2hyper, anchor=north] at ($(rule.south)+(0,-1)$) {B=1000 R2 cutout};
+  \node[s2tiny, anchor=north west, text width=72mm, align=left] at (2.5,-34)
+       {\textbf{held fixed in every arm:} the allocation \emph{shape}
+        (same softmax, same budget, same ranking, same greedy rule).
+        Only what the rule is pointed \emph{at} changes.};
+  \node[s2tiny, anchor=north west, text width=72mm, align=left] at (2.5,-42)
+       {each control destroys one thing:\quad
+        \textsc{shuffled} the signal's cluster assignment $\cdot$
+        \textsc{centroid} the signal entirely $\cdot$
+        \textsc{direction} the fitted axis $\cdot$
+        \textsc{null} everything};
+
+  % ---------------- MEASUREMENT: the ladder --------------------------------
+  \scodmeaslabel{81}
+  \draw[s2rule] (79,-15) -- (79,-52.2);
+  \node[s2tiny, anchor=north west] at (81,-18.2)
+       {held-out Cohen's $d$, mean over 20 cells:};
+  % the five arms, most-real at the top
+  \node[s2outcome, s2selected, draw=s2orange, text width=33mm, anchor=north west]
+       (a1) at (81,-20.4) {\textsc{targeted} (the real signal)};
+  \node[s2outcome, text width=33mm, anchor=north west] (a2) at (81,-26.5)
+       {\textsc{shuffled} signal destroyed};
+  \node[s2outcome, text width=33mm, anchor=north west] (a3) at (81,-32.6)
+       {\textsc{centroid} arbitrary cluster};
+  \node[s2outcome, text width=33mm, anchor=north west] (a4) at (81,-38.7)
+       {\textsc{direction} random axis};
+  \node[s2outcome, s2unresolved, text width=33mm, anchor=north west] (a5) at (81,-44.8)
+       {\textsc{null} random vs random};
+  \foreach \n/\v in {a1/{+0.675}, a2/{+0.668}, a3/{+0.740}, a4/{+0.627}, a5/{-0.133}}
+    \node[s2note, anchor=west, font=\scriptsize\bfseries] at ($(\n.east)+(1.5,0)$) {\v};
+    % +0.675 from figure_data.json :: c1.d_heldout.TARGETED_by_target_es
+    % +0.668 from figure_data.json :: c1.d_heldout.shuffled_es
+    % +0.740 from figure_data.json :: c1.d_heldout.random_centroid
+    % +0.627 from figure_data.json :: c1.d_heldout.random_direction
+    % -0.133 from figure_data.json :: c1.d_heldout.random_vs_random
+
+  % ---------------- OUTCOME ------------------------------------------------
+  \draw[s2rule] (0,-52.2) -- (139,-52.2);
+  \node[s2zonelabel, anchor=north west] at (1.8,-52.8) {OUTCOME};
+  \node[s2tiny, anchor=north west, text width=76mm, align=left] at (2.5,-56.8)
+       {paired increment, targeted \emph{minus} control, over all 20 cells:\\[1pt]
+        vs its own \textsc{shuffled} control \quad
+        \textbf{+0.0073} of a $d$, targeted wins \textbf{13/20} --- a coin flip\\[1pt]
+        vs an arbitrary \textsc{centroid} \quad
+        \textbf{$-$0.0649}, targeted wins \textbf{4/20} --- it is \emph{worse}};
+        % +0.0073 and 13/20 from figure_data.json :: c1.increment.shuffled_es
+        % -0.0649 and 4/20  from figure_data.json :: c1.increment.random_centroid
+  \node[s2verdictref, text width=54mm, anchor=north west] at (80,-55.6)
+       {destroying the signal reproduces the separation\\[1pt]
+        \textnormal{\scriptsize what targeting buys is
+        \textbf{concentration}, not targeting}};
+  % NOTE: C1's scope sentence lives in the figure CAPTION, not the card --
+  % a figure should not carry a paragraph, and the card must stay under
+  % 0.30\textheight so two can stack on an appendix page.
+  \scodcardframe{139}{-69}
+\end{tikzpicture}
