@@ -1450,7 +1450,12 @@ annotation in block #3 — §16(b) item 2.**
 **concentration**, so its null said nothing about the uncertainty signal. T2 holds concentration
 *exactly* fixed and varies only the signal's **direction**: C10 (the real `target_es`), CSHUF (ES
 permuted across clusters, targeting destroyed) and CINV (rank-reversed, maximally anti-targeted).
-12 further training runs, 2 architectures × 3 arms × 3 seeds.
+**12 further training runs, 2 architectures × 2 *new* arms × 3 seeds** — only CSHUF and CINV
+are trained here. C10 and B are **re-scored, never re-trained**, and enter as reference arms; the
+σ̂ pool is therefore all four arms {B, C10, CSHUF, CINV} at df = 8, which is what licenses
+applying this campaign's bar to Δ(C10 − B). *(Corrected 2026-09-13: this line previously read
+"2 architectures × 3 arms × 3 seeds", which is 18, not 12. The committed block `EXP T2` #2 @
+`REBUILD_LOG.txt:2409` carries the correct structure and was always authoritative.)*
 
 **Headline result.** *"**WITHIN NOISE on all twelve cells: every gap, both architectures, both
 endpoints.** The largest gap anywhere is 0.005007 (1.82 σ̂); the largest on the primary endpoint is

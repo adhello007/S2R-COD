@@ -2608,3 +2608,49 @@ NOTES      T2-C is CORRELATIONAL. It establishes a strong prior that uncertainty
            ONE shared boundary band per image, from the S2C teacher, used by all three signals, so "boundary-restricted" names the same region in every row. A per-signal band would make each row a different region and confound the comparison invisibly; it is reported for the ensemble as the ens_*_ownband robustness row only.
 ================================================================================
 
+================================================================================
+2026-09-13T12:51:21+05:30 | commit 11f9053 (dirty) | EXP AC
+CMD   .venv/bin/python rebuild/AC/ac_measure.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  per-cluster target signal vs per-cluster endpoint error, dinoL518 k=75 committed seed 0, floors >=15 endpoint / >=5 target, first-order partial Spearman
+METRICS
+  ordering_unpartialled        = 8/8    (reproduces T2C at the committed seed 0)
+  ordering_partial_object_area = 7/8    (z_obj = per-cluster mean gt_fg_frac over endpoint images)
+  ordering_partial_band_area   = 6/8    (z_unc = per-cluster mean band_frac over target images)
+  area_robust_verdict          = AREA-ROBUST    (PREREGISTRATION_AC.md SS AC.4, >=6/8 on BOTH covariates)
+  G_AC1_max_dev_vs_t2c_table   = 4.922e-05    (recomputed rho vs committed t2c_table.csv at 4dp)
+  SINet/S2C|ES                 = raw +0.6284/+0.3433/+0.2613 | obj +0.5761/+0.4988/+0.4862 | unc +0.5518/+0.3897/+0.3457    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet/S2C|entropy            = raw +0.5892/+0.4267/+0.3588 | obj +0.5505/+0.5517/+0.5479 | unc +0.5060/+0.4426/+0.4046    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet/S2C|ensemble A0        = raw +0.6028/+0.2698/+0.1491 | obj +0.5411/+0.4301/+0.3706 | unc +0.5603/+0.2583/+0.1535    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet/S2C|ensemble CSHUF     = raw +0.5212/+0.4006/+0.3361 | obj +0.5002/+0.4857/+0.4694 | unc +0.4857/+0.3937/+0.3431    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet-v2/S2C|ES              = raw +0.7070/+0.5628/+0.4591 | obj +0.7062/+0.6272/+0.5930 | unc +0.4457/+0.4744/+0.4088    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet-v2/S2C|entropy         = raw +0.7393/+0.5404/+0.4070 | obj +0.7134/+0.6546/+0.6138 | unc +0.5369/+0.4266/+0.3147    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet-v2/S2C|ensemble A0     = raw +0.6191/+0.5483/+0.4540 | obj +0.6245/+0.5969/+0.5617 | unc +0.4355/+0.4488/+0.3795    (MAE/1-Sa/1-IoU; 50 clusters)
+  SINet-v2/S2C|ensemble CSHUF  = raw +0.5576/+0.4488/+0.3370 | obj +0.5344/+0.5209/+0.4765 | unc +0.4482/+0.3615/+0.2636    (MAE/1-Sa/1-IoU; 50 clusters)
+THRESHOLD  recomputed rho reproduces the committed T2C whole-image table at 4dp -> PASS
+THRESHOLD  ordering survives partialling on object area in >=6 of 8 rows -> PASS
+THRESHOLD  ordering survives partialling on band area in >=6 of 8 rows -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/AC/out/ac_partials.json, /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/AC/out/ac_table.csv
+TRAINS     NO
+NOTES      AREA CONTROL ON T2C. Rule frozen in PREREGISTRATION_AC.md at c2114af, BEFORE this script existed. Tests the confound T2C's own post-hoc explanation implies but does not test: a whole-image mean is uncertainty density x area, MAE scales with area and S_alpha carries an object-size term that does not. Cluster partition, both floors and both aggregations are IMPORTED from the committed T2C/B1 code path, not reimplemented, so any difference is attributable to the partial and to nothing else. G-AC1 asserts the unpartialled recomputation reproduces the committed table before any partial is reported.
+================================================================================
+
+================================================================================
+2026-09-13T19:07:50+05:30 | commit e22593b (dirty) | EXP PC
+CMD   .venv/bin/python rebuild/PC/pc_train.py --steps train
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  MyTrain.py --method mean_teacher --iteration 1, SINet, base pool 4447, cuDNN deterministic, seeds 42/43/45
+METRICS
+  training_runs_completed = 3/3    (mean_teacher, SINet, iteration forced to 1 by MyTrain.py:249-251)
+  pool_size_each_arm      = 4447    (hardlinks of the committed base pool; no A/B/C pool opened for writing)
+  teacher_SINet_MT_s42    = 2ff0517ffbedc358    (sha256[:16] of Tea_epoch_best.pth)
+  teacher_SINet_MT_s43    = ab6831d822f11f69    (sha256[:16] of Tea_epoch_best.pth)
+  teacher_SINet_MT_s45    = 57f10c425d94f0a9    (sha256[:16] of Tea_epoch_best.pth)
+THRESHOLD  all declared mean-teacher runs completed with a best teacher -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/PC/out/pc_train_s42.log, /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/PC/out/pc_train_s43.log, /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/PC/out/pc_train_s45.log
+TRAINS     YES
+NOTES      BLOCK 1 OF 2 -- RUN ACCOUNTING FOR THE POSITIVE CONTROL. Rule frozen in PREREGISTRATION_PC.md at c2114af before this script existed. This is a control on INSTRUMENT SENSITIVITY, not an ablation: C10 differs from MT in method, round count and pool size at once, so no component attribution follows from it and none is made. rebuild/ABC/abc_train.py is untouched and remains frozen; the committed A/B/C and T2 runs are not retrained and C10 enters only as a re-scored reference arm in block #2.
+================================================================================
+
