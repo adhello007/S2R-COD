@@ -40,15 +40,30 @@ ARCHS = {
 }
 ARMS = ('A0', 'A2', 'B', 'C10')          # C05 is the pre-registered secondary
 T2_ARMS = ('CSHUF', 'CINV')              # PREREGISTRATION_T2.md -- additive, dated
-ARM_ALPHA = {'C10': 1.0, 'C05': 0.5, 'CSHUF': 1.0, 'CINV': 1.0}
+OR_ARMS = ('CORACLE',)                   # PREREGISTRATION_OR.md -- additive, dated
+# FX: the optimisation-schedule control (PREREGISTRATION_FX.md -- additive, dated).
+# An FX arm has the SAME pool as the arm it suffixes and differs ONLY in the
+# trainer's --exposure flag, so RUNID must differ or it would overwrite a
+# committed snapshot. The suffix is the whole mechanism.
+FX_SUFFIX = 'FX'
+FX_ARMS = ('A0FX', 'BFX', 'C10FX')
+ARM_ALPHA = {'C10': 1.0, 'C05': 0.5, 'CSHUF': 1.0, 'CINV': 1.0, 'CORACLE': 1.0,
+             'C10FX': 1.0}
 # T2: how each C-family arm permutes the COMMITTED target_es vector before the
 # softmax. None is C10's identity. BOTH T2 transforms are PERMUTATIONS, so the
 # allocation SHAPE is preserved exactly and only the cluster->budget assignment
 # changes (PREREGISTRATION_T2.md T2.4).
 ARM_ES_PERM = {'C10': None, 'C05': None,
-               'CSHUF': 'shuffled', 'CINV': 'rank_reversed'}
+               'CSHUF': 'shuffled', 'CINV': 'rank_reversed',
+               'CORACLE': 'oracle_rank', 'C10FX': None}
 SHAPE_KEYS = ('clusters_funded', 'max_alloc_share',
               'alloc_entropy_norm', 'tv_from_uniform')   # n_displaced EXCLUDED
+# OR: the oracle vector's only sanctioned source. Per-cluster mean (1 - S_alpha)
+# on COD10K-test under the committed dinoL518 partition, read and never recomputed.
+# PREREGISTRATION_OR.md OR.2.3. Reading this is an ENDPOINT-LABEL read and is the
+# whole content of the CORACLE arm -- declared in OR.0, never used by a method arm.
+ORACLE_CSV = 'rebuild/B1/out/b1_cluster_es_dinoL518.csv'
+ORACLE_COL = 'test_one_minus_sa'
 SHUF_NS = 910_000        # T2 C-shuffled permutation namespace
 SHUF_MAX_RHO = 0.10      # |Spearman(es[sigma], es)| acceptance bound
 SHUF_TRIES = 64          # declared before the draw; exhausting it is a HALT
@@ -143,6 +158,42 @@ def _spearman_perm(es, sigma):
     return float(a @ b / np.sqrt((a @ a) * (b @ b)))
 
 
+def oracle_error():
+    """The OR arm's ranking vector: per-cluster mean (1 - S_alpha) on COD10K-test.
+
+    READ, never recomputed, from the committed B1 table -- the only sanctioned
+    accessor (PREREGISTRATION_OR.md OR.2.3). Returns (vector, provenance).
+
+    THIS IS AN ENDPOINT-LABEL READ. Gate G1 exists to forbid exactly this for a
+    METHOD arm; CORACLE is a declared diagnostic upper bound, not a method, and
+    OR.0 states that in full. No method arm calls this function.
+    """
+    import csv as _csv
+    import hashlib
+    path = os.path.join(C.REPO, ORACLE_CSV)
+    with open(path, newline='') as fh:
+        rows = list(_csv.DictReader(fh))
+    if len(rows) != 75:
+        raise RuntimeError('OR HALT: %s has %d rows, expected 75' % (ORACLE_CSV, len(rows)))
+    rows.sort(key=lambda r: int(r['cluster']))
+    if [int(r['cluster']) for r in rows] != list(range(75)):
+        raise RuntimeError('OR HALT: cluster ids in %s are not 0..74' % ORACLE_CSV)
+    vec = np.array([float(r[ORACLE_COL]) for r in rows], dtype=np.float64)
+    if not np.isfinite(vec).all():
+        raise RuntimeError('OR HALT: non-finite value in %s' % ORACLE_COL)
+    if len(np.unique(vec)) != len(vec):
+        raise RuntimeError('OR HALT: ties in %s -- the rank map would be ambiguous' % ORACLE_COL)
+    n_test = np.array([int(r['n_test']) for r in rows], dtype=np.int64)
+    prov = dict(source=ORACLE_CSV, column=ORACLE_COL, n_clusters=len(vec),
+                sha256=hashlib.sha256(open(path, 'rb').read()).hexdigest(),
+                n_test_min=int(n_test.min()), n_test_max=int(n_test.max()),
+                n_test_sum=int(n_test.sum()),
+                n_clusters_n_test_eq_1=int((n_test == 1).sum()),
+                value_min=round(float(vec.min()), 6), value_max=round(float(vec.max()), 6),
+                oracle_uses_endpoint_labels=True)
+    return vec, prov
+
+
 def es_permutation(es, kind):
     """The T2 cluster permutation sigma, with es_used = es[sigma].
 
@@ -177,6 +228,32 @@ def es_permutation(es, kind):
                            perm_rho=round(_spearman_perm(es, sigma), 5),
                            perm_fixed_points=int((sigma == np.arange(k)).sum()),
                            perm_seed=None)
+    if kind == 'oracle_rank':
+        # PREREGISTRATION_OR.md OR.1. Give the cluster with the r-th LARGEST true
+        # endpoint error exactly the budget the r-th LARGEST ES received under C10.
+        # sigma[asc_or[i]] = asc_es[i] is a permutation by construction (both are
+        # argsorts of tie-free vectors), so the allocation SHAPE is preserved
+        # EXACTLY and only the cluster->budget assignment changes.
+        oracle, prov = oracle_error()
+        if len(oracle) != k:
+            raise RuntimeError('OR HALT: oracle vector is %d long, es is %d' % (len(oracle), k))
+        asc_es = np.argsort(es, kind='stable')
+        asc_or = np.argsort(oracle, kind='stable')
+        sigma = np.empty(k, dtype=np.int64)
+        sigma[asc_or] = asc_es
+        if sorted(sigma.tolist()) != list(range(k)):
+            raise RuntimeError('OR HALT: oracle_rank map is not a permutation')
+        # rho of the ORACLE ranking against the ES ranking -- reported, decides nothing
+        ro = np.argsort(np.argsort(oracle, kind='stable'), kind='stable').astype(np.float64)
+        re_ = np.argsort(np.argsort(es, kind='stable'), kind='stable').astype(np.float64)
+        a, b = ro - ro.mean(), re_ - re_.mean()
+        rho_oracle_vs_es = float(a @ b / np.sqrt((a @ a) * (b @ b)))
+        return sigma, dict(es_perm='oracle_rank',
+                           perm_rho=round(_spearman_perm(es, sigma), 5),
+                           perm_fixed_points=int((sigma == np.arange(k)).sum()),
+                           perm_seed=None,
+                           rho_oracle_vs_es=round(rho_oracle_vs_es, 5),
+                           oracle_provenance=prov)
     if kind == 'shuffled':
         for off in range(SHUF_TRIES):
             sigma = np.random.default_rng(SHUF_NS + off).permutation(k)
@@ -223,10 +300,25 @@ def arm_c_stems(alpha, es_perm=None):
     return [sp.names[i] for i in idx], cell
 
 
+def base_arm(arm):
+    """The arm an FX arm mirrors. 'C10FX' -> 'C10'; a non-FX arm is itself.
+
+    An FX arm's POOL is identical to its base arm's -- same stems, same size,
+    same provenance. The two differ only in the trainer's --exposure flag, which
+    is not a property of the pool at all. Keeping the pools identical is what
+    makes the schedule the single manipulated factor (PREREGISTRATION_FX.md)."""
+    return arm[:-len(FX_SUFFIX)] if arm.endswith(FX_SUFFIX) and arm != FX_SUFFIX else arm
+
+
+def is_fx(arm):
+    return arm.endswith(FX_SUFFIX) and arm != FX_SUFFIX
+
+
 def arm_added(arm, seed):
     """What an arm adds: (src_prefix, dst_prefix, stems, (img_dir, img_ext),
     (msk_dir, msk_ext)). The render pool's files already carry SOD_; the authors'
     pool's do not, so the source and destination prefixes differ for A2."""
+    arm = base_arm(arm)
     if arm == 'A0':
         return None, None, [], None, None
     if arm == 'A2':

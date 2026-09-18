@@ -212,7 +212,7 @@ def check_pool(rid, arm, seed):
     import numpy as np
     stem = lambda f: os.path.splitext(f)[0]                       # noqa: E731
     pool = os.path.join(C.REPO, A.pool_dir(rid))
-    expect = 4447 if arm == 'A0' else 4447 + A.BUDGET
+    expect = 4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET
     img = sorted(os.listdir(pool + '/Image'))
     gt = sorted(os.listdir(pool + '/GT'))
     r = dict(runid=rid, arm=arm, seed=seed, n_image=len(img), n_gt=len(gt),
@@ -313,6 +313,12 @@ def gate_pools(runs):
         x, y = sets[a], sets[b]
         kind = ('CxC' if a in A.ARM_ALPHA and b in A.ARM_ALPHA
                 else ('BxB' if a not in A.ARM_ALPHA and b not in A.ARM_ALPHA else 'BxC'))
+        # PREREGISTRATION_FX.md FX.2.2: an FX arm IS its base arm's selection --
+        # identity is the requirement, not a violation. Such a pair is recorded as
+        # 'FXpair' and asserted EQUAL (jaccard == 1) instead of being gated for
+        # distinctness. It is never silently dropped.
+        if kind == 'CxC' and A.base_arm(a) == A.base_arm(b) and a != b:
+            kind = 'FXpair'
         ov['%s|%s' % (a, b)] = dict(overlap=len(x & y), chance=round(chance, 1),
                                     ratio=round(len(x & y) / chance, 3),
                                     jaccard=round(len(x & y) / len(x | y), 4),
@@ -328,7 +334,11 @@ def gate_pools(runs):
               # T2.7 distinctness: two C-family arms sharing most of their images
               # cannot test the claim -- a null would be mechanical.
               and all(v['jaccard'] <= A.T2_MAX_JACCARD
-                      for v in ov.values() if v['kind'] == 'CxC'))
+                      for v in ov.values() if v['kind'] == 'CxC')
+              # FX.2.2 identity: an FX arm must select EXACTLY its base arm's set,
+              # or the schedule is no longer the only manipulated factor.
+              and all(v['jaccard'] == 1.0
+                      for v in ov.values() if v['kind'] == 'FXpair'))
     return dict(gate='pools', passed=ok, n_pools=len(per), per_pool=per,
                 base_bytes_bad=base_ok, render_mask_bad=mask_ok,
                 armC_reproduces_C1=repro, overlap_B_vs_C=ov,
