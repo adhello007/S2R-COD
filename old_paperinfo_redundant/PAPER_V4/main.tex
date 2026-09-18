@@ -1,0 +1,870 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2027_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\title{Concentration, Not Targeting: A Pre-Registered Null for\\
+Uncertainty-Guided Synthetic Data in Camouflaged Object Detection}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{Anonymous Authors \\
+Anonymous Institution \\
+\texttt{anonymous@example.com}
+}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+\maketitle
+
+% =====================================================================
+% ABSTRACT -- written last
+% =====================================================================
+\begin{abstract}
+A control that returns zero is informative only if it could have returned something else. We report
+two cases in camouflaged object detection where the default control certifies the comforting answer.
+First, allocating a synthetic-data budget by model uncertainty appears to select a markedly different
+training set than random selection --- but selection rules that keep the allocation's \emph{shape}
+while destroying the uncertainty signal reproduce that separation entirely, and the signal itself adds
+$+0.0073$ of a Cohen's $d$ over its own shuffle. In $24$ pre-registered training runs the targeted
+budget does not beat the random one, and in $12$ further runs holding concentration exactly fixed,
+real, destroyed and reversed targeting are indistinguishable in $12/12$ cells. Second, exact hashing
+reports $0$ collisions between CHAMELEON and COD10K-train, while re-encode-tolerant matching finds
+that $41$ of CHAMELEON's $76$ images ($53.9\%$) are the same photographs as training data; we claim
+non-independence rather than inflation, and release a detector and clean protocol. Across six
+independent signal--architecture tests, uncertainty also predicts pixel error better than structural
+error under a criterion fixed in advance, surviving a pre-registered area control that clears its
+floor by no margin on one of two covariates. We quantify rather than assert the limits: the nulls
+resolve $39\%$ to $45\%$ of the reference improvement, and a mean-teacher positive control confirms
+the design detects a real effect of $+0.0197$ at $3.3\times$ its bar --- while remaining unable to
+resolve an effect the size of the nulls themselves.
+\end{abstract}
+
+% =====================================================================
+% 1. INTRODUCTION -- written fifth
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Camouflaged object detection is label-scarce: annotating an object whose appearance statistics match
+its surroundings is slow and expensive. Generating camouflaged images offers a way out, and once
+generation is cheap a question follows --- if the budget is finite, where should it be spent? The
+answer the field's methods propose is appealing: partition the unlabelled target distribution into
+clusters, score each by how much the model disagrees with its own moving average, and allocate
+generation in proportion, so new data arrives where the model is weakest. Every component is standard,
+each is cheap, and the composite is exactly the kind of closed-loop system that ought to work.
+
+\paragraph{The thesis: the default control certifies the comforting answer.} Testing that idea, we
+twice found the standard instrument returning a clean zero where a better one does not. Comparing a
+targeted allocation against a \emph{random} one credits to targeting an effect that concentration
+alone produces; the control that discriminates is a same-shape allocation with the signal destroyed.
+Checking a benchmark for contamination by \emph{exact hashing} certifies as perfectly clean a
+benchmark of which over half is training data; the control that discriminates is re-encode-tolerant
+matching. In both cases the default returns $0$, the result is the one everybody would prefer, and it
+is wrong. That pattern, not either result alone, is what this paper is about.
+
+\paragraph{What we did, and the scope, in the same breath.} Across $24$ pre-registered training runs
+--- two architectures, four arms, three seeds --- a targeted allocation does not beat a random one:
+the decisive gap is \textsc{within noise} on both architectures and both endpoints under a rule fixed
+before the first run. That campaign's bar is $126\%$ of the improvement the approach reports; a second
+campaign of $12$ runs tightens it by $3.24\times$, and under \emph{that} bar the decisive gap sits at
+$0.91\times$ threshold --- still within noise, marginally so. Both are therefore \emph{no effect
+resolvable at this sensitivity}, never a demonstration of absence. And because a null is worth only as
+much as the design's demonstrated ability to return something else, a mean-teacher positive control
+detects a real effect of $+0.0197$ at $3.3\times$ the bar, $3/3$ sign-consistent --- establishing the
+instrument is not blind, though not that it could have seen an effect the size of the nulls, a gap we
+state explicitly in Section~\ref{sec:null}.
+
+\paragraph{Contributions.} Each maps to one section, and the tier says how far it travels:
+\textbf{Tier 3} independent of the method, \textbf{Tier 2} concerning the target data or the
+uncertainty signal, \textbf{Tier 1} properties of this loop.
+
+\begin{itemize}
+\itemsep0.10em
+\item \textbf{[Tier 3]} $41$ of CHAMELEON's $76$ images ($53.9\%$) are re-encoded COD10K-train and
+CAMO training images, while exact hashing returns $0$. Verified against an author-sourced release and
+calibrated by a negative control finding $0$ of the $1082$ NC4K images checkable against the COD10K
+\emph{test} split (the $1715$ checkable figure in Table~\ref{tab:contamination} is the training-pool
+axis; the two must not be collapsed). We claim non-independence rather than inflation, and identify a
+published protocol whose unlabelled target pool contains $40$ of the $76$ test images
+(Section~\ref{sec:contamination}).
+\item \textbf{[Tier 2]} The target distribution has no cluster structure to allocate over --- best
+silhouette $0.1600$, no better in three embedding spaces (Section~\ref{sec:diss-structure}).
+\item \textbf{[Tier 2]} An uncertainty signal can contribute nothing beyond the concentration it
+induces: $+0.0073$ of a Cohen's $d$ against its own shuffle, and with concentration held \emph{exactly}
+fixed, real, destroyed and reversed targeting are indistinguishable in $12/12$ cells
+(Section~\ref{sec:diss-signal}).
+\item \textbf{[Tier 2]} Uncertainty predicts pixel error better than structural error in six
+independent signal--architecture tests under a criterion fixed in advance, surviving a pre-registered
+area control --- though that control clears its floor by no margin on one of two covariates
+(Section~\ref{sec:diss-ordering}).
+\item \textbf{[Tier 1, scoped]} Why this instantiation could not have shown a gain: a pinned
+optimisation budget, a foreground supply that is a bijection onto $4447$ copied objects, and a
+generated distribution narrower than its own input. We also \emph{withdraw} one of our own candidate
+causes (Section~\ref{sec:diss-instantiation}). None licenses the conclusion that closed-loop
+generation cannot work.
+\end{itemize}
+
+Decision rules were committed before the runs they govern, at named commits; amendments are
+append-only and dated; thresholds that failed are reported failed, and two that \emph{passed} are
+reported and then refused.
+
+% =====================================================================
+% 2. RELATED WORK -- written fourth
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Camouflaged object detection and its benchmarks.} The task asks for pixel-accurate
+segmentation of objects whose appearance statistics match their surroundings
+[CITE: COD task definition / survey], reported on a small fixed set of benchmarks ---
+COD10K [CITE: COD10K benchmark], CAMO [CITE: CAMO benchmark], NC4K [CITE: NC4K benchmark] and
+CHAMELEON [CITE: CHAMELEON benchmark] --- with search-and-identification architectures
+[CITE: SINet], [CITE: SINet-v2], [CITE: SegMaR] and structure-aware measures [CITE: S-measure],
+[CITE: E-measure], [CITE: weighted F-measure]. That those four are the standard reporting set is what
+makes Section~\ref{sec:contamination} consequential beyond any single method.
+
+\paragraph{Synthetic data and generative augmentation.} Diffusion-generated training data is a
+standard response to label scarcity in dense prediction
+[CITE: diffusion-generated training data for segmentation], [CITE: latent diffusion], [CITE: DDIM],
+with compositing augmentation its cheaper predecessor [CITE: copy-paste augmentation]. For camouflage,
+a synthetic-to-real line [CITE: synthetic-to-real domain adaptation] regenerates a background around a
+real foreground [CITE: LAKE-RED] and couples that generator to a self-training loop [CITE: S2R-COD].
+That pairing is what we test; other camouflage generators exist
+[CITE: other camouflage image generation] and we do not test them, so our null is about this
+instantiation.
+
+\paragraph{Uncertainty-guided acquisition.} The idea under test is reasonable, and prior work is why.
+Acquiring data where a model is least certain is long-established
+[CITE: uncertainty sampling / active learning survey], with teacher disagreement [CITE: mean teacher],
+ensembles [CITE: deep ensembles] and predictive entropy [CITE: predictive entropy / MC-dropout] as
+standard estimators, and consistency training [CITE: consistency regularisation / FixMatch] and
+pseudo-labelling [CITE: pseudo-labelling] as the usual way to exploit unlabelled data. In the batch
+setting acquisition is also spread over a representation, by clustering or core-set selection
+[CITE: core-set / diversity-based acquisition], here over self-supervised features [CITE: DINOv2],
+[CITE: CLIP]. Uncertainty and diversity are known to be entangled in batch acquisition
+[CITE: batch active learning, uncertainty-diversity trade-off]; Section~\ref{sec:diss-signal} measures
+how much benefit survives when the uncertainty is destroyed and only the diversity remains.
+
+\paragraph{Benchmark integrity and negative results.} Train-test contamination has repeatedly been
+found in established vision benchmarks [CITE: train-test contamination in vision benchmarks],
+[CITE: CIFAR/ImageNet duplicate analysis], and is a first-order concern in evaluating large models
+[CITE: benchmark contamination in LLM evaluation]; our contribution is that exact hashing certifies a
+contaminated set as clean. We follow arguments for pre-registration
+[CITE: pre-registration in machine learning] and for publishing disconfirming results
+[CITE: negative results / reproducibility in ML], and our finding that a learned probe separates two
+encodings of identical content joins existing criticism of learned distributional distances
+[CITE: critiques of learned-probe distributional distance], [CITE: FID / representation-metric critiques].
+
+
+
+% =====================================================================
+% 3. THE APPROACH UNDER TEST -- written first
+% =====================================================================
+\section{The Approach Under Test}
+\label{sec:method}
+
+A negative result is only as informative as the specification of what was tested. We therefore give
+the loop in full, and state which of its properties are pre-registered, which are inherited from the
+released implementation, and which we measured rather than assumed.
+
+\subsection{Setting and loop}
+\label{sec:method-setting}
+
+The task is source-to-real domain adaptation for camouflaged object detection. The labelled source
+pool holds $4447$ image and ground-truth pairs; the unlabelled target pool holds $4040$ images and no
+labels. The primary endpoint is the COD10K test split, the secondary NC4K. The target pool is not one
+distribution: it mixes $3040$ COD10K images with $1000$ from CAMO, and a held-out probe separates them
+at up to $0.9225$ AUC, so a method partitioning this pool is partitioning a mixture
+(Section~\ref{sec:diss-structure}).
+
+Training runs in two rounds. Round one trains a student against the source pool while an
+exponential-moving-average teacher supplies a consistency target on the unlabelled images. Between
+rounds, target images whose student--teacher edge disagreement falls below a fixed fraction of the set
+average are appended with the teacher's prediction as their label. Round two rebuilds both models from
+ImageNet initialisation and trains on the enlarged pool; its best teacher checkpoint is evaluated. Two
+properties matter and neither is visible from ``closed loop'': the round count is a fixed constant,
+not a convergence criterion, and the generator is never invoked from training --- it renders its pool
+once, offline, and the only returning edge carries pseudo-labels, not images. It composites rather
+than synthesises (Section~\ref{sec:diss-instantiation}).
+
+\subsection{Uncertainty-guided allocation}
+\label{sec:method-allocation}
+
+The idea under test spends a fixed generation budget where the model is weakest, in four stages.
+\textbf{(i)} The target pool is partitioned by $k$-means into $k=75$ clusters over L2-normalised
+self-supervised embeddings, fitted once and never refitted. \textbf{(ii)} Each image receives a scalar
+from the student--teacher disagreement --- the quantity the consistency loss already optimises,
+computed without ground truth, which is what makes it available on unlabelled data:
+\begin{equation}
+\mathrm{ES}(x) \;=\; a \,\big\| \nabla \sigma(s(x)) - \nabla \sigma(t(x)) \big\|_{1}
+\;+\; b \, \mathrm{BCE}\big( \sigma(s(x)),\, \sigma(t(x)) \big),
+\label{eq:es}
+\end{equation}
+with student and teacher logits $s,t$, sigmoid $\sigma$, Sobel gradient magnitude $\nabla$, and
+configured weights $a=0.9$, $b=0.3$; the per-cluster score $\mathit{es}_j$ is the mean over its
+members. \textbf{(iii)} Budget $B$ is spread by a temperature softmax over $\mathit{es}_j$ with
+$T = \alpha \cdot \mathrm{sd}(\mathit{es})$, at $\alpha = 1.0$ and $B = 1000$. \textbf{(iv)} Each
+funded cluster draws images by cosine similarity between its centroid and a grey-masked cutout of each
+candidate foreground --- the cutout, because at selection time the foreground exists and the render
+does not. Appendix~\ref{app:method} gives the remaining specification.
+
+\subsection{Conditions}
+\label{sec:method-arms}
+
+Four arms share one base pool and differ only in what is appended. \textbf{A0}, the unpadded baseline,
+is the base pool of $4447$ pairs alone --- an \emph{unclean} control, differing in pool size as well
+as content, and \emph{not} the configuration corresponding to the published row, which is C10
+(Section~\ref{sec:null}). \textbf{A2} adds the $1000$ original
+photographs of arm B's stems, separating pool size from generated content. \textbf{B} adds $1000$
+renders drawn uniformly at random, redrawn per seed. \textbf{C10} adds the $1000$ renders chosen by the
+allocation above. A2, B and C10 all hold $5447$ pairs, and the pre-registered claim is the gap between
+C10 and B.
+
+What is held constant is verified rather than assumed: across all $24$ runs the base pool is asserted
+byte-identical against a hash manifest with $0$ mismatches, both rounds read the unfiltered
+$4040$-image target set, and every run shares one trainer invocation, checkpoint rule, endpoint set and
+deterministic-kernel setting.
+
+% =====================================================================
+% 4. EXPERIMENTAL SETUP AND PRE-REGISTRATION
+% =====================================================================
+\section{Experimental Setup and Pre-Registration}
+\label{sec:setup}
+
+Every decision rule was committed before the runs it governs, and we state them before any result,
+because a null is only worth reading if the reader can tell it was not produced by choosing how to
+look.
+
+\paragraph{Endpoints and seeds.} The primary endpoint is COD10K-test $S_\alpha$ from the final round's
+best teacher checkpoint; NC4K $S_\alpha$ is \emph{reported, never decides}, as are MAE, $F_\beta^w$ and
+$E_\phi$. Seeds are $\{42,43,45\}$. CHAMELEON is not an endpoint, and the reason is itself a result of
+this paper (Section~\ref{sec:contamination}).
+
+\paragraph{The decision rule.} Let $\hat{\sigma}$ be the pooled within-arm standard deviation of
+$S_\alpha$ across arms, at $8$ degrees of freedom. The rule, frozen before the first run:
+\begin{quote}
+\begin{tabbing}
+\textsc{real effect} \quad\= iff $\Delta > 2\hat{\sigma}$ \; and sign consistent $3/3$ seeds \\
+\textsc{within noise} \> iff $|\Delta| \leq 2\hat{\sigma}$ \\
+\textsc{real regression} \> iff $\Delta < -2\hat{\sigma}$ \; and sign consistent $3/3$ seeds \\
+\textsc{inconclusive} \> iff $|\Delta| > 2\hat{\sigma}$ but sign not $3/3$ --- report as is, do
+\emph{not} add seeds
+\end{tabbing}
+\end{quote}
+The rule is applied independently per architecture --- SINet primary, SINet-v2 the robustness check,
+neither overriding the other, a disagreement reported as a disagreement. At $n = 3$ we report no
+$p$-value, bootstrap or multiple-comparison correction: a design choice, not an omission. Verdicts are
+$\Delta$ against a $2\hat{\sigma}$ bar with sign-consistency counts, and nothing converts them into
+significance claims.
+
+\paragraph{Two further arms that isolate direction from shape.} Arms C10 and B differ by
+\emph{concentration} as well as by targeting, so that comparison alone cannot speak to the
+uncertainty signal. A separately pre-registered campaign of $12$ runs --- two architectures $\times$
+two new arms $\times$ three seeds, with B and C10 re-scored rather than re-trained --- holds the
+allocation's shape fixed and varies only the signal's direction. \textbf{CSHUF} permutes the
+per-cluster scores across clusters, destroying targeting; \textbf{CINV} reverses their rank, making
+the allocation maximally anti-targeted. CSHUF's permutation is the first of $64$ pre-declared draws
+satisfying zero fixed points and $|\rho| \leq 0.10$, chosen by a rule fixed before the draw; its
+realised rank correlation with the true score vector is $-0.03351$, against $-1.0$ for CINV. Because
+equality is the \emph{supporting} outcome here, set distinctness was gated before any GPU time at a
+Jaccard bound of $0.50$: between $452$ and $511$ of each pair's $1000$ injected images differ.
+
+\paragraph{Provenance of the rules.} Each rule is recorded at a named commit preceding the runs it
+governs, and amendments are append-only and dated; Appendix~\ref{app:method} gives the commits and all
+amendments, including one frozen clause that no correct computation could satisfy. We do not present
+that as minor: the author of the rule also authored its flaw.
+
+% =====================================================================
+% 5. THE PRE-REGISTERED NULL -- written third
+% =====================================================================
+\section{The Pre-Registered Null}
+\label{sec:null}
+
+Under the rule of Section~\ref{sec:setup}, applied to $24$ training runs,
+$\Delta(\mathrm{C}-\mathrm{B})$ is \textsc{within noise} on both architectures and both endpoints
+(Table~\ref{tab:null}); the secondary endpoint returns the same verdict on every gap.
+
+\begin{table}[t]
+\caption{The pre-registered verdict on COD10K-test $S_\alpha$, three seeds per arm. $\hat{\sigma}$ is
+pooled within-arm at df $=8$; the frozen rule declares \textsc{within noise} when
+$|\Delta| \leq 2\hat{\sigma}$. The architectures disagree on the sign of the decisive gap. Per-run
+values at full precision: Table~\ref{tab:perrun}. \emph{Source:} \texttt{EXP ABC} \#3 @
+\texttt{REBUILD\_LOG.txt:1376}.}
+\label{tab:null}
+\begin{center}
+\small
+\begin{tabular}{lccccl}
+\toprule
+& $\hat{\sigma}$ (df $=8$) & $2\hat{\sigma}$ & $\Delta(\mathrm{B}-\mathrm{A2})$ & $\mathbf{\Delta(\mathrm{C}\!-\!\mathrm{B})}$ & Verdict \\
+\midrule
+SINet    & $0.0090$ & $0.0179$ & $+0.0058$ \; 3/3 & $\mathbf{+0.0050}$ \; 3/3 & \textsc{within noise} \\
+SINet-v2 & $0.0061$ & $0.0123$ & $+0.0030$ \; 3/3 & $\mathbf{-0.0004}$ \; 2/3 & \textsc{within noise} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\paragraph{The power statement, and the sensitivity analysis it demands.} This campaign resolved
+more coarsely than it declared. Its bar, $2\hat{\sigma} = 0.0179$, is \emph{larger} than this
+repository's reproduction gap of $0.0142$ that it was pre-registered as able to half-resolve. Stated
+without softening: at $126\%$ of the effect it was built to detect, \textbf{this campaign could not
+have detected the reference effect had it been present}, and the null survives only on the tighter bar
+imported from the falsification campaign.
+
+That bar is $3.24\times$ tighter, $\hat{\sigma} = 0.0028$ against $0.0090$, pooled within-arm over
+$\{\mathrm{B}, \mathrm{C10}, \mathrm{CSHUF}, \mathrm{CINV}\}$ at df $= 8$. Because that pool contains
+B and C10 --- the two arms of the decisive gap --- it applies here.
+\textbf{$\Delta(\mathrm{C10}-\mathrm{B}) = 0.0050$ against a bar of $0.0055$ is $0.91\times$
+threshold, $3/3$ sign-consistent: still \textsc{within noise}, and marginally so.} We state the
+asymmetry rather than leave it to be found --- where equality is the \emph{supporting} outcome a
+tighter bar is conservative, but here the claim and the null coincide, so the looser bar is
+anti-conservative. Even the tighter one resolves only $39\%$ of the reference gap on SINet and $45\%$
+on SINet-v2.
+
+\paragraph{Both of the campaign's largest effects sit just inside the bar.} We make this point rather
+than leave it to be computed. The decisive gap is $0.91\times$ threshold; the largest falsification
+gap, $0.0050$ on the \emph{NC4K} endpoint, is also $0.91\times$ its own bar (on the primary endpoint
+the maxima are smaller, $0.0027$ and $0.0024$). Two independent \textsc{within noise} verdicts at
+$91\%$ of threshold is not a comfortable null: a modest gain in sensitivity would flip at least one to
+\textsc{inconclusive}.
+
+\paragraph{A positive control: the instrument is not blind.} A null is only as good as the design's
+demonstrated ability to return something else. We trained a mean-teacher arm --- SINet, three seeds,
+base pool, single-round by construction --- against C10 under a rule frozen before the first run, with
+the scorer validated against its committed reference beforehand. On COD10K-test the mean teacher
+reaches $0.6988$ against C10's $0.7185$: $\Delta = +0.0197$ against a bar of $0.0060$, sign-consistent
+$3/3$, verdict \textsc{detected}, with the secondary endpoint agreeing.
+
+This is a control on \emph{instrument sensitivity}, not an ablation --- the arm differs from C10 in
+method, round count and pool size at once, so no component attribution follows and none is made.
+\textbf{And it does not close the gap that matters most.} It shows effects of roughly the reference
+magnitude are visible; it does \emph{not} show an effect the size of our nulls would be. The control's
+own bar, $0.0060$, exceeds the decisive gap $\Delta(\mathrm{C10}-\mathrm{B}) = 0.0050$, so an effect
+that size would not have cleared this pooling either. A positive control at $0.020$ licenses \emph{the
+instrument works}, not \emph{the instrument would have seen the effect we are nulling}.
+
+\paragraph{The aggregate pattern, which points away from our conclusion.} The ordering
+$\mathrm{A0}<\mathrm{A2}<\mathrm{B}\approx\mathrm{C10}$ is monotone in all four cells, three steps
+sign-consistent $3/3$. If real it would mean padding the pool helps and targeting adds nothing on top.
+The frozen rule does not convert it into a verdict --- no step clears its bar --- but our own standard
+forbids suppressing a pattern for failing a threshold, and this one does not flatter us.
+
+\paragraph{Where these arms sit against the published numbers.} The published configuration
+corresponding to arm C10 reports $S_\alpha = 0.7136$; our C10 measures $0.7185$. A0 is the
+\emph{unpadded} baseline, not that configuration: its pre-declared reproduction gate was on seed 42,
+which measured $0.7151$ against this repository's committed $0.7172$, inside the declared
+$3\sigma = 0.0107$. The A0 arm \emph{mean} of $0.7010$ sits lower because A0 is the least stable arm,
+spanning $0.0334$ across seeds on SINet and $0.0211$ on SINet-v2 --- for which
+Appendix~\ref{app:anchor} offers an untested pool-size mechanism.
+
+% =====================================================================
+% 6. TIERED DISSECTION -- written fourth
+% =====================================================================
+\section{What Generalizes: A Tiered Dissection}
+\label{sec:dissection}
+
+The null does not establish that the approach fails, only that no benefit is resolvable at this
+sensitivity; it says nothing about the uncertainty signal, since C10 and B differ by concentration as
+well as targeting; and its scope is inherited from the generator. Those three gaps are what this
+section measures. We separate causes by scope: \textbf{Tier 2} findings concern the target data or the
+uncertainty signal and travel beyond this instantiation, \textbf{Tier 1} findings are properties of
+this loop and do not. Table~\ref{tab:causes} in Appendix~\ref{app:causes} assigns every cause.
+
+\subsection{The target distribution has no cluster structure to allocate over}
+\label{sec:diss-structure}
+
+\textbf{[Tier 2]} Cluster-wise allocation presumes clusters; this pool barely has them. Its best
+silhouette is $0.1600$ at $k = 75$ in the space the pipeline uses, and the other two spaces reach only
+$0.1465$ and $0.0568$ --- all below any conventional threshold, so the weakness is not an artifact of
+one encoder. The third fails more specifically: its silhouette falls monotonically from $0.0568$ at
+$k=5$ to $0.0357$ at $k=150$, so the criterion returns its smallest grid value by hitting the boundary
+rather than finding a maximum. Our pre-declared guard required an interior maximum and failed; we
+record that rather than relax it. Two measurements reinforce this: an arbitrary preprocessing
+choice reassigns $5.4\%$ of cluster memberships, so an effect smaller than that cannot be attributed
+to targeting; and the pool is the two-dataset mixture of Section~\ref{sec:method-setting}, separating
+from itself at up to $0.9225$. Measured in three embedding spaces with $k$-means only, this check is
+upstream of any signal question and costs one silhouette sweep.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=\textwidth]{figs/fig1_thesis.pdf}
+\end{center}
+\caption{\textbf{(a)} Held-out Cohen's $d$ between a selected set and a random set of equal size.
+Every rule preserving the allocation's \emph{concentration} reproduces the separation --- including
+permuting the uncertainty scores across clusters, and ignoring them entirely; only destroying
+concentration collapses it. Bars are means over four cells, whiskers the range. \textbf{(b)} Trained
+$S_\alpha$ for the three arms holding concentration \emph{exactly} fixed while varying only the
+signal's direction; points are seeds, rules are arm means, the band is the frozen $\pm 2\hat{\sigma}$
+bar. \emph{Source:} \texttt{c1\_attribution.csv} (\texttt{EXP C1} \#4); \texttt{out/t2/abc\_metrics.csv}
+(\texttt{EXP T2} \#3).}
+\label{fig:thesis}
+\end{figure}
+
+\subsection{An uncertainty signal can contribute nothing beyond the concentration it induces}
+\label{sec:diss-signal}
+
+\textbf{[Tier 2]} Our most transferable result, and the first instance of this paper's thesis;
+Figure~\ref{fig:thesis} carries it.
+
+A targeted selection separates from a random one of equal size at a held-out Cohen's $d$ of roughly
+$1.00$ to $1.23$, an order of magnitude above a previously claimed $0.10$. That separation is real and
+is not caused by targeting: control arms keeping the allocation's \emph{shape} while destroying the
+signal reproduce it --- permuting scores across clusters gives $+0.9139$ to $+1.1403$ in the same
+cells, and an \emph{arbitrary} cluster as much again; only destroying concentration too collapses it. Paired across twenty cells the signal adds $+0.0073$
+of a $d$ against its own shuffle, winning $13/20$ --- weak evidence for a small positive contribution
+($P \approx 0.13$ under a fair coin), not the coin flip we previously called it --- and is
+\emph{negative} at $-0.0649$ against an arbitrary cluster, winning $4/20$ ($P \approx 0.006$). Applying
+the same yardstick both ways, the strongest directional evidence here points \emph{against} targeting.
+What the targeted arm does is narrow: an effective-rank ratio of $0.634$ on average over $20/20$ cells,
+$0.53$ to $0.64$ in the four peak cells, covering no more of the target manifold.
+
+Geometry is not performance. The falsification arms hold concentration \emph{exactly} fixed --- CSHUF
+permutes the per-cluster scores across clusters and CINV reverses their rank, both reproducing the
+committed allocation's shape to five decimal places on all four recorded shape statistics --- and vary
+only direction. All twelve cells are \textsc{within noise}; the largest gap anywhere is $0.0050$ at
+$1.82\hat{\sigma}$. A directional pattern exists and we report it without claiming it: C10 is the best
+arm in none of the four cells, the anti-targeted CINV has the highest mean in three of four, and the
+architectures disagree in sign on two of three gaps --- the signature of noise. None of it reaches the
+bar, so it is not the verdict.
+
+\textbf{Scope, and the trained half is the weaker one.} Negligible \emph{in this geometry} is
+supported; zero and harmful are not. The trained comparison is attenuated three times over and the
+factors multiply: injected images are $1000$ of a $5447$-image pool ($18.4\%$), the pinned budget
+dilutes exposure, and only $\approx 48\%$ of injected images differ between arms --- an effective
+contrast near $8.8\%$ against a bar of $0.0055$. \textbf{So the $12/12$ trained result is weakly
+informative, and the geometric result carries this claim.} The attenuation biases toward the null,
+which is why it must be disclosed. \textbf{Transfers:} the control that matters is not random
+selection but a same-shape allocation with the signal destroyed.
+
+\subsection{Uncertainty predicts pixel error better than structural error}
+\label{sec:diss-ordering}
+
+\textbf{[Tier 2]} Under a criterion fixed before measurement, the ordering
+$\rho(\mathrm{MAE}) > \rho(1-S_\alpha) > \rho(1-\mathrm{IoU})$ holds in \textbf{six independent
+signal--architecture tests}: three estimators --- student--teacher disagreement, predictive entropy
+and ensemble disagreement --- crossed with two architectures. The table carries eight rows because the
+ensemble is evaluated on two arms, but our own pre-registration treats the second as a
+\emph{sensitivity check on} the first, so they are not independent tests and we do not count them as
+two. The gap spans $+0.0708$ to $+0.3330$; all clear the pre-registered resolution floor of about
+$0.06$, the smallest only just.
+
+The same criterion demonstrably can fail, which is what makes its passing informative: aggregated over
+a boundary band, only $2$ of $8$ rows pass and four go negative, outside our pre-registered
+interpretation space, which did not anticipate inversion. We report it as it fell.
+
+\paragraph{The area control, pre-registered after that failure and before it was run.} Our own
+explanation for the boundary collapse --- a whole-image mean is uncertainty density times area ---
+\emph{applies to the whole-image rows too}: if MAE and the signals both scale with area while
+$S_\alpha$ carries an object-size term that does not, the ordering could be a property of the metrics.
+We partialled area out on the same partition and floors, with the consequence fixed in advance, using
+object area on the endpoint side and uncertain-region area on the target side.
+
+\textbf{The strongest evidence against the confound is the direction of the shift, not the pass count:
+partialling object area \emph{raises} $\rho(1-S_\alpha)$ in all eight rows} --- $+0.3433$ to $+0.4988$
+for student--teacher disagreement on SINet --- the opposite of what the confound predicts. Area was
+suppressing the structural correlation, not inflating the pixel one. The ordering then survives on
+$7/8$ and $6/8$ rows against a floor of $6/8$ declared before the run. That floor is weak and we say
+so: $6$ of $8$ has $P \approx 0.145$ under a fair coin, so the uncertain-area covariate clears a
+near-chance bar by zero margin. Two details cut further: the single object-area failure is a tie
+crossing by $0.0012$, and both uncertain-area failures are on SINet-v2, where $\rho(\mathrm{MAE})$
+falls $+0.7070$ to $+0.4457$ once band area is removed. \textbf{Area accounts for part of the gap but
+not its sign.}
+
+\textbf{Scope:} correlational, one endpoint, and the \emph{magnitude} does not generalise ---
+$\rho(1-S_\alpha)$ reaches $+0.5628$ on SINet-v2, so the claim is strictly ordinal.
+\textbf{Transfers:} if you care about structural quality, an uncertainty signal of these kinds is a
+better proxy for pixel-average error than for what you want to improve.
+
+\subsection{Why this instantiation could not have shown a gain}
+\label{sec:diss-instantiation}
+
+\textbf{[Tier 1]} Three properties of \emph{this} loop and \emph{this} generator explain why the
+campaign could not have demonstrated a gain, and none licenses the conclusion that closed-loop
+generation cannot work. The optimisation budget is pinned at $253$ and $127$ steps per epoch in both
+rounds of every run regardless of pool size, so adding $1000$ images bought no additional optimisation
+--- only a change of mixture. The foreground supply is a bijection onto the base set: all $4447$
+renders trace into it, $0$ outside, and of the $8885$ objects with a valid interior comparison
+($4443+4442$, since erosion leaves no interior at all for four and five objects each under $1\%$ of
+frame), $0$ show any sign of regeneration --- the objects are copied, not synthesised. And the
+generated distribution is narrower than its own input: real photographs of an entirely different genre
+cover the target manifold better than the synthetic images generated from those very photographs, a
+paired loss of $-23.6\%$ to $-82.9\%$, and that measurement is the only evidence here not bounded by
+statistical power.
+
+Each carries a dismissal we state rather than await: the first is a property of the training schedule,
+not of synthetic data; the second follows from choosing a generator that composites by design; the
+third is a distributional characterisation, so ``the distribution is far, therefore no amount of it
+can help'' would be a non-sequitur. We also \emph{withdraw} one of our own candidate causes --- the
+convenient narrow-conditioning-channel explanation, which reading the generator's architecture refutes
+as stated, by source reading rather than measurement. Appendix~\ref{app:tier1} gives the full
+measurements.
+
+% =====================================================================
+% 7. CONTAMINATION -- written fifth
+% =====================================================================
+\section{Benchmark Contamination and a Clean Protocol}
+\label{sec:contamination}
+
+The thesis again, in its cleanest form: exact hashing is how dataset overlap is normally checked, it
+reports the benchmark below as perfectly clean, and it is wrong. Nothing here depends on whether the
+method of Section~\ref{sec:method} worked.
+
+\paragraph{The finding, and the control that misses it.} $41$ of CHAMELEON's $76$ images
+--- $53.9\%$ --- are the same photographs as images in the COD10K-train and CAMO training pool,
+re-encoded; $40$ lie in the public COD10K-train split and one in CAMO, so a model trained on
+COD10K-train has already seen over half of CHAMELEON before being evaluated on it. We verified against
+an author-sourced release, byte-identical at $76/76$. Exact hashing returns $0$ collisions and is
+correct at that level: these are re-encodings, not byte-identical copies. The number was right; the
+inference drawn from it was not --- and we hit the same trap ourselves, our first implementation
+reporting $10/76$ ($13.2\%$) because contrast normalisation destroyed the discriminative scale.
+CHAMELEON predates COD10K, so the parsimonious reading is that COD10K-train absorbed these images, but
+only pool membership is measured.
+
+\paragraph{The count is a property of the data, not of a tolerance.} Matches at mean absolute
+difference $\leq 1,2,3,5,6$ are $11$, $26$, $37$, $40$ and $41$ of $76$: the count saturates.
+Independently, the sorted nearest-neighbour distances place $41$ images below $5.51$ with the next at
+$40.58$ --- a $7.36\times$ jump --- unchanged at shortlist depth $8$, $32$, or all. Two instruments
+that owe each other nothing land on the same integer, and the other three endpoints show no
+discontinuity.
+
+\begin{table}[t]
+\caption{Which evaluation columns can be reported as independent measurements. Every rate is a
+\emph{lower bound}: only same-dimension images are comparable, so an image with no candidate is
+unchecked, not clean; crops, rescales and different photographs of one specimen are not detected. In
+the exact-hash column $0$ is a measured zero, ``---'' not applicable. \emph{Source:}
+\texttt{CLEAN\_PROTOCOL.md}; \texttt{EXP D2} \#5, \texttt{D2R} \#4, \texttt{D2\_NC4K} \#2.}
+\label{tab:contamination}
+\begin{center}
+\small
+\begin{tabular}{lccclc}
+\toprule
+Endpoint & Contaminated & Exact hash & Unchecked & Nearest-neighbour gap & Verdict \\
+\midrule
+COD10K-test & $2/2026$ \; ($0.1\%$) & --- & $524/2026$ & none & reportable$^\dagger$ \\
+NC4K & $1/4121$ \; ($0.0\%$) & --- & $2406/4121$ & none & reportable$^\dagger$ \\
+\textbf{CHAMELEON} & $\mathbf{41/76}$ \; $\mathbf{(53.9\%)}$ & $\mathbf{0}$ & $25/76$ & $41$ below $5.51$, next $40.58$ & \textbf{not reportable} \\
+CAMO & $4/250$ \; ($1.6\%$) & --- & $155/250$ & none & selection set only \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize $^\dagger$ Measured against on-disk copies, not author-sourced ones --- the same weakness
+the CHAMELEON re-audit closes. That re-audit is \emph{owed} for these rows; until then their rates are
+provisional.
+\end{table}
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=\textwidth]{figs/fig2_pairs.pdf}
+\end{center}
+\caption{Six of the $41$ confirmed pairs: the author-sourced CHAMELEON image (top) and its partner in
+the COD10K-train pool (bottom). \emph{Selection rule, applied not curated:} the six lowest mean
+absolute difference among pairs with a COD10K-train partner. Exact hashing reports $0$ collisions for
+every pair shown, because each is a re-encoding rather than a byte-identical copy.
+\emph{Source:} \texttt{chameleon\_contaminated.json} (\texttt{EXP D2R} \#4).}
+\label{fig:pairs}
+\end{figure}
+
+\paragraph{A negative control, from the same instrument.} An audit that finds contamination wherever
+it looks is worthless. The identical detector --- imported, not re-implemented --- returns a clean null
+on NC4K against the COD10K test split: $0$ byte-identical, $0$ pixel-identical, $0/4121$ re-encoded at
+every tolerance swept, and a minimum nearest distance of $20.610$, $3.44\times$ the confirmation
+tolerance. NC4K's $1/4121$ in Table~\ref{tab:contamination} is a \emph{different axis} --- the full
+training pool, not COD10K-test --- and the two must not be collapsed.
+
+\paragraph{What we measured for, and could not report.} We expected to report by how much a
+contaminated column misleads, measured, and found nothing: all eight difficulty percentiles for the
+leaked subset land within $0.448$ to $0.559$, and the sign of the clean-minus-leaked difference
+\emph{flips} with the mask release. The pre-declared reading --- a percentile inside $[0.25,0.75]$
+means no skew --- is what stopped us writing the quotable sentence. Our claim is therefore
+non-independence, not inflation: \emph{CHAMELEON is not an independent endpoint for COD10K-trained
+models.}
+
+\paragraph{The protocol: retire the benchmark, do not subset it.} Our released protocol originally
+recommended reporting CHAMELEON on its $35$ uncontaminated images. We withdraw that: of $76$ images,
+$41$ are contaminated and $25$ more have no same-dimension candidate and are \emph{unchecked, not
+clean}, leaving \textbf{only $10$ verifiably clean}. A $10$-image endpoint is not an endpoint, and with
+two incompatible mask releases the honest recommendation is to retire CHAMELEON rather than subset it
+--- stated as a change to a released artifact, not a silent tightening. Report COD10K-test and NC4K
+instead, disclosing the unchecked share. We release the detector alongside this paper; it is checkable without our data, and
+Appendix~\ref{app:masks} records its self-test. [TODO: author finalize --- anonymised release URL for
+the detector, the contaminated-pair list, and the clean protocol.]
+
+\paragraph{A concrete instance, from the protocol we test.} The method under test evaluates on
+CHAMELEON, and its task setup states that for this family of benchmarks it \emph{``consistently
+use[s] the real unlabeled COD10K training set as the target domain''}. It also takes an explicit
+precaution: when the test set is CHAMELEON, CHAMELEON images are removed from the \emph{source} domain
+\emph{``to prevent target domain data leakage''}. That closes the source path; it does not touch the
+target pool, since the case definitions adjust source selection only --- and that pool holds $40$ of
+the $76$ CHAMELEON images, so a model following this protocol self-trains on pseudo-labels over a set
+containing more than half the images it is then tested on. We attribute no intent: the source-side
+removal shows the authors were alert to leakage, and the target-side path is invisible without a
+re-encode-tolerant check. The usual scope limits apply.
+
+% =====================================================================
+% 8. CONCLUSION
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+Instantiated in this loop with this generator, uncertainty-guided closed-loop generation yields no
+gain resolvable at $39\%$--$45\%$ of the reported improvement --- bounded by sensitivity, scoped to an
+exhausted foreground supply, with a positive control detecting $+0.0197$ but not an effect the size of
+the null. A control that returns $0$ is only as good as its ability to return something else.
+
+\subsection*{AI use statement}
+
+[TODO: author finalize --- this statement is required by ICLR 2027 and must describe the authors'
+actual use of generative AI tools. It must be written by the authors, not inferred, and it should
+state which tasks with required disclosure such tools were and were not used for, which are not
+applicable, and how AI-assisted work was verified. One verification mechanism is available to this
+work and should be named if relevant: every numeric value in this paper is traceable to a committed
+log block emitted by a committed script, and no result was transcribed by hand; the traceability map
+in Appendix~\ref{app:tables} records the mapping. The authors take responsibility for the final
+content of this work.]
+
+\subsection*{Ethics statement}
+
+This work involves no human subjects and no personally identifying data. It uses public research
+benchmarks for camouflaged object detection under their published terms
+[TODO: author confirm --- dataset licence statements for each benchmark used].
+
+Section~\ref{sec:contamination} reports an overlap between two public datasets. We state explicitly
+what that measurement does and does not support. It is a measurement of pool membership; it attributes
+no intent to any dataset's authors, and we draw the direction of provenance as an inference from
+release chronology rather than as a finding. We measured for a score-inflation figure, did not find
+one, and do not report one. The one correction we direct at anyone is directed at ourselves: it was
+our own protocol that adopted CHAMELEON as an evaluation endpoint without checking whether the
+repository we built on ever sanctioned it. We release the detector so that the measurement can be
+repeated, contested, or extended by others rather than taken on trust.
+
+\subsection*{Reproducibility statement}
+
+The decision rules governing every result are committed before the runs they govern, at the commits
+named in Section~\ref{sec:setup}, and amendments to them are append-only and dated. Each experiment
+has a committed result document and one or more committed log blocks; each number in this paper is
+traceable to such a block or to a committed artifact, and Appendix~\ref{app:tables} gives that
+mapping. Per-run metrics for all $36$ training runs, the full clustering sweep, and the full
+signal-generality table are in the appendix. The contamination detector is released with an
+eight-assertion known-answer self-test that runs without any of our data
+[TODO: author finalize --- anonymised URL for code, artifacts, and the released detector].
+
+Two limits on reproducibility are worth stating rather than discovering. Our regeneration check
+establishes byte-identical reproduction on one machine with one software stack; it is not a claim of
+determinism across hardware or driver versions. And a render from this generator is a function of its
+foreground, its mask, \emph{and its position within the processing shard}, so changing the shard count
+changes the outputs even at a fixed seed.
+
+\appendix
+
+\section{Method specification}
+\label{app:method}
+
+\paragraph{Training.} SINet at batch 16 for 40 epochs and SINet-v2 at batch 32 for 100 epochs, Adam at
+$10^{-4}$, images at $352 \times 352$ with ImageNet normalisation. The EMA teacher uses momentum
+$0.996$ under this task setting. The consistency weights in Equation~\ref{eq:es} are the configured
+$a = 0.9$, $b = 0.3$ with the unweighted cross-entropy variant --- note that these are the values the
+trainer sets for this task, not the loss class's own defaults. Strong views add random autocontrast
+and Gaussian blur to the weak view. \texttt{cudnn.deterministic} is enabled and
+\texttt{cudnn.benchmark} disabled; this reduces, and is not claimed to eliminate, kernel
+nondeterminism.
+
+\paragraph{Optimisation budget.} Steps per epoch are set by the shorter of the source and target
+loaders, which fixes them at $253$ (SINet) and $127$ (SINet-v2) in both rounds of every run regardless
+of pool size. This is measured per run and asserted, and it is the mechanism behind
+Section~\ref{sec:diss-instantiation}'s first cause.
+
+\paragraph{Allocation sweeps.} The budget grid is $B \in \{250, 500, 1000, 2000, 3000, 4447\}$ and the
+temperature grid over $\alpha$ is extended until both degenerate ends are reached, defined numerically
+as concentrated when $\max_j p_j \geq 0.95$ and uniform when the total variation from uniform falls
+below $0.01$, with caps at $\alpha \in [10^{-4}, 10^{3}]$. The campaign uses $\alpha = 1.0$, $B = 1000$.
+
+\paragraph{Metrics.} $S_\alpha$ at $\alpha = 0.5$ is the primary endpoint metric; MAE is the
+checkpoint-selection metric; $F_\beta^w$ and $E_\phi$ are computed and reported but decide nothing.
+The $F$-measures apply $\beta$ in the non-squared form, so the metric name rather than a formula is
+what identifies them.
+
+\paragraph{The A2 control's one confound.} A2 pairs the authors' original photographs with the
+authors' masks, whose mean foreground fraction differs from the raw masks by $0.0058$ on $1000$ of
+$5447$ images. This affects $\Delta(\mathrm{B}-\mathrm{A2})$ and is disclosed; it does not touch
+$\Delta(\mathrm{C10}-\mathrm{B})$, the decisive gap, since B and C10 share mask provenance, pool size
+and render pool.
+
+\paragraph{Pre-registration commits and amendments.} The four-arm rule is recorded at
+\texttt{065dac6}, the commit carrying that campaign's first log block; the falsification campaign's at
+\texttt{617a2e1}, before its first training run; the signal-generality check's at \texttt{6efde9f};
+the area control's at \texttt{c2114af}; the positive control's at \texttt{c2114af}. Three amendments
+exist, all append-only and dated. Two are reference-tolerance defects of the same kind: a frozen clause
+requiring reproduction to better than $10^{-9}$ against a file recording six decimal places, and --- in
+the area control, written by the same author who had just documented the first --- the identical
+mistake against a file recording four. Both are replaced by exact agreement at the recorded precision,
+which is the strictest satisfiable form, and neither altered a decision threshold. The third marks one
+verification gate not applicable in scope after it was found to compare two architectures' signals.
+
+\section{Supporting tables}
+\label{app:tables}
+
+\input{appendix_tables.tex}
+
+\section{Tier 1 causes in full}
+\label{app:tier1}
+
+\textbf{[Tier 1]} These causes are properties of this loop and this generator. They explain why this
+attempt could not have demonstrated a gain; they do not license the conclusion that closed-loop
+generation cannot work. Each carries a legitimate dismissal, which we state.
+
+\emph{The optimisation budget is pinned} at $253$ and $127$ steps per epoch for the two
+architectures, in both rounds of every run, regardless of pool size --- so adding $1000$ images to a
+$4447$-image pool bought no additional optimisation, only a change of mixture. A reviewer may call
+this a property of the training schedule rather than a result about synthetic data, and that reading
+is correct: nothing here measures what happens when the optimisation budget grows with the data,
+which is the largest open question this paper creates.
+
+\emph{The foreground pool is exhausted; the background is not.} The render set is a bijection onto the
+base foreground set --- all $4447$ renders trace into it, $0$ outside, $0$ base foregrounds unrendered
+--- on the pool training reads as well as on ours, and the mapping is literal: interior error against
+the source foreground is $5.603$ and $9.633$ mean absolute grey levels against background error near
+$70.6$, and of $8885$ traced objects $0$ show any sign of regeneration. This is an identity statement
+about pixels, not a claim about similarity, which is what makes it resistant to the obvious
+counter-argument. The dismissal --- this generator composites by design, so of course it adds no new
+foregrounds --- is right, and what survives it is the scope statement every null here inherits:
+evidence about targeting under an exhausted foreground supply, silent on whether a larger or more
+diverse one would behave differently.
+
+\emph{The generated distribution is narrow, and this evidence alone does not depend on power.} As
+recall against the target manifold the synthetic pools reach $0.1277$ to $0.5421$ across three
+embedding spaces, while the generator's own input pool --- real photographs of a different genre ---
+reaches $0.7097$ to $0.7473$ and a different real camouflage dataset reaches $0.7921$ to $0.8995$: real
+photographs of the wrong genre cover the target better than synthetic images generated from those very
+photographs, a paired loss of $-23.6\%$ to $-82.9\%$. Effective rank falls $243.3$ to $193.2$ while
+precision \emph{rises} $0.6490$ to $0.6886$ --- narrowing, not displacement. This is a distributional
+characterisation, not a training-utility bound; reading it as ``the distribution is far, therefore no
+amount of it can help'' would be a non-sequitur, and what generalises is the design, not the number.
+
+\emph{One candidate cause we removed rather than kept.} A convenient explanation was available: that
+foreground information reaches the regenerated background only through a narrow low-dimensional
+summary. Examining the released generator's architecture refutes that account as stated --- four routes
+carry foreground information into the regenerated region, the narrow summary is one, and the dominant
+route bypasses it entirely. \emph{This is resolved by source reading, not by measurement:} no
+experiment was run and no metric logged, and it withdraws one of our own candidate causes rather than
+establishing a result. Showing the channel is not narrow does not show its capacity is used, so we
+decline both the claim that the generator is not the binding constraint and that it is steerable.
+
+
+
+\section{Contamination: corrections to our own work}
+
+\paragraph{Corrections to our own work.} An author-sourced re-audit reproduced $8$ of $8$ of our
+earlier measurements; its three mismatches correct our prior work, not the data. One declared
+threshold is left \emph{failing} rather than reworded: we required every confirmed pair to differ in
+its JPEG quantization table and compared with an inequality that scored a \emph{missing} table as a
+differing one --- absence of evidence read as evidence --- because two files are PNGs carrying a
+\texttt{.jpg} extension. Corrected, $41$ of $41$ pairs still carry independent re-encoding evidence,
+$40$ by quantization table and one by container format. Separately, CHAMELEON was never a sanctioned
+endpoint in the repository we built on; it was our own plan that promoted it, so the framing here is
+not that we found a defect in someone else's evaluation.
+
+
+\section{The endpoint-measured signal}
+
+\paragraph{A correction to our own measurement.} Our first measurement correlated this signal \emph{on
+the labelled endpoint} against endpoint error --- not the quantity the pipeline allocates by. Measured
+on the signal actually available, correlation with pixel error falls by $+0.2100$ and $+0.2470$, from
+$+0.8695$ and $+0.8754$ to $+0.6595$ and $+0.6284$. A signal validated where labels exist overstates
+what is usable where they do not.
+
+
+\section{The two CHAMELEON mask releases, and the released detector}
+\label{app:masks}
+
+The two circulating CHAMELEON ground-truth releases are different annotations, unrelated to
+contamination or to any method. They disagree in polarity, giving a mean IoU of $0.0$ as stored and
+$0.6932$ after polarity alignment; only $27$ of $76$ masks are exactly identical after alignment and
+$40$ of $76$ reach IoU $\geq 0.9$. On identical predictions the choice of release alone moves MAE by
+$2.7\times$ ($0.2196$ against the author-sourced masks, $0.0816$ against the repackaged ground truth).
+Any CHAMELEON column is therefore not comparable across papers unless the release is named.
+
+\paragraph{Detector self-test.} The released detector passes an eight-assertion synthetic
+known-answer test using no repository data, reproduces the canonical $41$ pairs and $41$ names
+exactly, and surfaced one additional pair --- the second partner of the one image that has two.
+
+
+\section{A threshold that passed, and was refused}
+
+\paragraph{A threshold that passed, and was refused.} On the secondary endpoint,
+$\Delta(\mathrm{A0} \rightarrow \mathrm{C10})$ for SINet is $+0.0109$ with sign consistent $3/3$,
+against a bar of $0.0083$: the frozen rule returns \textsc{real effect}. We do not report it as
+one, on two independent grounds each sufficient by itself. NC4K is the secondary endpoint and decides
+nothing, and the comparison is against A0, which is both confounded in pool size and the least
+stable arm in the campaign. We record it prominently \emph{because} it is the tempting one.
+
+
+\section{Arm anchoring and A0's instability}
+\label{app:anchor}
+
+\paragraph{Where these arms sit against the published numbers.} The published configuration
+corresponding to arm C10 reports $S_\alpha = 0.7136$ on this endpoint; our C10 measures $0.7185$. A0
+is the \emph{unpadded} baseline and is not that configuration: its pre-declared reproduction gate was
+on seed 42, which measured $0.7151$ against this repository's committed $0.7172$, inside the declared
+$3\sigma = 0.0107$. The A0 arm \emph{mean} of $0.7010$ sits lower because A0 is the least stable arm,
+spanning $0.0334$ across seeds on SINet and $0.0211$ on SINet-v2. We offer a mechanism rather than
+leaving it unexplained: A0 holds $4447$ images where every other arm holds $5447$ under an identical
+pinned step count, so it samples a different mixture and should carry higher seed variance --- and the
+effect reproduces on both architectures, which argues for a property rather than a broken run. We did
+not test this, and state it as a hypothesis.
+
+
+\section{The tiered cause summary}
+\label{app:causes}
+
+\begin{table}[t]
+\caption{Every cause, its measured quantity, and its scope tier. Tier 2 causes concern the target
+data or the uncertainty signal and travel beyond this instantiation; Tier 1 causes are properties of
+this loop or this generator. The tier column, not the magnitude column, determines how far a row may
+be carried. \emph{Sources, by row:} \texttt{FINAL\_RESULTS.md} Tables 8.2, 8.1, 9.2, 9.4, 11.1, 12.1,
+5.1, 7.1 and 10.4; blocks \texttt{EXP B1} \#3 and \#4, \texttt{EXP C1} \#4, \texttt{EXP T2} \#3,
+\texttt{EXP T2C}, \texttt{EXP ABC} \#2, \texttt{EXP D1}, \texttt{EXP A3}, in
+\texttt{results/REBUILD\_LOG.txt}. The conditioning row has no log block by construction.}
+\label{tab:causes}
+\begin{center}
+\small
+\begin{tabular}{p{3.1cm}p{4.0cm}cp{3.6cm}}
+\toprule
+Cause & Measured quantity & Tier & Generalizes to \\
+\midrule
+No cluster structure to allocate over & best silhouette $0.1600$; $0.1465$, $0.0568$ elsewhere & 2 & any method allocating over clusters of such a distribution \\
+Membership is not a robust label & $5.4\%$ of memberships move under a preprocessing change & 2 & a floor beneath which an effect cannot be attributed to targeting \\
+Signal adds nothing beyond concentration, in geometry & $+0.0073$ of a $d$ against its own shuffle, $13/20$ & 2 & any uncertainty-guided acquisition: the shuffle is the control \\
+\ldots{} and nothing resolvable on trained accuracy & $12/12$ \textsc{within noise}, $3.24\times$ tighter bar & 2 & this signal class carries no resolvable directional information \\
+Targeting buys proximity, not coverage & effective-rank ratio $0.53$--$0.64$, $20/20$ & 2 & concentration narrows the set rather than extending its reach \\
+Pixel error predicted better than structural error & ordering passes $8/8$ rows, 3 signals $\times$ 2 architectures & 2 & uncertainty-guided allocation for this task in general \\
+Endpoint-measured signal overstates itself & $\rho$ drops $+0.2100$, $+0.2470$ & 2 & any signal validated where labels exist \\
+\midrule
+Optimisation budget is pinned & $253$ / $127$ steps, both rounds, every run & 1 & nothing --- a property of this loop \\
+Foreground pool is exhausted & bijection $4447/4447$; $0$ outside, $0$ unrendered & 1 $\rightarrow$ 2 & the scoping sentence any comparable null must carry \\
+Objects are copied, not generated & interior $5.603$ / $9.633$ vs background $70.802$ / $70.555$ & 1 & the measurement design, reusable on any inpainting generator \\
+Generated distribution is narrow & recall $0.13$--$0.54$ vs $0.71$--$0.90$ for every real set & 1 & the design: a paired within-content coverage delta \\
+Conditioning channel is \emph{not} the bottleneck & four routes; source reading, no experiment & 1 & nothing --- a withdrawn cause \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\bibliography{iclr2027_conference}
+\bibliographystyle{iclr2027_conference}
+
+\end{document}

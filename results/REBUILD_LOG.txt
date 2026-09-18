@@ -2654,3 +2654,26 @@ TRAINS     YES
 NOTES      BLOCK 1 OF 2 -- RUN ACCOUNTING FOR THE POSITIVE CONTROL. Rule frozen in PREREGISTRATION_PC.md at c2114af before this script existed. This is a control on INSTRUMENT SENSITIVITY, not an ablation: C10 differs from MT in method, round count and pool size at once, so no component attribution follows from it and none is made. rebuild/ABC/abc_train.py is untouched and remains frozen; the committed A/B/C and T2 runs are not retrained and C10 enters only as a re-scored reference arm in block #2.
 ================================================================================
 
+================================================================================
+2026-09-13T19:23:57+05:30 | commit b755aa9 (dirty) | EXP PC
+CMD   .venv/bin/python rebuild/PC/pc_evaluate.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  Tea_epoch_best.pth, 352x352 inference, scored from written PNGs with Eval/metrics.py at 6 decimals; identical scorer and endpoint as every committed campaign
+METRICS
+  scorer_reproduces_B1            = Sa 0.717216 (delta 3.77e-07), MAE 0.074463 (delta 2.32e-07)    (G-PC1, on committed Result/SINet/S2C)
+  MT_mean_COD10K                  = 0.698767    (sd 0.001120; seeds 0.699633 0.699167 0.697503)
+  C10_mean_COD10K                 = 0.718481    (committed arm, RE-SCORED never re-trained; sd 0.004059)
+  sigma_hat_PC_COD10K             = 0.002977    (pooled within-arm over {MT, C10}, df=4; bar = 0.005954)
+  DELTA_C10_minus_MT_COD10K       = +0.019713    (paired per seed: +0.017532 +0.023867 +0.017740; sign 3/3)
+  PC_VERDICT_COD10K               = DETECTED    (PREREGISTRATION_PC.md SS PC.5, frozen)
+  delta_exceeds_falsification_bar = True    (T-PC2: Delta against the frozen 0.005533 bar used by the paper)
+  NC4K_secondary                  = MT 0.749659  C10 0.769013  Delta +0.019354  bar 0.006331 -> DETECTED    (secondary endpoint, reported never decides)
+THRESHOLD  scorer reproduces B1 committed Sa/MAE before any PC number -> PASS
+THRESHOLD  T-PC1: Delta(C10-MT) > 2*sigma_hat AND sign 3/3 on the primary endpoint -> PASS
+THRESHOLD  T-PC2: Delta(C10-MT) also exceeds the frozen falsification bar 0.005533 -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/PC/out/pc_verdict.json, /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/PC/out/pc_metrics.csv
+TRAINS     NO
+NOTES      BLOCK 2 OF 2 -- THE POSITIVE CONTROL VERDICT. Rule frozen in PREREGISTRATION_PC.md at c2114af before the first run; not altered here. This is a control on INSTRUMENT SENSITIVITY, not an ablation: C10 differs from MT in method, round count and pool size at once, so no component attribution follows and none is made. C10 is re-scored from its committed predictions, never re-trained. A DETECTED verdict establishes that effects of roughly the reference magnitude are visible to this harness; it says nothing about whether effects the size of the paper's nulls would be.
+================================================================================
+

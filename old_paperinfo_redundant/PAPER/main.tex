@@ -1,0 +1,1149 @@
+% =============================================================================
+% ICLR 2027 submission -- negative results
+% Plan of record: rebuild/PAPER/PAPER_PLAN.md
+%
+% Style files live in ../../iclr2027/ and are NEVER edited. Compile with:
+%   cd rebuild/PAPER
+%   TEXINPUTS=.:../../iclr2027: BIBINPUTS=.:../../iclr2027: pdflatex main.tex
+%
+% RULES INHERITED FROM THE REBUILD (see PAPER_PLAN.md):
+%   * No number appears here unless a committed artifact supplies it. Every
+%     factual sentence carries a source comment naming its log block / CSV.
+%   * A number that does not exist is written [TODO: verify ...], never guessed.
+%   * References are [CITE: topic] markers until a deep-research pass fills them.
+%     Do NOT invent a citation key.
+%
+% ICLR 2027 SUBMISSION CHECKLIST (author to confirm before upload):
+%   [ ] Main text ends on p.9 or earlier. Verified: Conclusion ends p.9. The AI
+%       use / ethics / reproducibility statements, references and appendices are
+%       excluded from the limit. Beyond 9 pages of main text = desk rejection.
+%   [ ] \iclrfinalcopy stays COMMENTED OUT (anonymises authors, enables ruler).
+%   [ ] No author identity in main text or supplementary material.
+%   [ ] AI use statement completed and attested by an author. REQUIRED section.
+%   [TODO: author] If any earlier version of this work exists on arXiv or was
+%       presented at a workshop, cite it in the THIRD PERSON. Such a version does
+%       not break anonymity, but referring to it as ours does.
+%   [TODO: author] Supplementary material: measurement log, per-run metrics,
+%       frozen decision rule, detector + self-test, contaminated filename list.
+%       Anonymise any repository link; the host must not log visitors.
+%   [ ] All co-authors have OpenReview profiles before the ABSTRACT deadline;
+%       no authors may be added after it. Abstract must be genuine, not a
+%       placeholder. At least one author registered to review >= 3 papers.
+% =============================================================================
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+% Added (not in the shipped template): figures and tables.
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+
+\title{Uncertainty-Guided Closed-Loop Synthetic Generation\\
+       Does Not Improve Synthetic-to-Real\\
+       Camouflaged Object Detection}
+
+% Overridden by the style file while \iclrfinalcopy is off; must be completed
+% for the camera-ready version only.
+\author{Anonymous}
+
+\begin{document}
+
+\maketitle
+
+% =============================================================================
+\begin{abstract}
+% Every figure here is a back-reference; nothing originates in the abstract.
+% 0.1600 -> Section 6 / Table 4; 41 of 76 and 53.9% -> Section 7 / Table 3;
+% "within noise" -> Section 5 / Table 1. Reconciled 2026-09-09.
+Camouflaged object detection is constrained by the cost of mask annotation,
+which motivates training on synthetic imagery from camouflage generators. If
+generation is cheap, a model's own uncertainty could steer \emph{where} the next
+images are generated, closing a loop between training and data synthesis. We
+test that idea. Instantiating the loop in a mean-teacher synthetic-to-real
+framework with a published camouflage generator, we fix the decision rule before
+training and run $24$ models across two architectures and three seeds. Targeted
+allocation does not beat uniform allocation: the gap is within noise on both
+architectures and both endpoints. We dissect the failure into four measured
+causes and separate those specific to this framework and generator --- a
+per-epoch optimisation budget that cannot grow with the dataset, and an
+exhausted foreground supply whose objects are copied rather than synthesised ---
+from those concerning the data and the signal, which travel further: the target
+distribution's best silhouette coefficient is $0.1600$, and removing the
+uncertainty information while preserving the allocation's shape reproduces the
+same effect. A fifth candidate cause, too narrow a conditioning channel, is
+refuted by source reading and withdrawn. Independently, we find that $41$ of
+$76$ images in a standard COD
+benchmark are re-encoded copies of training data, invisible to exact hashing,
+and we release a detector and a clean evaluation protocol.
+\end{abstract}
+
+% =============================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Camouflaged object detection asks a model to segment objects whose appearance
+has evolved to defeat segmentation. Ground-truth masks are correspondingly
+expensive, and the field is small enough that most results rest on a handful of
+datasets [CITE: COD10K] [CITE: NC4K]. Generative models offer an appealing way
+out: a camouflage generator can synthesise a concealing background behind any
+supplied foreground [CITE: LAKE-RED], and synthetic-to-real training then adapts
+from generated data to real photographs [CITE: S2R-COD].
+
+If generation is cheap, the natural next question is not \emph{how much} to
+generate but \emph{where}. A trained model already knows which parts of the
+target distribution it handles badly; that signal could steer the next batch of
+generations toward exactly those regions, and the loop could be closed --- train,
+measure deficiency, generate where deficient, retrain. The idea is well
+motivated: it is the standard active-learning argument [CITE: uncertainty sampling] [CITE: generative active learning] applied to a generator instead of
+an annotator, in a domain where annotation is the binding constraint. We
+expected it to work.
+
+\textbf{It does not.} We instantiate the loop in a mean-teacher
+synthetic-to-real framework with a published camouflage generator, fix a decision
+rule in advance, and train $24$ models across two architectures and three seeds.
+Targeted allocation does not beat uniform allocation: the gap is within noise on
+both architectures and both endpoints (Section~\ref{sec:null}).
+
+A null is only worth reporting if it comes with a mechanism and an honest
+account of its reach. We therefore separate our claims into three tiers and hold
+to the distinction throughout. \textbf{T1} findings are properties of this
+training loop or this generator; \textbf{T2} findings concern the target data or
+the uncertainty signal and travel beyond our instantiation; \textbf{T3} findings
+are independent of the method entirely. The distinction is not decoration: our
+most striking cause --- that the training loop's optimisation budget cannot grow
+with the dataset --- is T1, and reading it as evidence that synthetic data cannot
+help would be unsupported by anything we measured.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item \textbf{A pre-registered null.} Uncertainty-guided closed-loop generation
+      yields no measurable accuracy gain in this setting. The decision rule was
+      committed before the first training run and is reported unchanged,
+      including the finding that the campaign resolved a coarser effect than it
+      set out to (Section~\ref{sec:null}).
+\item \textbf{A four-cause dissection, tiered by scope.} We localise the failure
+      to a pinned optimisation budget (T1), an exhausted foreground supply
+      (T1/T2), diffuse target structure (T2), and an uncertainty signal that
+      adds little beyond concentration (T2); a fifth candidate, a conditioning
+      bottleneck, is refuted by source reading and withdrawn
+      (Section~\ref{sec:causes}).
+% All figures in this list are back-references, not new measurements:
+% 0.1600 -> Section 6 and Appendix Table 4 (EXP B1 #3);
+% 41 of 76 / 53.9% -> Section 7 and Table 3 (EXP D2 #5, re-verified EXP D2R #4).
+\item \textbf{A target distribution with little to target.} The target pool's
+      best silhouette coefficient is $0.1600$ and stays below $0.25$ in all
+      three embedding spaces we tried --- a property of the data, not of our
+      trainer, and a precondition any cluster-allocation method needs and does
+      not get here (Section~\ref{sec:causes}).
+\item \textbf{Severe contamination in a standard COD benchmark, and a clean
+      protocol.} Independently of the above, $41$ of $76$ CHAMELEON images
+      ($53.9\%$) are re-encoded copies of training-pool images, invisible to
+      exact hashing. We release a detector, the contaminated file list, and an
+      evaluation protocol (Section~\ref{sec:contamination}).
+\end{itemize}
+
+% =============================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Camouflaged object detection and its benchmarks.}
+COD is evaluated on a small number of datasets --- COD10K, NC4K, CAMO and
+CHAMELEON --- with architectures such as SINet, SINet-v2 and SegMaR
+[CITE: COD10K] [CITE: NC4K] [CITE: CAMO] [CITE: CHAMELEON] [CITE: SINet]
+[CITE: SINet-v2] [CITE: SegMaR]. Because these sets are reused across nearly all
+published comparisons, their internal relationships matter for every reported
+number; Section~\ref{sec:contamination} shows one such relationship has gone
+unnoticed.
+
+\paragraph{Synthetic data for camouflage.}
+Annotating camouflaged objects is unusually expensive, which motivates
+generating training data. Camouflage-specific generators paint a concealing
+background behind a supplied foreground [CITE: LAKE-RED]
+[CITE: camouflage generation other], typically built on diffusion inpainting
+[CITE: diffusion inpainting]. Synthetic-to-real pipelines then adapt from
+generated to real camouflage, of which the framework we test is a recent
+instance [CITE: S2R-COD]. We test one generator inside one framework; other
+generators are related work, not evidence about them.
+
+\paragraph{Deciding what data to acquire.}
+Choosing where to spend a labelling or generation budget is the subject of active
+learning: uncertainty sampling, coverage and core-set criteria, and more recently
+budget allocation over generative models
+[CITE: active learning survey] [CITE: uncertainty sampling]
+[CITE: core-set selection] [CITE: generative active learning]. Our stage (ii)
+is an uncertainty criterion and stage (iii) an allocation rule, so the approach
+under test is an active-learning policy over a generator rather than over an
+annotator. Self-training with a mean teacher supplies the underlying adaptation
+signal [CITE: mean teacher] [CITE: domain adaptation seg].
+
+\paragraph{Negative results and benchmark integrity.}
+Reporting methods that do not work is undersupplied relative to its value, and
+pre-registration has been proposed to make such reports credible
+[CITE: negative results venue] [CITE: pre-registration in ML]. Separately, a
+line of work documents train--test contamination and near-duplicate leakage in
+widely used datasets [CITE: train-test contamination]
+[CITE: dataset duplication]. Our second contribution belongs to that line and,
+unlike our first, does not depend on the method under test.
+
+% =============================================================================
+\section{The Approach Under Test}
+\label{sec:method}
+
+We specify the approach in full because our contribution is a precise account of
+why it fails; each component below is later shown to be a distinct point of
+breakdown. Section~\ref{sec:causes} maps each component to the measurement that
+localises its contribution.
+
+\subsection{Setting}
+
+The base framework is cross-domain self-training with a mean-teacher objective
+(CSRDA) for camouflaged object detection [CITE: S2R-COD]. A labelled
+\emph{source} pool of synthetic camouflage images is paired with an unlabelled
+\emph{target} pool of real photographs. A student network is trained by gradient
+descent; a teacher is maintained as an exponential moving average of the student
+with momentum $\lambda = 0.996$ and is never back-propagated.
+% SOURCE: MyTrain.py:230 overwrites the argparse default 0.9996 with 0.996
+% under --task S2C; update_ema at MyTrain.py:129. Verified this session.
+Each optimisation step consumes one source batch and one target batch. The
+objective is
+\begin{equation}
+\mathcal{L} \;=\; \mathcal{L}_{\mathrm{sup}} \;+\; \mathcal{L}_{\mathrm{ES}},
+\qquad
+\mathcal{L}_{\mathrm{ES}} \;=\; 0.9\,\mathcal{L}_{\mathrm{EA}} \;+\;
+0.3\,\mathcal{L}_{\mathrm{SW}},
+\label{eq:loss}
+\end{equation}
+where $\mathcal{L}_{\mathrm{sup}}$ is supervised loss on the labelled source
+batch, $\mathcal{L}_{\mathrm{EA}}$ is a Sobel edge-alignment term between student
+and teacher predictions on the target batch, and $\mathcal{L}_{\mathrm{SW}}$ is a
+saliency-weighted cross-entropy against the teacher's prediction
+[CITE: S2R-COD].
+% SOURCE: coefficients a=0.9, b=0.3 set at MyTrain.py:225-231 under --task S2C;
+% equation numbering (6-8) per Explanations/MEAN_TEACHER.md. Sobel kernels ->
+% appendix.
+
+Training runs for two self-training rounds. After the first round, a
+confidence-based selection step (CLS) admits target images whose
+student--teacher edge disagreement falls below a fraction of the running mean,
+\begin{equation}
+\mathrm{edge\_loss}(x) \;<\; u \cdot \overline{\mathrm{edge\_loss}},
+\qquad u = 0.8,
+\label{eq:cls}
+\end{equation}
+assigns each admitted image a pseudo-label by thresholding the teacher's class
+activation map at $\tau = 0.4$, and appends the resulting pairs to the source
+pool for the second round.
+% SOURCE: CLS.py:139 (selection), CLS.py CAM threshold tau; u=0.8, tau=0.4 set
+% at MyTrain.py:225-231. Round loop at MyTrain.py:265-348.
+Model selection takes the teacher checkpoint minimising validation MAE on a
+held-out real set, which is never used as an evaluation endpoint.
+% SOURCE: MyTrain.py:181-188 (Tea_epoch_best rule), :302-304 / :322-324
+% (--val_root ./Dataset/Val/CAMO/, 250 images asserted).
+
+\subsection{The idea: closing the loop on the model's own uncertainty}
+
+The synthetic source pool is produced by a background-generation model that
+paints a novel camouflaging background behind a supplied foreground and its mask
+[CITE: LAKE-RED]. Because generation is cheap relative to annotation, it is
+natural to ask \emph{where} in the target distribution the next batch of
+generations should be spent. The approach under test answers this with the
+model's own error signal, in four stages.
+
+\paragraph{(i) Target clustering.}
+The unlabelled target pool is embedded with a frozen vision backbone and
+partitioned by $k$-means into $k$ clusters. We use DINOv2-L at $518$px and
+$k = 75$, selected by maximising the mean silhouette coefficient over
+$k \in \{5,10,15,20,30,50,75,100,150\}$ [CITE: DINOv2] [CITE: silhouette].
+% SOURCE: embedder identity = vit_large_patch14_dinov2.lvd142m at 518px
+% (rebuild/E0/E0.md:142; rebuild/B1/out/b1_assertions.json family "dinov2").
+% Exact model id -> appendix.
+% SOURCE: rebuild/B1/out/b1_k_sweep.csv (silhouette curve, k*=75 at 0.1600);
+% b1_embedder_sweep.json criterion = "max silhouette (stability reported, not
+% used to rank)"; b1_cluster_assignment_dinoL518.json (k=75, seed=0).
+% NOTE: the EXP B1 log NOTES prose describes a bootstrap-ARI criterion; the
+% artifacts and B1_RESULTS.md:184 agree on silhouette. Artifacts are cited.
+Embeddings are L2-normalised once at load time.
+% SOURCE: rebuild/C1/c1_space.py load_space(); ABC_PLAN.md section A.3.
+
+\paragraph{(ii) Deficiency scoring.}
+Each cluster receives a scalar deficiency score, its mean per-image edge
+disagreement $\mathit{es}$ under Eq.~\ref{eq:loss}, computed on the
+\emph{target} images and requiring no ground truth. Scoring the target side
+rather than a labelled endpoint is what makes the loop self-contained.
+% SOURCE: rebuild/B1/out/b1_cluster_es_dinoL518.csv (75 rows, target_es
+% populated 75/75, range 0.018391-0.070668) per ABC_PLAN.md section A.3.
+% NOTE: EXP B1 block 4 established that the earlier blocks scored endpoint-side
+% ES, which is not the signal the loop uses; allocation is by target_es.
+
+\paragraph{(iii) Budget allocation.}
+A generation budget of $B$ images is distributed over clusters by a softmax of
+the deficiency scores at temperature $T = \alpha \cdot \mathrm{sd}(\mathit{es})$,
+\begin{equation}
+w_j \;\propto\; \exp\!\left(\frac{\mathit{es}_j - \max_i \mathit{es}_i}{T}\right),
+\qquad
+T = \alpha \cdot \mathrm{sd}(\mathit{es}),
+\label{eq:alloc}
+\end{equation}
+converted to integers by the largest-remainder method so the allocation sums to
+exactly $B$. We set $\alpha = 1.0$, the scale-free operating point at which the
+temperature equals the spread of the scores themselves. At $B = 1000$ and
+$\alpha = 1.0$ the allocation funds all $75$ clusters with a maximum share of
+$0.194$.
+% SOURCE: rebuild/C1/c1_targeted_vs_random.py softmax_alloc/largest_remainder,
+% reused verbatim by ABC (ABC_PLAN.md section A.3, arm C); reproduction gate
+% pins clusters_funded=75, max_alloc_share=0.194 against
+% rebuild/C1/out/c1_cells.csv row (dinoL518, B=1000, R2_cut).
+
+\paragraph{(iv) Foreground selection and generation.}
+Within each funded cluster, foregrounds are served in order of cosine similarity
+to the cluster centroid, and a greedy pass fills each cluster's quota, displacing
+requests that cannot be met from the available foreground supply. The selected
+foregrounds and their masks are passed to the generator, which returns one new
+image per foreground. Selection is deterministic: it involves no random draw, so
+the targeted condition is identical across training seeds.
+% SOURCE: ABC_PLAN.md section A.3 (rank_by_centroid, serving_orders['desc_nc'],
+% greedy_select); n_displaced=370 at alpha=1.0 per c1_cells.csv; stem list
+% emitted once as rebuild/ABC/out/abc_stems_C_a1.0.txt and asserted identical
+% across the three per-seed pools.
+
+\subsection{Conditions}
+\label{sec:conditions}
+
+Isolating the effect of \emph{where} generations are spent requires holding
+constant everything else that a larger pool changes. We therefore compare four
+source pools that share the same base pool, verified byte-identical by per-file
+SHA-256 against a provenance manifest rather than assumed:
+% SOURCE: 1st EXP ABC block, threshold "every pool's base subset matches E0's
+% manifest byte for byte" -> PASS; ABC_PLAN.md section A.5 item 7.
+
+\begin{itemize}
+\item \textbf{A0} --- base pool only. The condition comparable to the published
+      baseline, and \emph{not} a clean control for the others: at a fixed
+      optimisation budget a smaller pool gives every image more exposure per
+      epoch (Section~\ref{sec:causes}).
+\item \textbf{A2} --- base pool plus $B$ duplicates of the same foregrounds
+      selected by condition B, carrying their \emph{original} backgrounds. This
+      matches pool size and foreground identity while removing the generated
+      background, isolating generation itself.
+\item \textbf{B} --- base pool plus $B$ generated images for $B$ foregrounds
+      drawn uniformly without replacement.
+\item \textbf{C} --- base pool plus $B$ generated images for the $B$ foregrounds
+      chosen by stages (i)--(iv). Identical injection mechanics to B; only the
+      \emph{selection} differs.
+\end{itemize}
+
+\noindent
+$\Delta(\mathrm{C}-\mathrm{B})$ is therefore the quantity of interest: targeted
+against uniform allocation at equal pool size, equal budget, equal foreground
+supply and equal mask provenance. $\Delta(\mathrm{B}-\mathrm{A2})$ separately
+isolates the generated background.
+% SOURCE: PREREGISTRATION.md section 1 defines Delta_CB as "THE claim".
+% NOTE for later reconciliation: A2's added masks come from the original pool
+% and B/C's from the generator's own output, a mask-tightness difference of
+% 0.00575 mean white fraction on 1000 of 5447 images. This confounds
+% Delta(B-A2) only; Delta(C-B) is unaffected (ABC_PLAN.md section A.3).
+
+\subsection{What is held identical}
+
+Beyond the base pool, the campaign fixes the architecture, the method flag, the
+number of self-training rounds, the epoch and batch schedule, the learning rate
+and decay, the loss coefficients of Eq.~\ref{eq:loss}, the seed governing
+initialisation and shuffling, the unlabelled target pool, the model-selection
+set and rule, the evaluation protocol, the generation budget $B$, and the
+backbone initialisation, each asserted rather than assumed.
+% SOURCE: ABC_PLAN.md section A.5 enumerates 15 held-identical items with the
+% assertion used for each; the 1st EXP ABC block logs 16 thresholds, all PASS.
+% Per-architecture schedule (epochs 40->39 / 100->99, batch 16/32, lr 1e-4,
+% decay 0.1@30 / 0.1@50, clip_grad False/True) -> appendix, ABC_PLAN A.5.1.
+
+One quantity is \emph{not} held constant by this design, and it is the reason the
+null has a mechanism rather than merely an absence: the number of gradient steps
+per epoch is set by the shorter of the two data loaders and is therefore pinned
+by the target pool, independent of how large the source pool becomes. We return
+to this in Section~\ref{sec:causes}.
+% SOURCE: MyTrain.py:306-307 (min of loader lengths) with zip() truncation at
+% :51,53; 2nd EXP ABC block threshold "total_step stayed pinned in BOTH rounds
+% of every run (253 SINet / 127 SINet-v2)" -> PASS.
+
+% =============================================================================
+\section{Experimental Setup and Pre-Registration}
+\label{sec:setup}
+
+\paragraph{Endpoints.}
+The primary endpoint is COD10K-test ($2026$ images), reported as the structure
+measure $S_\alpha$ [CITE: S-measure] [CITE: COD10K]. NC4K ($4121$ images) is a
+secondary endpoint: it is reported but never decides
+[CITE: NC4K]. CHAMELEON is \emph{withdrawn} as an endpoint, for reasons
+established independently of this campaign and reported in
+Section~\ref{sec:contamination}. CAMO ($250$ images) is the model-selection set
+and is never an endpoint.
+% SOURCE: PREREGISTRATION.md section 1 (primary/secondary/never-decides);
+% REBUILD_PLAN.md section 1 for counts; D2 scoping consequence "checkpoint
+% selection runs on a test set => CAMO is never an endpoint".
+
+\paragraph{Runs.}
+Two architectures (SINet, SINet-v2) $\times$ four conditions $\times$ three
+seeds $\{42,43,45\}$ give $24$ training runs, each of two self-training rounds.
+% SOURCE: ABC_PLAN.md section A.2 (RUNID scheme); 2nd EXP ABC block
+% "training_runs_completed = 24/24", "runs_abandoned = 0".
+Because the campaign compares conditions rather than tuning them, the schedule
+is fixed by the code and cannot drift from the command line; per-architecture
+values are in Appendix~\ref{app:impl}.
+% SOURCE: ABC_PLAN.md section A.5 item 4 and A.5.1; hyperparameters are
+% overwritten after argument parsing at MyTrain.py:225-231.
+
+\paragraph{The decision rule, fixed before the first run.}
+The rule below was committed before any training began and never edited
+afterwards; the governing document states that the campaign is void and must be
+re-run if any part of it changed once a single $S_\alpha$ had been computed.
+% SOURCE: rebuild/ABC/PREREGISTRATION.md, preamble and section 1. The 2nd and
+% 3rd EXP ABC blocks both assert it unchanged.
+Let $\hat{\sigma}$ be the pooled within-arm standard deviation of $S_\alpha$
+across all four conditions and three seeds ($\mathrm{df} = 8$), estimated
+separately for each architecture and endpoint. For a gap $\Delta$ between two
+conditions:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textsc{real effect}     & $\Delta > 2\hat{\sigma}$ and sign consistent in $3/3$ seeds \\
+\textsc{within noise}    & $|\Delta| \le 2\hat{\sigma}$ \\
+\textsc{real regression} & $\Delta < -2\hat{\sigma}$ and sign consistent in $3/3$ seeds \\
+\textsc{inconclusive}    & $|\Delta| > 2\hat{\sigma}$ but sign not $3/3$ --- reported as-is; seeds are \emph{not} added \\
+\bottomrule
+\end{tabular}
+\end{center}
+No $p$-value is computed at $n = 3$. The claim under test is
+$\Delta(\mathrm{C}-\mathrm{B})$; $\Delta(\mathrm{B}-\mathrm{A2})$ is reported
+alongside it, and gaps against A0 are reported for comparability with the
+published baseline only.
+% SOURCE: PREREGISTRATION.md section 1, quoted structure verbatim; the
+% "do NOT add seeds" clause and "NO p-value at n=3" are in the frozen text.
+
+\paragraph{Gates before any comparison.}
+The pre-flight stage asserted $16$ conditions and all passed, including that
+every condition's base pool matches the provenance manifest byte for byte, that
+the targeted condition reproduces the allocation of the earlier selection
+experiment exactly, that the two generated conditions overlap only at the chance
+rate, and that the endpoint-measured signal appears nowhere in the pipeline.
+% SOURCE: 1st EXP ABC block (2026-09-04T23:36:25+05:30), 16 THRESHOLD lines all
+% -> PASS. NOTE: ABC_RESULTS.md reports "15/15" for this block; the block itself
+% carries 16 THRESHOLD lines. The log wins (REBUILD_FINDINGS.md section 6).
+The scoring code was itself validated against a previously committed
+measurement before being used to decide anything.
+% SOURCE: abc_verdict.json scorer_validation {Sm: 0.7172156230064066,
+% MAE: 0.07446323197740462, passed: true} against
+% Eval/Eval/eval_txt/SINet/S2C/10Aug_eval.txt.
+
+% =============================================================================
+\section{Result: No Measurable Gain}
+\label{sec:null}
+
+Table~\ref{tab:main} reports the campaign. \textbf{The claim under test,
+$\Delta(\mathrm{C}-\mathrm{B})$, is \textsc{within noise} in all four
+architecture $\times$ endpoint cells.} Targeting the generation budget at the
+model's least-well-served clusters does not beat spending it uniformly, by the
+rule fixed before the first run.
+% SOURCE: 3rd EXP ABC block (2026-09-06T13:37:26+05:30); abc_verdict.json
+% verdicts.<cell>.gaps["B->C10"].verdict == "WITHIN NOISE" in all four cells.
+
+Two features of the table deserve comment before any interpretation. First, the
+arm means \emph{do} increase monotonically from A0 through A2 and B to C in
+three of the four cells, and the ordering is the one the approach predicts --- it
+is simply smaller than the noise the design was built to see through. Second,
+the largest single gap anywhere in the campaign is not the one under test.
+% SOURCE: arm_means in abc_verdict.json; monotonicity noted in
+% A3_RESULTS.md section 6 ("the arm means in fact rose monotonically in all four
+% architecture x endpoint cells").
+
+\begin{table}[t]
+\caption{\textbf{Main result.} $S_\alpha$ per condition, mean $\pm$ standard
+deviation over seeds $\{42,43,45\}$; higher is better. $\Delta(\mathrm{C}-\mathrm{B})$
+is the pre-registered claim and $2\hat{\sigma}$ its decision threshold; ``sign''
+in parentheses counts seeds agreeing in direction. All values at four decimal places. The frozen
+decision rule, the per-run metrics and the machine-readable verdict are in the supplementary
+material; Appendix~\ref{app:trace} maps every value to its measurement-log entry.}
+\label{tab:main}
+\begin{center}
+\footnotesize
+\begin{tabular}{llccccrc}
+\toprule
+Arch. & Endpoint & A0 & A2 & B & C & $\Delta(\mathrm{C}-\mathrm{B})$ & $2\hat{\sigma}$ \\
+\midrule
+SINet    & COD10K$^\dagger$ & 0.7010 & 0.7077 & 0.7134 & 0.7185 & $+0.0050$ (3/3) & 0.0179 \\
+SINet    & NC4K             & 0.7581 & 0.7632 & 0.7669 & 0.7690 & $+0.0021$ (3/3) & 0.0083 \\
+SINet-v2 & COD10K$^\dagger$ & 0.6891 & 0.6921 & 0.6951 & 0.6947 & $-0.0004$ (2/3) & 0.0123 \\
+SINet-v2 & NC4K             & 0.7444 & 0.7479 & 0.7486 & 0.7496 & $+0.0009$ (2/3) & 0.0105 \\
+\midrule
+\multicolumn{8}{c}{\textsc{verdict: within noise in all four cells}} \\
+\midrule
+\multicolumn{8}{l}{Per-arm s.d., primary cell: A0 $0.0173$, A2 $0.0019$, B $0.0018$, C $0.0041$.} \\
+\multicolumn{8}{l}{$^\dagger$ primary endpoint. $|\Delta| \le 2\hat{\sigma}$ in every row.} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{The one significant gap is inadmissible, and we say so rather than report it.}
+Across all $20$ gap tests the campaign returns \textsc{within noise} eighteen
+times, \textsc{inconclusive} once, and \textsc{real effect} once. The single
+\textsc{real effect} is $\mathrm{A0} \rightarrow \mathrm{C}$ on SINet/NC4K,
+$\Delta = +0.0109$, consistent in $3/3$ seeds. It is disqualified twice over: it
+sits on the secondary endpoint, which the pre-registered rule states never
+decides, and it is measured against A0, which is not a clean control because at a
+pinned optimisation budget its smaller pool gives every image more exposure per
+epoch (Section~\ref{sec:causes}). We report it for completeness and draw nothing
+from it.
+% SOURCE: abc_verdict.json -- verdict census 18 WITHIN NOISE / 1 INCONCLUSIVE /
+% 1 REAL EFFECT; the REAL EFFECT is SINet|NC4K gaps["A0->C10"], delta 0.010892,
+% n_seeds 3. ABC_RESULTS.md:71-74 warns these "must not be read as support".
+% REAL REGRESSION never occurs.
+
+\paragraph{Power: the design did not reach the resolution it declared.}
+The pre-registration stated that the design ``resolves an effect $\sim$half the
+paper's MT$\rightarrow$Ours gap ($0.0142$) and no smaller''. The realised noise
+estimate on the primary endpoint is $2\hat{\sigma} = 0.0179$, which
+\emph{exceeds} that reference gap: the campaign resolves roughly $1.3\times$ it,
+not half of it. \textbf{The null is therefore a null at a coarser resolution
+than intended, and both halves of that sentence belong in any report of this
+result.}
+% SOURCE: ABC_RESULTS.md:6-11 and :120-123 ("it resolves about 1.3x it").
+% 2*sigma_hat = 0.017933 at REBUILD_LOG.txt:1453. The 0.0142 reference is
+% Sa 0.7172 (Eval/.../SINet/S2C/10Aug_eval.txt) - 0.7030
+% (Eval/.../SINet/S2C_MT/12Aug_eval.txt).
+The rule anticipated this: it fixes the bar at $2\hat{\sigma}$ as measured, not
+at an assumed noise level, so a larger $\hat{\sigma}$ raises the bar rather than
+invalidating the test.
+% SOURCE: PREREGISTRATION.md section 2.7 pre-authorises a rising bar.
+Two quantities that would sharpen the statement are unavailable and are not
+estimated here: run-to-run seed variance, which would require retraining that
+was deferred, and any rate translating a pool shift into an $S_\alpha$ change,
+which we found could not be re-derived from the available runs and therefore do
+not assume.
+% SOURCE: sigma_seed is UNVERIFIED-DEFERRED (REBUILD_PLAN.md C3, REVISION_TABLE
+% section 5). The old response-rate anchor 0.00867 Sa/SD is recorded as
+% discarded and non-derivable in REBUILD_PLAN.md section 3 (C3): "I will not
+% invent a rate."
+
+% =============================================================================
+\section{Why It Fails}
+\label{sec:causes}
+
+A null is only useful if it comes with a mechanism. We measured four, and they
+do not have the same reach. A fifth, a conditioning bottleneck in the generator,
+we advanced and withdraw in paragraph~(ii). Recalling the scope tiers of
+Section~\ref{sec:intro}: \textbf{T1} findings are properties of this training
+loop or this generator, \textbf{T2} findings concern the data or the signal and
+travel beyond our instantiation, and \textbf{T3} is independent of the method
+entirely. Table~\ref{tab:causes} summarises; the tier column is the load-bearing
+one.
+
+\begin{table}[t]
+\caption{\textbf{Four measured causes, with scope, and one refuted.} T1 is
+specific to this framework or generator; T2 concerns the data or signal and
+generalises further. A T1 cause is \emph{not} evidence about
+generators-in-the-loop in general. Row (ii), refuted by source reading, is
+withdrawn and carries no tier. Roman numerals index
+the paragraphs of Section~\ref{sec:causes};
+Appendix~\ref{app:trace} gives the measurement-log entry for each row.}
+\label{tab:causes}
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}p{0.265\linewidth}p{0.545\linewidth}c@{}}
+\toprule
+Cause & Measured quantity & Tier \\
+\midrule
+(i) Optimisation budget is pinned & Steps per epoch fixed at $253$ / $127$ in both rounds of all $24$ runs, independent of pool size & T1 \\
+(ii) Generator conditioning width \emph{--- refuted, withdrawn} & Not a bottleneck: the foreground latent also reaches the denoiser at full resolution, where global self-attention can read it from any background position & --- \\
+(iii) Foreground pool is exhausted & Generated set is a bijection onto the $4447$ existing foregrounds; object pixels are copied, not synthesised & T1/T2 \\
+(iv) Target clusters are diffuse & Best silhouette $0.1600$; below $0.25$ in all three embedding spaces & T2 \\
+(v) Signal adds little over shape & Removing the targeting information but keeping the allocation shape reproduces the same separation & T2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{(i) Added data cannot buy optimisation. \textnormal{[T1]}}
+Each step consumes one source and one target batch, and the loop stops when the
+shorter loader is exhausted. Because the target pool is fixed, the number of
+gradient steps per epoch is pinned --- measured at $253$ (SINet) and $127$
+(SINet-v2) in \emph{both} rounds of all $24$ runs, regardless of how much
+synthetic data was added.
+% SOURCE: 2nd EXP ABC block, THRESHOLD "total_step stayed pinned in BOTH rounds
+% of every run (253 SINet / 127 SINet-v2)" -> PASS; abc_runs.csv total_step_set.
+The consequence is \emph{dilution, not exclusion}: both loaders shuffle, so the
+added images are sampled --- they occupy about $18.4\%$ of the first round's
+gradient content --- but every image's expected exposure per epoch falls
+correspondingly. A condition with the base pool alone gives each image $0.9103$
+exposures per epoch against $0.7432$ for the enlarged pools, some $22\%$ more.
+% SOURCE: 2nd EXP ABC block NOTES ("0.910 ... against 0.743 ... 22% more");
+% POOL_MECHANICS_AUDIT.md section 7(a) for the dilution-not-exclusion
+% correction and the 18.4% round-1 share.
+% NOTE: that audit has no EXP block of its own; its round-1 figures are also in
+% the log block, and its round-2 figures are NOT logged -> not used here.
+This is the cause most easily over-read. It says that \emph{this} loop converts
+extra data into a rearranged mixture rather than more learning; it says nothing
+about whether generated data helps a training regime that scales its
+optimisation with dataset size. It also explains why A0 is not a clean control,
+and hence why A2 exists.
+
+\paragraph{(ii) The conditioning channel --- a cause we withdraw. \textnormal{[T1, refuted by source reading]}}
+A selection method can only matter if the difference it selects for survives
+into the render, and we advanced a narrow conditioning channel as the reason it
+might not: before the foreground conditions background synthesis it is reduced
+to $16$ superpixel means of a three-channel latent --- $48$ scalars --- which
+would bound what any selection policy could express. Reading the generator's
+source refutes that account. The summary is real but is one route among several.
+The conditioning tensor handed to the diffusion denoiser retains the foreground
+latent at full resolution over the object region and enters as input channels of
+a U-Net whose self-attention is unmasked and global, so any background position
+can read the foreground directly; a second route admits the same
+full-resolution latent into every regenerated position through a $1\times1$
+convolution inside the summarising module. Foreground information is therefore
+not confined to the summary, and we withdraw the cause.
+% SOURCE: static reading of the generator; the exact files read are hashed in
+% rebuild/A1/out/a1_source_manifest.sha256 and the audit is rebuild/A1/A1_SCOPING.md.
+% 48 = n_super_pix 16 (config_LAKERED.yaml:72) x embed_dim 3 (:47).
+% Summary construction: ddpm.py:1548-1564 (LMP), :1574-1586 (BKRM + upsample).
+% Route via the 1x1 conv: ddpm.py:1534 (Conv2d(6,3,kernel_size=1)) and :1587
+% (fuse over cat(vec_bg, fg)). Route via the U-Net: ddpm.py:1590 (new_fg keeps
+% fg over the object region) -> :1467 (concatenated to the U-Net input;
+% in_channels 7, config:29) -> openaimodel.py:318-324 (AttentionBlock flattens
+% all spatial positions, no mask), instantiated at :541 and :606 for
+% attention_resolutions [8,4,2] (config:32-35).
+% NOTE: this paragraph reports no measured quantity. It is a reading of source,
+% not a measurement, and it therefore has no measurement-log entry; the manifest
+% above is what pins it, because LAKE-RED/ is untracked in this repository.
+% SUPERSEDES the earlier "[T1, unmeasured]" wording, which named the decisive
+% check as whether the foreground tensor is identically zero under the mask.
+% That check is both unsatisfiable -- the first-stage encoder normalises over the
+% whole spatial extent (GroupNorm, model.py:38-39), so every latent position is a
+% function of global input statistics -- and insufficient, since the U-Net route
+% above does not pass through the tensor it inspects.
+It does not follow that the generator makes \emph{semantic} use of what it
+receives --- that needs a foreground perturbation with the summary held fixed,
+which we did not run --- nor that it is steerable
+(Section~\ref{sec:conclusion}). The withdrawal removes a T1 explanation and
+leaves more of the account to (iv) and (v).
+% SOURCE: absence of a cross-attention port -- openaimodel.py:464-475 default
+% use_spatial_transformer=False / context_dim=None, and unet_config
+% (config_LAKERED.yaml:25-43) sets neither; the concat branch calls the denoiser
+% with no context argument (ddpm.py:1467-1468). The only conditioning is the
+% 4-channel masked-image latent plus mask (test.py:128-134).
+% NOTE: "does not establish semantic use" is the A1 limit recorded in
+% rebuild/A1/A1_SCOPING.md section 4.3; the perturbation design is its section 4.2.
+
+\paragraph{(iii) There are no new foregrounds to find. \textnormal{[T1 mechanism, T2 consequence]}}
+Every image the loop can add is a re-rendering of a foreground already in the
+pool. The generated set is a bijection onto the $4447$ source foregrounds:
+$4447$ of $4447$ trace back, none originates outside, and none is left
+unrendered. Moreover the generator composites the original object pixels back
+into its output, so the object is reproduced rather than re-imagined --- mean
+absolute error inside the object is $5.603$ against $70.802$ in the background
+(a ratio of $12.64$), and not one of the $4447$ images has an object-interior
+error above $40$.
+% SOURCE: EXP D1 block; D1_RESULTS.md sections 3.1-3.2. The second pool
+% (authors') gives 9.633 vs 70.555, ratio 7.32; both reported in the appendix.
+Exhaustion here is therefore an identity statement about pixels, not a
+statistical claim about distributional overlap that could be argued about. The
+mechanism is specific to a generator that composites the object back; the
+consequence --- that re-rendering an exhausted foreground supply adds no new
+object information --- applies to any pipeline whose novelty is confined to
+backgrounds.
+
+\paragraph{(iv) The target distribution has little cluster structure to target. \textnormal{[T2]}}
+The method assumes the target pool decomposes into clusters that can be
+individually under-served. It barely does. The best mean silhouette coefficient
+over $k \in \{5,\dots,150\}$ is $0.1600$, at $k = 75$ --- far below the
+$0.25$ that would indicate usable structure --- and the finding is robust across
+embedding spaces: $0.1465$ for DINOv2-L at $224$px and $0.0568$ for CLIP-L, with
+the peak below $0.25$ in every space.
+% SOURCE: EXP B1 block 3, THRESHOLD "WEAK CLUSTER STRUCTURE is embedder-robust:
+% the silhouette peak is below 0.25 in every embedder space" -> PASS;
+% b1_k_sweep*.csv, b1_embedder_sweep.json. Full grid in Appendix Table 4.
+We report a companion failure honestly: in the CLIP space the silhouette does
+not attain an interior maximum at all but falls monotonically to $0.0357$ at
+$k = 150$, so ``choose $k$ by silhouette'' is not even well posed there.
+% SOURCE: EXP B1 block 3, THRESHOLD "the silhouette criterion actually selects
+% a k in every embedder space (an interior maximum, not the grid edge)" -> FAIL.
+This is a property of the target data, not of our trainer: an allocation policy
+over clusters is only as meaningful as the clustering it allocates over.
+
+\paragraph{(v) The uncertainty signal contributes little beyond concentration. \textnormal{[T2]}}
+The targeted and uniform conditions do produce measurably different pools. But
+an audit of \emph{why} they differ found that the difference is not attributable
+to the uncertainty signal: destroying the targeting information while preserving
+the \emph{shape} of the allocation --- how concentrated it is, not where it
+points --- reproduces the same separation. Of seven declared attribution
+thresholds, two passed and five failed, and the honest verdict is that the
+separation is real but is produced by concentration rather than by targeting.
+% SOURCE: 4th EXP C1 block; C1_RESULTS.md section 8 ("the ES signal is not what
+% produces d ~ 1.0"), verdict REOPENS-BUT-NOT-BY-TARGETING, 2/7 PASS 5 FAIL.
+This matters more than the null itself: it means the negative result is not
+merely about a weak generator, but about a signal that, in this setting, carries
+little information a concentration prior does not already carry.
+
+\paragraph{Where the synthetic images sit, and a metric that cannot tell us. \textnormal{[T2]}}
+It is tempting to explain the null by saying the synthetic pool is simply far
+from the real target distribution. Stated absolutely, that explanation does not
+survive its own controls. A linear probe separates real from generated images at
+an area-under-curve of $0.9993$ --- but re-encoding the \emph{identical} real
+images as JPEG at quality $30$ separates them from themselves at $0.9928$,
+higher than either genuine real-versus-real control ($0.9381$ and $0.9225$).
+The declared vacuity flag fired: at that operating point the metric is not
+measuring distributional distance.
+% SOURCE: EXP A3 block, THRESHOLD "T6 VACUITY FLAG: some identity-preserving
+% control exceeds AUC 0.90" -> PASS (it fired); A3_RESULTS.md:118-170.
+What does survive is comparative and stated as coverage: a genuinely different
+real camouflage dataset covers the target manifold at $0.79$--$0.90$, real
+photographs of an unrelated genre at $0.71$--$0.75$, and the synthetic images
+generated \emph{from those very photographs} at $0.13$--$0.54$.
+% SOURCE: A3_RESULTS.md:280-284, quoted as the strongest defensible form.
+We state the limit of this explicitly: it is a characterisation of the
+distribution, not a bound on training utility. A distant or low-coverage
+synthetic set can still improve a model, and in our own campaign the condition
+means rose monotonically. A3 supplies a mechanism consistent with the absence of
+a resolvable gain; it does not show that no gain exists.
+% SOURCE: A3_RESULTS.md section 6 "What A3 does NOT establish", verbatim intent.
+
+% =============================================================================
+\section{Benchmark Contamination and a Clean Evaluation Protocol}
+\label{sec:contamination}
+
+This section is independent of everything above. It would stand if the method
+under test had worked, and it is why CHAMELEON is absent from
+Table~\ref{tab:main}. \textbf{Of the $76$ images in CHAMELEON, $41$
+($53.9\%$) are re-encoded copies of images in the training pool a
+COD10K-trained model has already seen} --- $40$ in COD10K-train and one in CAMO.
+% SOURCE: 41/76 (53.9%) first logged in EXP D2 block 3 and carried to the
+% authoritative block 5; re-measured against an author-sourced copy in EXP D2R
+% block 4 (41/76, OLD CLAIM -> MATCH, delta 0). The 40/1 partner split is D2R
+% only (nearvdup partner_pool).
+
+\paragraph{Exact hashing declares the set clean.}
+Hashing CHAMELEON against the training pool returns \emph{zero} collisions at
+the file-byte level and zero at the decoded-pixel level. The duplicates are
+re-encodings: same photograph, different compression. Any audit that stops at
+hashing --- as audits usually do --- will certify a $53.9\%$-contaminated
+benchmark as uncontaminated. That is the trap this section exists to close.
+% SOURCE: EXP D2 block 5, "cham vs target: 0 byte, 0 pixel"; the log line notes
+% "0 here does not mean clean".
+
+\paragraph{Detection.}
+Images are grouped by exact pixel dimensions, since a re-encode preserves them.
+Within a group, each image is reduced to a $32\times32$ greyscale descriptor
+and pairs are shortlisted by descriptor RMS distance; survivors are decoded at
+full resolution and confirmed when the mean absolute difference over RGB falls
+below a tolerance of $6/255$. We deliberately do \emph{not} contrast-normalise
+the descriptor: normalising destroys the scale that discriminates a re-encode
+from a merely similar photograph, and it is precisely what caused our own first
+pass to report $10$ of $76$ rather than $41$.
+% SOURCE: detect_contamination.py:64-69 (constants), :206-216 and :281-298
+% (grouping, shortlist, confirmation), :17-20 (the rejected normalisation).
+% The 10/76 (13.2%) figure is EXP D2 blocks 1-2; superseded at block 3.
+% Complexity: 23,854 images -> 4,427 dimension groups -> 7.4M candidate pairs
+% -> 323 shortlisted (d2_leakage_sweep.py:198-202; D2_RESULTS.md:205-212).
+The criterion is a \emph{mean}, not an exact match: the confirmed pairs reach
+maximum per-pixel differences as high as $70$, so any test demanding pixel
+equality rejects all of them.
+% SOURCE: d2r_duplicate_pairs.csv max_abs column, range 13-70.
+
+\paragraph{The count does not depend on the tolerance.}
+Sweeping the confirmation tolerance over $\{1,2,3,5,6\}$ gives
+$11, 26, 37, 40, 41$ contaminated images: the count saturates rather than
+growing with permissiveness. Independently of any tolerance, the sorted
+nearest-neighbour distances show a gap --- $41$ images lie below $5.51$ and the
+next is at $40.58$, a factor of $7.36$ --- so the contaminated set is separated
+from the rest of the benchmark by an order of magnitude, not by a threshold we
+chose. Varying the shortlist depth changes nothing.
+% SOURCE: EXP D2 block 5 and EXP D2R block 4 tolerance sweeps (identical for
+% both copies); NN gap below=5.512 above=40.577 n_below=41 ratio 7.36x;
+% TOPK sweep {8,32,all} all give 41 (d2r_topk_sensitivity.json).
+% The other three endpoints show no gap.
+
+\begin{table}[t]
+\caption{\textbf{Contamination against the COD10K training pool.} ``Exact''
+counts byte- or decoded-pixel-identical files, ``re-enc.'' counts confirmed
+re-encodings at tolerance $6/255$; the two are disjoint by construction. The
+nearest-neighbour gap is tolerance-independent. Lower panel: the CHAMELEON count
+as the confirmation tolerance varies. Appendix~\ref{app:trace} gives the measurement-log entry
+for each row.}
+\label{tab:contam}
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+Benchmark & $n$ & Exact & Re-enc. & Total (\%) & NN gap \\
+\midrule
+CHAMELEON                  & 76   & 0 & 41 & \textbf{41 (53.9)} & $41$ below $5.51$, next $40.58$ ($7.36\times$) \\
+COD10K-test                & 2026 & 7 & 2  & 9 (0.44)           & none --- continuous \\
+NC4K                       & 4121 & 0 & 1  & 1 (0.02)           & none --- continuous \\
+CAMO$^\ddagger$            & 250  & 0 & 4  & 4 (1.6)            & none --- continuous \\
+\midrule
+NC4K vs COD10K-\emph{test} & 4121 & 0 & 0  & \textbf{0 (0.0)}   & none; closest $20.61$, $3.44\times$ tol. \\
+\midrule
+\multicolumn{6}{@{}l}{CHAMELEON count at tolerance $1/2/3/5/6$: \; $11 \,/\, 26 \,/\, 37 \,/\, 40 \,/\, \mathbf{41}$ \; (saturates)} \\
+\midrule
+\multicolumn{6}{@{}l}{$^\ddagger$ model-selection set, never an endpoint. Rows other than CHAMELEON are measured} \\
+\multicolumn{6}{@{}l}{against on-disk copies, not author-sourced ones; treat them as lower bounds.} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragraph{The finding survives being re-tested on data we did not control.}
+Our first audit used the CHAMELEON copy in our own working tree. Because that is
+exactly the weakness such a claim invites, we repeated it against the release
+distributed by the dataset's authors. The two copies are byte-identical in all
+$76$ files, and the re-audit returns the same $41$ of $76$. It also corrected
+three of our own earlier values --- we report those corrections rather than
+quietly adopting them.
+% SOURCE: EXP D2R block 4; copies byte-identical 76/76; OLD CLAIM -> MATCH for
+% 41/76; three MISMATCH entries recorded as corrections to our own prior work.
+
+\paragraph{One declared check failed, and we leave it failing.}
+We had declared that every confirmed pair should show differing JPEG
+quantisation tables as independent evidence of re-encoding. It does not hold:
+two files in the CHAMELEON release are PNGs carrying a \texttt{.jpg} extension
+and so have no quantisation table at all, and our original comparison had read a
+\emph{missing} table as a differing one --- absence of evidence counted as
+evidence. The corrected tally is $40$ of $41$ pairs evidenced by quantisation
+table and one by container format ($413$\,KB PNG against a $132$\,KB JPEG), so
+every pair retains independent evidence, but the check as worded fails and we
+did not reword it after the fact.
+% SOURCE: EXP D2R block 4, THRESHOLD T5 -> FAIL in all four D2R blocks; the
+% replacement T5b -> PASS ("every confirmed pair carries re-encoding evidence
+% from SOME independent channel"). Files: animal-19.jpg, animal-28.jpg.
+% D2R_RESULTS.md:110-120.
+
+\paragraph{What we do \emph{not} claim: inflated scores.}
+The obvious next step is to argue that reported CHAMELEON numbers are inflated.
+We measured this and cannot support it. Removing the seven exact duplicates from
+COD10K-test moves MAE by $1.2 \times 10^{-5}$, and in the wrong direction; the
+duplicated images sit at the $48$th percentile of the clean set's error
+distribution. On CHAMELEON, the contaminated and clean subsets are
+indistinguishable on every proxy we tried, and the direction of the difference
+\emph{flips} depending on which of the two circulating mask releases is used to
+score. \textbf{The conclusion is about independence, not inflation: a
+contaminated column cannot be interpreted as an independent measurement,
+regardless of whether it happens to be higher.}
+% SOURCE: EXP D2 block 5 MAE impact (delta -1.242e-05, -0.0167%, mean
+% percentile 0.4761); EXP D2R block 4 leaked-vs-clean (all percentiles
+% 0.448-0.559, Mann-Whitney p 0.47-0.99,
+% split_direction_agrees_across_mask_sets = False). CLEAN_PROTOCOL.md:145-148
+% states the independence-not-inflation conclusion; the D2R inference run is
+% explicitly not quotable as a performance number.
+
+\paragraph{A second, larger source of incomparability.}
+While reconciling the two CHAMELEON mask releases we found that the choice of
+release alone changes MAE by a factor of $2.7$ on \emph{identical} predictions
+($0.2196$ against $0.0816$), with only $27$ of $76$ masks identical between them.
+Papers reporting CHAMELEON without naming the mask release are not comparable
+with each other even setting contamination aside.
+% SOURCE: EXP D2R block 4, d2r_reconcile.json; mean IoU 0.6932 after polarity
+% alignment, 0.0 as stored, opposite polarity conventions.
+
+\paragraph{A clean protocol.}
+For a COD10K-trained camouflaged-object model we recommend: report COD10K-test
+and NC4K, disclosing that both were audited against on-disk copies and that a
+fraction of each is unchecked; do not report CHAMELEON as an independent
+endpoint, and if it is reported at all, report it on the named $35$-image
+uncontaminated subset together with the mask release used; never report the set
+used for model selection as an endpoint; and run the detector on your own
+directories before reporting anything. NC4K in particular survives the
+additional check its use invites --- it does not overlap COD10K-test at any
+level, with the closest approach $3.44\times$ the confirmation tolerance.
+% SOURCE: CLEAN_PROTOCOL.md:202-217 (recommendation, quoted in substance) and
+% :32-37 (the reportability table); EXP D2_NC4K block 2 for the NC4K result.
+% NOTE: cite the repository CLEAN_PROTOCOL.md, not release/CLEAN_PROTOCOL.md,
+% which omits the EXP D2_NC4K section entirely.
+The detector, the list of contaminated filenames, and the protocol are included in the
+supplementary material.
+% [TODO: author -- if an anonymous repository is preferred to a supplementary
+% .zip, insert the anonymised link here. It must not reveal author identity and
+% the host must not log visitors (ICLR 2027 author guidelines).]
+Two caveats are ours to carry: unchecked is not clean, so every rate in
+Table~\ref{tab:contam} is a lower bound; and only the CHAMELEON row has been
+verified against author-sourced data, so the others remain provisional.
+% SOURCE: CLEAN_PROTOCOL.md:45-54 (both universal caveats, verbatim intent).
+% NOTE: our own protocol table lists COD10K-test as 2/2026; that is the
+% re-encode count only and omits the 7 exact duplicates, which are disjoint.
+% Table 3 above reports the corrected total of 9/2026 (0.44%).
+% [TODO: fix CLEAN_PROTOCOL.md:34 upstream to 9/2026.]
+
+% =============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+Uncertainty-guided closed-loop generation does not improve synthetic-to-real
+camouflaged object detection in the setting we tested. The gap between targeted
+and uniform allocation is within noise on two architectures and two endpoints
+under a rule fixed before training, and the campaign resolved a coarser effect
+than it was designed to. We hold the scope of that result where the measurements
+put it: the two causes with the largest apparent force --- a per-epoch
+optimisation budget that cannot grow with the dataset, and a foreground supply
+whose objects are copied rather than synthesised --- are properties of this loop
+and this generator. What generalises further is less flattering to the idea
+itself: the target distribution has little cluster structure to allocate over,
+and the uncertainty signal contributes little beyond the concentration of the
+allocation it induces.
+
+\paragraph{What a working system would require.}
+The causes imply concrete requirements rather than general prohibitions.
+\emph{First}, a training regime whose optimisation scales with dataset size, so
+that added data buys gradient steps instead of diluting exposure; under a fixed
+step budget no acquisition policy can express itself. \emph{Second}, a source of
+genuinely new foregrounds. Our null is correctly read as ``targeting does not
+help once the foreground pool is exhausted'', and the experiment that would
+separate exhaustion from targeting --- a condition supplied with new foregrounds
+from a salient-object dataset, holding the generator fixed --- is designed and
+deferred rather than run, because admitting a pool that has not been swept for
+leakage to the standard of Section~\ref{sec:contamination} into a load-bearing
+comparison would repeat the error that section documents.
+% SOURCE: ABC_SCOPING.md section 8 (the Oracle arm: DECISION "OUT of this
+% campaign ... blocked on data that is not on this machine"; its scope is a
+% clean test of foreground exhaustion holding the generator fixed; the four
+% unblocking prerequisites include a D2-standard leakage sweep). D1_RESULTS.md
+% section 5: "D1 does not establish that new foregrounds could not help."
+\emph{Third}, a deficiency signal aligned with what the task actually rewards.
+Ours is an edge-disagreement measure, and its own attribution audit found the
+targeting information largely redundant given the allocation shape.
+\emph{Fourth}, a generator that can be steered toward a named deficiency rather
+than only supplied with a foreground --- a requirement about the \emph{shape} of
+the interface, not its capacity. Ours carries foreground information at full
+resolution (Section~\ref{sec:causes}(ii)) but accepts only that foreground and
+its mask, with no cross-attention port through which a deficiency could be
+named. Whether a generator offering one would help is untested.
+
+\paragraph{What survives regardless.}
+The contamination result does not depend on any of the above. A benchmark in
+routine use is $53.9\%$ re-encoded training data, and exact hashing certifies it
+as clean. The detector, the contaminated file list, and the evaluation protocol
+are released, and we expect them to outlast the negative result they were found
+alongside.
+
+% =============================================================================
+\subsection*{AI use statement}
+
+(This section is \textbf{required} and does not count toward the page limit.)
+
+% [TODO: author must read, correct and attest to this section before submission.
+% It is drafted from what actually occurred; only an author can confirm the
+% review claims in the final two sentences. Required section; do not delete.]
+We used a large language model in three roles, and disclose each.
+\emph{Analysis.} An LLM was used to query, cross-check and summarise the
+measurement artifacts described in Appendix~\ref{app:trace} --- for example, to
+recompute per-condition means from the committed per-run metrics and to check
+reported figures against the measurement log. It did not perform any of the
+measurements themselves: every number in this paper was produced by a committed
+script and written to the log before being quoted.
+\emph{Drafting and editing.} An LLM assisted in drafting and revising the
+manuscript text, including the structure of Sections~\ref{sec:method}--\ref{sec:conclusion}
+and the tables, working from the committed artifacts and a written plan.
+\emph{Not used.} We did not use generative AI to produce research ideas, to
+generate or synthesise any data or experimental result, or to write the
+experiment code whose outputs this paper reports; the training, audit and
+detection code predates and is independent of the drafting process.
+We reviewed all AI-assisted work: every quantitative claim was checked against
+its source artifact, and claims we could not source are marked as unverified in
+Appendix~\ref{app:ledger} rather than asserted. We take responsibility for the
+final content of this work, including all text, claims and artifacts.
+
+\subsection*{Ethics statement}
+
+This work reports that a widely used evaluation benchmark substantially overlaps
+a standard training split, and releases the means to detect it. We note three
+considerations. \emph{First}, the finding concerns dataset construction, not
+conduct: the overlap is invisible to exact hashing, so a benchmark can be
+assembled and used in good faith without anyone noticing, and we attribute no
+fault to the dataset's authors or to any group that has reported results on it.
+\emph{Second}, we deliberately do not convert the finding into a claim about any
+published number. We measured whether contamination inflates reported scores and
+found no detectable effect (Section~\ref{sec:contamination}); asserting that
+specific results are inflated would go beyond our evidence and could unfairly
+impugn other work. \emph{Third}, the released material --- a detector and a list
+of filenames already present in a public dataset --- introduces no new personal
+data and involves no human subjects. We release it because the alternative,
+reporting a contamination rate without the means to reproduce or extend the
+check, would ask the community to take the claim on trust. The method we test is
+a third party's; we test one instantiation of it, scope our conclusions
+accordingly, and report the negative result without implying error on the part
+of its authors.
+
+\subsection*{Reproducibility statement}
+The experimental setup, the pre-registered decision rule and the gates asserted
+before any comparison are given in Section~\ref{sec:setup}; per-architecture
+schedules, backbone and embedder identifiers, and the exposure calculation are
+in Appendix~\ref{app:impl}. Appendix~\ref{app:trace} maps every quantity
+reported in the paper to the entry in the measurement log that produced it, and
+Appendix~\ref{app:ledger} states the threshold accounting and lists every
+quantity we could not verify. The detection procedure of
+Section~\ref{sec:contamination} is described in enough detail to reimplement,
+and the implementation, its self-test and the affected filenames are provided in
+the supplementary material together with the measurement log, the per-run
+metrics and the frozen decision rule.
+
+\bibliography{iclr2027_conference}
+\bibliographystyle{iclr2027_conference}
+
+\appendix
+
+\section{Implementation details}
+\label{app:impl}
+
+\paragraph{Schedules.}
+Hyperparameters are set in code after argument parsing and cannot be overridden
+from the command line, so they are identical across all conditions. SINet: $40$
+epochs declared and $39$ executed, batch $16$, learning rate $10^{-4}$ decayed
+by $0.1$ at epoch $30$, no gradient clipping. SINet-v2: $100$ declared and $99$
+executed, batch $32$, learning rate $10^{-4}$ decayed by $0.1$ at epoch $50$,
+gradient clipping enabled.
+% SOURCE: ABC_PLAN.md section A.5.1, restated from MyTrain.py:194-199, :249-259.
+
+\paragraph{Steps and exposure.}
+Steps per epoch are $253$ (SINet) and $127$ (SINet-v2), giving $4048$ and $4064$
+source images seen per epoch. Per-image expected exposure per epoch is $0.9103$
+for the base-only condition against $0.7432$ for the enlarged pools on SINet, and
+$0.9139$ against $0.7461$ on SINet-v2.
+% SOURCE: ABC_PLAN.md section A.5.1; 2nd EXP ABC block; abc_runs.csv.
+
+\paragraph{Backbones and embedders.}
+Backbone initialisations are pinned by file size and SHA-256
+(\texttt{resnet50-11ad3fa6.pth}, $102{,}540{,}417$ bytes;
+\texttt{res2net50\_v1b\_26w\_4s-3cf99910.pth}, $103{,}197{,}949$ bytes).
+Embeddings use \texttt{vit\_large\_patch14\_dinov2.lvd142m} at $224$ and $518$px
+and \texttt{vit\_large\_patch14\_clip\_224.openai}, all frozen, with features
+L2-normalised at use.
+% SOURCE: ABC_PLAN.md section A.5 item 15; rebuild/E0/E0.md:141-142;
+% rebuild/B1/out/b1_assertions.json.
+
+\paragraph{Object-compositing measurement, both pools.}
+Mean absolute error inside the object against the background was $5.603$ vs
+$70.802$ (ratio $12.64$) for the locally regenerated pool and $9.633$ vs
+$70.555$ (ratio $7.32$) for the pool the trainer actually reads, over all $4447$
+images of each, with zero objects exceeding an interior error of $40$.
+% SOURCE: EXP D1 block; D1_RESULTS.md section 3.2.
+
+\paragraph{Deferred by design.}
+Resize interpolation, the numerical stabiliser in the allocation softmax,
+tie-breaking in the greedy selection, and the Sobel kernels of
+Eq.~\ref{eq:loss} are unchanged from the released implementations of the
+framework and generator and are not restated here.
+% [TODO: verify -- readable from the released code, but not pinned by a
+% committed measurement in this repository.]
+
+\section{Cluster quality across $k$ and embedding space}
+\label{app:clusters}
+
+\begin{table}[h]
+\caption{\textbf{Mean silhouette coefficient} over $k$-means partitions of the
+$4040$-image target pool, by embedding space and $k$. The peak of each row is in
+bold. No space exceeds $0.25$; in CLIP the curve has no interior maximum,
+falling across the grid, so selecting $k$ by silhouette is not well posed there.
+Full sweep artifacts are in the supplementary material; see Appendix~\ref{app:trace}.}
+\label{tab:silhouette}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+Embedding space & $k{=}5$ & $10$ & $15$ & $20$ & $30$ & $50$ & $75$ & $100$ & $150$ \\
+\midrule
+DINOv2-L / 518px & 0.0566 & 0.0923 & 0.1152 & 0.1326 & 0.1527 & 0.1556 & \textbf{0.1600} & 0.1557 & 0.1507 \\
+DINOv2-L / 224px & 0.0538 & 0.0868 & 0.1053 & 0.1180 & 0.1378 & \textbf{0.1465} & 0.1457 & 0.1419 & 0.1367 \\
+CLIP-L / 224px   & \textbf{0.0568} & 0.0550 & 0.0486 & 0.0486 & 0.0488 & 0.0448 & 0.0396 & 0.0382 & 0.0357 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Traceability}
+\label{app:trace}
+
+Every quantity in this paper originates in an append-only measurement log
+supplied with the supplementary material. One entry is written per accepted run
+and records the command, the environment, the declared thresholds with their
+outcomes, and the artifacts produced; entries are never edited or deleted, so
+superseded runs remain visible alongside the ones reported. Table~\ref{tab:trace}
+maps each reported group of quantities to its entry.
+
+\begin{table}[h]
+\caption{\textbf{Where each reported quantity comes from.} Entry labels are those
+used in the supplied measurement log. Where several entries share a label, the
+one cited is named; earlier entries are retained but superseded. One row reports
+a reading of the generator's source rather than a measurement and so has no log
+entry; the files read are hashed in the supplementary material.}
+\label{tab:trace}
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}p{0.42\linewidth}p{0.30\linewidth}p{0.22\linewidth}@{}}
+\toprule
+Reported in & Quantity & Log entry \\
+\midrule
+Section~\ref{sec:setup}, gates & $16$ pre-flight assertions & \texttt{ABC} \#1 \\
+Table~\ref{tab:main}; Section~\ref{sec:null} & condition means, $\hat{\sigma}$, gaps, verdicts & \texttt{ABC} \#3 \\
+Section~\ref{sec:causes}(i); App.~\ref{app:impl} & steps per epoch, exposure & \texttt{ABC} \#2 \\
+Section~\ref{sec:causes}(ii) & conditioning-path architecture & source reading; no entry \\
+Section~\ref{sec:causes}(iii); App.~\ref{app:impl} & foreground bijection, compositing error & \texttt{D1} \\
+Section~\ref{sec:causes}(iv); Table~\ref{tab:silhouette} & silhouette across $k$ and space & \texttt{B1} \#3 \\
+Section~\ref{sec:causes}(v) & attribution audit & \texttt{C1} \#4 \\
+Section~\ref{sec:causes}, last paragraph & coverage, probe controls, vacuity flag & \texttt{A3} \\
+Table~\ref{tab:contam}, CHAMELEON row & contamination rate, tolerance sweep & \texttt{D2} \#5; re-audit \texttt{D2R} \#4 \\
+Table~\ref{tab:contam}, NC4K vs COD10K-test & independence of the two endpoints & \texttt{D2\_NC4K} \#2 \\
+Section~\ref{sec:contamination}, mask releases & MAE under each mask release & \texttt{D2R} \#4 \\
+App.~\ref{app:ledger} & threshold accounting & all entries cited above \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Measurement discipline and what remains unverified}
+\label{app:ledger}
+
+Across the log blocks cited in this paper, $143$ thresholds were declared in
+advance, $127$ passed and $16$ failed. Failures are reported rather than
+repaired: several are the findings themselves (the contamination rate, the
+instability of the binary cluster-structure label), two are corrections to our
+own earlier work, and one --- the quantisation-table check of
+Section~\ref{sec:contamination} --- was left failing rather than reworded after
+the fact.
+% SOURCE: REBUILD_FINDINGS.md sections 1-3 (cited-block ledger 143/127/16).
+
+\noindent The following are \emph{not} established by any committed measurement.
+Except where a reading of source is named as the basis, they are asserted
+nowhere in this paper:
+\begin{itemize}
+\item Whether the generator makes semantic use of the foreground information it
+      receives. That the architecture does \emph{not} confine that information
+      to the $48$-scalar summary we establish by reading the generator's source
+      rather than by measurement (Section~\ref{sec:causes}(ii)); the experiment
+      that would show whether the available capacity is \emph{used} ---
+      perturbing the foreground while holding the summary values fixed and
+      measuring the generated background --- was not run. We assert no bound in
+      either direction.
+\item Any inflation of reported scores attributable to contamination. We
+      measured this and found no detectable effect; the conclusion is about
+      independence, not inflation.
+\item Run-to-run seed variance, and any rate translating a pool shift into a
+      change in $S_\alpha$. Both would require training that was deferred; the
+      latter could not be re-derived from the available runs.
+\item Author-sourced verification of the contamination rates for COD10K-test,
+      NC4K and CAMO. Only the CHAMELEON row has been re-audited against data we
+      did not control. [TODO: verify --- re-audit owed.]
+\item Whether any published table reports the contaminated benchmark, which we
+      cannot check from the artifacts available to us.
+\item An overlap we measured but did not log to the standard the rest of this
+      work requires: a further $32$ of the $76$ CHAMELEON images appear to
+      coincide with COD10K-\emph{test}. [TODO: verify --- present in the
+      artifact, absent from the measurement log; used in no claim above.]
+\end{itemize}
+
+\end{document}
