@@ -1,0 +1,23 @@
+{
+  "n_rows": 24312,
+  "n_errors": 0,
+  "runs": [
+    "SINet_B_s42",
+    "SINet_B_s43",
+    "SINet_B_s45",
+    "SINet_C10_s42",
+    "SINet_C10_s43",
+    "SINet_C10_s45",
+    "SINet_CINV_s42",
+    "SINet_CINV_s43",
+    "SINet_CINV_s45",
+    "SINet_CSHUF_s42",
+    "SINet_CSHUF_s43",
+    "SINet_CSHUF_s45"
+  ],
+  "endpoint": "COD10K",
+  "biou_frac": 0.02,
+  "bf_frac": 0.0075,
+  "bin_thresh": 0.4,
+  "errors": []
+}

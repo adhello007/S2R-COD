@@ -56,7 +56,8 @@ def cmd_for(arch, arm, seed):
             '--save_model', './' + A.snap_dir(rid) + '/',
             '--source_root', './' + A.pool_dir(rid) + '/',
             '--target_root', './Dataset/Target/',
-            '--val_root', './Dataset/Val/CAMO/']
+            '--val_root', './Dataset/Val/CAMO/'] + (
+        ['--exposure', 'fixed_exposures'] if A.is_fx(arm) else [])
 
 
 def assert_ready(arch, arm, seed):
@@ -64,7 +65,7 @@ def assert_ready(arch, arm, seed):
     snapshot dir. Returns (ok, reason)."""
     rid = A.runid(arch, arm, seed)
     pool = os.path.join(C.REPO, A.pool_dir(rid))
-    expect = 4447 if arm == 'A0' else 4447 + A.BUDGET
+    expect = 4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET
     if not os.path.isdir(pool):
         return False, 'pool missing: %s' % A.pool_dir(rid)
     n = len(os.listdir(os.path.join(pool, 'Image')))
@@ -106,13 +107,30 @@ def verify_run(arch, arm, seed):
     d['target_loaded_4040'] = run.count('Loaded 4040 images')
     be = re.findall(r'Best epoch:(\d+)', run)
     d['best_epoch'] = int(be[-1]) if be else None
+    # PATCH P6 / FX. Under 'fixed_exposures' the source loader drives, so the
+    # expected step count is ceil(pool / batch) and NOT the committed pinned value.
+    # A pinned value under FX would mean the flag did not take effect, so this
+    # check is what PROVES the manipulation happened -- it is strengthened for FX,
+    # never relaxed. Round 2 grows the pool by CLS's appends, so FX legitimately
+    # shows TWO step counts; the round-1 value is the asserted one.
+    if A.is_fx(arm):
+        n_pool = 4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET
+        exp_step = -(-n_pool // spec['batch'])          # ceil
+        d['fx_expected_step_r1'] = exp_step
+        step_ok = ('%04d' % exp_step) in d['total_step_set'].split(',')
+        d['fx_step_moved_off_pinned'] = ('%04d' % spec['total_step']) not in \
+            d['total_step_set'].split(',')
+    else:
+        exp_step = spec['total_step']
+        step_ok = d['total_step_set'] == '%04d' % exp_step
     checks = dict(
         rounds=d['rounds'] == 2,
-        total_step=d['total_step_set'] == '%04d' % spec['total_step'],
+        total_step=step_ok,
         last_epoch=d['last_epoch'] == spec['last_epoch'],
         tea_best=bool(d['tea_best']),
-        wall=bool(d['wall_min'] is not None and d['wall_min'] < 2 * spec['ref_min']),
-        pool_r1=d['pool_r1'] == (4447 if arm == 'A0' else 4447 + A.BUDGET),
+        wall=bool(d['wall_min'] is not None
+                  and d['wall_min'] < (3 if A.is_fx(arm) else 2) * spec['ref_min']),
+        pool_r1=d['pool_r1'] == (4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET),
         target=d['target_loaded_4040'] == 2)
     d['checks'] = checks
     d['failed_checks'] = [k for k, v in checks.items() if not v]
@@ -148,16 +166,25 @@ def main():
     ap.add_argument('--retries', type=int, default=1)
     ap.add_argument('--no-log', action='store_true')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--seeds', default='',
+                    help='comma list of training seeds. EMPTY = the committed {42,43,45} \n'
+                         'exactly, so every prior invocation is unchanged. Non-empty is the \n'
+                         'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
+                         'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--only', default='',
                     help='comma list of RUNIDs to consider, e.g. the single '
                          'sanity run. Pure scheduling filter: it selects WHICH of '
                          'the already-defined runs this invocation drives and '
                          'changes no pool, no command and no number.')
     args = ap.parse_args()
+    SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
+             if args.seeds else A.SEEDS)
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
     global OUT, EXP
     OUT = A.set_out(args.tag)
-    EXP = 'T2' if args.tag == 't2' else A.EXP
+    # tag -> EXP namespace. 't2' stays 'T2' exactly as committed; any other tag
+    # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
+    EXP = args.tag.upper() if args.tag else A.EXP
     os.makedirs(OUT, exist_ok=True)
 
     # SINet first (including its A0_s42 sanity run, already done), then SINet-v2
@@ -165,7 +192,7 @@ def main():
     todo, done_already = [], []
     for arch in ('SINet', 'SINetv2'):
         for arm in arms:
-            for seed in A.SEEDS:
+            for seed in SEEDS:
                 if only and A.runid(arch, arm, seed) not in only:
                     continue
                 ok, _ = verify_run(arch, arm, seed)

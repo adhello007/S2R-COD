@@ -42,6 +42,7 @@
     "rebuild/C1/c1_space.py",
     "rebuild/C1/c1_targeted_vs_random.py",
     "rebuild/C1/c1_variance_coverage.py",
+    "rebuild/FinalPaper/make_results.py",
     "rebuild/D2/d2_export_duplicates.py",
     "rebuild/D2/d2_leakage_sweep.py",
     "rebuild/D2_nc4k/d2_nc4k_crosscheck.py",
@@ -56,14 +57,23 @@
     "rebuild/D2_reaudit/d2r_reaudit.py",
     "rebuild/D2_reaudit/detect_contamination.py",
     "rebuild/D2_reaudit/release/detect_contamination.py",
+    "rebuild/PC/pc_evaluate.py",
+    "rebuild/PC/pc_train.py",
     "rebuild/B1/b1_allocation_signal.py",
     "rebuild/B1/b1_embedder_sweep.py",
     "rebuild/B1/b1_es_error_correlation.py",
     "rebuild/A3/a3_appearance_signature.py",
     "rebuild/E0/e0_regenerate.py",
+    "rebuild/DIAG/diag_boundary.py",
+    "rebuild/DIAG/diag_chameleon_ext.py",
+    "rebuild/DIAG/diag_clusters.py",
+    "rebuild/DIAG/diag_emit.py",
+    "rebuild/DIAG/diag_subgroups.py",
+    "rebuild/DIAG/diag_tost.py",
     "rebuild/T2C/t2c_measure.py",
     "rebuild/T2C/t2c_preflight.py",
     "rebuild/T2C/t2c_signals.py",
-    "rebuild/D1/d1_foreground_exhaustion.py"
+    "rebuild/D1/d1_foreground_exhaustion.py",
+    "rebuild/AC/ac_measure.py"
   ]
 }

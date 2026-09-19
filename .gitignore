@@ -29,3 +29,19 @@ __pycache__*
 
 /iclr2027*
 /rebuild/PAPER*
+# LaTeX build products under Paper/. The .tex, .bib, .sty and the figure PDFs
+# are tracked; everything latexmk derives from them is not.
+/Paper/*.aux
+/Paper/*.bbl
+/Paper/*.blg
+/Paper/*.fdb_latexmk
+/Paper/*.fls
+/Paper/*.log
+/Paper/*.out
+/Paper/*.pdf
+/Paper/*.synctex.gz
+
+# DIAG per-image boundary tables: ~20MB of 72936-row scores, regenerable with
+# rebuild/DIAG/diag_boundary.py from predictions already under Result/.
+# The per-run aggregates and every JSON ARE tracked.
+/rebuild/DIAG/out/diag_boundary_per_image*.csv

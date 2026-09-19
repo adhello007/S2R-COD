@@ -46,7 +46,16 @@ METRIC_KEYS = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm'
 # The frozen gap sets. 'abc' is PREREGISTRATION.md and stays the default so a
 # bare re-run of A/B/C is bit-identical; 't2' is PREREGISTRATION_T2.md, additive.
 GAPS = {'abc': (('A2', 'B'), ('B', 'C10'), ('A0', 'B'), ('A0', 'C10'), ('A0', 'A2')),
-        't2':  (('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF'))}
+        't2':  (('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF')),
+        # PREREGISTRATION_OR.md OR.1 -- Delta_1 = CORACLE - B, Delta_2 = CORACLE - C10
+        'or':  (('B', 'CORACLE'), ('C10', 'CORACLE')),
+        # PREREGISTRATION_FX.md FX.1 -- Delta_1 = C10FX - BFX, Delta_2 = BFX - A0FX.
+        # The cross-schedule gaps (Delta_3/4/5) pool arms from two different
+        # campaigns and are NOT computed here; they are reported in results.md
+        # against each campaign's own sigma_hat, as FX.1 requires.
+        'fx':  (('BFX', 'C10FX'), ('A0FX', 'BFX'), ('A0FX', 'C10FX')),
+        # PREREGISTRATION_SE.md SE.1 -- four gaps at n = 8
+        'se':  (('B', 'C10'), ('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF'))}
 # What T2 cross-checks. C1 measured these in embedding-distance space only.
 OLD_CLAIMS_T2 = [
     ('C1.4 ES contribution vs its own shuffle',
@@ -140,15 +149,34 @@ def main():
                          'two directories, so this changes throughput and no number.')
     ap.add_argument('--gpus', default='0', help='comma list for inference')
     ap.add_argument('--no-log', action='store_true')
+    ap.add_argument('--min-sign', type=int, default=0,
+                    help='minimum sign-consistent seed-paired differences a REAL '
+                         'EFFECT/REGRESSION must show. 0 = ALL of them, which is '
+                         'the committed 3-of-3 rule and the default, so every '
+                         'prior invocation is unchanged. SE declares 7 at n = 8 '
+                         '(rebuild/SE/PREREGISTRATION_SE.md SE.1): 8-of-8 would be '
+                         'far STRICTER than the committed 3-of-3 (P = 0.004 vs '
+                         '0.125 one-sided) and would bias toward WITHIN NOISE, '
+                         'which is this paper own claim -- so it is declared, not '
+                         'inherited by accident.')
     ap.add_argument('--gaps', default='abc', choices=sorted(GAPS),
                     help='which FROZEN gap set to apply; "t2" is '
                          'PREREGISTRATION_T2.md, additive')
+    ap.add_argument('--seeds', default='',
+                    help='comma list of training seeds. EMPTY = the committed {42,43,45} \n'
+                         'exactly, so every prior invocation is unchanged. Non-empty is the \n'
+                         'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
+                         'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
     args = ap.parse_args()
+    SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
+             if args.seeds else A.SEEDS)
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
     global OUT, EXP
     OUT = A.set_out(args.tag)
-    EXP = 'T2' if args.tag == 't2' else A.EXP
+    # tag -> EXP namespace. 't2' stays 'T2' exactly as committed; any other tag
+    # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
+    EXP = args.tag.upper() if args.tag else A.EXP
     os.makedirs(OUT, exist_ok=True)
 
     _p('=== s1 scorer validation against B1\'s committed values ===')
@@ -167,7 +195,7 @@ def main():
     tasks = []
     for arch in ('SINet', 'SINetv2'):
         for arm in arms:
-            for seed in A.SEEDS:
+            for seed in SEEDS:
                 rid = A.runid(arch, arm, seed)
                 if not os.path.isfile(os.path.join(C.REPO, A.snap_dir(rid),
                                                    'Tea_epoch_best.pth')):
@@ -289,11 +317,12 @@ def main():
                 sgn = 1 if delta > 0 else (-1 if delta < 0 else 0)
                 consistent = sum(1 for s in seeds
                                  if (paired[s] > 0) == (delta > 0) and paired[s] != 0)
+                need_sign = args.min_sign if args.min_sign > 0 else len(seeds)
                 if abs(delta) <= 2 * sigma:
                     verdict = 'WITHIN NOISE'
-                elif delta > 2 * sigma and consistent == len(seeds):
+                elif delta > 2 * sigma and consistent >= need_sign:
                     verdict = 'REAL EFFECT'
-                elif delta < -2 * sigma and consistent == len(seeds):
+                elif delta < -2 * sigma and consistent >= need_sign:
                     verdict = 'REAL REGRESSION'
                 else:
                     verdict = 'INCONCLUSIVE'
@@ -367,11 +396,19 @@ def main():
         thresholds.append(('SINet and SINet-v2 return the same verdict for every gap '
                            'on the primary endpoint', all(agree.values())))
     if prim:
-        need = (('CSHUF->C10', 'CINV->C10') if args.gaps == 't2' else ('B->C10',))
+        NEED = {'t2': (('CSHUF->C10', 'CINV->C10'),
+                       ' Delta(C10-CSHUF) and Delta(C10-CINV) are'),
+                'or': (('B->CORACLE', 'C10->CORACLE'),
+                       ' Delta(CORACLE-B) and Delta(CORACLE-C10) are'),
+                'fx': (('BFX->C10FX', 'A0FX->BFX'),
+                       ' Delta(C10FX-BFX) and Delta(BFX-A0FX) are'),
+                'se': (('B->C10', 'CSHUF->C10', 'CINV->C10'),
+                       ' Delta(C10-B), Delta(C10-CSHUF) and Delta(C10-CINV) are'),
+                'abc': (('B->C10',), ' Delta(C-B) is')}
+        need, phrase = NEED[args.gaps]
         thresholds.append((
             'the primary claim%s decided by the frozen rule, whatever the answer'
-            % (' Delta(C10-CSHUF) and Delta(C10-CINV) are' if args.gaps == 't2'
-               else ' Delta(C-B) is'),
+            % phrase,
             all(g in prim['gaps'] for g in need)))
     relout = os.path.relpath(OUT, C.REPO)
     artifacts += [os.path.join(relout, f) for f in

@@ -84,19 +84,28 @@ def main():
     ap.add_argument('--arms', default=','.join(A.ARMS))
     ap.add_argument('--skip-gate', default='')
     ap.add_argument('--no-log', action='store_true')
+    ap.add_argument('--seeds', default='',
+                    help='comma list of training seeds. EMPTY = the committed {42,43,45} \n'
+                         'exactly, so every prior invocation is unchanged. Non-empty is the \n'
+                         'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
+                         'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
     args = ap.parse_args()
+    SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
+             if args.seeds else A.SEEDS)
     arms = tuple(a.strip() for a in args.arms.split(',') if a.strip())
     skip = {s.strip() for s in args.skip_gate.split(',') if s.strip()}
     global OUT, EXP
     OUT = A.set_out(args.tag)
-    EXP = 'T2' if args.tag == 't2' else A.EXP
+    # tag -> EXP namespace. 't2' stays 'T2' exactly as committed; any other tag
+    # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
+    EXP = args.tag.upper() if args.tag else A.EXP
     os.makedirs(OUT, exist_ok=True)
-    runs = A.all_runs(arms=arms)
+    runs = A.all_runs(arms=arms, seeds=SEEDS)
 
     _p('=== s1 emit the arm stem selections ===')
     sel = {}
-    for s in A.SEEDS:
+    for s in SEEDS:
         st = A.arm_b_stems(s)
         sel['B_s%d' % s] = st
         with open(os.path.join(OUT, 'abc_stems_B_s%d.txt' % s), 'w') as fh:
@@ -141,14 +150,14 @@ def main():
                           save_model=A.snap_dir(rid) + '/')
     C.save_json(os.path.join(OUT, 'abc_pools.json'), dict(
         generated=C.now(), commit=C.git_commit(), budget=A.BUDGET,
-        embedder=A.EMBEDDER, serving=A.SERVING, seeds=list(A.SEEDS),
+        embedder=A.EMBEDDER, serving=A.SERVING, seeds=list(SEEDS),
         arm_B_draw_coupling='per-seed (numpy default_rng(%d + seed))' % A.DRAW_NS,
         arm_C_alpha=A.ARM_ALPHA, pools=pools))
 
     # cross-arch / cross-seed identity of pool CONTENT (same arm+seed, both archs)
     same = []
     for arm in arms:
-        for s in A.SEEDS:
+        for s in SEEDS:
             a = pools.get(A.runid('SINet', arm, s))
             b = pools.get(A.runid('SINetv2', arm, s))
             if a and b:
@@ -161,8 +170,8 @@ def main():
     for arm in arms:
         if arm in A.ARM_ALPHA:
             dg = [pools[A.runid('SINet', arm, s)]['image_digest']
-                  for s in A.SEEDS if A.runid('SINet', arm, s) in pools]
-            cseed[arm] = (len(dg), bool(len(dg) == len(A.SEEDS) and len(set(dg)) == 1))
+                  for s in SEEDS if A.runid('SINet', arm, s) in pools]
+            cseed[arm] = (len(dg), bool(len(dg) == len(SEEDS) and len(set(dg)) == 1))
 
     _p('=== s5 log block ===')
     g = {x['gate']: x for x in report['gates']}
@@ -173,7 +182,7 @@ def main():
                                len(report['gates'])),
                     ', '.join(GATE for GATE in PFA.GATES)))
     metrics.append(('arm_pools_assembled', len(built),
-                    '%d arch x %d arms x %d seeds' % (2, len(arms), len(A.SEEDS))))
+                    '%d arch x %d arms x %d seeds' % (2, len(arms), len(SEEDS))))
     metrics.append(('pool_size_A0', 4447, 'base authors\' pool only, unpadded'))
     metrics.append(('pool_size_A2_B_C', 4447 + A.BUDGET,
                     'base + B=%d, identical in A2/B/C' % A.BUDGET))
@@ -301,7 +310,7 @@ def main():
     for arm, (ndg, okd) in sorted(cseed.items()):
         metrics.append(('armC_pool_identical_across_seeds_%s' % arm, okd,
                         '%d/%d seed digests compared; the selection is '
-                        'deterministic -- no RNG' % (ndg, len(A.SEEDS))))
+                        'deterministic -- no RNG' % (ndg, len(SEEDS))))
     thresholds += [('pool content is identical across the two architectures for '
                     'every (arm, seed)', all(same)),
                    ('every deterministic C-family arm has an identical pool at all '

@@ -47,6 +47,20 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
     # It also iterates the FULL source loader instead of being gated by len(target_loader).
     if opt.method == 'source_only':
         batches = ((src_batch, (None, None)) for src_batch in source_loader)
+    elif getattr(opt, 'exposure', 'fixed_steps') == 'fixed_exposures':
+        # PATCH P6 -- rebuild/FX/PREREGISTRATION_FX.md. OPT-IN ONLY; the default
+        # branch below is untouched and remains the behaviour every committed run
+        # executed. Under 'fixed_exposures' the SOURCE loader drives the epoch and
+        # the target loader is CYCLED, so every source image is seen exactly once
+        # per epoch and the optimisation budget scales with the pool instead of
+        # being pinned by the 4040-image target loader. _cycle re-ITERATES the
+        # loader (it does not cache batches), so memory is unchanged and each pass
+        # is freshly shuffled.
+        def _cycle(loader):
+            while True:
+                for b in loader:
+                    yield b
+        batches = zip(source_loader, _cycle(target_loader))
     else:
         batches = zip(source_loader, target_loader)
 
@@ -223,6 +237,17 @@ if __name__ == "__main__":
     parser.add_argument('--val_root', type=str, default='./Dataset/Val/CAMO/', help='the test rgb images root')
     parser.add_argument('--seed', type=int, default=42,
                         help='RNG seed (was hardcoded 42 at MyTrain.py:242)')
+    parser.add_argument('--exposure', type=str, default='fixed_steps',
+                        choices=['fixed_steps', 'fixed_exposures'],
+                        help='PATCH P6 (rebuild/FX/PREREGISTRATION_FX.md). '
+                             'fixed_steps: steps per epoch are min(len(source), '
+                             'len(target)), so the 4040-image target loader pins '
+                             'them regardless of pool size -- the behaviour every '
+                             'committed run executed, and the DEFAULT. '
+                             'fixed_exposures: the source loader drives and the '
+                             'target loader is cycled, so every source image is '
+                             'seen once per epoch and the optimisation budget '
+                             'scales with the pool.')
     opt = parser.parse_args()
 
     # Override hyperparameters for S2C
@@ -323,7 +348,11 @@ if __name__ == "__main__":
                                 gt_root=opt.val_root + 'GT/',
                                 testsize=opt.trainsize)
         # zip() truncates to the shorter loader; Source-Only ignores the target loader.
-        total_step = (len(source_loader) if opt.method == 'source_only'
+        # PATCH P6 -- under the opt-in 'fixed_exposures' schedule the source loader
+        # drives instead, so total_step grows with the pool. Default is unchanged.
+        total_step = (len(source_loader)
+                      if (opt.method == 'source_only'
+                          or getattr(opt, 'exposure', 'fixed_steps') == 'fixed_exposures')
                       else min(len(source_loader), len(target_loader)))
 
         log_file_path = os.path.join(opt.save_model, 'training_log.log')

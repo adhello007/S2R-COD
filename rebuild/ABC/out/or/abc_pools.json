@@ -1,0 +1,100 @@
+{
+  "arm_B_draw_coupling": "per-seed (numpy default_rng(700000 + seed))",
+  "arm_C_alpha": {
+    "C05": 0.5,
+    "C10": 1.0,
+    "CINV": 1.0,
+    "CORACLE": 1.0,
+    "CSHUF": 1.0
+  },
+  "budget": 1000,
+  "commit": "b755aa9 (dirty)",
+  "embedder": "dinoL518",
+  "generated": "2026-09-18T10:45:52+05:30",
+  "pools": {
+    "SINet_CORACLE_s42": {
+      "added": 1000,
+      "arch": "SINet",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINet_CORACLE_s42_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINet_CORACLE_s42/",
+      "seed": 42,
+      "source_root": "Dataset/Source/ABC/SINet_CORACLE_s42/"
+    },
+    "SINet_CORACLE_s43": {
+      "added": 1000,
+      "arch": "SINet",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINet_CORACLE_s43_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINet_CORACLE_s43/",
+      "seed": 43,
+      "source_root": "Dataset/Source/ABC/SINet_CORACLE_s43/"
+    },
+    "SINet_CORACLE_s45": {
+      "added": 1000,
+      "arch": "SINet",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINet_CORACLE_s45_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINet_CORACLE_s45/",
+      "seed": 45,
+      "source_root": "Dataset/Source/ABC/SINet_CORACLE_s45/"
+    },
+    "SINetv2_CORACLE_s42": {
+      "added": 1000,
+      "arch": "SINetv2",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINetv2_CORACLE_s42_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINetv2_CORACLE_s42/",
+      "seed": 42,
+      "source_root": "Dataset/Source/ABC/SINetv2_CORACLE_s42/"
+    },
+    "SINetv2_CORACLE_s43": {
+      "added": 1000,
+      "arch": "SINetv2",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINetv2_CORACLE_s43_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINetv2_CORACLE_s43/",
+      "seed": 43,
+      "source_root": "Dataset/Source/ABC/SINetv2_CORACLE_s43/"
+    },
+    "SINetv2_CORACLE_s45": {
+      "added": 1000,
+      "arch": "SINetv2",
+      "arm": "CORACLE",
+      "cls_dir": "Dataset/Source/ABC/SINetv2_CORACLE_s45_iteration2",
+      "gt_digest": "70ded0b9d8ee7e4f59dbc601e32d3cc5a72dbc291bcf784ef1e9a0d2221b989f",
+      "image_digest": "b3102fc6c24e33689f229de272bb9c8b4b9b284cc77df086a737779bee4ec936",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINetv2_CORACLE_s45/",
+      "seed": 45,
+      "source_root": "Dataset/Source/ABC/SINetv2_CORACLE_s45/"
+    }
+  },
+  "seeds": [
+    42,
+    43,
+    45
+  ],
+  "serving": "desc_nc"
+}

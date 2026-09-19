@@ -1,0 +1,26 @@
+chameleon_image,cham_dims,best_partner,partner_dims,stage1_rms,stage1_rms_rank1,stage1_pass,n_inlier,n_good,inlier_share,stage2_pass,norm_rms,norm_mean_abs,norm_p99,norm_corr,verdict,at_operating_point
+animal-10.jpg,1200x811,camourflage_00776.jpg,400x300,40.353,40.2725,False,8,19,0.4211,False,47.9344,38.7183,118.0,0.0847,no match found,False
+animal-16.jpg,815x1188,camourflage_00673.jpg,800x613,25.2663,25.2663,False,621,621,1.0,True,35.6565,28.0804,93.0,0.2635,MATCH,True
+animal-18.jpg,1536x1136,COD10K-CAM-3-Flying-66-Owlfly-4675.jpg,1024x683,27.7344,27.7344,False,0,3,0.0,False,35.8572,28.3707,98.0,0.2618,no match found,False
+animal-2.jpg,2272x1704,camourflage_00876.jpg,1200x945,37.7973,37.7973,False,0,3,0.0,False,50.0629,40.5597,124.0,0.1815,no match found,False
+animal-20.jpg,620x400,COD10K-CAM-1-Aquatic-3-Crab-64.jpg,1024x768,35.0876,35.0876,False,0,2,0.0,False,47.9543,38.7139,116.0,-0.0009,no match found,False
+animal-22.jpg,791x568,COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg,777x557,18.1281,18.1281,False,779,783,0.9949,True,42.755,30.5751,136.0,0.6362,MATCH,True
+animal-27.jpg,505x360,COD10K-CAM-2-Terrestrial-45-Spider-2750.jpg,1024x768,21.8716,21.8716,False,0,3,0.0,False,31.829,25.5509,81.0,-0.0399,no match found,False
+animal-28.jpg,610x401,camourflage_00040.jpg,324x400,40.2256,37.3519,False,15,27,0.5556,True,45.7018,35.6833,127.0,0.1216,MATCH,False
+animal-3.jpg,1200x818,COD10K-CAM-1-Aquatic-6-Fish-177.jpg,742x984,38.9837,37.0367,False,4,8,0.5,False,51.2556,40.5596,129.0,-0.0068,no match found,False
+animal-36.jpg,962x621,camourflage_00656.jpg,902x480,18.4811,18.4811,False,0,6,0.0,False,25.4807,19.5588,73.65,-0.0305,no match found,False
+animal-43.jpg,755x352,camourflage_00876.jpg,1200x945,17.0775,17.0775,False,422,422,1.0,True,34.9863,27.6743,93.0,0.3683,MATCH,True
+animal-47.jpg,755x487,camourflage_00656.jpg,902x480,40.8881,40.8881,False,5,12,0.4167,False,51.1005,42.301,122.0,0.0329,no match found,False
+animal-49.jpg,580x387,camourflage_00796.jpg,852x480,17.4546,17.4546,False,0,0,0.0,False,26.3362,20.5684,73.65,0.1525,no match found,False
+animal-59.jpg,915x686,camourflage_00230.jpg,577x428,34.2592,34.2592,False,694,697,0.9957,True,59.8957,45.56,171.0,0.5176,MATCH,True
+animal-61.jpg,605x362,camourflage_00037.jpg,589x366,33.5205,33.5205,False,664,664,1.0,True,48.0353,35.0643,138.0,0.4376,MATCH,True
+animal-62.jpg,1000x628,camourflage_00453.jpg,400x224,38.4476,38.4476,False,0,2,0.0,False,44.9125,35.838,114.0,0.435,no match found,False
+animal-64.jpg,861x633,camourflage_00705.jpg,401x267,43.1476,43.1476,False,5,26,0.1923,False,47.1688,35.6894,131.0,0.337,no match found,False
+animal-66.jpg,610x409,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,1200x943,35.1923,35.1923,False,595,595,1.0,True,55.1568,42.1786,152.0,0.3978,MATCH,True
+animal-68.jpg,1272x1236,camourflage_00734.jpg,400x301,27.5762,27.5762,False,0,5,0.0,False,37.7671,29.8989,102.0,0.0885,no match found,False
+animal-69.jpg,847x565,COD10K-CAM-2-Terrestrial-24-Caterpillar-1613.jpg,1024x666,21.4015,18.2525,False,7,16,0.4375,False,27.7721,21.2712,82.0,0.1849,no match found,False
+animal-7.jpg,880x968,camourflage_00776.jpg,400x300,33.8195,31.8029,False,25,58,0.431,True,37.1595,29.5226,97.0,0.0724,MATCH,True
+animal-72.jpg,2000x977,camourflage_00549.jpg,315x160,21.7903,21.7903,False,383,386,0.9922,True,29.7347,17.3342,116.0,0.8382,MATCH,True
+animal-73.jpg,850x701,COD10K-CAM-3-Flying-55-Butterfly-3292.jpg,849x677,16.7052,16.7052,False,925,925,1.0,True,31.3041,22.0803,102.0,0.6161,MATCH,True
+animal-74.jpg,933x700,COD10K-CAM-3-Flying-55-Butterfly-3293.jpg,932x673,21.011,21.011,False,835,838,0.9964,True,40.6788,27.7049,135.0,0.748,MATCH,True
+animal-75.jpg,549x575,COD10K-CAM-3-Flying-57-Dragonfly-3561.jpg,1024x593,40.1312,36.7766,False,5,8,0.625,False,47.5434,37.0147,133.0,0.062,no match found,False

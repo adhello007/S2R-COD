@@ -1,0 +1,9 @@
+# every command this driver executes, written BEFORE execution
+# generated 2026-09-18T10:46:09+05:30 | commit b755aa9 (dirty)
+
+.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 2 --seed 42 --save_model ./Snapshot/ABC/SINet_CORACLE_s42/ --source_root ./Dataset/Source/ABC/SINet_CORACLE_s42/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
+.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 2 --seed 43 --save_model ./Snapshot/ABC/SINet_CORACLE_s43/ --source_root ./Dataset/Source/ABC/SINet_CORACLE_s43/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
+.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 2 --seed 45 --save_model ./Snapshot/ABC/SINet_CORACLE_s45/ --source_root ./Dataset/Source/ABC/SINet_CORACLE_s45/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
+.venv/bin/python MyTrain.py --network SINet-v2 --task S2C --method ours --iteration 2 --seed 42 --save_model ./Snapshot/ABC/SINetv2_CORACLE_s42/ --source_root ./Dataset/Source/ABC/SINetv2_CORACLE_s42/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
+.venv/bin/python MyTrain.py --network SINet-v2 --task S2C --method ours --iteration 2 --seed 43 --save_model ./Snapshot/ABC/SINetv2_CORACLE_s43/ --source_root ./Dataset/Source/ABC/SINetv2_CORACLE_s43/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
+.venv/bin/python MyTrain.py --network SINet-v2 --task S2C --method ours --iteration 2 --seed 45 --save_model ./Snapshot/ABC/SINetv2_CORACLE_s45/ --source_root ./Dataset/Source/ABC/SINetv2_CORACLE_s45/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu N
