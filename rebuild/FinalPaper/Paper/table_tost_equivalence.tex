@@ -1,0 +1,21 @@
+\begin{table}[t]
+\caption{Post-hoc interval estimates for the gaps this paper turns on, on COD10K-test $S_\alpha$. \emph{These decide nothing}: the verdicts remain the pre-registered $2\hat{\sigma}$ rule of Section~\ref{sec:setup}, which reports no $p$-value at $n=3$. Intervals are Welch (unequal-variance) on the two arms actually compared, so they are not inflated by A0. TOST is run at the SESOI $\delta = 0.005$; the final column gives the smallest $\delta$ at which each comparison \emph{could} have concluded equivalence, which is the honest positive statement the data supports. \emph{Source:} \texttt{rebuild/DIAG/out/diag\_tost.json}.}
+\label{tab:tost}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Arch. & Gap & $\Delta$ & 90\% CI & 95\% CI & smallest $\delta$ \\
+\midrule
+SINet & $\mathrm{C10}-\mathrm{B}$ & $+0.0050$ & $[-0.0012, +0.0113]$ & $[-0.0035, +0.0136]$ & $0.0113$ \\
+SINet-v2 & $\mathrm{C10}-\mathrm{B}$ & $-0.0004$ & $[-0.0079, +0.0071]$ & $[-0.0107, +0.0099]$ & $0.0079$ \\
+SINet & $\mathrm{C10}-\mathrm{CSHUF}$ & $+0.0015$ & $[-0.0048, +0.0078]$ & $[-0.0072, +0.0102]$ & $0.0078$ \\
+SINet & $\mathrm{C10}-\mathrm{CINV}$ & $-0.0009$ & $[-0.0072, +0.0054]$ & $[-0.0092, +0.0075]$ & $0.0072$ \\
+SINet-v2 & $\mathrm{C10}-\mathrm{CSHUF}$ & $-0.0027$ & $[-0.0080, +0.0027]$ & $[-0.0099, +0.0045]$ & $0.0080$ \\
+SINet-v2 & $\mathrm{C10}-\mathrm{CINV}$ & $-0.0023$ & $[-0.0056, +0.0010]$ & $[-0.0070, +0.0024]$ & $0.0056$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize No comparison reaches equivalence at $\delta = 0.005$: at $n = 3$ per arm a TOST has almost no power, and reporting that plainly is more useful than reporting the $p$-values. What the intervals \emph{do} establish is stated in Section~\ref{sec:null}.
+\end{table}

@@ -1,0 +1,246 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{settles2009active}
+\citation{tarvainen2017mean}
+\citation{oquab2024dinov2,radford2021learning}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Our answer.}{1}{section*.1}\protected@file@percent }
+\citation{fan2023advances}
+\citation{wu2023datasetdm}
+\citation{zhao2024lakered}
+\citation{luo2025s2rcod}
+\@writefile{toc}{\contentsline {paragraph}{What we found, and how far the measurement reaches.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why it looks like it works, and a second finding.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.4}\protected@file@percent }
+\citation{settles2009active}
+\citation{tarvainen2017mean}
+\citation{sener2018active}
+\citation{lakshminarayanan2017simple}
+\citation{gal2016dropout}
+\citation{ash2020deep}
+\citation{frisch2025gauda}
+\citation{liang2025discl}
+\citation{chen2025synque}
+\citation{pineau2021improving}
+\citation{lakens2017equivalence}
+\citation{barz2020train}
+\citation{wu2024antileak}
+\citation{zhao2024lakered}
+\citation{luo2025s2rcod}
+\citation{frisch2025gauda}
+\citation{liang2025discl}
+\citation{chen2025synque}
+\citation{fan2023advances}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{3}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Scope and closest systems.}{3}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Acquisition and uncertainty.}{3}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Uncertainty-guided synthesis, curricula, and dataset valuation.}{3}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Seed-level inference, equivalence, and contamination auditing.}{3}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation context.}{3}{section*.9}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Where this work sits among systems that steer a synthetic-data budget. \emph  {Acquisition signal} is what decides where the budget goes; \emph  {generator control} is what the method can actually vary in the generated image; \emph  {diversity control} is what stops the budget piling onto near-duplicates; \emph  {closed-loop} means the downstream model's state feeds back into generation; \emph  {abstention / control} is whether a signal-destroying or same-shape control is run, which is what separates an effect of aiming from an effect of concentrating. The last column is the one this paper argues is missing from the literature, not a claim of superiority --- our own entry records a null.}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:closest}{{1}{4}{Where this work sits among systems that steer a synthetic-data budget. \emph {Acquisition signal} is what decides where the budget goes; \emph {generator control} is what the method can actually vary in the generated image; \emph {diversity control} is what stops the budget piling onto near-duplicates; \emph {closed-loop} means the downstream model's state feeds back into generation; \emph {abstention / control} is whether a signal-destroying or same-shape control is run, which is what separates an effect of aiming from an effect of concentrating. The last column is the one this paper argues is missing from the literature, not a claim of superiority --- our own entry records a null}{table.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methods}{4}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{4}{Methods}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Experimental Setting and Closed-Loop Protocol}{4}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:method-setting}{{3.1}{4}{Experimental Setting and Closed-Loop Protocol}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Uncertainty-Guided Data Allocation}{4}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:method-allocation}{{3.2}{4}{Uncertainty-Guided Data Allocation}{subsection.3.2}{}}
+\citation{fan2020sinet}
+\citation{fan2022concealed}
+\newlabel{eq:es}{{1}{5}{Uncertainty-Guided Data Allocation}{equation.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Experimental Conditions}{5}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:method-arms}{{3.3}{5}{Experimental Conditions}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Experimental Setup and Pre-Registered Decision Rules}{5}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:setup}{{3.4}{5}{Experimental Setup and Pre-Registered Decision Rules}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Endpoints and seeds.}{5}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The decision rule.}{5}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Two further arms that isolate direction from shape.}{5}{section*.12}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces The verdict on COD10K-test $S_\alpha $, three seeds per arm. $\hat  {\sigma }$ is pooled within-arm at df $=8$; \textsc  {within noise} means $|\Delta | \leq 2\hat  {\sigma }$. The architectures disagree on the sign of the decisive gap. Per-run values: Table~\ref {tab:perrun}. \emph  {Source:} \texttt  {EXP ABC} \#3 @ \texttt  {REBUILD\_LOG.txt:1376}.}}{6}{table.2}\protected@file@percent }
+\newlabel{tab:null}{{2}{6}{The verdict on COD10K-test $S_\alpha $, three seeds per arm. $\hat {\sigma }$ is pooled within-arm at df $=8$; \textsc {within noise} means $|\Delta | \leq 2\hat {\sigma }$. The architectures disagree on the sign of the decisive gap. Per-run values: Table~\ref {tab:perrun}. \emph {Source:} \texttt {EXP ABC} \#3 @ \texttt {REBUILD\_LOG.txt:1376}}{table.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Provenance of the rules.}{6}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{6}{section.4}\protected@file@percent }
+\newlabel{sec:null}{{4}{6}{Results}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{The honest limit: this campaign resolved coarsely.}{6}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The decisive gap is better resolved than either pooled bar implies.}{6}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The instrument is not blind.}{6}{section*.16}\protected@file@percent }
+\citation{cheng2021boundary}
+\@writefile{toc}{\contentsline {paragraph}{Two loose ends, neither of which flatters us.}{7}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Concentration Rather Than Targeting}{7}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:res-signal}{{4.1}{7}{Concentration Rather Than Targeting}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}The Concentration Effect on Trained Accuracy}{7}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:res-boundary}{{4.2}{7}{The Concentration Effect on Trained Accuracy}{subsection.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {(a)} How far a selected set sits from a random set of the same size, in held-out Cohen's $d$. Every rule that keeps the allocation's \emph  {concentration} reproduces the separation --- permuting the uncertainty scores across clusters, and ignoring them entirely --- and only destroying concentration collapses it. Bars are means over four cells, whiskers the range. \textbf  {(b)} Trained $S_\alpha $ for the three arms that hold concentration \emph  {exactly} fixed and vary only the signal's direction; points are seeds, rules are arm means, the band is the $\pm 2\hat  {\sigma }$ bar. \emph  {Source:} \texttt  {c1\_attribution.csv} (\texttt  {EXP C1} \#4); \texttt  {out/t2/abc\_metrics.csv} (\texttt  {EXP T2} \#3).}}{8}{figure.1}\protected@file@percent }
+\newlabel{fig:thesis}{{1}{8}{\textbf {(a)} How far a selected set sits from a random set of the same size, in held-out Cohen's $d$. Every rule that keeps the allocation's \emph {concentration} reproduces the separation --- permuting the uncertainty scores across clusters, and ignoring them entirely --- and only destroying concentration collapses it. Bars are means over four cells, whiskers the range. \textbf {(b)} Trained $S_\alpha $ for the three arms that hold concentration \emph {exactly} fixed and vary only the signal's direction; points are seeds, rules are arm means, the band is the $\pm 2\hat {\sigma }$ bar. \emph {Source:} \texttt {c1\_attribution.csv} (\texttt {EXP C1} \#4); \texttt {out/t2/abc\_metrics.csv} (\texttt {EXP T2} \#3)}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Cluster Structure of the Target Distribution}{8}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:res-structure}{{4.3}{8}{Cluster Structure of the Target Distribution}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{What the budget is actually aimed at.}{8}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Uncertainty and Error-Type Ordering}{9}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:res-ordering}{{4.4}{9}{Uncertainty and Error-Type Ordering}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{The area control.}{9}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{9}{section.5}\protected@file@percent }
+\newlabel{sec:dissection}{{5}{9}{Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Setup-Specific Limitations}{9}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:diss-instantiation}{{5.1}{9}{Setup-Specific Limitations}{subsection.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}A Second Case: A Control That Could Not Have Returned Anything Else}{10}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:contamination}{{5.2}{10}{A Second Case: A Control That Could Not Have Returned Anything Else}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{The finding, and the control that misses it.}{10}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{$41$ was itself a lower bound, and we can now say by how much.}{10}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A caution for anyone repeating this across benchmarks.}{11}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The count is a property of the data, not of a tolerance.}{11}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A negative control, from the same instrument.}{11}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non-independence, not inflation.}{11}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The protocol: retire the benchmark, do not subset it.}{11}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A concrete instance, from the protocol we test.}{11}{section*.27}\protected@file@percent }
+\citation{fan2022concealed}
+\citation{le2019anabranch}
+\citation{lv2021simultaneously}
+\citation{skurowski2018animal}
+\citation{zhao2024lakered}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{12}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{12}{Conclusion}{section.6}{}}
+\citation{fan2022concealed}
+\citation{le2019anabranch}
+\citation{lv2021simultaneously}
+\citation{skurowski2018animal}
+\citation{fan2020sinet}
+\citation{fan2022concealed}
+\citation{jia2022segment}
+\citation{fan2017structure}
+\citation{fan2018enhanced}
+\citation{margolin2014evaluate}
+\citation{rombach2022high}
+\citation{song2021denoising}
+\citation{ghiasi2021simple}
+\citation{hoffman2018cycada}
+\citation{chen2025realcamo}
+\citation{sohn2020fixmatch}
+\citation{lee2013pseudo}
+\citation{oquab2024dinov2}
+\citation{radford2021learning}
+\citation{sener2018active}
+\citation{ash2020deep}
+\@writefile{toc}{\contentsline {paragraph}{Artifacts.}{13}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A}Additional Related Work}{13}{appendix.A}\protected@file@percent }
+\newlabel{app:related}{{A}{13}{Additional Related Work}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{COD benchmarks and detectors.}{13}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Synthetic generation and domain adaptation.}{13}{section*.33}\protected@file@percent }
+\citation{torralba2011unbiased}
+\citation{barz2020train}
+\citation{wu2024antileak}
+\citation{pineau2021improving}
+\citation{karl2024position}
+\citation{parmar2022aliased,jayasumana2024rethinking}
+\citation{fan2020sinet}
+\citation{fan2022concealed}
+\@writefile{toc}{\contentsline {paragraph}{Uncertainty-guided acquisition and self-training.}{14}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Benchmark integrity and negative results.}{14}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Detailed Method Specification}{14}{appendix.B}\protected@file@percent }
+\newlabel{app:method}{{B}{14}{Detailed Method Specification}{appendix.B}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training.}{14}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What was held constant, verified.}{14}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Optimisation budget.}{14}{section*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Allocation sweeps.}{14}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{14}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The A2 control's one confound.}{14}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pre-registration commits and amendments.}{15}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Supplementary Results and Tables}{15}{appendix.C}\protected@file@percent }
+\newlabel{app:tables}{{C}{15}{Supplementary Results and Tables}{appendix.C}{}}
+\@writefile{toc}{\contentsline {paragraph}{The area control in detail.}{15}{section*.43}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Full clustering sweep over the target set: silhouette (mean over 10 $k$-means seeds), bootstrap ARI and seed ARI, for every $k$ in the declared grid and all three embedding spaces. The principled $k$ per space is \textbf  {bold}. No $k$ in any space reaches a silhouette conventionally regarded as well-separated structure, and \texttt  {clipL224} falls monotonically, so its selection criterion returns the grid edge rather than an interior maximum --- recorded as a FAIL of the declared guard. \emph  {Source:} \texttt  {rebuild/B1/out/b1\_k\_sweep\_\{dinoL224,dinoL518,clipL224\}.csv}; block \texttt  {EXP B1} \#3 @ \texttt  {results/REBUILD\_LOG.txt:922}.}}{15}{table.3}\protected@file@percent }
+\newlabel{tab:silhouette}{{3}{15}{Full clustering sweep over the target set: silhouette (mean over 10 $k$-means seeds), bootstrap ARI and seed ARI, for every $k$ in the declared grid and all three embedding spaces. The principled $k$ per space is \textbf {bold}. No $k$ in any space reaches a silhouette conventionally regarded as well-separated structure, and \texttt {clipL224} falls monotonically, so its selection criterion returns the grid edge rather than an interior maximum --- recorded as a FAIL of the declared guard. \emph {Source:} \texttt {rebuild/B1/out/b1\_k\_sweep\_\{dinoL224,dinoL518,clipL224\}.csv}; block \texttt {EXP B1} \#3 @ \texttt {results/REBUILD\_LOG.txt:922}}{table.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Post-Hoc Diagnostics: Intervals, Allocation Composition, Boundary Metrics}{15}{appendix.D}\protected@file@percent }
+\newlabel{app:diag}{{D}{15}{Post-Hoc Diagnostics: Intervals, Allocation Composition, Boundary Metrics}{appendix.D}{}}
+\@writefile{toc}{\contentsline {paragraph}{On reading the equivalence tests.}{15}{section*.44}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Full signal-generality measurement, all 16 rows: four signal variants across three signal families, two architectures, two aggregations. $\rho $ at the committed seed, $\pm $ sd over 10 $k$-means seeds. The whole-image block passes the pre-registered ordering $8/8$; the boundary block passes $2/8$ with four rows going negative, an outcome outside the pre-registered interpretation space, reported as it fell. \emph  {Source:} \texttt  {rebuild/T2C/out/t2c\_table.csv}; block \texttt  {EXP T2C} @ \texttt  {results/REBUILD\_LOG.txt:2550}.}}{16}{table.4}\protected@file@percent }
+\newlabel{tab:t2cfull}{{4}{16}{Full signal-generality measurement, all 16 rows: four signal variants across three signal families, two architectures, two aggregations. $\rho $ at the committed seed, $\pm $ sd over 10 $k$-means seeds. The whole-image block passes the pre-registered ordering $8/8$; the boundary block passes $2/8$ with four rows going negative, an outcome outside the pre-registered interpretation space, reported as it fell. \emph {Source:} \texttt {rebuild/T2C/out/t2c\_table.csv}; block \texttt {EXP T2C} @ \texttt {results/REBUILD\_LOG.txt:2550}}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces The area control (\texttt  {EXP AC}). First-order partial Spearman on the same cluster partition and floors as the committed measurement. $z_{\mathrm  {obj}}$ = per-cluster mean object area on the endpoint side; $z_{\mathrm  {unc}}$ = per-cluster mean uncertain-region area on the target side. Ordering survives $7/8$ and $6/8$ against a floor of $6/8$ declared before the run. Note that partialling object area \emph  {raises} $\rho (1-S_\alpha )$ in every row --- the opposite of the confound's prediction. \emph  {Source:} \texttt  {rebuild/AC/out/ac\_table.csv}; block \texttt  {EXP AC} @ \texttt  {results/REBUILD\_LOG.txt:2612}.}}{16}{table.5}\protected@file@percent }
+\newlabel{tab:areacontrol}{{5}{16}{The area control (\texttt {EXP AC}). First-order partial Spearman on the same cluster partition and floors as the committed measurement. $z_{\mathrm {obj}}$ = per-cluster mean object area on the endpoint side; $z_{\mathrm {unc}}$ = per-cluster mean uncertain-region area on the target side. Ordering survives $7/8$ and $6/8$ against a floor of $6/8$ declared before the run. Note that partialling object area \emph {raises} $\rho (1-S_\alpha )$ in every row --- the opposite of the confound's prediction. \emph {Source:} \texttt {rebuild/AC/out/ac\_table.csv}; block \texttt {EXP AC} @ \texttt {results/REBUILD\_LOG.txt:2612}}{table.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Subgroup breakdowns.}{16}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}Setup-Specific Limitations and Diagnostics}{16}{appendix.E}\protected@file@percent }
+\newlabel{app:tier1}{{E}{16}{Setup-Specific Limitations and Diagnostics}{appendix.E}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {(a)} Each point is one of the $75$ clusters, sized by how many target images it holds. The budget piles onto clusters far to the right of the pool's own CAMO share, so the allocation is partly a source selector. \textbf  {(b)} The same budget against how many primary-endpoint images each cluster contains: the two largest quotas sit at $n_{\mathrm  {test}} = 2$ and $5$. \textbf  {(c)} Endpoint error variance decomposed across the same clusters --- four fifths of it is within clusters, so a cluster-level policy cannot address it however well aimed. \emph  {Source:} \texttt  {rebuild/DIAG/out/diag\_clusters.json}.}}{17}{figure.2}\protected@file@percent }
+\newlabel{fig:clusterdiag}{{2}{17}{\textbf {(a)} Each point is one of the $75$ clusters, sized by how many target images it holds. The budget piles onto clusters far to the right of the pool's own CAMO share, so the allocation is partly a source selector. \textbf {(b)} The same budget against how many primary-endpoint images each cluster contains: the two largest quotas sit at $n_{\mathrm {test}} = 2$ and $5$. \textbf {(c)} Endpoint error variance decomposed across the same clusters --- four fifths of it is within clusters, so a cluster-level policy cannot address it however well aimed. \emph {Source:} \texttt {rebuild/DIAG/out/diag\_clusters.json}}{figure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Six of the $41$ confirmed pairs: the author-sourced CHAMELEON image (top) and its partner in the COD10K-train pool (bottom). \emph  {Selection rule, applied not curated:} the six lowest mean absolute difference among pairs with a COD10K-train partner. Exact hashing reports $0$ collisions for every pair shown, each being a re-encoding rather than a byte-identical copy. \emph  {Source:} \texttt  {chameleon\_contaminated.json} (\texttt  {EXP D2R} \#4).}}{17}{figure.3}\protected@file@percent }
+\newlabel{fig:pairs}{{3}{17}{Six of the $41$ confirmed pairs: the author-sourced CHAMELEON image (top) and its partner in the COD10K-train pool (bottom). \emph {Selection rule, applied not curated:} the six lowest mean absolute difference among pairs with a COD10K-train partner. Exact hashing reports $0$ collisions for every pair shown, each being a re-encoding rather than a byte-identical copy. \emph {Source:} \texttt {chameleon\_contaminated.json} (\texttt {EXP D2R} \#4)}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Six of the $9$ CHAMELEON images that the released same-dimension detector reports \textsc  {unchecked} and the geometric extension matches: the author-sourced CHAMELEON image (top) and its partner in the training pool (bottom), with each pair's RANSAC inlier count. \emph  {Selection rule, applied not curated:} the six highest inlier counts among the newly matched. Note the differing dimensions in every pair --- that is why a same-dimension check cannot see them, and why the $41$ of Section~\ref {sec:contamination} was a lower bound. A tenth candidate cleared the inlier threshold but failed the residual test and is excluded; its homography is degenerate (Appendix~\ref {app:chamext}). \emph  {Source:} \texttt  {rebuild/FINAL\_AUDIT/out/final\_verdicts.json}.}}{18}{figure.4}\protected@file@percent }
+\newlabel{fig:chamext}{{4}{18}{Six of the $9$ CHAMELEON images that the released same-dimension detector reports \textsc {unchecked} and the geometric extension matches: the author-sourced CHAMELEON image (top) and its partner in the training pool (bottom), with each pair's RANSAC inlier count. \emph {Selection rule, applied not curated:} the six highest inlier counts among the newly matched. Note the differing dimensions in every pair --- that is why a same-dimension check cannot see them, and why the $41$ of Section~\ref {sec:contamination} was a lower bound. A tenth candidate cleared the inlier threshold but failed the residual test and is excluded; its homography is degenerate (Appendix~\ref {app:chamext}). \emph {Source:} \texttt {rebuild/FINAL\_AUDIT/out/final\_verdicts.json}}{figure.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Benchmark Contamination Audit Corrections}{18}{appendix.F}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Corrections to our own work.}{18}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {G}Endpoint-Available Signal Validation}{18}{appendix.G}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A correction to our own measurement.}{18}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {H}CHAMELEON Contamination: Calibration, Controls and Adjudication}{18}{appendix.H}\protected@file@percent }
+\newlabel{app:chamext}{{H}{18}{CHAMELEON Contamination: Calibration, Controls and Adjudication}{appendix.H}{}}
+\@writefile{toc}{\contentsline {paragraph}{Tier A --- the released same-dimension detector.}{18}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Tier B --- calibration of the geometric extension.}{19}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Adjudication --- from ``the keypoints agree'' to ``the same photograph''.}{19}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Scope of the exact-hash zero.}{19}{section*.51}\protected@file@percent }
+\bibdata{reference}
+\bibcite{ash2020deep}{{1}{2020}{{Ash et~al.}}{{Ash, Zhang, Krishnamurthy, Langford, and Agarwal}}}
+\bibcite{barz2020train}{{2}{2020}{{Barz \& Denzler}}{{Barz and Denzler}}}
+\bibcite{chen2025synque}{{3}{2025}{{Chen \& Zhong}}{{Chen and Zhong}}}
+\bibcite{chen2025realcamo}{{4}{2025}{{Chen et~al.}}{{Chen, Cai, Li, Liang, Wang, and Xu}}}
+\bibcite{cheng2021boundary}{{5}{2021}{{Cheng et~al.}}{{Cheng, Girshick, Doll{\'a}r, Berg, and Kirillov}}}
+\bibcite{fan2017structure}{{6}{2017}{{Fan et~al.}}{{Fan, Cheng, Liu, Li, and Borji}}}
+\@writefile{toc}{\contentsline {paragraph}{What remains uncounted.}{20}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {I}CHAMELEON Mask Releases and Detector Validation}{20}{appendix.I}\protected@file@percent }
+\newlabel{app:masks}{{I}{20}{CHAMELEON Mask Releases and Detector Validation}{appendix.I}{}}
+\@writefile{toc}{\contentsline {paragraph}{Detector self-test.}{20}{section*.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {J}Secondary-Endpoint Sensitivity Check}{20}{appendix.J}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A threshold that passed, and was refused.}{20}{section*.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {K}Arm Anchoring and Baseline Stability}{20}{appendix.K}\protected@file@percent }
+\newlabel{app:anchor}{{K}{20}{Arm Anchoring and Baseline Stability}{appendix.K}{}}
+\@writefile{toc}{\contentsline {paragraph}{Where these arms sit against the published numbers.}{20}{section*.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {L}Summary of Causes and Scope}{20}{appendix.L}\protected@file@percent }
+\newlabel{app:causes}{{L}{20}{Summary of Causes and Scope}{appendix.L}{}}
+\bibcite{fan2018enhanced}{{7}{2018}{{Fan et~al.}}{{Fan, Gong, Cao, Ren, Cheng, and Borji}}}
+\bibcite{fan2020sinet}{{8}{2020}{{Fan et~al.}}{{Fan, Ji, Sun, Cheng, Shen, and Shao}}}
+\bibcite{fan2022concealed}{{9}{2022}{{Fan et~al.}}{{Fan, Ji, Cheng, and Shao}}}
+\bibcite{fan2023advances}{{10}{2023}{{Fan et~al.}}{{Fan, Ji, Xu, Cheng, Sakaridis, and Gool}}}
+\bibcite{frisch2025gauda}{{11}{2025}{{Frisch et~al.}}{{Frisch, Bornberg, Fuchs, and Mukhopadhyay}}}
+\bibcite{gal2016dropout}{{12}{2016}{{Gal \& Ghahramani}}{{Gal and Ghahramani}}}
+\bibcite{ghiasi2021simple}{{13}{2021}{{Ghiasi et~al.}}{{Ghiasi, Cui, Srinivas, Qian, Lin, Cubuk, Le, and Zoph}}}
+\bibcite{hoffman2018cycada}{{14}{2018}{{Hoffman et~al.}}{{Hoffman, Tzeng, Park, Zhu, Isola, Saenko, Efros, and Darrell}}}
+\bibcite{jayasumana2024rethinking}{{15}{2024}{{Jayasumana et~al.}}{{Jayasumana, Raghunathan, Veit, Glasner, and Basu}}}
+\bibcite{jia2022segment}{{16}{2022}{{Jia et~al.}}{{Jia, Yao, Liu, Fan, Liu, and Luo}}}
+\bibcite{karl2024position}{{17}{2024}{{Karl et~al.}}{{Karl, Kemeter, Dax, and Sierak}}}
+\bibcite{lakens2017equivalence}{{18}{2017}{{Lakens}}{{}}}
+\bibcite{lakshminarayanan2017simple}{{19}{2017}{{Lakshminarayanan et~al.}}{{Lakshminarayanan, Pritzel, and Blundell}}}
+\bibcite{le2019anabranch}{{20}{2019}{{Le et~al.}}{{Le, Nguyen, Nie, Tran, and Sugimoto}}}
+\bibcite{lee2013pseudo}{{21}{2013}{{Lee}}{{}}}
+\bibcite{liang2025discl}{{22}{2025}{{Liang et~al.}}{{Liang, Bhardwaj, and Zhou}}}
+\bibcite{luo2025s2rcod}{{23}{2025}{{Luo et~al.}}{{Luo, Lin, and Lin}}}
+\bibcite{lv2021simultaneously}{{24}{2021}{{Lv et~al.}}{{Lv, Zhang, Dai, Li, Liu, Barnes, and Fan}}}
+\bibcite{margolin2014evaluate}{{25}{2014}{{Margolin et~al.}}{{Margolin, Zelnik-Manor, and Tal}}}
+\bibcite{oquab2024dinov2}{{26}{2024}{{Oquab et~al.}}{{Oquab, Darcet, Moutakanni, Vo, Szafraniec, Khalidov, Fernandez, Haziza, Massa, El-Nouby, Assran, Ballas, Galuba, Howes, Huang, Li, Misra, Rabbat, Sharma, Synnaeve, Xu, J{\'e}gou, Mairal, Labatut, Joulin, and Bojanowski}}}
+\bibcite{parmar2022aliased}{{27}{2022}{{Parmar et~al.}}{{Parmar, Zhang, and Zhu}}}
+\bibcite{pineau2021improving}{{28}{2021}{{Pineau et~al.}}{{Pineau, Vincent-Lamarre, Sinha, Larivi{\`e}re, Beygelzimer, {d'Alch{\'e}-Buc}, Fox, and Larochelle}}}
+\bibcite{radford2021learning}{{29}{2021}{{Radford et~al.}}{{Radford, Kim, Hallacy, Ramesh, Goh, Agarwal, Sastry, Askell, Mishkin, Clark, Krueger, and Sutskever}}}
+\bibcite{rombach2022high}{{30}{2022}{{Rombach et~al.}}{{Rombach, Blattmann, Lorenz, Esser, and Ommer}}}
+\bibcite{sener2018active}{{31}{2018}{{Sener \& Savarese}}{{Sener and Savarese}}}
+\bibcite{settles2009active}{{32}{2009}{{Settles}}{{}}}
+\bibcite{skurowski2018animal}{{33}{2018}{{Skurowski et~al.}}{{Skurowski, Abdulameer, B{\l }aszczyk, Depta, Kornacki, and Kozie{\l }}}}
+\bibcite{sohn2020fixmatch}{{34}{2020}{{Sohn et~al.}}{{Sohn, Berthelot, Carlini, Zhang, Zhang, Raffel, Cubuk, Kurakin, and Li}}}
+\bibcite{song2021denoising}{{35}{2021}{{Song et~al.}}{{Song, Meng, and Ermon}}}
+\bibcite{tarvainen2017mean}{{36}{2017}{{Tarvainen \& Valpola}}{{Tarvainen and Valpola}}}
+\bibcite{torralba2011unbiased}{{37}{2011}{{Torralba \& Efros}}{{Torralba and Efros}}}
+\bibcite{wu2023datasetdm}{{38}{2023}{{Wu et~al.}}{{Wu, Zhao, Chen, Gu, Zhao, He, Zhou, Shou, and Shen}}}
+\bibcite{wu2024antileak}{{39}{2024}{{Wu et~al.}}{{Wu, Pan, Xie, Zhou, Zhao, Ma, Du, Mao, Luu, and Wang}}}
+\bibcite{zhao2024lakered}{{40}{2024}{{Zhao et~al.}}{{}}}
+\bibstyle{iclr2027_conference}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Per-run metrics at full recorded precision for every training run in this work --- the two frozen campaigns and the mean-teacher positive control --- on both endpoints. Arms B and C10 appear once; they were re-scored, not re-trained, for the falsification campaign and reproduced their committed values exactly at six decimal places. \emph  {Source:} \texttt  {rebuild/ABC/out/abc\_metrics.csv} and \texttt  {out/t2/abc\_metrics.csv}; blocks \texttt  {EXP ABC} \#3 and \texttt  {EXP T2} \#3.}}{24}{table.6}\protected@file@percent }
+\newlabel{tab:perrun}{{6}{24}{Per-run metrics at full recorded precision for every training run in this work --- the two frozen campaigns and the mean-teacher positive control --- on both endpoints. Arms B and C10 appear once; they were re-scored, not re-trained, for the falsification campaign and reproduced their committed values exactly at six decimal places. \emph {Source:} \texttt {rebuild/ABC/out/abc\_metrics.csv} and \texttt {out/t2/abc\_metrics.csv}; blocks \texttt {EXP ABC} \#3 and \texttt {EXP T2} \#3}{table.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Which evaluation columns can be reported as independent measurements. Every rate is still a \emph  {lower bound}: different photographs of one specimen, montages and heavy colour edits are not detected, and an image with no match is unchecked, not clean. The CHAMELEON row combines the released same-dimension detector's $41$ with $9$ rescaled or cropped copies recovered by the geometric extension and confirmed by post-warp residual; the other three rows are same-dimension only, so their unchecked shares are larger than stated here. In the exact-hash column $0$ is a measured zero against the \emph  {training pool}, ``---'' not applicable; it is not a claim about overlap between benchmarks (Section~\ref {sec:contamination}). $^{\ddagger }$the nearest-neighbour gap is evidence for the same-dimension tier of $41$, not for the combined figure. \emph  {Source:} \texttt  {CLEAN\_PROTOCOL.md}; \texttt  {EXP D2} \#5, \texttt  {D2R} \#4, \texttt  {D2\_NC4K} \#2; extension and adjudication in \texttt  {rebuild/FINAL\_AUDIT/out/final\_verdicts.json}.}}{25}{table.7}\protected@file@percent }
+\newlabel{tab:contamination}{{7}{25}{Which evaluation columns can be reported as independent measurements. Every rate is still a \emph {lower bound}: different photographs of one specimen, montages and heavy colour edits are not detected, and an image with no match is unchecked, not clean. The CHAMELEON row combines the released same-dimension detector's $41$ with $9$ rescaled or cropped copies recovered by the geometric extension and confirmed by post-warp residual; the other three rows are same-dimension only, so their unchecked shares are larger than stated here. In the exact-hash column $0$ is a measured zero against the \emph {training pool}, ``---'' not applicable; it is not a claim about overlap between benchmarks (Section~\ref {sec:contamination}). $^{\ddagger }$the nearest-neighbour gap is evidence for the same-dimension tier of $41$, not for the combined figure. \emph {Source:} \texttt {CLEAN\_PROTOCOL.md}; \texttt {EXP D2} \#5, \texttt {D2R} \#4, \texttt {D2\_NC4K} \#2; extension and adjudication in \texttt {rebuild/FINAL\_AUDIT/out/final\_verdicts.json}}{table.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Post-hoc interval estimates for the gaps this paper turns on, on COD10K-test $S_\alpha $. \emph  {These decide nothing}: the verdicts remain the pre-registered $2\hat  {\sigma }$ rule of Section~\ref {sec:setup}, which reports no $p$-value at $n=3$. Intervals are Welch (unequal-variance) on the two arms actually compared, so they are not inflated by A0. TOST is run at the SESOI $\delta = 0.005$; the final column gives the smallest $\delta $ at which each comparison \emph  {could} have concluded equivalence, which is the honest positive statement the data supports. \emph  {Source:} \texttt  {rebuild/DIAG/out/diag\_tost.json}.}}{25}{table.8}\protected@file@percent }
+\newlabel{tab:tost}{{8}{25}{Post-hoc interval estimates for the gaps this paper turns on, on COD10K-test $S_\alpha $. \emph {These decide nothing}: the verdicts remain the pre-registered $2\hat {\sigma }$ rule of Section~\ref {sec:setup}, which reports no $p$-value at $n=3$. Intervals are Welch (unequal-variance) on the two arms actually compared, so they are not inflated by A0. TOST is run at the SESOI $\delta = 0.005$; the final column gives the smallest $\delta $ at which each comparison \emph {could} have concluded equivalence, which is the honest positive statement the data supports. \emph {Source:} \texttt {rebuild/DIAG/out/diag\_tost.json}}{table.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces The ten most-funded clusters, and what the budget is actually aimed at. The target pool is $24.8\%$ CAMO, but $51.5\%$ of the generation budget lands on CAMO images --- a $2.08\times $ enrichment ($2.14\times $ under the committed assignment). The two largest quotas take $33.5\%$ of the budget, are $90.2\%$ CAMO, and between them hold $7$ of the $2026$ primary-endpoint images. \emph  {Source:} \texttt  {rebuild/DIAG/out/diag\_clusters.json}.}}{26}{table.9}\protected@file@percent }
+\newlabel{tab:clustercomp}{{9}{26}{The ten most-funded clusters, and what the budget is actually aimed at. The target pool is $24.8\%$ CAMO, but $51.5\%$ of the generation budget lands on CAMO images --- a $2.08\times $ enrichment ($2.14\times $ under the committed assignment). The two largest quotas take $33.5\%$ of the budget, are $90.2\%$ CAMO, and between them hold $7$ of the $2026$ primary-endpoint images. \emph {Source:} \texttt {rebuild/DIAG/out/diag\_clusters.json}}{table.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Arm differences on \emph  {boundary} metrics, COD10K-test, same three seeds, same pooled-$\hat  {\sigma }$ rule. \textbf  {Post-hoc: these metrics were not pre-registered and no campaign verdict is re-decided.} On SINet the concentration gap $\mathrm  {C10}-\mathrm  {B}$ clears its bar --- and so does $\mathrm  {CINV}-\mathrm  {B}$, the \emph  {anti}-targeted arm, by as much; the two direction contrasts stay within noise. SINet-v2 resolves none of it, and that disagreement is reported as a disagreement. \emph  {Source:} \texttt  {rebuild/DIAG/out/diag\_subgroups.json}.}}{26}{table.10}\protected@file@percent }
+\newlabel{tab:boundary}{{10}{26}{Arm differences on \emph {boundary} metrics, COD10K-test, same three seeds, same pooled-$\hat {\sigma }$ rule. \textbf {Post-hoc: these metrics were not pre-registered and no campaign verdict is re-decided.} On SINet the concentration gap $\mathrm {C10}-\mathrm {B}$ clears its bar --- and so does $\mathrm {CINV}-\mathrm {B}$, the \emph {anti}-targeted arm, by as much; the two direction contrasts stay within noise. SINet-v2 resolves none of it, and that disagreement is reported as a disagreement. \emph {Source:} \texttt {rebuild/DIAG/out/diag\_subgroups.json}}{table.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Every cause, its measured quantity, and how far it carries. Causes marked \emph  {generalizes} concern the target data or the uncertainty signal and travel beyond this instantiation; those marked \emph  {specific to this setup} are properties of this loop or this generator. The scope column, not the magnitude column, determines how far a row may be carried. \emph  {Sources, by row:} \texttt  {FINAL\_RESULTS.md} Tables 8.2, 8.1, 9.2, 9.4, 11.1, 12.1, 5.1, 7.1 and 10.4; blocks \texttt  {EXP B1} \#3 and \#4, \texttt  {EXP C1} \#4, \texttt  {EXP T2} \#3, \texttt  {EXP T2C}, \texttt  {EXP ABC} \#2, \texttt  {EXP D1}, \texttt  {EXP A3}, in \texttt  {results/REBUILD\_LOG.txt}. The conditioning row has no log block by construction.}}{27}{table.11}\protected@file@percent }
+\newlabel{tab:causes}{{11}{27}{Every cause, its measured quantity, and how far it carries. Causes marked \emph {generalizes} concern the target data or the uncertainty signal and travel beyond this instantiation; those marked \emph {specific to this setup} are properties of this loop or this generator. The scope column, not the magnitude column, determines how far a row may be carried. \emph {Sources, by row:} \texttt {FINAL\_RESULTS.md} Tables 8.2, 8.1, 9.2, 9.4, 11.1, 12.1, 5.1, 7.1 and 10.4; blocks \texttt {EXP B1} \#3 and \#4, \texttt {EXP C1} \#4, \texttt {EXP T2} \#3, \texttt {EXP T2C}, \texttt {EXP ABC} \#2, \texttt {EXP D1}, \texttt {EXP A3}, in \texttt {results/REBUILD\_LOG.txt}. The conditioning row has no log block by construction}{table.11}{}}
+\gdef \@abspage@last{27}
