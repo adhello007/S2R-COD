@@ -19,7 +19,7 @@ parser.add_argument('--model_path', type=str,
 parser.add_argument('--test_save', type=str,
                     default='./Result/SINet-v2/test/')
 parser.add_argument('--gpu', type=int, default=0, help='choose which gpu you use')
-# CHAMELEON is deliberately absent: 41/76 of it is training data (D2, 53.9%), so it is
+# CHAMELEON is deliberately absent: 50/76 of it is training data (FINAL_AUDIT, 65.8%), so it is
 # withdrawn as an endpoint. CAMO is the checkpoint-selection set, never an endpoint.
 parser.add_argument('--dataset', type=str, default='COD10K', choices=['COD10K', 'NC4K'],
                     help='endpoint to score, from Dataset/Test/<name>/{Imgs,GT}')

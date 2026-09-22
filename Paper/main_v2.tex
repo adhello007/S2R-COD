@@ -55,9 +55,10 @@ accuracy by nothing we can resolve. On boundary metrics --- which is what the ac
 built to move --- the concentration effect does become resolvable, and the anti-targeted arm captures
 it just as fully.
 
-Independently: at least $51$ of CHAMELEON's $76$ images ($67.1\%$) are re-encoded, rescaled or
-cropped copies of COD10K and CAMO training images. Exact hashing, the standard check, reports zero
-overlap because the copies were re-saved in a different format. We claim non-independence rather
+Independently: at least $50$ of CHAMELEON's $76$ images ($65.8\%$) are re-encoded, rescaled or
+cropped copies of COD10K and CAMO training images --- $41$ reproducible by a released detector and
+$9$ more confirmed pixel-by-pixel after geometric alignment. Exact hashing, the standard check,
+reports zero overlap because the copies were re-saved in a different format. We claim non-independence rather
 than inflation, and release a detector and a clean protocol. A control that returns zero is
 informative only if it could have returned something else.
 \end{abstract}
@@ -115,12 +116,14 @@ setup, and the last is a property of the loop we built.
 
 \begin{itemize}
 \itemsep0.02em
-\item At least $51$ of CHAMELEON's $76$ images ($67.1\%$) are re-encoded, rescaled or cropped
-COD10K-train and CAMO training images, while exact hashing returns $0$. Verified against an
-author-sourced release, extended past the same-dimension limit by geometric matching calibrated to
-$41/41$ recall on the confirmed pairs, and held to a negative control that flags $0$ of $120$ on
-NC4K. We claim non-independence rather than inflation, and identify a published protocol whose
-unlabelled target pool holds $40$ of the $76$ test images (Section~\ref{sec:contamination}).
+\item At least $50$ of CHAMELEON's $76$ images ($65.8\%$) are re-encoded, rescaled or cropped
+COD10K-train and CAMO training images, while exact hashing returns $0$. A released detector
+reproduces $41$ of them; the remaining $9$ leave their dimension group and are confirmed by warping
+each candidate into its partner's frame and measuring the residual, which separates a rescale or
+crop from a second photograph of the same specimen. Verified against an author-sourced release,
+calibrated to $41/41$ recall on the confirmed pairs, and held to a negative control that flags
+$0$ of $120$ on NC4K. We claim non-independence rather than inflation, and identify a published protocol whose
+unlabelled target pool holds $44$ of the $76$ test images (Section~\ref{sec:contamination}).
 \item The target distribution separates only weakly into clusters under every embedding we tested
 --- best silhouette $0.1600$ across three spaces --- and the budget a cluster-wise policy then
 spends is aimed largely at one component of a two-dataset mixture: $51.5\%$ of it lands on CAMO
@@ -660,7 +663,9 @@ $0$ on a benchmark that is two-thirds training data is the same failure as a con
 separation whatever you aim it at: in both cases the instrument cannot fail, so its passing carries
 no information.
 
-\paragraph{The finding, and the control that misses it.} $41$ of CHAMELEON's $76$ images ---
+\paragraph{The finding, and the control that misses it.} We report two tiers. The floor is what a
+released same-dimension detector reproduces on any machine; the extension adds copies that were
+rescaled or cropped. \textbf{Floor:} $41$ of CHAMELEON's $76$ images ---
 $53.9\%$ --- are the same photographs as images in the COD10K-train and CAMO training pool,
 re-encoded, $40$ in the public COD10K-train split and one in CAMO. A model trained on COD10K-train
 has already seen over half of CHAMELEON before being evaluated on it. We verified against an
@@ -673,17 +678,38 @@ though only pool membership is measured.
 
 \paragraph{$41$ was itself a lower bound, and we can now say by how much.} Our detector compares
 only same-dimension images, so a copy that was \emph{rescaled} or \emph{cropped} out of its dimension
-group is invisible to it and reported \textsc{unchecked}, not clean --- $25$ of the $76$. Adding
-resolution-normalised matching and SIFT correspondences filtered by a RANSAC homography closes most
-of that gap. Both thresholds are calibrated on answers already known rather than chosen by
-inspection, and the geometric instrument separates them without overlap: $525$--$1174$ inliers on the
-$41$ confirmed pairs against a maximum of $8$ on random ones. At an operating point one inlier above
-the largest count \emph{any} negative set produced, it recovers $41/41$ of the known pairs, flags
-$0$ of $120$ sampled NC4K images, and matches \textbf{$10$ of the $25$ unchecked: CHAMELEON is at
-least $51/76$ ($67.1\%$) training data, $15$ remain unchecked, $10$ are verifiably clean}
-(Figure~\ref{fig:chamext}, calibration in Appendix~\ref{app:masks}). Every one of the ten left its
-dimension group by a rescale or crop --- why the released detector could not see it, and why this
+group is invisible to it and reported \textsc{unchecked}, not clean --- $25$ of the $76$. SIFT
+correspondences filtered by a RANSAC homography close most of that gap. (We also tried
+resolution-normalised global matching; it recovered nothing these keypoints did not, and we report
+it only so its null is on the record.) The inlier threshold is calibrated on answers already known
+rather than chosen by inspection: $525$--$1174$ inliers on the $41$ confirmed pairs against a
+maximum of $8$ on random pairs and $19$ anywhere in the NC4K control, and we take the operating
+point one inlier above that worst case, at $20$.
+
+An inlier count, however, only shows that local patches agree on a geometric model --- two exposures
+of one static scene agree on a homography too. Since the claim is that these are the same
+photographs, we measure it as one: each candidate partner is warped into the CHAMELEON frame through
+the recovered homography and we take the residual over the overlap. Run first on the $41$ known
+pairs the instrument reproduces their recorded mean absolute difference to three decimals, which is
+what makes its verdict on the rest readable. \textbf{Nine of the $25$ survive}: residual $3.8$ to
+$12.1$ on a $0$--$255$ scale, correlation $0.96$ to $1.00$, shear and perspective indistinguishable
+from zero, at scales from $0.39\times$ to $6.36\times$ --- and two of the nine at scale $1.000$ with
+different dimensions, which is to say plain crops. A tenth candidate cleared the inlier threshold
+and \emph{failed} this test: its homography decomposes to $-86.5^\circ$ of shear and anisotropic
+scale $0.24$ against $1.24$, collapsing the frame towards a line, and at full resolution it yields
+no homography at all. We exclude it. \textbf{CHAMELEON is therefore at least $50/76$ ($65.8\%$)
+training data} --- $44$ of the partners in the public COD10K-train split and $6$ in CAMO ---
+\textbf{$16$ remain unchecked, $10$ are clean with respect to the training pool}
+(Figure~\ref{fig:chamext}, calibration in Appendix~\ref{app:chamext}). Every one of the nine left its
+dimension group by a rescale or a crop --- why the released detector could not see it, and why this
 count too is a lower bound.
+
+\paragraph{A caution for anyone repeating this across benchmarks.} Exact hashing returns $0$ against
+the \emph{training pool}, which is the claim we make. It does not return $0$ across benchmarks:
+three CHAMELEON images are byte-identical to CAMO-250 images (\texttt{animal-17}, \texttt{animal-25},
+\texttt{animal-60}). Those files are not in the training pool, so they do not enter the count above,
+but CAMO-250 is the split this repository selects checkpoints on --- so a further three test images
+sit in the selection path, and one of them is an image we otherwise call clean.
 
 \paragraph{The count is a property of the data, not of a tolerance.} Sweeping the tolerance saturates
 the count at $41$, and the sorted nearest-neighbour distances independently place $41$ images below
@@ -694,8 +720,9 @@ no jump.
 \paragraph{A negative control, from the same instrument.} An audit that finds contamination wherever
 it looks is worthless. The identical detector returns a clean null on NC4K against the COD10K test
 split --- $0/4121$ at every tolerance swept, minimum nearest distance $3.44\times$ the confirmation
-tolerance --- and so does the geometric extension, at $0$ of $120$ sampled. Appendix~\ref{app:masks}
-gives both, and the reason NC4K's $1/4121$ in Table~\ref{tab:contamination} is a different axis that
+tolerance, and $0$ of the $1082$ images actually comparable --- and so does the geometric extension,
+at $0$ of $120$ sampled, its highest inlier count anywhere being $19$ against an operating point of
+$20$. Appendix~\ref{app:chamext} gives both, and the reason NC4K's $1/4121$ in Table~\ref{tab:contamination} is a different axis that
 must not be collapsed with it.
 
 \paragraph{Non-independence, not inflation.} We expected to say how much a contaminated column
@@ -708,21 +735,22 @@ models.}
 
 \paragraph{The protocol: retire the benchmark, do not subset it.} Our released protocol originally
 recommended reporting CHAMELEON on its $35$ uncontaminated images. We withdraw that: of $76$ images,
-$51$ are now confirmed contaminated and $15$ more are \emph{unchecked, not clean}, leaving
-\textbf{$10$ verifiably clean}. The extension makes the recommendation stronger rather than
+$50$ are now confirmed contaminated and $16$ more are \emph{unchecked, not clean}, leaving
+\textbf{$10$ clean with respect to the training pool} --- one of which, \texttt{animal-25}, is
+byte-identical to a CAMO-250 image and so is not independent of that benchmark either. The extension makes the recommendation stronger rather than
 weaker --- every image it moved came out of the unchecked column, and none moved the other way. A
 $10$-image endpoint is not an endpoint, and with two incompatible mask releases the honest
 recommendation --- a change to one we already released --- is to retire CHAMELEON rather than subset
 it. Report COD10K-test and NC4K instead, disclosing the unchecked share. The detector we release is
-checkable without our data, and Appendix~\ref{app:masks} records its self-test and the extension's
-calibration.
+checkable without our data, and Appendix~\ref{app:chamext} records its self-test, the extension's
+calibration and the per-pair adjudication.
 
 \paragraph{A concrete instance, from the protocol we test.} The method under test evaluates on
 CHAMELEON, and its task setup states that for this family of benchmarks it \emph{``consistently use[s] the real
 unlabeled COD10K training set as the target domain''}. It takes a precaution: when the test set is
 CHAMELEON, those images are removed from the \emph{source} domain \emph{``to prevent target domain
 data leakage''}. That closes the source path but not the target pool, since the case definitions adjust source
-selection only --- and that pool holds $40$ of the $76$ CHAMELEON images, so a model following this
+selection only --- and that pool holds $44$ of the $76$ CHAMELEON images, so a model following this
 protocol self-trains on pseudo-labels over a set containing more than half the images it is then
 tested on. We attribute no intent: the source-side removal shows the authors were alert to leakage,
 and the target-side path is invisible without a re-encode-tolerant check.
@@ -752,7 +780,7 @@ The idea still seems reasonable. For it to have a chance you would need an optim
 grows with the pool rather than one under which added images displace real ones, a foreground supply
 not already exhausted, a generator wider than its own input, and a target pool that is not a mixture
 whose components the uncertainty signal can tell apart --- ours sends half its budget to a quarter of
-its data. Separately: CHAMELEON is at least two-thirds training data for models trained on COD10K,
+its data. Separately: CHAMELEON is at least $65.8\%$ training data for models trained on COD10K,
 the usual check reports it perfectly clean, and we release one that does not. A control that returns
 $0$ is only as good as its ability to return something else.
 
@@ -951,11 +979,15 @@ where $\rho(\mathrm{MAE})$ falls $+0.7070$ to $+0.4457$ once band area is remove
 \caption{Which evaluation columns can be reported as independent measurements. Every rate is still a
 \emph{lower bound}: different photographs of one specimen, montages and heavy colour edits are not
 detected, and an image with no match is unchecked, not clean. The CHAMELEON row combines the
-released same-dimension detector's $41$ with $10$ rescaled or cropped copies recovered by the
-geometric extension; the other three rows are same-dimension only, so their unchecked shares are
-larger than stated here. In the exact-hash column $0$ is a measured zero, ``---'' not applicable.
-\emph{Source:} \texttt{CLEAN\_PROTOCOL.md}; \texttt{EXP D2} \#5, \texttt{D2R} \#4,
-\texttt{D2\_NC4K} \#2; extension in \texttt{rebuild/DIAG/out/diag\_chameleon\_ext.json}.}
+released same-dimension detector's $41$ with $9$ rescaled or cropped copies recovered by the
+geometric extension and confirmed by post-warp residual; the other three rows are same-dimension
+only, so their unchecked shares are larger than stated here. In the exact-hash column $0$ is a
+measured zero against the \emph{training pool}, ``---'' not applicable; it is not a claim about
+overlap between benchmarks (Section~\ref{sec:contamination}).
+$^{\ddagger}$the nearest-neighbour gap is evidence for the same-dimension tier of $41$, not for the
+combined figure. \emph{Source:} \texttt{CLEAN\_PROTOCOL.md}; \texttt{EXP D2} \#5, \texttt{D2R} \#4,
+\texttt{D2\_NC4K} \#2; extension and adjudication in
+\texttt{rebuild/FINAL\_AUDIT/out/final\_verdicts.json}.}
 \label{tab:contamination}
 \begin{center}
 \small
@@ -965,7 +997,7 @@ Endpoint & Contaminated & Exact hash & Unchecked & Nearest-neighbour gap & Verdi
 \midrule
 COD10K-test & $2/2026$ \; ($0.1\%$) & --- & $524/2026$ & none & reportable$^\dagger$ \\
 NC4K & $1/4121$ \; ($0.0\%$) & --- & $2406/4121$ & none & reportable$^\dagger$ \\
-\textbf{CHAMELEON} & $\mathbf{51/76}$ \; $\mathbf{(67.1\%)}$ & $\mathbf{0}$ & $15/76$ & $41$ below $5.51$, next $40.58$ & \textbf{not reportable} \\
+\textbf{CHAMELEON} & $\mathbf{50/76}$ \; $\mathbf{(65.8\%)}$ & $\mathbf{0}$ & $16/76$ & $41$ below $5.51$, next $40.58^{\ddagger}$ & \textbf{not reportable} \\
 CAMO & $4/250$ \; ($1.6\%$) & --- & $155/250$ & none & selection set only \\
 \bottomrule
 \end{tabular}
@@ -1034,13 +1066,15 @@ every pair shown, each being a re-encoding rather than a byte-identical copy.
 \begin{center}
 \includegraphics[width=\textwidth]{figs/fig_chameleon_pairs.pdf}
 \end{center}
-\caption{Six of the $10$ CHAMELEON images that the released same-dimension detector reports
+\caption{Six of the $9$ CHAMELEON images that the released same-dimension detector reports
 \textsc{unchecked} and the geometric extension matches: the author-sourced CHAMELEON image (top) and
 its partner in the training pool (bottom), with each pair's RANSAC inlier count. \emph{Selection
 rule, applied not curated:} the six highest inlier counts among the newly matched. Note the
 differing dimensions in every pair --- that is why a same-dimension check cannot see them, and why
-the $41$ of Section~\ref{sec:contamination} was a lower bound. \emph{Source:}
-\texttt{diag\_chameleon\_ext.json}.}
+the $41$ of Section~\ref{sec:contamination} was a lower bound. A tenth candidate cleared the inlier
+threshold but failed the residual test and is excluded; its homography is degenerate
+(Appendix~\ref{app:chamext}). \emph{Source:}
+\texttt{rebuild/FINAL\_AUDIT/out/final\_verdicts.json}.}
 \label{fig:chamext}
 \end{figure}
 
@@ -1112,6 +1146,86 @@ the labelled endpoint} against endpoint error --- not the quantity the pipeline 
 on the signal actually available, correlation with pixel error falls by $+0.2100$ and $+0.2470$, from
 $+0.8695$ and $+0.8754$ to $+0.6595$ and $+0.6284$. A signal validated where labels exist overstates
 what is usable where they do not.
+
+
+\section{CHAMELEON Contamination: Calibration, Controls and Adjudication}
+\label{app:chamext}
+
+\paragraph{Tier A --- the released same-dimension detector.} Images are grouped by exact pixel
+dimensions, since a re-encode preserves them. Within a group each image is reduced to a
+$32\times32$ greyscale descriptor, pairs are shortlisted by descriptor RMS distance at $14.0$, and
+survivors are decoded at full resolution and confirmed when the mean absolute difference over RGB
+falls below $6/255$. We deliberately do \emph{not} contrast-normalise the descriptor: normalising
+destroys the scale that separates a re-encode from a merely similar photograph, and it is what made
+our own first pass report $10$ of $76$ rather than $41$. Sweeping the tolerance over
+$1, 2, 3, 5, 6$ gives $11$, $26$, $37$, $40$ and $41$ --- the count saturates. The detector passes an
+eight-assertion synthetic known-answer test that uses no repository data.
+
+\paragraph{Tier B --- calibration of the geometric extension.} SIFT correspondences, Lowe ratio
+$0.75$, filtered by a RANSAC homography at $4$ px. Thresholds are fixed on data whose answer is
+already committed, before the unchecked images are scored: positives are the $41$ Tier-A pairs,
+negatives $4000$ random CHAMELEON$\times$training pairs.
+
+\begin{center}\small
+\begin{tabular}{lc}
+\toprule
+Inliers on the $41$ confirmed pairs & $525$--$1174$ (median $1129$) \\
+Inliers on $4000$ random pairs & max $8$ \\
+Inliers anywhere in the NC4K control & max $19$ \\
+\textbf{Operating point} & \textbf{$20$} \\
+Recall on the knowns at that point & $41/41$ \\
+NC4K flagged at that point & $0$ of $120$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The operating point is one inlier above the largest count \emph{any} negative set produced, which is
+the NC4K maximum of $19$ rather than the random-pair maximum of $8$. We also ran resolution-normalised
+global matching as a second instrument; no unchecked image passed it (lowest normalised RMS $16.7$
+against a calibrated threshold of $1.02$), so every Tier-B match rests on the keypoint stage alone.
+
+\paragraph{Adjudication --- from ``the keypoints agree'' to ``the same photograph''.} An inlier count
+shows that local patches agree on a geometric model. Two exposures of one static scene agree on a
+homography as well, so the inlier count alone cannot carry the claim that these files are the same
+photograph. For each candidate we recover the homography, warp the partner into the CHAMELEON frame
+and measure the residual over the valid overlap, and we decompose the homography into scale,
+rotation, shear and perspective. Run on $8$ of the $41$ known pairs the instrument returns their
+recorded mean absolute difference to three decimals ($0.603 \to 0.603$, $5.512 \to 5.514$) at
+$H = I$, which is what licenses reading its output on the rest.
+
+\begin{center}\small
+\begin{tabular}{lrrrrl}
+\toprule
+CHAMELEON & Inliers & Residual & Corr. & Scale & Partner pool \\
+\midrule
+\texttt{animal-16} & $2015$ & $3.76$ & $0.99$ & $1.02$ & CAMO \\
+\texttt{animal-73} & $3332$ & $3.93$ & $1.00$ & $1.00$ (crop) & COD10K-train \\
+\texttt{animal-74} & $3403$ & $4.17$ & $1.00$ & $1.00$ (crop) & COD10K-train \\
+\texttt{animal-22} & $3097$ & $5.84$ & $1.00$ & $1.00$ (crop) & COD10K-train \\
+\texttt{animal-72} & $396$ & $6.60$ & $0.99$ & $6.36$ & CAMO \\
+\texttt{animal-61} & $1456$ & $8.92$ & $0.97$ & $0.98$ & CAMO \\
+\texttt{animal-43} & $263$ & $9.54$ & $0.96$ & $0.53$ & CAMO \\
+\texttt{animal-66} & $860$ & $10.72$ & $0.97$ & $0.51/0.39$ & COD10K-train \\
+\texttt{animal-59} & $1017$ & $12.11$ & $0.97$ & $1.52$ & CAMO \\
+\midrule
+\texttt{animal-7} & $25$ & \multicolumn{4}{l}{\textbf{rejected} --- shear $-86.5^\circ$, scale $0.24$ vs $1.24$; no homography at full resolution} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Residual is mean $|{\cdot}|$ over the overlap on a $0$--$255$ scale. Shear and perspective are
+indistinguishable from zero for all nine. \texttt{animal-7} was the only candidate below the
+calibration band of $525$--$1174$ inliers, clearing the operating point by $5$ while the NC4K
+negatives reached $19$; its homography collapses the frame towards a line, and it is excluded.
+
+\paragraph{Scope of the exact-hash zero.} The $0$ we report is measured against the training pool.
+Across benchmarks it is not zero: \texttt{animal-17}, \texttt{animal-25} and \texttt{animal-60} are
+byte-identical to CAMO-250 images. Those files are absent from the training pool and so do not enter
+the contamination count, but CAMO-250 is the split this repository selects checkpoints on.
+
+\paragraph{What remains uncounted.} Sixteen images have no partner at either tier and are reported
+\textsc{unchecked}, not clean. Different photographs of one specimen, montages and heavy colour edits
+are not detected and are not claimed. Every figure here is a lower bound.
 
 
 \section{CHAMELEON Mask Releases and Detector Validation}

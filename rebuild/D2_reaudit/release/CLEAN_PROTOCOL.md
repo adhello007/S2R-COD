@@ -12,7 +12,10 @@ it on trust.
 
 ## The finding
 
-**41 of CHAMELEON's 76 images (53.9 %) are re-encoded copies of images in the
+**50 of CHAMELEON's 76 images (65.8 %) are copies of images in the training pool**
+— 41 same-dimension re-encodes plus 9 rescaled or cropped copies confirmed by
+post-warp residual (`rebuild/FINAL_AUDIT/`). Superseding the earlier 41-only figure,
+41 of which are re-encoded copies of images in the
 COD10K-train / CAMO training pool.** By nearest partner, 40 are in the public
 COD10K-train split and 1 is in CAMO.
 
@@ -33,7 +36,7 @@ membership is measured here; the direction is inference from release chronology.
 |---|---|---|---|---|---|
 | **COD10K-test** | **2 / 2026 (0.1 %)** | 524 / 2026 | none — continuous | on-disk copies; **not author-verified** | Reportable, with the caveat below |
 | **NC4K** | **1 / 4121 (0.0 %)** | 2406 / 4121 | none — continuous | on-disk copies; **not author-verified** | Reportable, with the caveat below |
-| **CHAMELEON** | **41 / 76 (53.9 %)** | 25 / 76 | **41 below 5.51, next at 40.58** (**7.36**×) | **author-sourced release, re-audited** | **Not reportable** |
+| **CHAMELEON** | **50 / 76 (65.8 %)** | 16 / 76 | **41 below 5.51, next at 40.58** (**7.36**×) | **author-sourced release, re-audited** | **Not reportable** |
 | **CAMO** | 4 / 250 (1.6 %) | 155 / 250 | none — continuous | on-disk copies; **not author-verified** | Never an endpoint — it is the checkpoint-selection set in this protocol |
 
 **Read the gap column, not just the rate.** A contamination count is conditional on
@@ -162,5 +165,5 @@ For a COD10K-trained camouflaged-object model:
   protocol that is CAMO.
 - Run the detector on your own directories before reporting anything. Exact hashing
   will tell you a contaminated set is clean: on this data, hashing CHAMELEON against
-  the training pool returns **zero** collisions while 53.9 % of it is training data.
+  the training pool returns **zero** collisions while 65.8 % of it is training data.
   That is the trap this document exists to close.

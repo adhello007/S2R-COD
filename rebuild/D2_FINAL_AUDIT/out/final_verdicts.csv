@@ -1,0 +1,77 @@
+image,verdict,tier,partner,pool,evidence
+animal-1.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-37-Lion-2116.jpg,cod10k_train,mean|diff|=2.306
+animal-2.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-3.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-4.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-61-Katydid-3937.jpg,cod10k_train,mean|diff|=1.052
+animal-5.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-6.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4512.jpg,cod10k_train,mean|diff|=1.923
+animal-7.jpg,UNCHECKED,unchecked,,,rejected: no homography at full resolution
+animal-8.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg,cod10k_train,mean|diff|=4.490
+animal-9.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,cod10k_train,mean|diff|=1.266
+animal-10.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-11.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4508.jpg,cod10k_train,mean|diff|=1.461
+animal-12.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4805.jpg,cod10k_train,mean|diff|=1.461
+animal-13.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1879.jpg,cod10k_train,mean|diff|=1.165
+animal-14.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4509.jpg,cod10k_train,mean|diff|=0.692
+animal-15.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-48-Wolf-2913.jpg,cod10k_train,mean|diff|=0.989
+animal-16.jpg,CONTAMINATED,B_geometric,camourflage_00673.jpg,camo,inliers=2015 residual=3.76 corr=0.99 scale=1.019/1.020
+animal-17.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4806.jpg,cod10k_train,mean|diff|=1.389
+animal-18.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-19.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-53-Bird-3014.jpg,cod10k_train,mean|diff|=3.750
+animal-20.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-21.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-26-Chameleon-1664.jpg,cod10k_train,mean|diff|=1.706
+animal-22.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg,cod10k_train,inliers=3097 residual=5.84 corr=1.00 scale=1.000/1.000
+animal-23.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-26-Chameleon-1665.jpg,cod10k_train,mean|diff|=2.672
+animal-24.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2493.jpg,cod10k_train,mean|diff|=1.463
+animal-25.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-26.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2495.jpg,cod10k_train,mean|diff|=1.798
+animal-27.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-28.jpg,UNCHECKED,unchecked,,,rejected: no homography at full resolution
+animal-29.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4866.jpg,cod10k_train,mean|diff|=2.203
+animal-30.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4807.jpg,cod10k_train,mean|diff|=0.835
+animal-31.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-1-Aquatic-20-Turtle-1208.jpg,cod10k_train,mean|diff|=5.512
+animal-32.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-33.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1883.jpg,cod10k_train,mean|diff|=0.952
+animal-34.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-61-Katydid-3936.jpg,cod10k_train,mean|diff|=0.653
+animal-35.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1884.jpg,cod10k_train,mean|diff|=0.905
+animal-36.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-37.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1885.jpg,cod10k_train,mean|diff|=2.010
+animal-38.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-39.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-1-Aquatic-3-Crab-19.jpg,cod10k_train,mean|diff|=1.190
+animal-40.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1886.jpg,cod10k_train,mean|diff|=2.755
+animal-41.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-42.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1887.jpg,cod10k_train,mean|diff|=0.781
+animal-43.jpg,CONTAMINATED,B_geometric,camourflage_00876.jpg,camo,inliers=263 residual=9.54 corr=0.96 scale=0.528/0.528
+animal-44.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-64-Moth-4428.jpg,cod10k_train,mean|diff|=1.733
+animal-45.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3614.jpg,cod10k_train,mean|diff|=0.844
+animal-46.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-47.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-48.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-64-Moth-4429.jpg,cod10k_train,mean|diff|=2.079
+animal-49.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-50.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3616.jpg,cod10k_train,mean|diff|=0.645
+animal-51.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-52.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3617.jpg,cod10k_train,mean|diff|=2.296
+animal-53.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-54.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-55.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-67-Frog-4680.jpg,cod10k_train,mean|diff|=1.514
+animal-56.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-58-Frogmouth-3594.jpg,cod10k_train,mean|diff|=1.542
+animal-57.jpg,CONTAMINATED,A_same_dimension,camourflage_00836.jpg,camo,mean|diff|=3.062
+animal-58.jpg,CLEAN_VS_TRAINING,clean,,,no training partner found
+animal-59.jpg,CONTAMINATED,B_geometric,camourflage_00230.jpg,camo,inliers=1017 residual=12.11 corr=0.97 scale=1.525/1.524
+animal-60.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4513.jpg,cod10k_train,mean|diff|=2.225
+animal-61.jpg,CONTAMINATED,B_geometric,camourflage_00037.jpg,camo,inliers=1456 residual=8.92 corr=0.97 scale=0.979/0.979
+animal-62.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-63.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2496.jpg,cod10k_train,mean|diff|=2.011
+animal-64.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-65.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-47-Tiger-2875.jpg,cod10k_train,mean|diff|=1.257
+animal-66.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,cod10k_train,inliers=860 residual=10.72 corr=0.97 scale=0.509/0.387
+animal-67.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-67-Frog-4681.jpg,cod10k_train,mean|diff|=2.107
+animal-68.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-69.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-70.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2497.jpg,cod10k_train,mean|diff|=2.067
+animal-71.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-55-Butterfly-3291.jpg,cod10k_train,mean|diff|=0.850
+animal-72.jpg,CONTAMINATED,B_geometric,camourflage_00549.jpg,camo,inliers=396 residual=6.60 corr=0.99 scale=6.357/6.378
+animal-73.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3292.jpg,cod10k_train,inliers=3332 residual=3.93 corr=1.00 scale=1.000/1.000
+animal-74.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3293.jpg,cod10k_train,inliers=3403 residual=4.17 corr=1.00 scale=1.000/1.000
+animal-75.jpg,UNCHECKED,unchecked,,,no same-dimension candidate
+animal-76.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4516.jpg,cod10k_train,mean|diff|=0.603

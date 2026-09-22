@@ -1,0 +1,20 @@
+aspect_ratio,cham_dims,chameleon_image,corr,ext_at_operating_point,ext_inliers,group,inlier_share,known_mean_abs,n_good,n_inlier,overlap_frac,partner,partner_dims,perspective,residual_max,residual_mean,residual_p99,rotation_deg,scale_x,scale_y,shear_deg,verdict
+0.99999,829x466,animal-76.jpg,0.9998,,,anchor,1.0,0.603,3745,3745,1.0,COD10K-CAM-3-Flying-65-Owl-4516.jpg,829x466,0.0,13.0,0.6034,4.0,-0.00062,0.99998,0.99998,-0.00165,
+1.0,1024x683,animal-50.jpg,0.9998,,,anchor,1.0,0.645,3540,3540,1.0,COD10K-CAM-3-Flying-59-Grasshopper-3616.jpg,1024x683,0.0,13.0,0.6457,3.0,-0.00053,0.99997,0.99998,-0.00046,
+1.00002,700x436,animal-34.jpg,0.9999,,,anchor,0.9952,0.653,839,835,1.0,COD10K-CAM-3-Flying-61-Katydid-3936.jpg,700x436,0.0,33.0,0.6532,6.0,-0.00021,1.0,0.99999,-0.00257,
+1.0,1440x900,animal-14.jpg,0.9999,,,anchor,1.0,0.692,3787,3787,1.0,COD10K-CAM-3-Flying-65-Owl-4509.jpg,1440x900,0.0,17.0,0.6923,4.0,-2e-05,1.0,1.0,-7e-05,
+1.0,640x480,animal-31.jpg,0.9984,,,anchor,0.9997,5.512,3510,3509,1.0,COD10K-CAM-1-Aquatic-20-Turtle-1208.jpg,640x480,0.0,97.0,5.5143,35.0,-0.00018,1.0,1.0,-0.00143,
+0.99998,1200x792,animal-8.jpg,0.999,,,anchor,0.9995,4.49,3671,3669,1.0,COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg,1200x792,0.0,87.0,4.4904,23.0,0.00014,1.0,1.00002,0.00088,
+1.0,497x300,animal-19.jpg,0.9992,,,anchor,0.9929,3.75,3260,3237,1.0,COD10K-CAM-3-Flying-53-Bird-3014.jpg,497x300,0.0,70.0,3.751,19.0,-0.00016,1.0,1.0,-0.00121,
+1.0,880x660,animal-57.jpg,0.9979,,,anchor,1.0,3.062,3456,3456,1.0,camourflage_00836.jpg,880x660,0.0,25.0,3.0607,11.0,0.00029,0.99999,0.99999,0.00078,
+1.0,850x701,animal-73.jpg,0.9962,True,925,extension,1.0,,3332,3332,0.9595,COD10K-CAM-3-Flying-55-Butterfly-3292.jpg,849x677,0.0,63.0,3.9274,16.0,0.00011,0.99999,0.99999,-0.00013,
+1.00001,933x700,animal-74.jpg,0.9978,True,835,extension,0.9997,,3404,3403,0.9555,COD10K-CAM-3-Flying-55-Butterfly-3293.jpg,932x673,0.0,47.0,4.1675,17.0,0.00034,1.0,0.99999,-0.00019,
+1.00002,791x568,animal-22.jpg,0.9957,True,779,extension,0.9994,,3099,3097,0.9514,COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg,777x557,0.0,73.0,5.8391,24.0,-0.00068,0.99998,0.99996,-0.00149,
+1.0002,915x686,animal-59.jpg,0.9708,True,694,extension,0.9922,,1025,1017,0.9057,camourflage_00230.jpg,577x428,0.0,114.0,12.1137,55.0,-0.00497,1.52473,1.52443,-0.00244,
+0.99985,605x362,animal-61.jpg,0.9689,True,664,extension,0.9959,,1462,1456,0.9347,camourflage_00037.jpg,589x366,0.0,112.0,8.9187,47.0,0.00097,0.97913,0.97928,-0.00467,
+0.99906,815x1188,animal-16.jpg,0.992,True,621,extension,0.999,,2017,2015,0.5227,camourflage_00673.jpg,800x613,0.0,39.0,3.761,15.0,0.00526,1.01889,1.01985,0.0125,
+1.31561,610x409,animal-66.jpg,0.9715,True,595,extension,0.9942,,865,860,0.8826,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,1200x943,0.0,113.0,10.7158,46.0,0.00013,0.50865,0.38663,-0.01121,
+0.99999,755x352,animal-43.jpg,0.9632,True,422,extension,0.9962,,264,263,0.8344,camourflage_00876.jpg,1200x945,0.0,121.0,9.535,38.0,0.00362,0.52829,0.52829,-0.00383,
+0.9967,2000x977,animal-72.jpg,0.9862,True,383,extension,0.9167,,432,396,0.9945,camourflage_00549.jpg,315x160,1e-05,148.0,6.6004,36.0,0.00295,6.35725,6.37827,0.09068,
+,880x968,animal-7.jpg,,True,25,extension,0.0,,0,0,,camourflage_00776.jpg,400x300,,,,,,,,,NO HOMOGRAPHY
+,610x401,animal-28.jpg,,False,15,extension,0.0,,2,0,,camourflage_00040.jpg,324x400,,,,,,,,,NO HOMOGRAPHY
