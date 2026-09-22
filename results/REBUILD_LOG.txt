@@ -3520,3 +3520,96 @@ NOTES      BLOCK 3 OF 3 -- THE VERDICT. Applied strictly by rebuild/ABC/PREREGIS
            ENDPOINTS. COD10K-test is primary (2/2026 = 0.1% near-duplicate contamination, 7 exact with a measured MAE impact of -1.24e-05). NC4K is secondary and REPORTED ONLY -- it never decides. CHAMELEON is withdrawn (41/76 = 53.9% of it is training data) and CAMO is the checkpoint-selection set, never an endpoint; both are unreachable in code and re-checked by gate G4. Any null inherits D1's scope: it is evidence about targeting under an EXHAUSTED FOREGROUND POOL, and is silent on whether new foregrounds would help.
 ================================================================================
 
+================================================================================
+2026-09-22T16:04:53+05:30 | commit 32e3b55 (dirty) | EXP SE
+CMD   .venv/bin/python rebuild/ABC/abc_train.py --arms B,C10,CSHUF,CINV --tag se
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training reads each arm's own pool at Dataset/Source/ABC/<RUNID>/{Image,GT}; CLS round 2 reads Dataset/Source/ABC/<RUNID>_iteration2/
+METRICS
+  training_runs_completed        = 64/64
+  runs_abandoned                 = 0
+  runs_discarded_and_rerun       = 2
+  wall_clock_SINet_min           = mean 106.3  range 104.8-108.3  n=32    (reference 104.5 min)
+  wall_clock_SINetv2_min         = mean 123.4  range 120.6-129.7  n=32    (reference 131.0 min)
+  n_appended_SINet_B_s42         = 1902    (CLS round-2 append; best_epoch 32; wall 108.3m)
+  n_appended_SINet_B_s43         = 2103    (CLS round-2 append; best_epoch 28; wall 107.0m)
+  n_appended_SINet_B_s45         = 2019    (CLS round-2 append; best_epoch 21; wall 108.3m)
+  n_appended_SINet_B_s46         = 2001    (CLS round-2 append; best_epoch 28; wall 106.1m)
+  n_appended_SINet_B_s47         = 1995    (CLS round-2 append; best_epoch 29; wall 106.4m)
+  n_appended_SINet_B_s48         = 1817    (CLS round-2 append; best_epoch 30; wall 105.4m)
+  n_appended_SINet_B_s49         = 1959    (CLS round-2 append; best_epoch 24; wall 106.3m)
+  n_appended_SINet_B_s50         = 1976    (CLS round-2 append; best_epoch 27; wall 106.0m)
+  n_appended_SINet_C10_s42       = 1852    (CLS round-2 append; best_epoch 32; wall 106.1m)
+  n_appended_SINet_C10_s43       = 1782    (CLS round-2 append; best_epoch 28; wall 107.7m)
+  n_appended_SINet_C10_s45       = 2163    (CLS round-2 append; best_epoch 22; wall 108.1m)
+  n_appended_SINet_C10_s46       = 1910    (CLS round-2 append; best_epoch 28; wall 105.9m)
+  n_appended_SINet_C10_s47       = 1899    (CLS round-2 append; best_epoch 29; wall 105.3m)
+  n_appended_SINet_C10_s48       = 1838    (CLS round-2 append; best_epoch 39; wall 106.0m)
+  n_appended_SINet_C10_s49       = 2078    (CLS round-2 append; best_epoch 29; wall 106.3m)
+  n_appended_SINet_C10_s50       = 1899    (CLS round-2 append; best_epoch 25; wall 106.1m)
+  n_appended_SINet_CINV_s42      = 1949    (CLS round-2 append; best_epoch 22; wall 106.1m)
+  n_appended_SINet_CINV_s43      = 2010    (CLS round-2 append; best_epoch 29; wall 106.9m)
+  n_appended_SINet_CINV_s45      = 2057    (CLS round-2 append; best_epoch 27; wall 107.2m)
+  n_appended_SINet_CINV_s46      = 1966    (CLS round-2 append; best_epoch 23; wall 105.7m)
+  n_appended_SINet_CINV_s47      = 2055    (CLS round-2 append; best_epoch 29; wall 105.6m)
+  n_appended_SINet_CINV_s48      = 1928    (CLS round-2 append; best_epoch 29; wall 105.7m)
+  n_appended_SINet_CINV_s49      = 2014    (CLS round-2 append; best_epoch 24; wall 105.3m)
+  n_appended_SINet_CINV_s50      = 1869    (CLS round-2 append; best_epoch 30; wall 105.6m)
+  n_appended_SINet_CSHUF_s42     = 1992    (CLS round-2 append; best_epoch 28; wall 104.8m)
+  n_appended_SINet_CSHUF_s43     = 2014    (CLS round-2 append; best_epoch 28; wall 106.3m)
+  n_appended_SINet_CSHUF_s45     = 1914    (CLS round-2 append; best_epoch 21; wall 106.6m)
+  n_appended_SINet_CSHUF_s46     = 1927    (CLS round-2 append; best_epoch 26; wall 106.4m)
+  n_appended_SINet_CSHUF_s47     = 1859    (CLS round-2 append; best_epoch 29; wall 106.5m)
+  n_appended_SINet_CSHUF_s48     = 2069    (CLS round-2 append; best_epoch 38; wall 105.8m)
+  n_appended_SINet_CSHUF_s49     = 1991    (CLS round-2 append; best_epoch 37; wall 106.3m)
+  n_appended_SINet_CSHUF_s50     = 1888    (CLS round-2 append; best_epoch 30; wall 105.3m)
+  n_appended_SINetv2_B_s42       = 2010    (CLS round-2 append; best_epoch 30; wall 129.7m)
+  n_appended_SINetv2_B_s43       = 2045    (CLS round-2 append; best_epoch 99; wall 126.8m)
+  n_appended_SINetv2_B_s45       = 2005    (CLS round-2 append; best_epoch 62; wall 128.2m)
+  n_appended_SINetv2_B_s46       = 2055    (CLS round-2 append; best_epoch 37; wall 121.2m)
+  n_appended_SINetv2_B_s47       = 1965    (CLS round-2 append; best_epoch 21; wall 121.7m)
+  n_appended_SINetv2_B_s48       = 2090    (CLS round-2 append; best_epoch 23; wall 121.7m)
+  n_appended_SINetv2_B_s49       = 1878    (CLS round-2 append; best_epoch 76; wall 121.2m)
+  n_appended_SINetv2_B_s50       = 2036    (CLS round-2 append; best_epoch 37; wall 121.7m)
+  n_appended_SINetv2_C10_s42     = 2140    (CLS round-2 append; best_epoch 34; wall 126.3m)
+  n_appended_SINetv2_C10_s43     = 1904    (CLS round-2 append; best_epoch 22; wall 127.7m)
+  n_appended_SINetv2_C10_s45     = 2020    (CLS round-2 append; best_epoch 62; wall 121.2m)
+  n_appended_SINetv2_C10_s46     = 1960    (CLS round-2 append; best_epoch 30; wall 121.6m)
+  n_appended_SINetv2_C10_s47     = 2259    (CLS round-2 append; best_epoch 89; wall 121.9m)
+  n_appended_SINetv2_C10_s48     = 2154    (CLS round-2 append; best_epoch 98; wall 122.3m)
+  n_appended_SINetv2_C10_s49     = 1998    (CLS round-2 append; best_epoch 76; wall 122.1m)
+  n_appended_SINetv2_C10_s50     = 2253    (CLS round-2 append; best_epoch 21; wall 122.7m)
+  n_appended_SINetv2_CINV_s42    = 2137    (CLS round-2 append; best_epoch 23; wall 126.7m)
+  n_appended_SINetv2_CINV_s43    = 2116    (CLS round-2 append; best_epoch 99; wall 127.5m)
+  n_appended_SINetv2_CINV_s45    = 2183    (CLS round-2 append; best_epoch 38; wall 120.6m)
+  n_appended_SINetv2_CINV_s46    = 2013    (CLS round-2 append; best_epoch 21; wall 121.9m)
+  n_appended_SINetv2_CINV_s47    = 1951    (CLS round-2 append; best_epoch 89; wall 121.3m)
+  n_appended_SINetv2_CINV_s48    = 2149    (CLS round-2 append; best_epoch 26; wall 122.5m)
+  n_appended_SINetv2_CINV_s49    = 1943    (CLS round-2 append; best_epoch 76; wall 122.1m)
+  n_appended_SINetv2_CINV_s50    = 1901    (CLS round-2 append; best_epoch 21; wall 121.9m)
+  n_appended_SINetv2_CSHUF_s42   = 2254    (CLS round-2 append; best_epoch 23; wall 123.6m)
+  n_appended_SINetv2_CSHUF_s43   = 2278    (CLS round-2 append; best_epoch 34; wall 127.0m)
+  n_appended_SINetv2_CSHUF_s45   = 1967    (CLS round-2 append; best_epoch 62; wall 127.3m)
+  n_appended_SINetv2_CSHUF_s46   = 2059    (CLS round-2 append; best_epoch 74; wall 122.0m)
+  n_appended_SINetv2_CSHUF_s47   = 1899    (CLS round-2 append; best_epoch 21; wall 122.2m)
+  n_appended_SINetv2_CSHUF_s48   = 2033    (CLS round-2 append; best_epoch 35; wall 121.8m)
+  n_appended_SINetv2_CSHUF_s49   = 2068    (CLS round-2 append; best_epoch 76; wall 122.1m)
+  n_appended_SINetv2_CSHUF_s50   = 2106    (CLS round-2 append; best_epoch 37; wall 121.7m)
+  n_appended_mean_range          = mean 2008.2  range 1782-2278  spread 24.7% of mean
+  n_appended_spread_exceeds_5pct = True    (ABC_PLAN.md A.12 item 3 -- the one legitimate place the arms diverge beyond the Stage C injection)
+THRESHOLD  CLS round-2 append counts agree across arms within 5%% of the mean -> FAIL
+THRESHOLD  every completed run logged exactly 2 CSRDA rounds -> PASS
+THRESHOLD  total_step stayed pinned in BOTH rounds of every run (253 SINet / 127 SINet-v2), so added data bought zero extra optimisation -> PASS
+THRESHOLD  every run reached its final epoch and saved Tea_epoch_best.pth -> PASS
+THRESHOLD  every run read the unfiltered 4040-image target set in both rounds -> PASS
+THRESHOLD  no run was abandoned -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/se/abc_runs.csv, rebuild/ABC/out/se/abc_commands.txt, rebuild/ABC/out/se/abc_discards.json
+TRAINS     YES
+NOTES      BLOCK 2 OF 3, AND THE FIRST BLOCK IN THE WHOLE REBUILD WITH TRAINS YES. Every prior block -- E0, D2, D1, B1, C1 -- records TRAINS NO. Block #1 is the pre-flight, this is run accounting, #3 is the verdict. None supersedes another.
+           total_step IS PINNED, MEASURED PER RUN. min(len(source), len(target)) at MyTrain.py:306-307 with zip() truncating at :51,53 means B changes the MIXTURE and not the step count. So arm A0 gives each base image 0.910 exposures per epoch against 0.743 for A2/B/C at B=1000 -- 22% more -- which is exactly why A0 is not a clean control and why A2 exists.
+           n_appended DIFFERS PER ARM BY CONSTRUCTION, and is reported rather than absorbed. CLS selects target images by edge_loss < u*avg_loss (CLS.py:139) using the arm's OWN round-1 model, so each arm appends a different number of differently-pseudo-labelled images. That is legitimately part of "closed-loop", but it is a SECOND place the arms differ beyond the Stage C injection, and it is high-variance. total_step stays pinned for any n_appended, which is asserted above.
+           A DISCARDED RUN NEVER ENTERS THE METRICS. Any run failing an A.8.3 assertion has its snapshot and CLS directories removed and is re-run; discards are in abc_discards.json. CLS falls back to Tea_40/Tea_100.pth if Tea_epoch_best is missing (CLS.py:65-75), so a killed run would silently change which teacher generates pseudo-labels -- hence the assertion rather than a warning.
+           PREREGISTRATION.md was committed before block #1 and is unchanged. This driver neither reads it as an input nor writes it.
+================================================================================
+

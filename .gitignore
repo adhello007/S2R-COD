@@ -46,3 +46,6 @@ __pycache__*
 # rebuild/DIAG/diag_boundary.py from predictions already under Result/.
 # The per-run aggregates and every JSON ARE tracked.
 /rebuild/DIAG/out/diag_boundary_per_image*.csv
+
+# Built supplement artifact (40MB); rebuild with tools/build_supplement.sh
+/s2r-cod-supplement.zip

@@ -50,10 +50,33 @@ In dependency order. One line each; the numbers are in the log block and the rea
 | **C1** | Targeted-vs-random pool distance, plus the attribution audit of what actually produces the separation | `EXP C1` ×4 | [C1_RESULTS.md](rebuild/C1/C1_RESULTS.md) | [rebuild/C1/out/](rebuild/C1/out/) |
 | **A3** | How far the generator's synthetic renders sit from the real target distribution, with real-vs-real controls | `EXP A3` ×1 | [A3_RESULTS.md](rebuild/A3/A3_RESULTS.md) | [rebuild/A3/out/](rebuild/A3/out/) |
 | **ABC** | The 3-seed A/B/C/A2 training campaign — the measured verdict against the pre-registered rule | `EXP ABC` ×3 | [ABC_RESULTS.md](rebuild/ABC/ABC_RESULTS.md) | [rebuild/ABC/out/](rebuild/ABC/out/) |
+| **T2** | The falsification arms: does destroying (CSHUF) or reversing (CINV) the signal cost anything, at allocation shape held fixed | `EXP T2` ×4 | [T2_RESULTS.md](rebuild/ABC/T2_RESULTS.md) | [rebuild/ABC/out/t2/](rebuild/ABC/out/t2/) |
+| **T2C** | Whether the pixel-over-structure error ordering is specific to the ES signal, or general | `EXP T2C` ×1 | [T2C_RESULTS.md](rebuild/T2C/T2C_RESULTS.md) | [rebuild/T2C/out/](rebuild/T2C/out/) |
+| **AC** | Area control: whether T2C's ordering survives partialling out object and band area. Inference-free | `EXP AC` ×1 | [AC_RESULTS.md](rebuild/AC/AC_RESULTS.md) | [rebuild/AC/out/](rebuild/AC/out/) |
+| **PC** | Positive control: a mean-teacher arm the rule *should* detect, to show the null is not an insensitive instrument | `EXP PC` ×2 | [PC_RESULTS.md](rebuild/PC/PC_RESULTS.md) | [rebuild/PC/out/](rebuild/PC/out/) |
+| **OR** | Oracle: replaces the uncertainty score with ground-truth per-cluster error. A declared upper bound, never a method | `EXP OR` ×3 | *setup only:* [PREREGISTRATION_OR.md](rebuild/OR/PREREGISTRATION_OR.md) | [rebuild/ABC/out/or/](rebuild/ABC/out/or/) |
+| **FX** | Unpins the step schedule, to test whether the fixed optimisation budget is what suppresses the effect | `EXP FX` ×4 | [FX_RESULTS.md](rebuild/FX/FX_RESULTS.md) | [rebuild/ABC/out/fx/](rebuild/ABC/out/fx/) |
+| **SE** | Seed expansion to n = 8 on B, C10, CSHUF, CINV, under its own frozen rule | `EXP SE` ×2 | *setup only:* [PREREGISTRATION_SE.md](rebuild/SE/PREREGISTRATION_SE.md) | [rebuild/ABC/out/se/](rebuild/ABC/out/se/) |
+| **C2** | Follow-on to C1's attribution audit | `EXP C2` ×3 | *no results markdown — see §2.1* | — |
+| **REGRESS** | Regression check that re-scoring the reference arms still reproduces the committed metrics | `EXP REGRESS` ×1 | *no results markdown — see §2.1* | [rebuild/ABC/out/regress/](rebuild/ABC/out/regress/) |
+| **DIAG** | Post-hoc diagnostics feeding the paper's tables: TOST, subgroup/boundary metrics, cluster composition | *(no EXP block — see §2.1)* | — | [rebuild/DIAG/out/](rebuild/DIAG/out/) |
+| **A1** | Withdraws the generator-conditioning-bottleneck explanation by source reading | *(no EXP block — a withdrawal)* | [A1_SCOPING.md](rebuild/A1/A1_SCOPING.md) | — |
 
-**D2_nc4k has no results markdown.** Its `README.md` is setup only and says so; its numbers live in
-the `EXP D2_NC4K` block, and its NC4K/COD10K-test rows are reported in
-[CLEAN_PROTOCOL.md](rebuild/D2_reaudit/CLEAN_PROTOCOL.md).
+### 2.1 The directories with no results markdown
+
+Six experiments have no `*_RESULTS.md`, for four different reasons. None of them is an omission.
+
+| Experiment | Why, and where its numbers are |
+|---|---|
+| **D2_nc4k** | `README.md` is setup only and says so. Numbers live in the `EXP D2_NC4K` block; the NC4K/COD10K-test rows are reported in [CLEAN_PROTOCOL.md](rebuild/D2_reaudit/CLEAN_PROTOCOL.md) |
+| **OR** | Completed 2026-09-19, after the last results-markdown pass. Its numbers are in the three `EXP OR` blocks and [rebuild/ABC/out/or/](rebuild/ABC/out/or/); the rule they are judged against is [PREREGISTRATION_OR.md](rebuild/OR/PREREGISTRATION_OR.md) |
+| **SE** | **Still running.** No number exists yet, and none may be read before the campaign closes — that is the whole point of its pre-registration against optional stopping. See [PREREGISTRATION_SE.md](rebuild/SE/PREREGISTRATION_SE.md) |
+| **C2** | Has `EXP C2` blocks but no directory of its own; it extends C1's attribution audit and its artifacts live under [rebuild/C1/out/](rebuild/C1/out/) |
+| **REGRESS** | A one-block reproduction gate, not an experiment. Its verdict is the block itself |
+| **DIAG** | Post-hoc derivation from already-committed artifacts, so it has no `EXP` block by design — the same standing as the pool-mechanics audit in §3.4. Its scripts write [Paper](rebuild/DIAG/out/) tables directly |
+
+**FX and OR completed after the paper snapshot** (`rebuild/FinalPaper/`), so read their log blocks
+rather than assuming the consolidated documents already reflect them.
 
 ---
 
@@ -156,7 +179,12 @@ exports), and the primary inputs they derive from
 are verified by hash against
 [rebuild/E0/out/e0_manifest.sha256](rebuild/E0/out/e0_manifest.sha256). **`./Result/` — the model
 predictions — is excluded from what is shared** (gitignored, and large); nothing in this document
-depends on it. The `rebuild/` directory is being sent separately.
+depends on it.
+
+In the distributed supplement the `rebuild/` directory is included here, not sent separately, and
+one subset of the otherwise-gitignored embedding cache travels with it
+(`rebuild/E0/cache/dinoL518_{tgt,test}_cls.npy` and its name map) so that the area control runs with
+none of the image data present. See `README.md`.
 
 ---
 

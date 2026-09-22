@@ -132,9 +132,13 @@ def welch_tost(a, b):
 
 
 def git_head():
+    # Outside a work tree -- as in the distributed supplement, which carries no
+    # .git -- rev-parse exits non-zero with empty stdout rather than raising,
+    # so the emptiness has to be checked explicitly.
     try:
-        return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=REPO,
-                              capture_output=True, text=True).stdout.strip()
+        sha = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=REPO,
+                             capture_output=True, text=True).stdout.strip()
+        return sha or 'unknown (no work tree)'
     except Exception:                                          # noqa: BLE001
         return 'unknown'
 

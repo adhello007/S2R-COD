@@ -1,0 +1,16 @@
+{
+  "discards": [
+    {
+      "at": "2026-09-21T12:35:20+05:30",
+      "reason": "pre-launch: snapshot dir already holds .pth: Snapshot/ABC/SINet_CSHUF_s48",
+      "runid": "SINet_CSHUF_s48"
+    },
+    {
+      "at": "2026-09-21T12:35:20+05:30",
+      "reason": "pre-launch: snapshot dir already holds .pth: Snapshot/ABC/SINet_CSHUF_s49",
+      "runid": "SINet_CSHUF_s49"
+    }
+  ],
+  "generated": "2026-09-22T16:04:51+05:30",
+  "n_discards": 2
+}
