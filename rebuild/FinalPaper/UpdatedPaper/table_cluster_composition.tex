@@ -1,0 +1,28 @@
+\begin{table}[t]
+\caption{The ten most-funded clusters, and what the budget is actually aimed at. The target pool is $24.8\%$ CAMO, but $51.5\%$ of the generation budget lands on CAMO images --- a $2.08\times$ enrichment ($2.14\times$ under the committed assignment). The two largest quotas take $33.5\%$ of the budget, are $90.2\%$ CAMO, and between them hold $7$ of the $2026$ primary-endpoint images. \emph{Source:} \texttt{rebuild/DIAG/out/diag\_clusters.json}.}
+\label{tab:clustercomp}
+\begin{center}
+\small
+\begin{tabular}{rrrrrrr}
+\toprule
+Cluster & Budget & \% of $B$ & $n_{\text{target}}$ & CAMO \% & $n_{\text{test}}$ & $\mathit{es}_j$ \\
+\midrule
+30 & 194 & 19.4 & 21 & 95.2 & 2 & 0.0707 \\
+34 & 141 & 14.1 & 81 & 85.2 & 5 & 0.0674 \\
+63 & 74 & 7.4 & 18 & 66.7 & 3 & 0.0609 \\
+13 & 67 & 6.7 & 57 & 17.5 & 24 & 0.0599 \\
+23 & 29 & 2.9 & 43 & 41.9 & 20 & 0.0515 \\
+73 & 26 & 2.6 & 39 & 46.2 & 16 & 0.0505 \\
+65 & 24 & 2.4 & 64 & 51.6 & 23 & 0.0496 \\
+19 & 23 & 2.3 & 93 & 8.6 & 66 & 0.0490 \\
+0 & 22 & 2.2 & 57 & 1.8 & 31 & 0.0485 \\
+64 & 19 & 1.9 & 141 & 29.1 & 74 & 0.0471 \\
+\midrule
+\multicolumn{7}{l}{\emph{Budget-weighted totals against the pool they are drawn from}} \\
+\multicolumn{4}{l}{CAMO share of the target pool} & \multicolumn{3}{r}{$0.248$} \\
+\multicolumn{4}{l}{CAMO share of the \emph{budget}} & \multicolumn{3}{r}{$\mathbf{0.515}$} \\
+\multicolumn{4}{l}{Endpoint images per unit budget, against uniform} & \multicolumn{3}{r}{$0.722$} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

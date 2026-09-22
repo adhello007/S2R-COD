@@ -25,6 +25,11 @@ OUT = os.path.join(_HERE, 'results.md')
 SEEDS = (42, 43, 45)
 DELTA = 0.005
 
+# Post-adjudication CHAMELEON verdicts. Supersedes the pre-adjudication
+# candidate counts in rebuild/DIAG/out/diagnostics_summary.json.
+ADJUDICATED_AUDIT = os.path.join(
+    REPO, 'rebuild', 'D2_FINAL_AUDIT', 'out', 'final_verdicts.json')
+
 # campaign -> (metrics csv, sigma json, verdict json, preregistration, label)
 CAMPAIGNS = [
     ('ABC', 'rebuild/ABC/out/abc_metrics.csv', 'rebuild/ABC/out/abc_sigma.json',
@@ -393,21 +398,45 @@ def main():
         ce = d['chameleon_extension']
         P('### 5.4 CHAMELEON audit extension')
         P('')
+        # The DIAG extension is PRE-adjudication: it reports how many candidates
+        # cleared the inlier operating point, not how many survived the post-warp
+        # residual test. D2_FINAL_AUDIT adjudicates those candidates and is the
+        # authority for every count. Read it when present; say so when it is not.
+        adj = ADJUDICATED_AUDIT if have(ADJUDICATED_AUDIT) else None
+        cnt = load_json(adj)['counts'] if adj else None
         P('| Quantity | Value |')
         P('|---|---|')
-        P('| committed, same-dimension detector | 41 / 76 (53.9%) |')
+        P('| committed, same-dimension detector (Tier A) | %d / %d (%.1f%%) |'
+          % ((cnt['tier_a'], cnt['total'], 100.0 * cnt['tier_a'] / cnt['total'])
+             if cnt else (41, 76, 53.9)))
         P('| declared unchecked by that detector | %d |' % ce['n_unchecked'])
-        P('| newly matched at the operating point | **%d** |' % ce['n_new_matches_at_operating_point'])
+        P('| cleared the inlier operating point | %d |'
+          % ce['n_new_matches_at_operating_point'])
         P('| operating point (RANSAC inliers) | %d |' % ce['operating_point_inliers'])
         P('| recall on the 41 known pairs | %s |' % ce['calibration']['stage2_recall_on_knowns'])
         P('| negative control (NC4K) flagged | %d of %d |'
           % (ce['negative_control']['n_flagged_at_operating_point'],
              ce['negative_control']['n_sampled']))
-        P('| **total contaminated** | **%d / 76 (%.1f%%)** |'
-          % (41 + ce['n_new_matches_at_operating_point'],
-             100.0 * (41 + ce['n_new_matches_at_operating_point']) / 76))
-        P('| still unchecked | %d |' % (ce['n_unchecked'] - ce['n_new_matches_at_operating_point']))
-        P('| verifiably clean | 10 |')
+        if cnt:
+            P('| **confirmed by post-warp residual (Tier B)** | **%d** |' % cnt['tier_b'])
+            P('| **total contaminated** | **%d / %d (%.1f%%)** |'
+              % (cnt['contaminated'], cnt['total'], 100.0 * cnt['share']))
+            P('| still unchecked | %d |' % cnt['unchecked'])
+            P('| verifiably clean w.r.t. the training pool | %d |' % cnt['clean_vs_training'])
+            P('')
+            P('Counts are the **adjudicated** ones from `%s`. The extension reported %d '
+              'candidates above the operating point; adjudication warps each partner into the '
+              'CHAMELEON frame and measures the residual, which rejects %d of them. See '
+              '`rebuild/D2_FINAL_AUDIT/CONTAMINATION_LEDGER.md`.'
+              % (os.path.relpath(adj, REPO),
+                 ce['n_new_matches_at_operating_point'],
+                 ce['n_new_matches_at_operating_point'] - cnt['tier_b']))
+        else:
+            P('| total contaminated | **PENDING ADJUDICATION** |')
+            P('')
+            P('**`%s` is absent**, so only the pre-adjudication candidate count is available '
+              'and no total is reported here. The extension count is not a contamination count.'
+              % os.path.relpath(ADJUDICATED_AUDIT, REPO))
         P('')
 
     def outcome_note(cid):
@@ -451,8 +480,16 @@ def main():
     P('| 4 | target pool "has no cluster structure" | **Re-worded and extended.** Weak k-means '
       'separation under the tested embeddings; additionally 51.5% of the budget lands on CAMO '
       '(24.8% of the pool) and only 20.5% of endpoint error variance is between-cluster. |')
-    P('| 5 | CHAMELEON is 41/76 (53.9%) contaminated | **Raised to at least 51/76 (67.1%).** '
-      '10 of the 25 unchecked matched by calibrated geometric retrieval; negative control clean. |')
+    _cnt = (load_json(ADJUDICATED_AUDIT)['counts']
+            if have(ADJUDICATED_AUDIT) else None)
+    P('| 5 | CHAMELEON is 41/76 (53.9%%) contaminated | %s |'
+      % (('**Raised to at least %d/%d (%.1f%%).** %d of the %d unchecked confirmed by '
+          'calibrated geometric retrieval and post-warp residual; %d still unchecked; '
+          'negative control clean.'
+          % (_cnt['contaminated'], _cnt['total'], 100.0 * _cnt['share'],
+             _cnt['tier_b'], _cnt['tier_b'] + _cnt['unchecked'], _cnt['unchecked']))
+         if _cnt else
+         '**PENDING ADJUDICATION** -- geometric extension run, verdicts not adjudicated.'))
     P('| 6 | "nothing measures what happens when the budget grows with the data" | **%s** — the FX '
       'campaign measures exactly this.%s |'
       % (states.get('FX', 'PENDING'), outcome_note('FX')))

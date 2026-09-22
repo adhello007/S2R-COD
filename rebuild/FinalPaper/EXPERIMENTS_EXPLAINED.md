@@ -49,13 +49,33 @@ contributes 92.7% of the pooled variance**, yet A0 appears in none of the decisi
 
 | Noise pooled over | σ̂ | bar | Δ(C10−B) against it |
 |---|---|---|---|
-| A0, A2, B, C10 (ABC) | 0.008966 | 0.017933 | 0.28× — far inside |
-| B, C10, CSHUF, CINV (T2) | 0.002767 | 0.005533 | **0.91×** — just inside |
+| A0, A2, B, C10 (ABC, n = 3) | 0.008966 | 0.017933 | 0.28× — far inside |
+| B, C10, CSHUF, CINV (T2, n = 3) | 0.002767 | 0.005533 | **0.91×** — just inside |
 | B and C10 only (post-hoc) | — | ~0.0051 | 95% CI [−0.0035, +0.0136] |
+| **B, C10, CSHUF, CINV (SE, n = 8)** | **0.003431** | **0.006862** | **0.34×** — comfortably inside |
 
 So **3.24×** = 0.008966 ÷ 0.002767, the factor by which dropping A0 tightens the bar, and **0.91×**
 = 0.005034 ÷ 0.005533, the decisive gap as a fraction of that tighter bar. The headline verdict is
 unchanged throughout; what changes is how coarse the instrument is said to be.
+
+**Careful reading the last row.** The first three rows all measure *the same* Δ = 0.005034 against
+different bars. SE's row does not: at eight seeds **the gap itself is different**, +0.002352, and
+0.34× is that new gap against SE's own bar. SE is a separate campaign, so it has its own Δ, its own
+σ̂ and its own verdicts. See §17.
+
+**Degrees of freedom, and why they decide how much to trust a bar.** σ̂ is an *estimate* of the
+wobble, and estimates have their own error. The relevant count is `df` = arms × (seeds − 1):
+
+| campaign | seeds per arm | df | what that buys |
+|---|---|---|---|
+| ABC, T2 | 3 | **8** | a noisy estimate — it lands low about as often as high |
+| **SE** | **8** | **28** | 3.5× the evidence about how noisy training actually is |
+
+This is the single most important thing to understand about SE, because it explains an outcome that
+looks backwards at first glance: **more runs made the bar wider, not narrower.** A bar computed from
+three runs per arm can easily come out too small — three runs that happen to land close together look
+like a stable method. With eight, you see more of the real spread. SE did not buy a *smaller* bar; it
+bought a *trustworthy* one, and in doing so showed that the three-seed bars were optimistic.
 
 **Arm names.** `A` = baselines (A0 unpadded, A2 padded with real photographs), `B` = random
 selection, `C` = chosen by uncertainty. The digits are the temperature: **C10 is α = 1.0**, and the
@@ -742,7 +762,7 @@ open question, because that question has been measured rather than conceded.
 
 ---
 
-# 17. SE — Does the null survive more seeds? *(running)*
+# 17. SE — Does the null survive more seeds? *(complete, 2026-09-22)*
 
 ### The essence, and why we did it
 
@@ -766,23 +786,95 @@ exactly. The sign-consistency requirement was set at 7 of 8 and declared in the 
 our own claim *harder* to support, since the alternative would have biased toward the answer we
 expect.
 
-### Status and what we expect
+### What we found
 
-**40 new training runs, 12 complete as of 2026-09-21.** A power loss on 2026-09-20 interrupted the
-campaign; 36 runs verified intact, 2 partial runs were discarded and re-queued, and the campaign
-resumed — the interruption is documented, and because no SE number had been computed at that point,
-resuming could not have been influenced by any result. The projected bar is around **0.0034** against
-the committed decisive gap of **0.0050**. Stated plainly in advance: **if the gap holds and the bar
-tightens as projected, SE returns a REAL EFFECT and the committed null becomes a power failure that
-must be reported as one.** That is the outcome that would most damage the paper, and the
-pre-registration commits to reporting it. The five new seeds may equally move the gap itself; nothing
-predicts which.
+**All sixteen gaps came back `WITHIN NOISE`** — four comparisons × two architectures × two
+endpoints. The committed null survives. 40 new runs, 75.9 GPU-hours, finished 2026-09-22 17:54.
+
+A power loss on 2026-09-20 interrupted the campaign: 36 runs verified intact, 2 partial runs were
+discarded and re-run from scratch, and no partially trained model could enter the pool. Because no SE
+number had been computed at that moment, resuming cannot have been influenced by any result.
+
+**The decisive comparison, before and after.** Both rows are the same question — *does choosing
+images by uncertainty beat choosing them at random?*
+
+| | seeds | Δ(C10 − B) | σ̂ | bar (2σ̂) | gap ÷ bar | verdict |
+|---|---|---|---|---|---|---|
+| ABC, committed | 3 | +0.005034 | 0.008966 | 0.017933 | 0.28× | `WITHIN NOISE` |
+| *(same gap vs T2's tighter bar)* | 3 | +0.005034 | 0.002767 | 0.005533 | **0.91×** | `WITHIN NOISE` |
+| **SE** | **8** | **+0.002352** | **0.003431** | **0.006862** | **0.34×** | **`WITHIN NOISE`** |
+
+**Two things moved, and they moved apart.**
+
+*The gap halved* — +0.005034 → +0.002352. Part of what the three-seed campaign measured as a gap was
+seed luck, and it washed out with more runs. That is what a real nothing looks like when you sample
+it more.
+
+*The bar widened* — against T2's 0.005533, SE's is 0.006862. This is the result that reads
+backwards, and it is the most important thing in this entry. Every arm's seed-to-seed spread came out
+larger at eight seeds than at three:
+
+| arm | sd at n = 3 (T2) | sd at n = 8 (SE) |
+|---|---|---|
+| B (random) | 0.00181 | 0.00251 |
+| C10 (targeted) | 0.00406 | 0.00489 |
+| CSHUF (shuffled) | 0.00166 | 0.00278 |
+| CINV (reversed) | 0.00285 | 0.00302 |
+
+Nothing got worse. **We found out the old number was too small.** A spread estimated from three runs
+per arm (df = 8) lands low about as often as high; SE's rests on df = 28. The three-seed bars were
+optimistic, and SE is the measurement that shows it.
+
+**What this does to the sensitivity claim — the number that actually matters.** The design had to be
+able to see the **0.0142** reference effect (the improvement this repository reproduced for the
+published method). Against that target:
+
+| | bar | bar ÷ 0.0142 | could it rule out the published effect? |
+|---|---|---|---|
+| ABC, committed | 0.017933 | **126%** | **No** — the yardstick was larger than the thing measured |
+| **SE** | **0.006862** | **48%** | **Yes** — with room to spare |
+
+This is the concrete gain. The paper's most awkward admission was that its headline instrument was
+too blunt to exclude the very effect it argued against. **SE's bar is 2.6× tighter than the committed
+campaign's and less than half the reference effect, and the measured gap is a third of the bar.** The
+honest scope sentence changes from *"no effect above 0.0179"* to *"no effect above roughly 0.0069,
+on eight seeds per arm."*
+
+**The arm that points the wrong way wins, in every cell.**
+
+| cell | B | C10 | CSHUF | **CINV** |
+|---|---|---|---|---|
+| SINet · COD10K | 0.71513 | 0.71748 | 0.71717 | **0.71959** |
+| SINet · NC4K | 0.76802 | 0.76836 | 0.76768 | **0.77141** |
+| SINet-v2 · COD10K | 0.69627 | 0.69517 | 0.69850 | **0.69865** |
+| SINet-v2 · NC4K | 0.74998 | 0.74903 | 0.75138 | **0.75329** |
+
+CINV *reverses* the uncertainty signal — it spends the budget on the clusters the score calls least
+uncertain — and it holds the highest mean in **4 of 4** cells. T2 saw this in 3 of 4 at three seeds.
+C10, the targeted arm, is below random on both SINet-v2 cells. Every one of these differences is
+inside the bar, so **this is not a claim that reversing the signal helps.** It is the absence of any
+ordering by signal direction, now at eight seeds: what the budget is aimed at does nothing this
+instrument can see, while the fact that it is concentrated somewhere does.
 
 ### Why it matters
 
-This is the last of the three standard objections to a null — bad score, untrained data, too few
-seeds — and the only one still open. Whichever way it falls, it is reported beside the committed
-verdicts rather than replacing them.
+This closes the last of the three standard objections to a null — bad score (**OR**), untrained data
+(**FX**), too few seeds (**SE**) — and it closes it in the uncomfortable direction first: the
+pre-registration committed, in writing and before any run, to reporting a `REAL EFFECT` as a power
+failure that would withdraw the paper's central claim. That branch did not occur, and it could have.
+
+The result is stronger than the branch we were bracing for. The feared outcome was a bar shrinking to
+0.0034 beneath a gap holding at 0.0050. What happened is that the bar grew slightly on 3.5× the
+evidence *and* the gap halved, so the null holds comfortably rather than marginally — and it now
+holds on the best noise estimate the project has.
+
+**One caution for the write-up.** Do not say SE "tightened the bar" without naming the comparison.
+Against the committed campaign it is 2.6× tighter; against T2 it is 1.24× wider. Both are true, and
+only the first supports the sensitivity claim.
+
+**Reported beside, never instead.** The committed three-seed verdicts are not recomputed or replaced.
+SE agrees with them, so nothing has to be adjudicated — but that is two campaigns concurring, not one
+confirming the other.
 
 ---
 
@@ -819,7 +911,16 @@ which are only **24.8%** of the pool, the two largest quotas take a third of the
 all. **Third**, on boundary metrics the concentration effect becomes *measurable* on SINet (1.37× the
 bar, all seeds agreeing) — but the **anti-targeted arm captures it just as fully**, and this holds at
 every binarisation threshold. **Fourth**, CHAMELEON contamination rises from 41/76 to at least
-**51/76 (67.1%)**, with the negative control still flagging zero.
+**50/76 (65.8%)**, with the negative control still flagging zero.
+
+> **The 51 you may remember is a superseded number.** DIAG's geometric extension put **10**
+> candidates above the inlier operating point, which is where `41 + 10 = 51` came from. Clearing an
+> inlier threshold only shows that local patches agree on a geometric model — two exposures of one
+> static scene do too. `rebuild/D2_FINAL_AUDIT` adjudicates each candidate by warping the partner
+> into the CHAMELEON frame and measuring the residual, and **rejects one of the ten** (`animal-7`,
+> whose homography decomposes to −86.5° of shear). The adjudicated count is **50 = 41 Tier A + 9
+> Tier B**, with **16** unchecked and **10** clean with respect to the training pool.
+> `CONTAMINATION_LEDGER.md` is the authority; `results.md` §5.4 now reads from it.
 
 ### Why it matters
 
@@ -833,12 +934,13 @@ caution about allocating over a mixed target pool.
 # The consensus across all experiments
 
 The project tested whether a model's own uncertainty can tell you which synthetic images to
-generate. The answer is a null defended from three directions rather than asserted once. Every
+generate. The answer is a null defended from four directions rather than asserted once. Every
 control has failed to explain it away. Not the score: perfect knowledge of true test error changed
 nothing (OR, 8 of 8 cells within noise). Not the schedule: when the added images are genuinely
 trained on instead of displacing existing ones, the gap *shrinks*, from +0.0050 to +0.0014 (FX).
 Not a blind instrument: the same apparatus detects +0.0197 at 3.3x its bar (PC), though not an
-effect the size of the nulls.
+effect the size of the nulls. And not too few seeds: at eight seeds per arm the committed gap halves,
+from +0.0050 to +0.0024 against a bar of 0.0069, and all 16 cells return within noise (SE).
 
 What survives positively is sharper than the null. Targeted selection does pick a different training
 set — but so does any rule that spreads the budget unevenly, including one that keeps the shape and
@@ -848,5 +950,10 @@ clusters, the signal predicts the wrong kind of error, half the budget lands on 
 data, and the generator copies objects rather than inventing them.
 
 Independently, CHAMELEON is at least two-thirds training data and the standard check calls it clean.
-One question stays open: the seed expansion is still running, and it alone could overturn the
-central claim.
+
+The one question that could have overturned the central claim is now closed. The seed expansion was
+the only experiment with the standing to withdraw the paper's headline, it was pre-committed to
+reporting that outcome if it occurred, and it did not occur. It also corrected the record in a way
+that cuts against us: the three-seed bars were optimistic, and the project's honest sensitivity is
+**no effect above roughly 0.0069 Sα** — coarser than the 0.0034 we projected, and still less than
+half the 0.0142 effect the design had to be able to see.
