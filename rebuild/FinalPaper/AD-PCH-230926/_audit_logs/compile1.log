@@ -1,0 +1,668 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex.fmt)
+ restricted \write18 enabled.
+entering extended mode
+(main.tex
+LaTeX2e <2026-06-01>
+L3 programming layer <2026-06-18>
+(C:\Program Files\MiKTeX\tex/latex/base\article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Program Files\MiKTeX\tex/latex/base\size10.clo)) (iclr2027_conference.sty
+(C:\Program Files\MiKTeX\tex/latex/eso-pic\eso-pic.sty
+(C:\Program Files\MiKTeX\tex/latex/graphics\keyval.sty)
+(C:\Program Files\MiKTeX\tex/latex/xcolor\xcolor.sty
+(C:\Program Files\MiKTeX\tex/latex/graphics-cfg\color.cfg)
+(C:\Program Files\MiKTeX\tex/latex/graphics-def\pdftex.def)
+(C:\Program Files\MiKTeX\tex/latex/graphics\mathcolor.ltx))) (fancyhdr.sty)
+(natbib.sty)) (C:\Program Files\MiKTeX\tex/latex/psnfss\times.sty)
+(math_commands.tex (C:\Program Files\MiKTeX\tex/latex/amsmath\amsmath.sty
+For additional information on amsmath, use the `?' option.
+(C:\Program Files\MiKTeX\tex/latex/amsmath\amstext.sty
+(C:\Program Files\MiKTeX\tex/latex/amsmath\amsgen.sty))
+(C:\Program Files\MiKTeX\tex/latex/amsmath\amsbsy.sty)
+(C:\Program Files\MiKTeX\tex/latex/amsmath\amsopn.sty))
+(C:\Program Files\MiKTeX\tex/latex/amsfonts\amsfonts.sty)
+(C:\Program Files\MiKTeX\tex/latex/tools\bm.sty))
+(C:\Program Files\MiKTeX\tex/latex/hyperref\hyperref.sty
+(C:\Program Files\MiKTeX\tex/generic/iftex\iftex.sty)
+(C:\Program Files\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty)
+(C:\Program Files\MiKTeX\tex/generic/kvdefinekeys\kvdefinekeys.sty)
+(C:\Program Files\MiKTeX\tex/generic/pdfescape\pdfescape.sty
+(C:\Program Files\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty)
+(C:\Program Files\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.sty
+(C:\Program Files\MiKTeX\tex/generic/infwarerr\infwarerr.sty)))
+(C:\Program Files\MiKTeX\tex/latex/hycolor\hycolor.sty)
+(C:\Program Files\MiKTeX\tex/latex/hyperref\nameref.sty
+(C:\Program Files\MiKTeX\tex/latex/refcount\refcount.sty)
+(C:\Program Files\MiKTeX\tex/generic/gettitlestring\gettitlestring.sty
+(C:\Program Files\MiKTeX\tex/latex/kvoptions\kvoptions.sty)))
+(C:\Program Files\MiKTeX\tex/latex/etoolbox\etoolbox.sty)
+(C:\Program Files\MiKTeX\tex/generic/stringenc\stringenc.sty)
+(C:\Program Files\MiKTeX\tex/latex/hyperref\pd1enc.def)
+(C:\Program Files\MiKTeX\tex/generic/intcalc\intcalc.sty)
+(C:\Program Files\MiKTeX\tex/latex/hyperref\puenc.def)
+(C:\Program Files\MiKTeX\tex/latex/url\url.sty)
+(C:\Program Files\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Program Files\MiKTeX\tex/generic/bigintcalc\bigintcalc.sty)))
+(C:\Program Files\MiKTeX\tex/latex/hyperref\hpdftex.def
+(C:\Program Files\MiKTeX\tex/latex/rerunfilecheck\rerunfilecheck.sty
+(C:\Program Files\MiKTeX\tex/generic/uniquecounter\uniquecounter.sty)))
+(C:\Program Files\MiKTeX\tex/latex/booktabs\booktabs.sty)
+(C:\Program Files\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Program Files\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Program Files\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Program Files\MiKTeX\tex/latex/graphics-cfg\graphics.cfg)))
+(C:\Program Files\MiKTeX\tex/latex/psnfss\ot1ptm.fd)
+(C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def)
+No file main.aux.
+(C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (C:\Program Files\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
+(C:\Program Files\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg))
+(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd)
+(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd)
+
+Package natbib Warning: Citation `settles2009active' on page 1 undefined on inp
+ut line 80.
+
+
+Package natbib Warning: Citation `tarvainen2017mean' on page 1 undefined on inp
+ut line 81.
+
+
+Package natbib Warning: Citation `oquab2024dinov2' on page 1 undefined on input
+ line 82.
+
+
+LaTeX Warning: Reference `sec:related' on page 1 undefined on input line 97.
+
+[1{C:/Users/<user>/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Program
+ Files/MiKTeX/fonts/enc/dvips/base/8r.enc}]
+(C:\Program Files\MiKTeX\tex/latex/psnfss\ts1ptm.fd)
+
+Package natbib Warning: Citation `fan2023advances' on page 2 undefined on input
+ line 132.
+
+
+Package natbib Warning: Citation `fan2017structure' on page 2 undefined on inpu
+t line 135.
+
+
+Package natbib Warning: Citation `zhao2024lakered' on page 2 undefined on input
+ line 149.
+
+
+Package natbib Warning: Citation `luo2025s2rcod' on page 2 undefined on input l
+ine 150.
+
+
+Package natbib Warning: Citation `wu2023datasetdm' on page 2 undefined on input
+ line 153.
+
+
+Package natbib Warning: Citation `settles2009active' on page 2 undefined on inp
+ut line 157.
+
+
+Package natbib Warning: Citation `tarvainen2017mean' on page 2 undefined on inp
+ut line 159.
+
+
+Package natbib Warning: Citation `oquab2024dinov2' on page 2 undefined on input
+ line 160.
+
+
+Package natbib Warning: Citation `radford2021learning' on page 2 undefined on i
+nput line 160.
+
+
+Package natbib Warning: Citation `sener2018active' on page 2 undefined on input
+ line 161.
+
+
+Package natbib Warning: Citation `lakshminarayanan2017simple' on page 2 undefin
+ed on input line 162.
+
+
+Package natbib Warning: Citation `gal2016dropout' on page 2 undefined on input 
+line 163.
+
+
+Package natbib Warning: Citation `ash2020deep' on page 2 undefined on input lin
+e 163.
+
+
+LaTeX Warning: Reference `sec:why' on page 2 undefined on input line 163.
+
+
+Package natbib Warning: Citation `frisch2025gauda' on page 2 undefined on input
+ line 169.
+
+
+Package natbib Warning: Citation `liang2025discl' on page 2 undefined on input 
+line 170.
+
+
+Package natbib Warning: Citation `chen2025synque' on page 2 undefined on input 
+line 171.
+
+
+LaTeX Warning: Reference `app:related' on page 2 undefined on input line 175.
+
+
+LaTeX Warning: Reference `sec:method' on page 2 undefined on input line 176.
+
+[2]
+
+LaTeX Warning: Reference `sec:why' on page 3 undefined on input line 192.
+
+
+LaTeX Warning: Reference `app:method' on page 3 undefined on input line 213.
+
+
+LaTeX Warning: Reference `sec:concentration' on page 3 undefined on input line 
+216.
+
+
+LaTeX Warning: Reference `app:method' on page 3 undefined on input line 218.
+
+
+LaTeX Warning: Reference `fig:arms' on page 3 undefined on input line 231.
+
+[3] (C:\Program Files\MiKTeX\tex/latex/psnfss\ot1pcr.fd)
+
+LaTeX Warning: Reference `app:method' on page 4 undefined on input line 258.
+
+
+LaTeX Warning: Reference `tab:trained' on page 4 undefined on input line 278.
+
+
+LaTeX Warning: Reference `app:diag' on page 4 undefined on input line 289.
+
+
+LaTeX Warning: Reference `app:diag' on page 4 undefined on input line 289.
+
+
+LaTeX Warning: Reference `app:diag' on page 4 undefined on input line 320.
+
+[4 <./figs/fig_arms.pdf>]
+
+LaTeX Warning: Reference `sec:concentration' on page 5 undefined on input line 
+361.
+
+[5]
+
+LaTeX Warning: Reference `fig:thesis' on page 6 undefined on input line 380.
+
+
+LaTeX Warning: Reference `fig:thesis' on page 6 undefined on input line 393.
+
+
+LaTeX Warning: Reference `tab:tost' on page 6 undefined on input line 401.
+
+
+LaTeX Warning: Reference `eq:es' on page 6 undefined on input line 408.
+
+
+LaTeX Warning: Reference `tab:boundary' on page 6 undefined on input line 411.
+
+(table_subgroup_metrics.tex
+
+LaTeX Warning: Reference `app:diag' on page 6 undefined on input line 23.
+
+)
+
+LaTeX Warning: Reference `tab:trained' on page 6 undefined on input line 435.
+
+
+Underfull \vbox (badness 3525) has occurred while \output is active [6]
+
+LaTeX Warning: Reference `tab:clustercomp' on page 7 undefined on input line 45
+8.
+
+
+LaTeX Warning: Reference `app:coverage' on page 7 undefined on input line 471.
+
+[7 <./figs/fig1_thesis.pdf>]
+
+LaTeX Warning: Reference `app:tables' on page 8 undefined on input line 482.
+
+
+LaTeX Warning: Reference `fig:cham' on page 8 undefined on input line 499.
+
+
+LaTeX Warning: Reference `app:chamext' on page 8 undefined on input line 508.
+
+
+Underfull \hbox (badness 2460) in paragraph at lines 510--523
+[]\OT1/ptm/b/n/10 We claim non-independence, not in-fla-tion. \OT1/ptm/m/n/10 W
+e ex-pected the con-tam-i-na-tion to flat-ter
+
+LaTeX Warning: Reference `app:coverage' on page 8 undefined on input line 555.
+
+[8]
+
+LaTeX Warning: Reference `app:method' on page 9 undefined on input line 586.
+
+
+LaTeX Warning: Reference `tab:tost' on page 9 undefined on input line 594.
+
+
+LaTeX Warning: Reference `tab:boundary' on page 9 undefined on input line 594.
+
+[9 <./figs/fig2_pairs.pdf> <./figs/fig_chameleon_pairs.pdf>]
+
+Package natbib Warning: Citation `fan2022concealed' on page 10 undefined on inp
+ut line 602.
+
+
+Package natbib Warning: Citation `le2019anabranch' on page 10 undefined on inpu
+t line 603.
+
+
+Package natbib Warning: Citation `lv2021simultaneously' on page 10 undefined on
+ input line 603.
+
+
+Package natbib Warning: Citation `skurowski2018animal' on page 10 undefined on 
+input line 604.
+
+
+Package natbib Warning: Citation `zhao2024lakered' on page 10 undefined on inpu
+t line 605.
+
+
+LaTeX Warning: Reference `sec:contamination' on page 10 undefined on input line
+ 613.
+
+
+LaTeX Warning: Reference `app:method' on page 10 undefined on input line 625.
+
+
+LaTeX Warning: Reference `tab:perrun' on page 10 undefined on input line 630.
+
+
+LaTeX Warning: Reference `tab:perrun-nc4k' on page 10 undefined on input line 6
+30.
+
+No file main.bbl.
+
+Package natbib Warning: Citation `fan2022concealed' on page 10 undefined on inp
+ut line 662.
+
+
+Package natbib Warning: Citation `le2019anabranch' on page 10 undefined on inpu
+t line 663.
+
+
+Package natbib Warning: Citation `lv2021simultaneously' on page 10 undefined on
+ input line 664.
+
+
+Package natbib Warning: Citation `skurowski2018animal' on page 10 undefined on 
+input line 665.
+
+
+LaTeX Warning: Reference `sec:contamination' on page 10 undefined on input line
+ 666.
+
+
+Package natbib Warning: Citation `fan2020sinet' on page 10 undefined on input l
+ine 668.
+
+
+Package natbib Warning: Citation `fan2022concealed' on page 10 undefined on inp
+ut line 669.
+
+
+Package natbib Warning: Citation `jia2022segment' on page 10 undefined on input
+ line 670.
+
+
+Package natbib Warning: Citation `fan2017structure' on page 10 undefined on inp
+ut line 672.
+
+
+Package natbib Warning: Citation `fan2018enhanced' on page 10 undefined on inpu
+t line 673.
+
+
+Package natbib Warning: Citation `margolin2014evaluate' on page 10 undefined on
+ input line 673.
+
+
+Underfull \vbox (badness 6428) has occurred while \output is active [10]
+
+Package natbib Warning: Citation `rombach2022high' on page 11 undefined on inpu
+t line 677.
+
+
+Package natbib Warning: Citation `song2021denoising' on page 11 undefined on in
+put line 677.
+
+
+Package natbib Warning: Citation `ghiasi2021simple' on page 11 undefined on inp
+ut line 679.
+
+
+Package natbib Warning: Citation `hoffman2018cycada' on page 11 undefined on in
+put line 680.
+
+
+Package natbib Warning: Citation `chen2025realcamo' on page 11 undefined on inp
+ut line 683.
+
+
+Package natbib Warning: Citation `sohn2020fixmatch' on page 11 undefined on inp
+ut line 687.
+
+
+Package natbib Warning: Citation `lee2013pseudo' on page 11 undefined on input 
+line 689.
+
+
+Package natbib Warning: Citation `oquab2024dinov2' on page 11 undefined on inpu
+t line 690.
+
+
+Package natbib Warning: Citation `radford2021learning' on page 11 undefined on 
+input line 690.
+
+
+Package natbib Warning: Citation `sener2018active' on page 11 undefined on inpu
+t line 692.
+
+
+Package natbib Warning: Citation `ash2020deep' on page 11 undefined on input li
+ne 693.
+
+
+LaTeX Warning: Reference `sec:concentration' on page 11 undefined on input line
+ 694.
+
+
+Package natbib Warning: Citation `torralba2011unbiased' on page 11 undefined on
+ input line 698.
+
+
+Package natbib Warning: Citation `barz2020train' on page 11 undefined on input 
+line 700.
+
+
+Package natbib Warning: Citation `wu2024antileak' on page 11 undefined on input
+ line 701.
+
+
+Package natbib Warning: Citation `pineau2021improving' on page 11 undefined on 
+input line 702.
+
+
+Package natbib Warning: Citation `karl2024position' on page 11 undefined on inp
+ut line 703.
+
+
+Package natbib Warning: Citation `parmar2022aliased' on page 11 undefined on in
+put line 704.
+
+
+Package natbib Warning: Citation `jayasumana2024rethinking' on page 11 undefine
+d on input line 704.
+
+
+LaTeX Warning: Reference `tab:closest' on page 11 undefined on input line 707.
+
+
+LaTeX Warning: Reference `sec:related' on page 11 undefined on input line 708.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 729--729
+[]\OT1/ptm/m/n/9 Acquisition
+
+Underfull \hbox (badness 10000) in paragraph at lines 729--729
+[]\OT1/ptm/m/n/9 Generator
+
+Underfull \hbox (badness 10000) in paragraph at lines 729--729
+[]\OT1/ptm/m/n/9 Closed-
+
+Underfull \hbox (badness 10000) in paragraph at lines 729--730
+[]\OT1/ptm/m/n/9 Abstention /
+
+Package natbib Warning: Citation `zhao2024lakered' on page 11 undefined on inpu
+t line 731.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 731--731
+[]\OT1/ptm/m/n/9 none (uni-
+
+Underfull \hbox (badness 10000) in paragraph at lines 731--731
+[]\OT1/ptm/m/n/9 background
+
+Package natbib Warning: Citation `luo2025s2rcod' on page 11 undefined on input 
+line 732.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 732--732
+[]\OT1/ptm/m/n/9 none (uni-
+
+Underfull \hbox (badness 10000) in paragraph at lines 732--732
+[]\OT1/ptm/m/n/9 background
+
+Underfull \hbox (badness 10000) in paragraph at lines 732--732
+[]\OT1/ptm/m/n/9 pseudo-
+
+Package natbib Warning: Citation `frisch2025gauda' on page 11 undefined on inpu
+t line 733.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 733--733
+[]\OT1/ptm/m/n/9 yes, on-
+
+Package natbib Warning: Citation `liang2025discl' on page 11 undefined on input
+ line 734.
+
+
+Underfull \hbox (badness 5908) in paragraph at lines 734--734
+[]\OT1/ptm/m/n/9 hardness, per
+
+Underfull \hbox (badness 10000) in paragraph at lines 734--734
+[]\OT1/ptm/m/n/9 guidance
+
+Overfull \hbox (1.08014pt too wide) in paragraph at lines 734--734
+[]\OT1/ptm/m/n/9 curriculum| 
+
+Package natbib Warning: Citation `chen2025synque' on page 11 undefined on input
+ line 735.
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 735--735
+[]\OT1/ptm/m/n/9 dataset rank-
+
+Underfull \hbox (badness 10000) in paragraph at lines 735--735
+[]\OT1/ptm/m/n/9 proxy score,
+
+Underfull \hbox (badness 10000) in paragraph at lines 735--735
+[]\OT1/ptm/m/n/9 n/a (picks
+
+Underfull \hbox (badness 10000) in paragraph at lines 737--737
+[]\OT1/ptm/m/n/9 disagreement,
+
+Underfull \hbox (badness 10000) in paragraph at lines 737--737
+[]\OT1/ptm/m/n/9 background
+
+Underfull \hbox (badness 10000) in paragraph at lines 737--737
+[]\OT1/ptm/m/n/9 pseudo-
+
+Underfull \hbox (badness 10000) in paragraph at lines 738--739
+[]\OT1/ptm/b/n/9 same-shape
+
+Underfull \hbox (badness 3547) in paragraph at lines 738--739
+\OT1/ptm/b/n/9 shuf-fle, rank
+
+Package natbib Warning: Citation `fan2020sinet' on page 11 undefined on input l
+ine 751.
+
+
+Package natbib Warning: Citation `fan2022concealed' on page 11 undefined on inp
+ut line 752.
+
+
+LaTeX Warning: Reference `eq:es' on page 11 undefined on input line 754.
+
+[11]
+
+LaTeX Warning: Reference `sec:null' on page 12 undefined on input line 765.
+
+
+LaTeX Warning: Reference `sec:null' on page 12 undefined on input line 776.
+
+
+LaTeX Warning: Reference `eq:es' on page 12 undefined on input line 788.
+
+
+LaTeX Warning: Reference `eq:alloc' on page 12 undefined on input line 797.
+
+
+LaTeX Warning: Reference `tab:clustercomp' on page 12 undefined on input line 7
+99.
+
+[12]
+
+LaTeX Warning: Reference `tab:trained' on page 13 undefined on input line 820.
+
+
+LaTeX Warning: Reference `sec:method' on page 13 undefined on input line 824.
+
+
+LaTeX Warning: Reference `tab:trained' on page 13 undefined on input line 854.
+
+
+LaTeX Warning: Reference `tab:allcells' on page 13 undefined on input line 854.
+
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13]
+
+LaTeX Warning: Reference `sec:null' on page 14 undefined on input line 910.
+
+(table_tost_equivalence.tex
+
+LaTeX Warning: Reference `sec:method' on page 14 undefined on input line 8.
+
+
+Package natbib Warning: Citation `lakens2017equivalence' on page 14 undefined o
+n input line 8.
+
+
+LaTeX Warning: Reference `sec:method' on page 14 undefined on input line 8.
+
+
+Package natbib Warning: Citation `lakens2017equivalence' on page 14 undefined o
+n input line 8.
+
+)
+
+LaTeX Warning: Reference `sec:null' on page 14 undefined on input line 930.
+
+
+LaTeX Warning: Reference `sec:concentration' on page 14 undefined on input line
+ 935.
+
+
+Package natbib Warning: Citation `cheng2021boundary' on page 14 undefined on in
+put line 937.
+
+
+Underfull \vbox (badness 2020) has occurred while \output is active [14]
+(appendix_tables.tex
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: Reference `tab:perrun-nc4k' on page 15 undefined on input line 1
+04.
+
+
+LaTeX Warning: Reference `tab:perrun-nc4k' on page 15 undefined on input line 1
+04.
+
+
+LaTeX Warning: Reference `tab:perrun' on page 15 undefined on input line 157.
+
+
+LaTeX Warning: Reference `tab:perrun' on page 15 undefined on input line 157.
+
+
+LaTeX Warning: Reference `tab:perrun' on page 15 undefined on input line 157.
+
+
+LaTeX Warning: Reference `tab:perrun' on page 15 undefined on input line 157.
+
+) (table_cluster_composition.tex
+
+LaTeX Warning: Reference `eq:alloc' on page 15 undefined on input line 2.
+
+
+LaTeX Warning: Reference `eq:alloc' on page 15 undefined on input line 2.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) [15] [16] [17] [18] [19] [20] (appendix_coverage.tex
+
+LaTeX Warning: Reference `sec:why' on page 21 undefined on input line 4.
+
+
+Package natbib Warning: Citation `kynkaanniemi2019improved' on page 21 undefine
+d on input line 5.
+
+
+LaTeX Warning: Reference `tab:silhouette' on page 21 undefined on input line 6.
+
+
+) [21]
+
+LaTeX Warning: Reference `sec:null' on page 22 undefined on input line 1073.
+
+[22]
+
+Package natbib Warning: There were undefined citations.
+
+[23] (main.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)<C:/Program Files/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Program Files/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pf
+b><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program
+ Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Program Files/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfont
+s/cm/cmr7.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb>
+<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program 
+Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmsy9.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/courier/uc
+rr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Progr
+am Files/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX/fonts
+/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/times/utmr
+i8a.pfb>
+Output written on main.pdf (23 pages, 1331718 bytes).
+Transcript written on main.log.

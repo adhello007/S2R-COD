@@ -1,0 +1,218 @@
+\begin{thebibliography}{41}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ash et~al.(2020)Ash, Zhang, Krishnamurthy, Langford, and Agarwal]{ash2020deep}
+Jordan~T. Ash, Chicheng Zhang, Akshay Krishnamurthy, John Langford, and Alekh Agarwal.
+\newblock Deep batch active learning by diverse, uncertain gradient lower bounds.
+\newblock In \emph{International Conference on Learning Representations}, 2020.
+
+\bibitem[Barz \& Denzler(2020)Barz and Denzler]{barz2020train}
+Bj{\"o}rn Barz and Joachim Denzler.
+\newblock Do we train on test data? {P}urging {CIFAR} of near-duplicates.
+\newblock \emph{Journal of Imaging}, 6\penalty0 (6):\penalty0 41, 2020.
+\newblock \doi{10.3390/jimaging6060041}.
+
+\bibitem[Chen \& Zhong(2025)Chen and Zhong]{chen2025synque}
+Arthur Chen and Victor Zhong.
+\newblock {SynQuE}: Estimating synthetic dataset quality without annotations, 2025.
+
+\bibitem[Chen et~al.(2025)Chen, Cai, Li, Liang, Wang, and Xu]{chen2025realcamo}
+Chunyuan Chen, Yunuo Cai, Shujuan Li, Weiyun Liang, Bin Wang, and Jing Xu.
+\newblock {RealCamo}: Boosting real camouflage synthesis with layout controls and textual-visual guidance, 2025.
+
+\bibitem[Cheng et~al.(2021)Cheng, Girshick, Doll{\'a}r, Berg, and Kirillov]{cheng2021boundary}
+Bowen Cheng, Ross Girshick, Piotr Doll{\'a}r, Alexander~C. Berg, and Alexander Kirillov.
+\newblock Boundary {IoU}: Improving object-centric image segmentation evaluation.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 2021.
+
+\bibitem[Fan et~al.(2017)Fan, Cheng, Liu, Li, and Borji]{fan2017structure}
+Deng-Ping Fan, Ming-Ming Cheng, Yun Liu, Tao Li, and Ali Borji.
+\newblock Structure-measure: {A} new way to evaluate foreground maps.
+\newblock In \emph{Proceedings of the {IEEE} International Conference on Computer Vision}, 2017.
+
+\bibitem[Fan et~al.(2018)Fan, Gong, Cao, Ren, Cheng, and Borji]{fan2018enhanced}
+Deng-Ping Fan, Cheng Gong, Yang Cao, Bo~Ren, Ming-Ming Cheng, and Ali Borji.
+\newblock Enhanced-alignment measure for binary foreground map evaluation.
+\newblock In \emph{Proceedings of the 27th International Joint Conference on Artificial Intelligence}, 2018.
+
+\bibitem[Fan et~al.(2020)Fan, Ji, Sun, Cheng, Shen, and Shao]{fan2020sinet}
+Deng-Ping Fan, Ge-Peng Ji, Guolei Sun, Ming-Ming Cheng, Jianbing Shen, and Ling Shao.
+\newblock Camouflaged object detection.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2020.
+\newblock \doi{10.1109/CVPR42600.2020.00285}.
+
+\bibitem[Fan et~al.(2022)Fan, Ji, Cheng, and Shao]{fan2022concealed}
+Deng-Ping Fan, Ge-Peng Ji, Ming-Ming Cheng, and Ling Shao.
+\newblock Concealed object detection.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 44\penalty0 (10):\penalty0 6024--6042, 2022.
+\newblock \doi{10.1109/TPAMI.2021.3085766}.
+
+\bibitem[Fan et~al.(2023)Fan, Ji, Xu, Cheng, Sakaridis, and Gool]{fan2023advances}
+Deng-Ping Fan, Ge-Peng Ji, Peng Xu, Ming-Ming Cheng, Christos Sakaridis, and Luc~Van Gool.
+\newblock Advances in deep concealed scene understanding.
+\newblock \emph{Visual Intelligence}, 1:\penalty0 16, 2023.
+\newblock \doi{10.1007/s44267-023-00019-6}.
+
+\bibitem[Frisch et~al.(2025)Frisch, Bornberg, Fuchs, and Mukhopadhyay]{frisch2025gauda}
+Yannik Frisch, Christina Bornberg, Moritz Fuchs, and Anirban Mukhopadhyay.
+\newblock {GAUDA}: Generative adaptive uncertainty-guided diffusion-based augmentation for surgical segmentation.
+\newblock In \emph{IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)}, 2025.
+
+\bibitem[Gal \& Ghahramani(2016)Gal and Ghahramani]{gal2016dropout}
+Yarin Gal and Zoubin Ghahramani.
+\newblock Dropout as a {B}ayesian approximation: Representing model uncertainty in deep learning.
+\newblock In \emph{Proceedings of the 33rd International Conference on Machine Learning}, 2016.
+
+\bibitem[Ghiasi et~al.(2021)Ghiasi, Cui, Srinivas, Qian, Lin, Cubuk, Le, and Zoph]{ghiasi2021simple}
+Golnaz Ghiasi, Yin Cui, Aravind Srinivas, Rui Qian, Tsung-Yi Lin, Ekin~D. Cubuk, Quoc~V. Le, and Barret Zoph.
+\newblock Simple copy-paste is a strong data augmentation method for instance segmentation.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2021.
+
+\bibitem[Hoffman et~al.(2018)Hoffman, Tzeng, Park, Zhu, Isola, Saenko, Efros, and Darrell]{hoffman2018cycada}
+Judy Hoffman, Eric Tzeng, Taesung Park, Jun-Yan Zhu, Phillip Isola, Kate Saenko, Alexei~A. Efros, and Trevor Darrell.
+\newblock {CyCADA}: Cycle-consistent adversarial domain adaptation.
+\newblock In \emph{Proceedings of the 35th International Conference on Machine Learning}, 2018.
+
+\bibitem[Jayasumana et~al.(2024)Jayasumana, Raghunathan, Veit, Glasner, and Basu]{jayasumana2024rethinking}
+Sadeep Jayasumana, Srikumar Raghunathan, Andreas Veit, Damien Glasner, and Ayan~Kumar Basu.
+\newblock Rethinking {FID}: Towards a better evaluation metric for image generation.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2024.
+
+\bibitem[Jia et~al.(2022)Jia, Yao, Liu, Fan, Liu, and Luo]{jia2022segment}
+Qi~Jia, Shuilian Yao, Yu~Liu, Xin Fan, Risheng Liu, and Zhongxuan Luo.
+\newblock Segment, magnify and reiterate: Detecting camouflaged objects the hard way.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2022.
+\newblock \doi{10.1109/CVPR52688.2022.00467}.
+
+\bibitem[Karl et~al.(2024)Karl, Kemeter, Dax, and Sierak]{karl2024position}
+Florian Karl, Lukas~Malte Kemeter, Gabriel Dax, and Paulina Sierak.
+\newblock Position: Embracing negative results in machine learning is necessary for the field to prosper, 2024.
+
+\bibitem[Kynk{\"a}{\"a}nniemi et~al.(2019)Kynk{\"a}{\"a}nniemi, Karras, Laine, Lehtinen, and Aila]{kynkaanniemi2019improved}
+Tuomas Kynk{\"a}{\"a}nniemi, Tero Karras, Samuli Laine, Jaakko Lehtinen, and Timo Aila.
+\newblock Improved precision and recall metric for assessing generative models.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2019.
+
+\bibitem[Lakens(2017)]{lakens2017equivalence}
+Dani{\"e}l Lakens.
+\newblock Equivalence tests: A practical primer for $t$ tests, correlations, and meta-analyses.
+\newblock \emph{Social Psychological and Personality Science}, 8\penalty0 (4):\penalty0 355--362, 2017.
+\newblock \doi{10.1177/1948550617697177}.
+
+\bibitem[Lakshminarayanan et~al.(2017)Lakshminarayanan, Pritzel, and Blundell]{lakshminarayanan2017simple}
+Balaji Lakshminarayanan, Alexander Pritzel, and Charles Blundell.
+\newblock Simple and scalable predictive uncertainty estimation using deep ensembles.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~30, 2017.
+
+\bibitem[Le et~al.(2019)Le, Nguyen, Nie, Tran, and Sugimoto]{le2019anabranch}
+Trung-Nghia Le, Tam~V. Nguyen, Zhongliang Nie, Minh-Triet Tran, and Akihiro Sugimoto.
+\newblock Anabranch network for camouflaged object segmentation.
+\newblock \emph{Computer Vision and Image Understanding}, 184:\penalty0 45--56, 2019.
+\newblock \doi{10.1016/j.cviu.2019.04.006}.
+
+\bibitem[Lee(2013)]{lee2013pseudo}
+Dong-Hyun Lee.
+\newblock Pseudo-label: The simple and efficient semi-supervised learning method for deep neural networks.
+\newblock In \emph{{ICML} Workshop on Challenges in Representation Learning}, 2013.
+
+\bibitem[Liang et~al.(2025)Liang, Bhardwaj, and Zhou]{liang2025discl}
+Yijun Liang, Shweta Bhardwaj, and Tianyi Zhou.
+\newblock Diffusion curriculum: Synthetic-to-real generative curriculum learning via image-guided diffusion.
+\newblock In \emph{IEEE/CVF International Conference on Computer Vision (ICCV)}, 2025.
+
+\bibitem[Luo et~al.(2025)Luo, Lin, and Lin]{luo2025s2rcod}
+Jiacheng Luo, Xin Lin, and Liang Lin.
+\newblock Synthetic-to-real camouflaged object detection.
+\newblock In \emph{Proceedings of the 33rd {ACM} International Conference on Multimedia}, 2025.
+\newblock \doi{10.1145/3746027.3755461}.
+
+\bibitem[Lv et~al.(2021)Lv, Zhang, Dai, Li, Liu, Barnes, and Fan]{lv2021simultaneously}
+Yunqiu Lv, Jing Zhang, Yuchao Dai, Aixuan Li, Bowen Liu, Nick Barnes, and Deng-Ping Fan.
+\newblock Simultaneously localize, segment and rank the camouflaged objects.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2021.
+
+\bibitem[Margolin et~al.(2014)Margolin, Zelnik-Manor, and Tal]{margolin2014evaluate}
+Ran Margolin, Lihi Zelnik-Manor, and Ayellet Tal.
+\newblock How to evaluate foreground maps?
+\newblock In \emph{Proceedings of the {IEEE} Conference on Computer Vision and Pattern Recognition}, pp.\  248--255, 2014.
+
+\bibitem[Oquab et~al.(2024)Oquab, Darcet, Moutakanni, Vo, Szafraniec, Khalidov, Fernandez, Haziza, Massa, El-Nouby, Assran, Ballas, Galuba, Howes, Huang, Li, Misra, Rabbat, Sharma, Synnaeve, Xu, J{\'e}gou, Mairal, Labatut, Joulin, and Bojanowski]{oquab2024dinov2}
+Maxime Oquab, Timoth{\'e}e Darcet, Th{\'e}o Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, Mahmoud Assran, Nicolas Ballas, Wojciech Galuba, Russell Howes, Po-Yao Huang, Shang-Wen Li, Ishan Misra, Michael Rabbat, Vasu Sharma, Gabriel Synnaeve, Hu~Xu, Herv{\'e} J{\'e}gou, Julien Mairal, Patrick Labatut, Armand Joulin, and Piotr Bojanowski.
+\newblock {DINOv2}: Learning robust visual features without supervision.
+\newblock \emph{Transactions on Machine Learning Research}, 2024.
+
+\bibitem[Parmar et~al.(2022)Parmar, Zhang, and Zhu]{parmar2022aliased}
+Gaurav Parmar, Richard Zhang, and Jun-Yan Zhu.
+\newblock On aliased resizing and surprising subtleties in {GAN} evaluation.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, pp.\  11410--11420, 2022.
+
+\bibitem[Pineau et~al.(2021)Pineau, Vincent-Lamarre, Sinha, Larivi{\`e}re, Beygelzimer, {d'Alch{\'e}-Buc}, Fox, and Larochelle]{pineau2021improving}
+Joelle Pineau, Philippe Vincent-Lamarre, Koustuv Sinha, Vincent Larivi{\`e}re, Alina Beygelzimer, Florence {d'Alch{\'e}-Buc}, Emily Fox, and Hugo Larochelle.
+\newblock Improving reproducibility in machine learning research.
+\newblock \emph{Journal of Machine Learning Research}, 22\penalty0 (164):\penalty0 1--20, 2021.
+
+\bibitem[Radford et~al.(2021)Radford, Kim, Hallacy, Ramesh, Goh, Agarwal, Sastry, Askell, Mishkin, Clark, Krueger, and Sutskever]{radford2021learning}
+Alec Radford, Jong~Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever.
+\newblock Learning transferable visual models from natural language supervision.
+\newblock In \emph{Proceedings of the 38th International Conference on Machine Learning}, 2021.
+
+\bibitem[Rombach et~al.(2022)Rombach, Blattmann, Lorenz, Esser, and Ommer]{rombach2022high}
+Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bj{\"o}rn Ommer.
+\newblock High-resolution image synthesis with latent diffusion models.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2022.
+
+\bibitem[Sener \& Savarese(2018)Sener and Savarese]{sener2018active}
+Ozan Sener and Silvio Savarese.
+\newblock Active learning for convolutional neural networks: {A} core-set approach.
+\newblock In \emph{International Conference on Learning Representations}, 2018.
+
+\bibitem[Settles(2009)]{settles2009active}
+Burr Settles.
+\newblock Active learning literature survey.
+\newblock Technical Report 1648, University of Wisconsin-Madison, Department of Computer Sciences, 2009.
+
+\bibitem[Skurowski et~al.(2018)Skurowski, Abdulameer, B{\l}aszczyk, Depta, Kornacki, and Kozie{\l}]{skurowski2018animal}
+P.~Skurowski, H.~Abdulameer, J.~B{\l}aszczyk, T.~Depta, A.~Kornacki, and P.~Kozie{\l}.
+\newblock Animal camouflage analysis: {CHAMELEON} database.
+\newblock Unpublished manuscript, 2018.
+
+\bibitem[Sohn et~al.(2020)Sohn, Berthelot, Carlini, Zhang, Zhang, Raffel, Cubuk, Kurakin, and Li]{sohn2020fixmatch}
+Kihyuk Sohn, David Berthelot, Nicholas Carlini, Zizhao Zhang, Han Zhang, Colin~A. Raffel, Ekin~Dogus Cubuk, Alexey Kurakin, and Chun-Liang Li.
+\newblock {FixMatch}: Simplifying semi-supervised learning with consistency and confidence.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~33, 2020.
+
+\bibitem[Song et~al.(2021)Song, Meng, and Ermon]{song2021denoising}
+Jiaming Song, Chenlin Meng, and Stefano Ermon.
+\newblock Denoising diffusion implicit models.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+
+\bibitem[Tarvainen \& Valpola(2017)Tarvainen and Valpola]{tarvainen2017mean}
+Antti Tarvainen and Harri Valpola.
+\newblock Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~30, 2017.
+
+\bibitem[Torralba \& Efros(2011)Torralba and Efros]{torralba2011unbiased}
+Antonio Torralba and Alexei~A. Efros.
+\newblock Unbiased look at dataset bias.
+\newblock In \emph{Proceedings of the {IEEE} Conference on Computer Vision and Pattern Recognition}, pp.\  1521--1528, 2011.
+
+\bibitem[Wu et~al.(2023)Wu, Zhao, Chen, Gu, Zhao, He, Zhou, Shou, and Shen]{wu2023datasetdm}
+Weijia Wu, Yuzhong Zhao, Hao Chen, Yuchao Gu, Rui Zhao, Yefei He, Hong Zhou, Mike~Zheng Shou, and Chunhua Shen.
+\newblock {DatasetDM}: Synthesizing data with perception annotations using diffusion models.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~36, 2023.
+
+\bibitem[Wu et~al.(2024)Wu, Pan, Xie, Zhou, Zhao, Ma, Du, Mao, Luu, and Wang]{wu2024antileak}
+Xiaobao Wu, Liangming Pan, Yuxi Xie, Ruiwen Zhou, Shuai Zhao, Yubo Ma, Mingzhe Du, Rui Mao, Anh~Tuan Luu, and William~Yang Wang.
+\newblock {AntiLeakBench}: Preventing data contamination by automatically constructing benchmarks with updated real-world knowledge, 2024.
+
+\bibitem[Zhao et~al.(2024)]{zhao2024lakered}
+Pancheng Zhao et~al.
+\newblock {LAKE-RED}: Camouflaged images generation by latent background knowledge retrieval-augmented diffusion.
+\newblock In \emph{Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition}, 2024.
+\newblock \doi{10.1109/CVPR52733.2024.00392}.
+
+\end{thebibliography}
