@@ -280,4 +280,4 @@ as documented in [`SOURCE_ONLY.md`](SOURCE_ONLY.md) and [`MEAN_TEACHER.md`](MEAN
 
 - [`MEAN_TEACHER.md`](MEAN_TEACHER.md) · [`SOURCE_ONLY.md`](SOURCE_ONLY.md) — the other two ladder rows
 - [`CHECKPOINT_LOADING_BUG.md`](CHECKPOINT_LOADING_BUG.md) — silent cross-device checkpoint load
-- [`../Experiments/REPRODUCE_TABLE1.md`](../Experiments/REPRODUCE_TABLE1.md) — CSRDA mechanics and upstream quirks
+- [`../Experiments/REPRODUCE_TABLE1_v2.md`](../Experiments/REPRODUCE_TABLE1_v2.md) — CSRDA mechanics and upstream quirks

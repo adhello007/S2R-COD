@@ -20,6 +20,16 @@ ZIPNAME="s2r-cod-supplement.zip"
 #   Paper/                     the paper is uploaded separately as a PDF
 #   rebuild/FinalPaper/Paper/  committed duplicate of Paper/, incl. .fls/.log
 #                              build artifacts holding ~600 absolute paths
+#   rebuild/FinalPaper/UpdatedPaper/  the live paper source; main.log alone holds
+#                              55 absolute paths. The paper uploads as a PDF.
+#   rebuild/FinalPaper/*_PLAN/SCOPING  paper-rewrite working notes, not experiments
+#   official_papers/           third-party copyrighted PDFs
+#   tools/                     THIS script and anon_scan.py contain the author
+#                              identifiers they search for. Shipping them would
+#                              defeat the gate. They were committed in 9a8d1a0,
+#                              so git ls-files now sweeps them in -- exclude
+#                              explicitly, and anon_scan no longer whitelists
+#                              them, so a regression fails the gate loudly.
 #   *.pdf *.zip *.rar          paper archives and third-party PDFs (one embeds
 #                              the upstream authors' names in its metadata)
 #   rebuild/reference/old_scripts/  dead code with hardcoded absolute paths
@@ -31,6 +41,10 @@ git ls-files \
   | grep -vE '^old_paperinfo_redundant/' \
   | grep -vE '^Paper/' \
   | grep -vE '^rebuild/FinalPaper/Paper/' \
+  | grep -vE '^rebuild/FinalPaper/UpdatedPaper/' \
+  | grep -vE '^rebuild/FinalPaper/(Execute_Rewrite_plan|REWRITE_PLAN_2209|SCOPING_ANALYSIS)\.md$' \
+  | grep -vE '^official_papers/' \
+  | grep -vE '^tools/' \
   | grep -vE '^rebuild/reference/old_scripts/' \
   | grep -vE '^src/' \
   | grep -vE '^(Paper\.rar|skills-lock\.json|manuscript_revision\.md|ICLR2027_SUPPLEMENT_PLAN\.md|SUPPLEMENT_README\.md)$' \

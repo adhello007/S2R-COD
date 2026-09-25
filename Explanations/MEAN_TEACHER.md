@@ -335,5 +335,5 @@ this, but check anyway.
 ## Related
 
 - [`CHECKPOINT_LOADING_BUG.md`](CHECKPOINT_LOADING_BUG.md) — the silent cross-device load failure
-- [`Experiments/REPRODUCE_TABLE1.md`](Experiments/REPRODUCE_TABLE1.md) — full Ours reproduction guide and upstream quirks
+- [`Experiments/REPRODUCE_TABLE1_v2.md`](Experiments/REPRODUCE_TABLE1_v2.md) — full Ours reproduction guide and upstream quirks
 - [`preflight.py`](preflight.py) — pre-run environment/data checks

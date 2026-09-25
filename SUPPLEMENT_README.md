@@ -24,8 +24,9 @@ the exact command (`CMD`), the environment, the metrics, the declared threshold 
 the artifacts written, and whether the experiment trained anything. Its own header states the rule
 it was kept under: *no number appears in any document before it appears here.*
 
-**`NAVIGATION.md`** maps every experiment to its directory, its log blocks and its readable results
-file.
+**`NAVIGATION.md`** is the run guide. Its §0 is the four commands that work with none of our data;
+§1 is setup and what we could not ship; §2 is every experiment with an honest statement of what it
+needs. It then maps each experiment to its directory, its log blocks and its results document.
 
 One rule governs the whole package, and every results document repeats it:
 
@@ -35,7 +36,7 @@ One rule governs the whole package, and every results document repeats it:
 
 ## What you can run right now, with none of our data
 
-Three things, on a laptop, in under a minute each. These are the fastest way to confirm the package
+Four things, on a laptop, in under a minute each. These are the fastest way to confirm the package
 is real rather than decorative.
 
 ```bash
@@ -43,13 +44,21 @@ is real rather than decorative.
 #    Eight assertions, no project data touched.
 python rebuild/D2_reaudit/detect_contamination.py --self-test
 
-# 2. The area control. Inference-free, no GPU: it reads committed artifacts
-#    and re-derives the table in rebuild/AC/out/.
+# 2. Formal equivalence testing -- the paper's TOST table, recomputed from the
+#    committed per-run metrics.
+python rebuild/DIAG/diag_tost.py
+
+# 3. The area control. Inference-free, no GPU: it reads committed artifacts
+#    and re-derives the table in rebuild/AC/out/. Reproduces to 4.9e-05.
 python rebuild/AC/ac_measure.py --no-log
 
-# 3. Regenerate the consolidated results document from committed artifacts.
+# 4. Regenerate the consolidated results document from committed artifacts.
 python rebuild/FinalPaper/make_results.py
 ```
+
+Of the sixteen experiment directories, those are the four that run from this package alone.
+`NAVIGATION.md` §2 says per experiment what each of the others needs — images, checkpoints, or
+embedding caches too large to ship. It does not overstate what is reachable.
 
 The detector is also the one piece meant to be useful on its own. Point it at any two image
 directories and it will find re-encoded duplicates between them:

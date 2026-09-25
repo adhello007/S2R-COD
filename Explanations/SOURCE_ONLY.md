@@ -372,4 +372,4 @@ Source-Only masks legitimately look blurrier and noisier than Ours — Fig. 2 an
 
 - [`MEAN_TEACHER.md`](MEAN_TEACHER.md) — the next rung up the ladder
 - [`CHECKPOINT_LOADING_BUG.md`](CHECKPOINT_LOADING_BUG.md) — the silent cross-device load failure
-- [`../Experiments/REPRODUCE_TABLE1.md`](../Experiments/REPRODUCE_TABLE1.md) — full Ours reproduction guide and upstream quirks
+- [`../Experiments/REPRODUCE_TABLE1_v2.md`](../Experiments/REPRODUCE_TABLE1_v2.md) — full Ours reproduction guide and upstream quirks

@@ -68,9 +68,11 @@ WHITELIST = {
     'Eval/metrics.py':                   {r'[\w.+-]+@[\w-]+\.(?:com|org|net|edu|ac\.\w+)'},
     # the re-audit plan quotes the anonymisation pattern list in prose
     'rebuild/D2_reaudit/REAUDIT_PLAN.md': {r'/home/'},
-    # this gate's own source and the build script that drives it
-    'tools/anon_scan.py':                {p for p, _ in FATAL} | {p for p, _ in WARN},
-    'tools/build_supplement.sh':         {p for p, _ in FATAL} | {p for p, _ in WARN},
+    # NOTE: tools/anon_scan.py and tools/build_supplement.sh are deliberately
+    # NOT whitelisted. They contain the author identifiers they search for, so
+    # they must never appear in a built package -- and if they ever do, this
+    # gate has to fail loudly rather than exempt them. Scan the source tree with
+    # --self-exempt when you want to check the tools themselves.
 }
 
 SKIP_DIRS = {'.git', '.venv', '__pycache__', 'node_modules', '.mypy_cache'}
@@ -150,8 +152,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('root')
     ap.add_argument('--verbose', action='store_true', help='list warn-tier hits')
+    ap.add_argument('--self-exempt', action='store_true',
+                    help='exempt tools/ -- only for scanning the source tree, '
+                         'never a built package')
     args = ap.parse_args()
     root = os.path.abspath(args.root)
+    if args.self_exempt:
+        allpat = {p for p, _ in FATAL} | {p for p, _ in WARN}
+        WHITELIST['tools/anon_scan.py'] = allpat
+        WHITELIST['tools/build_supplement.sh'] = allpat
 
     print('anon_scan: %s\n' % root)
 

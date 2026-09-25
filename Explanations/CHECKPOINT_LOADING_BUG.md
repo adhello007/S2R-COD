@@ -143,7 +143,7 @@ obviously blank ones — and why nothing downstream complained.
 
 ## Part 3 — Why SINet was fine and SINet-v2 was not
 
-Luck. Nothing else. From `Experiments/10_Aug/*/run_commands.txt`:
+Luck. Nothing else. From `Experiments/*/run_commands.txt`:
 
 | | trained with | checkpoint stamped | `MyTest.py` model on | same device? | result |
 |---|---|---|---|---|---|
@@ -257,7 +257,7 @@ silently poisoning round 2.
 
 ## Related
 
-- [`Experiments/10_Aug/SINETV2/run_commands.txt`](Experiments/10_Aug/SINETV2/run_commands.txt) — corrected commands
-- [`Experiments/REPRODUCE_TABLE1.md`](Experiments/REPRODUCE_TABLE1.md) — full reproduction guide and other upstream quirks
+- [`Experiments/SINETV2/run_commands.txt`](Experiments/SINETV2/run_commands.txt) — corrected commands
+- [`Experiments/REPRODUCE_TABLE1_v2.md`](Experiments/REPRODUCE_TABLE1_v2.md) — full reproduction guide and other upstream quirks
 - [`preflight.py`](preflight.py) — pre-run checks
 - Broken masks preserved at `Result/SINet-v2/S2C_broken-load/`
