@@ -2,7 +2,7 @@
 This is the official (Pytorch) implementation for the paper "Synthetic-to-Real Camouflaged Object Detection", ACM MM 2025.
 
 
-# 🛠️Setup
+# 🛠️Setup: Please Refer to SETUP.md
 ## Runtime
 
 The main python libraries we use:
