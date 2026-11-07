@@ -29,6 +29,7 @@ import glob
 import itertools
 import json
 import os
+import subprocess
 import random
 import sys
 
@@ -169,9 +170,31 @@ def gate_one_trainer():
         absent = [m for m in marks if m not in src]
         if absent:
             missing[f] = absent
+    # A byte-identical copy inside a GITIGNORED directory (the unpacked supplement
+    # package, iclr2027_supplement/, 2026-09-23) cannot be a second trainer: it is the
+    # same bytes, outside version control, and every run invokes ./MyTrain.py by path.
+    # Such copies are REPORTED by name and do not fail the gate. Any copy that differs
+    # by one byte, or that git tracks, still fails (added 2026-11-07, additive).
+    packaged = {}
+    for key in found:
+        canon = os.path.join(C.REPO, key + '.py')
+        keep = []
+        for rel in found[key]:
+            path = os.path.normpath(os.path.join(C.REPO, rel))
+            if path == canon:
+                keep.append(rel)
+                continue
+            ignored = subprocess.run(['git', '-C', C.REPO, 'check-ignore', '-q', path]).returncode == 0
+            same = open(path, 'rb').read() == open(canon, 'rb').read()
+            if ignored and same:
+                packaged.setdefault(key, []).append(rel)
+            else:
+                keep.append(rel)
+        found[key] = keep
     ok = bool(len(found['MyTrain']) == 1 and len(found['MyTest']) == 1 and not missing)
     return dict(gate='one_trainer', passed=ok, mytrain=found['MyTrain'],
                 mytest=found['MyTest'], patches_missing=missing,
+                identical_gitignored_copies=packaged,
                 note='ground rule 2: arms differ only by data dir and seed, so a '
                      'second trainer anywhere in the tree is a FAIL')
 

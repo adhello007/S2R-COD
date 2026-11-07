@@ -241,6 +241,12 @@ def main():
                 metrics.append(('  %s_%s' % (arm, k), v,
                                 ('C1 logged %s' % rc['c1'][k]) if k in rc['c1']
                                 else 'T2 provenance; not a C1 quantity'))
+            if rc.get('declared'):
+                thresholds.append((
+                    'arm %s satisfies its DECLARED shape (%s, %s) -- a different shape by '
+                    'design, never asserted against C1' % (arm, ', '.join(rc['asserted']), rc['declared']),
+                    bool(rc['match'])))
+                continue
             thresholds.append((
                 'arm %s reproduces C1\'s committed allocation %s' % (
                     arm, 'cell exactly (all five keys)' if full else
@@ -470,6 +476,33 @@ def main():
         notes.append(
             'PREREGISTRATION_T2.md was committed before this block and is FROZEN. '
             'This script neither reads it as an input nor writes it.')
+
+    # Rebuttal campaigns (rebuild/REBUTTAL/, 2026-11). A/B/C's narrative notes do not
+    # describe them, so -- as for T2 -- only the structural pool facts are kept.
+    REBUTTAL_NOTES = {
+        'ws5': ['WS5\' PRE-FLIGHT, ADDITIVE AND STANDALONE (rebuild/REBUTTAL/PREREGISTRATION_WS5.md). '
+                'Arms B, C10, CSHUF; SINet only; fresh seeds. NEVER POOLED WITH SE, whose verdicts '
+                'stand untouched. B redraws per seed with default_rng(700000 + seed); C10 and CSHUF are '
+                'the committed deterministic selections (CSHUF perm_seed 910004). This block TRAINS NOTHING.',
+                'The pools gate checks render masks and B-vs-C overlap for THIS campaign\'s own B draws '
+                '(abc_preflight.gate_pools follows the run set\'s seeds, 2026-11-07).'],
+        'ws6': ['WS6 PRE-FLIGHT, ADDITIVE (rebuild/REBUTTAL/PREREGISTRATION_WS6.md). CORPROP and CORTOP '
+                'ALLOCATE BY TRUE ENDPOINT ERROR: diagnostics, never methods (OR SS0 applies word for word; '
+                'oracle_uses_endpoint_labels = true). Gate G1 passes on syntax only, because these arms read '
+                'test_one_minus_sa, not the ES column. That is disclosed here, not offered as evidence.',
+                'DIFFERENT SHAPE BY DESIGN. The same-shape assertion does not apply; each arm is checked '
+                'against its DECLARED shape (abc_common.declared_shape): CORTOP funds exactly 5 clusters, '
+                'and both select exactly 1000 distinct renders. Comparator arm B (seeds 42/43/45) is '
+                'committed and is NOT rebuilt or retrained here. This block TRAINS NOTHING.'],
+    }
+    if args.tag in REBUTTAL_NOTES:
+        notes = [x for x in notes
+                 if x.startswith(('COLLISION IS IMPOSSIBLE', 'ROUND-2 PARITY IS PROVED'))]
+        notes += REBUTTAL_NOTES[args.tag]
+        ot = g.get('one_trainer', {})
+        if ot.get('identical_gitignored_copies'):
+            notes.append('one_trainer: byte-identical copies in a gitignored directory reported, not failed: %s'
+                         % json.dumps(ot['identical_gitignored_copies']))
 
     block = C.log_block(
         EXP,
