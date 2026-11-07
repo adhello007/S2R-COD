@@ -1,0 +1,41 @@
+endpoint,n,contrast,role,observed,power
+COD10K,8,C10-B,total targeting effect,0.002352,0.3162
+COD10K,8,C10-CSHUF,"direction effect, same shape",0.000312,0.5088
+COD10K,8,CSHUF-B,"concentration effect, same budget, no aim",0.00204,0.678
+COD10K,8,all three,joint,,0.1792
+COD10K,16,C10-B,total targeting effect,0.002352,0.59
+COD10K,16,C10-CSHUF,"direction effect, same shape",0.000312,0.9235
+COD10K,16,CSHUF-B,"concentration effect, same budget, no aim",0.00204,0.921
+COD10K,16,all three,joint,,0.5455
+COD10K,24,C10-B,total targeting effect,0.002352,0.746
+COD10K,24,C10-CSHUF,"direction effect, same shape",0.000312,0.9858
+COD10K,24,CSHUF-B,"concentration effect, same budget, no aim",0.00204,0.982
+COD10K,24,all three,joint,,0.7335
+COD10K,32,C10-B,total targeting effect,0.002352,0.853
+COD10K,32,C10-CSHUF,"direction effect, same shape",0.000312,0.9985
+COD10K,32,CSHUF-B,"concentration effect, same budget, no aim",0.00204,0.997
+COD10K,32,all three,joint,,0.8512
+COD10K,34,C10-B,total targeting effect,0.002352,0.8625
+COD10K,34,C10-CSHUF,"direction effect, same shape",0.000312,0.9998
+COD10K,34,CSHUF-B,"concentration effect, same budget, no aim",0.00204,0.9982
+COD10K,34,all three,joint,,0.8612
+NC4K,8,C10-B,total targeting effect,0.000343,0.7388
+NC4K,8,C10-CSHUF,"direction effect, same shape",0.000683,0.7455
+NC4K,8,CSHUF-B,"concentration effect, same budget, no aim",-0.00034,0.9563
+NC4K,8,all three,joint,,0.6138
+NC4K,16,C10-B,total targeting effect,0.000343,0.9812
+NC4K,16,C10-CSHUF,"direction effect, same shape",0.000683,0.9752
+NC4K,16,CSHUF-B,"concentration effect, same budget, no aim",-0.00034,1.0
+NC4K,16,all three,joint,,0.964
+NC4K,24,C10-B,total targeting effect,0.000343,0.9995
+NC4K,24,C10-CSHUF,"direction effect, same shape",0.000683,0.9985
+NC4K,24,CSHUF-B,"concentration effect, same budget, no aim",-0.00034,1.0
+NC4K,24,all three,joint,,0.998
+NC4K,32,C10-B,total targeting effect,0.000343,1.0
+NC4K,32,C10-CSHUF,"direction effect, same shape",0.000683,1.0
+NC4K,32,CSHUF-B,"concentration effect, same budget, no aim",-0.00034,1.0
+NC4K,32,all three,joint,,1.0
+NC4K,34,C10-B,total targeting effect,0.000343,1.0
+NC4K,34,C10-CSHUF,"direction effect, same shape",0.000683,1.0
+NC4K,34,CSHUF-B,"concentration effect, same budget, no aim",-0.00034,1.0
+NC4K,34,all three,joint,,1.0

@@ -3854,3 +3854,54 @@ NOTES      POST-HOC PROVENANCE AUDIT, not an experiment. Re-derives from git obj
            Filesystem times are reported as filesystem evidence and are weaker than git objects. a79886a is on no branch; the tag preserves it locally. Whether the tag is on the remote is the tag_on_remote line.
 ================================================================================
 
+================================================================================
+2026-11-07T15:03:12+05:30 | commit 412d0f2 (dirty) | EXP REBUTTAL_WS5_POWER
+CMD   .venv/bin/python rebuild/REBUTTAL/ws5_power.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  sinet_wall_min_measured          = 105.9    (mean of 20 SE-new SINet runs, abc_runs.csv)
+  launch                           = 2026-11-10T06:00:00+05:30    (hard gate, REBUTTAL_PLAN.md Addendum 1 A2)
+  deadline_trained_verified_scored = 2026-11-14T12:00:00+05:30
+  window_min                       = 6120
+  buffer                           = 10%    (interruption + scoring)
+  n_per_arm_chosen                 = 34    (largest n with ceil(3n/2)*wall*(1+buffer) <= window)
+  runs_total                       = 102    (3 arms x n, SINet only)
+  gpu_batches                      = 51    (2 GPUs, one run per GPU)
+  end_with_buffer                  = 2026-11-14T09:00+05:30
+  end_without_buffer               = 2026-11-14T00:00+05:30
+  n_plus_1_end_with_buffer         = 2026-11-14T12:53+05:30    (misses the deadline, so n+1 is infeasible)
+  seeds                            = 51..84    (fresh, disjoint from every committed campaign)
+  SE8_COD10K_B_mean_sd             = 0.715127 / 0.002508    (simulation input)
+  SE8_COD10K_C10_mean_sd           = 0.717479 / 0.004893    (simulation input)
+  SE8_COD10K_CSHUF_mean_sd         = 0.717167 / 0.002777    (simulation input)
+  observed_COD10K_C10-B            = +0.0024    (total targeting effect)
+  observed_COD10K_C10-CSHUF        = +0.0003    (direction effect, same shape)
+  observed_COD10K_CSHUF-B          = +0.0020    (concentration effect, same budget, no aim)
+  power_COD10K_n8                  = C10-B 0.32  C10-CSHUF 0.51  CSHUF-B 0.68  | all-three 0.18    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_COD10K_n16                 = C10-B 0.59  C10-CSHUF 0.92  CSHUF-B 0.92  | all-three 0.55    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_COD10K_n24                 = C10-B 0.75  C10-CSHUF 0.99  CSHUF-B 0.98  | all-three 0.73    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_COD10K_n32                 = C10-B 0.85  C10-CSHUF 1.00  CSHUF-B 1.00  | all-three 0.85    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_COD10K_n34                 = C10-B 0.86  C10-CSHUF 1.00  CSHUF-B 1.00  | all-three 0.86    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences -- CHOSEN n)
+  SE8_NC4K_B_mean_sd               = 0.768015 / 0.002730    (simulation input)
+  SE8_NC4K_C10_mean_sd             = 0.768358 / 0.003919    (simulation input)
+  SE8_NC4K_CSHUF_mean_sd           = 0.767675 / 0.002376    (simulation input)
+  observed_NC4K_C10-B              = +0.0003    (total targeting effect)
+  observed_NC4K_C10-CSHUF          = +0.0007    (direction effect, same shape)
+  observed_NC4K_CSHUF-B            = -0.0003    (concentration effect, same budget, no aim)
+  power_NC4K_n8                    = C10-B 0.74  C10-CSHUF 0.75  CSHUF-B 0.96  | all-three 0.61    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_NC4K_n16                   = C10-B 0.98  C10-CSHUF 0.98  CSHUF-B 1.00  | all-three 0.96    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_NC4K_n24                   = C10-B 1.00  C10-CSHUF 1.00  CSHUF-B 1.00  | all-three 1.00    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_NC4K_n32                   = C10-B 1.00  C10-CSHUF 1.00  CSHUF-B 1.00  | all-three 1.00    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences)
+  power_NC4K_n34                   = C10-B 1.00  C10-CSHUF 1.00  CSHUF-B 1.00  | all-three 1.00    (Welch TOST delta=0.005 alpha=0.05, 4000 draws, at observed differences -- CHOSEN n)
+THRESHOLD  n >= 24 (the floor below which the plan recommends against running) -> PASS
+THRESHOLD  end_with_buffer <= deadline -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/REBUTTAL/out/ws5_power.csv
+TRAINS     NO
+NOTES      PLANNING CALCULATION ON COMMITTED DATA. Sizes the standalone WS5' campaign. Decides nothing, re-decides no SE verdict, and pools nothing with SE: the SE spreads enter only as simulation inputs.
+           Power is simulated at the OBSERVED eight-seed differences, which is the pessimistic case for C10-B and CSHUF-B. At a true difference of 0, power is higher.
+           Independent-normal arms are an ASSUMPTION. Arm B carries draw variance by construction and the simulation inherits it through B's observed sd. The within-seed correlation, which the ad hoc audit measured near 0 on this cell, is ignored, matching the Welch (unpaired) primary test.
+           Wall-clock assumes WS6/WS4 have released both GPUs by the launch time, and that each run takes the SE mean. A run that fails verify_run and is re-run consumes buffer.
+================================================================================
+
