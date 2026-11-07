@@ -331,3 +331,76 @@ New code (`ws1_stats.py`, `ws3_contamination.py`, the WS4/WS6/WS7 pool builders,
 - **Two runs per GPU** has never been measured, so the budget doesn't assume it. **Single-round supervised run time and LAKE-RED render throughput** are unmeasured, and the first run of each measures them.
 - **That round-2 initialisation matches across arms at the same seed** is unverified, so "paired" means round-1 init plus the seed-coupled B draw.
 - **The review text itself**: every concern above is the prompt's paraphrase.
+
+---
+---
+
+# Addendum 1 — 2026-11-07 (IST)
+
+*Append-only. Nothing above this line is edited or deleted. Where this addendum and the text above disagree, this addendum governs. Each item cites the log block its facts come from.*
+
+## A1. P1 and diff D9 are corrected (supersedes the P1 bullet in Phase 0 and row D9)
+
+Checked against `EXP REBUTTAL_PREREG_PROVENANCE` (2026-11-07T15:01:30, commit `eabbfed`). Every time below comes from that block:
+
+| Fact | Value (IST) | Source line in the block |
+|---|---|---|
+| a79886a author = committer date | 2026-09-18 11:48:26 | `a79886a_author_date`, `a79886a_committer_date` |
+| tag `prereg-or-fx-se-a79886a` → a79886a | PASS | threshold 1 |
+| FX, SE blobs a79886a ≡ 28cfd84 | sha256 `5f96c844…`, `45127974…` | thresholds 3–4 |
+| OR a79886a is an exact prefix of 28cfd84; §OR.0, §OR.1 byte-identical | PASS (+4574 bytes = Addendum A1, 2026-09-19) | thresholds 5–7; diff in `out/or_prereg_a79886a_to_28cfd84.diff` |
+| OR first training step | 2026-09-18 10:46:14 | `OR_first_training_step` |
+| OR first endpoint-derived number (MyTest per-image MAE) | 2026-09-18 16:51:49 | `OR_first_endpoint_number` |
+| OR first S_alpha | 2026-09-18 18:23:17 | `OR_first_S_alpha_written`; EXP OR scoring block (log l.3305) |
+| FX first training step | 2026-09-18 18:23:23 | `FX_first_training_step` |
+| SE first new-run step | 2026-09-20 03:50:28 | `SE_first_new_run_step` |
+| tag on remote | **UNVERIFIED**: this environment has no GitHub credentials (`Permission denied (publickey)`, no key in `~/.ssh`, no agent) | `tag_on_remote` |
+
+**Correction to the prompt's claim "first scored OR result 18:23".** S_alpha was first written at 18:23:17. But `MyTest.py` prints a per-image **endpoint MAE** during inference, so the first endpoint-derived OR number dates from **16:51:49**. Both are after the 11:48 commit, so the substance of the claim holds. The text below uses "before any oracle result existed" and gives the earlier time.
+
+**Correction to the proposed sentence's last clause.** "Only the arm's construction was new" is not accurate. OR's *verdict bands* are the four-arm rule frozen at `065dac6`, verbatim ("Rule (identical to A/B/C and T2, unchanged)"). Its arm, its two gaps (CORACLE−B, CORACLE−C10), its noise pool ({B, C10, CORACLE}, df = 6) and its interpretation clauses were new.
+
+**P1, replacing the Phase-0 bullet, and D9 "after" text:**
+> Our repository history records that the pre-registrations for the seed expansion, the oracle and the unpinned schedule were committed together at `a79886a` (18 Sept 2026, 11:48 IST). A later history rewrite re-committed them, unchanged, as `28cfd84`, and the original commit is preserved under a tag. The schedule and seed-expansion campaigns began after that commit. The oracle campaign's first runs began about an hour earlier, at 10:46, before any oracle result existed (the first endpoint-derived number dates from 16:51). Its verdict rule is the four-arm rule frozen at `065dac6`, unchanged. Its arm, its two gaps and the arms its noise estimate pools over were new.
+
+**SE hash, everywhere:** `b755aa9` → `a79886a`. That covers D9, the response drafts, and any future revision text. `b755aa9` is the 2026-09-13 base commit the log blocks were run against, not the pre-registration commit.
+
+## A2. WS5′ becomes three arms (supersedes the WS5′ row, its compute line, and PREREGISTRATION_WS5 draft)
+
+- **Arms:** B, C10, CSHUF. **Arch:** SINet only. **Seeds:** 51…84 (fresh).
+- **n = 34 per arm, 102 runs**, from `EXP REBUTTAL_WS5_POWER` (2026-11-07T15:03:12, commit `412d0f2`): the largest n with ⌈3n/2⌉ × 105.9 min × 1.10 ≤ 6120 min.
+  - Launch 2026-11-10 06:00 IST, end 2026-11-14 09:00 IST with the buffer (00:00 without it). n = 35 would end 12:53 and miss 14 Nov 12:00.
+  - n ≥ 24, so the recommendation is to **run**.
+- **Power** (Welch TOST, δ = 0.005, α = 0.05, 4000 draws, at the observed eight-seed differences), COD10K primary:
+
+| Contrast | Role | Observed (SE, 8 seeds) | Power at n = 34 |
+|---|---|---|---|
+| C10 − B | total targeting effect | +0.0024 | **0.86** |
+| C10 − CSHUF | direction effect, same shape | +0.0003 | **1.00** |
+| CSHUF − B | concentration effect, same budget, no aim | +0.0020 | **1.00** |
+| all three jointly | | | 0.86 |
+
+- **Reported per contrast:** Welch 95% CI; TOST at 0.005; the paired-by-seed CI (secondary); and the frozen ABC 2σ̂ / sign verdict, for continuity only.
+- **Outcome wording, fixed in advance:** EQUIVALENT (90% CI within ±0.005) · BENEFIT (95% CI lower bound > 0) · HARM (95% CI upper bound < 0) · UNRESOLVED (otherwise).
+- **Joint readings, fixed in advance:**
+  - C10−B BENEFIT with C10−CSHUF EQUIVALENT → "concentration, not direction, helps downstream."
+  - All three EQUIVALENT → "neither helps at ±0.005."
+  - Any other combination is reported as it falls.
+- **No multiplicity correction.** All three contrasts are reported unadjusted, and the paper says so.
+- **Arm mechanics:** B draws with `default_rng(700000+seed)`; CSHUF uses the committed T2 permutation (`perm_seed` 910004); C10 is deterministic.
+- **Discipline:** never pooled with SE. All runs are reported or none. A run that fails `verify_run` is re-run under the same seed and logged as a discard. No interim looks.
+- **Compute:** 102 × 105.9 min ≈ 180 GPU-h. With WS6 + WS4 (~31 GPU-h), the total committed rises to about 211 of 312 GPU-h.
+
+## A3. WS7 is deferred
+
+WS7 runs only if WS5′ finishes at least 24 h before 16 Nov 00:00 IST. The decision is made on 12 Nov from WS5′'s **actual** progress (runs verified so far and the measured mean wall), not from this estimate. At the planned end time (14 Nov 09:00), WS7 would not run.
+
+## A4. WS4b is dropped; the WS4 download is approved
+
+The source-only row is covered by S2R-COD's published Tab. 1 source-only numbers (SINet 0.6418, SINet-v2 0.6466), cited as external and labelled as such. The WS4 download is approved. Its gate is unchanged: downloaded images must match `Dataset/Target/Image` by sha256, 4040/4040, or WS4 stops.
+
+## A5. Response-draft rules (the drafts themselves are in A5-drafts below, written after WS1/WS3)
+
+1. **General comment.** Delete the sentence about pre-registration files "reaching git a day after their runs began" (and the softened version that replaced it). Add one line to a short "other changes in the revision" list: *"Appendix B now gives exact commit times for each pre-registration; one campaign's file was committed an hour after its runs started, before any result existed."* Keep the effective-contrast correction.
+2. **Caus, the "sanity check" point.** Name GAUDA, DisCL and SynQuE. **VERIFIED** against the submitted PDF (`AD-PCHG-250926_FINAL.pdf`, Table 4 = `tab:closest`): each is listed with abstention/control "none reported".
+3. **Every reply labels the campaign behind each number.** No table in the paper prints three-seed arm means: Table 1 is arm definitions, Table 2 shows gaps only, and per-run values are in Tables 10/11. A three-seed mean is therefore cited to the ABC verdict block, and an eight-seed mean to the SE verdict block.
