@@ -404,3 +404,119 @@ The source-only row is covered by S2R-COD's published Tab. 1 source-only numbers
 1. **General comment.** Delete the sentence about pre-registration files "reaching git a day after their runs began" (and the softened version that replaced it). Add one line to a short "other changes in the revision" list: *"Appendix B now gives exact commit times for each pre-registration; one campaign's file was committed an hour after its runs started, before any result existed."* Keep the effective-contrast correction.
 2. **Caus, the "sanity check" point.** Name GAUDA, DisCL and SynQuE. **VERIFIED** against the submitted PDF (`AD-PCHG-250926_FINAL.pdf`, Table 4 = `tab:closest`): each is listed with abstention/control "none reported".
 3. **Every reply labels the campaign behind each number.** No table in the paper prints three-seed arm means: Table 1 is arm definitions, Table 2 shows gaps only, and per-run values are in Tables 10/11. A three-seed mean is therefore cited to the ABC verdict block, and an eight-seed mean to the SE verdict block.
+
+## A5-drafts — response drafts (2026-11-07), revised for WS1/WS3/P1/P2
+
+*Each draft is also saved as `rebuild/REBUTTAL/drafts/<name>.md`. Lengths: general 3261, dypE 2907, RL5B 2213, Caus 2424, all ≤ 4,500 characters. Bracketed text is a placeholder, filled only from that campaign's EXP block. **The one-line restatements have not been checked against the review texts:** `rebuild/REBUTTAL/reviews/` was empty when these were written.*
+
+### general
+
+Thank you all for careful, specific reviews. Three concerns are shared, and we have revised the paper around each of them. A fourth change came out of re-checking our own evidence, and we put it first because it weakens a claim you may have credited.
+
+**A result we withdraw.** The paper's "strongest form of the result" was a post-hoc boundary-metric effect on SINet: concentration cleared its bar at three seeds (C10−B 1.37× on Boundary IoU). We re-scored all eight seeds of the seed-expansion campaign, and it does not hold: C10−B is +0.0046, 0.30× its bar, with 5/8 seeds agreeing. The abstract and §3.2 no longer claim any downstream effect of concentration [§3.2, App. D].
+
+**1. "No evidence of benefit" is not "no meaningful effect."** You are right, and the paper now says so in those words. On the primary cell (SINet, COD10K, eight seeds per arm), targeted minus random is +0.0024 with 95% CI [−0.0020, +0.0067]. It does not pass equivalence at ±0.005 (TOST p = 0.10). We state what the data allow: **we rule out benefits larger than +0.0067 S_α; smaller benefits remain possible.** A new table [§3.1, Tab. N] separates "failed to detect" from "evidence of equivalence" for every comparison, at two margins:
+- **±0.005, your margin.** 5 of 16 comparisons pass.
+- **±0.0071, half the method's own gain over mean teacher.** This was our pre-registered sensitivity target, not a declared margin. 13 of 16 pass, including every targeted-versus-random cell.
+
+The asymmetry is the informative part. Targeting against its own shuffle, which holds the allocation's shape fixed, does pass at ±0.005 (p = 0.019). Targeting against random does not. Targeting-versus-random mixes concentration with direction, so a small concentration effect would sit exactly there, and the eight-seed design cannot see below about 0.006 (its 80%-power detectable effect is 0.0059). [If launched: a separate pre-registered campaign, 34 fresh seeds per arm with targeting, its shuffle and random, sized to resolve ±0.005 (power 0.86 at the observed gap), was committed before its first run and reports by 14 Nov.]
+
+**2. Concentration explains the training set, not the accuracy.** Agreed. The claim is now split: concentration explains why targeted and random training sets are separable (established), and on trained accuracy neither concentration nor direction is resolved [abstract, §3.2].
+
+**3. Scope.** A new paragraph [§4] names the bounds: LAKE-RED (background-only variation), a fixed pool of 4,447 foregrounds, the S2R-COD protocol, and the SINet family. The null concerns which synthetic images to add within that protocol.
+
+**Other changes in the revision**
+- Appendix C gave the effective contrast between targeted and random as about 8.8%. That figure belongs to pairs of same-shape arms. Between targeted and random, 76.7% of injected images differ, which makes it 14.1% of the pool.
+- Appendix B now gives exact commit times for each pre-registration; one campaign's file was committed an hour after its runs started, before any result existed.
+- Every post-hoc diagnostic in the paper (Tables 3 and 6, the CHAMELEON extension) is now re-emitted by its committed script into a dated log block. Two sweep values are corrected (0.52× → 0.51×, 0.14× → at most 0.15×).
+
+### dypE
+
+Thank you, especially for asking what improvement would matter. Answering it changed how we state the result.
+
+**Paired analysis at matched seeds.** Done [Tab. N]. The same seed gives every arm the same initialisation, but on the primary cell the within-seed correlation between targeted and random is essentially zero (r = −0.04). Pairing therefore doesn't narrow the interval: paired 95% CI [−0.0023, +0.0070], TOST p = 0.11 at ±0.005, against Welch's [−0.0020, +0.0067] and p = 0.10 (seed-expansion campaign, eight seeds per arm). We report both for every contrast.
+
+**What improvement is meaningful for COD?** We anchor on the protocol itself, because any outside threshold would be our invention. The method this loop sits on gains 0.0142 S_α over mean teacher in our reproduction (0.0152 in S2R-COD's own Table 1), and seed-to-seed spread on the primary cell is 0.0025–0.0049 S_α. We take half that gain, about 0.007, as the smallest effect that would change which method a practitioner picks. Every targeted-versus-random cell is equivalent at that margin (TOST p ≤ 0.021 in all four cells). At your ±0.005, the primary cell is not. The table gives the smallest margin at which each comparison would pass, so a reader with a stricter threshold can apply it.
+
+**Does concentration explain downstream accuracy?** Not established, and we no longer say it is. The boundary-metric support was a three-seed SINet result. Re-scored at eight seeds it does not hold: targeted minus random is 0.30× its bar on Boundary IoU [§3.2, App. D]. What survives: concentration explains why the training sets are separable, and no metric we tried shows direction mattering.
+
+**More diverse foregrounds, or larger training-set differences?** The difference between the compared sets is larger than we wrote. 76.7% of injected images differ between targeted and random, so the effective contrast is 14.1% of the pool, not the 8.8% we gave in Appendix C (that figure applies to same-shape arms). We have not varied the foreground pool in this window, and the scope paragraph [§4] names that as untested.
+
+**How CHAMELEON contamination enters each protocol** [new table, App. F]:
+- **Supervised training on the standard split** (COD10K-train 3,040 + CAMO-train 1,000): 50 of 76 CHAMELEON images have their photograph, with its own mask, in the training set. 44 partners are in COD10K-train and 6 in CAMO-train.
+- **Unlabelled target adaptation:** the same images sit unlabelled in the target pool. That is 44 under S2R-COD's target as described (COD10K-train) and all 50 under the 4,040-image pool as released.
+- **Checkpoint selection:** 3 CHAMELEON files are byte-identical to images in CAMO-250, the split checkpoints are selected on.
+
+In each case the issue is non-independence. We measured no score inflation on the leaked subset, and none of our endpoints uses CHAMELEON. Fifty is a floor: 16 images remain unchecked.
+
+### RL5B
+
+Thank you. The comparison you asked for is now in the paper, and it explains the gap more cleanly than our original text did.
+
+**Absolute scores below RISE and supervised SINet-v2.** That's right, and a new anchor table [App. G] puts every number beside its backbone and its label usage:
+- **Our arms, same code (SINet, ResNet-50, COD10K S_α):** C10 0.7175 and random 0.7151 (eight-seed means, seed-expansion campaign); mean teacher 0.6988 (three seeds, positive-control campaign).
+- **S2R-COD as published, same backbone and protocol:** 0.7136 for its method and 0.6984 for mean teacher. Our arms sit at or slightly above the protocol's own published result, and our mean teacher reproduces theirs to within 0.0004.
+- **Methods outside the protocol:** RISE uses a DINOv2 ViT-L/14 feature extractor and reaches 0.763 (0.790 with SAM), unsupervised. Supervised SINet trains on real masks and reaches 0.771.
+- [WS4, pending: the same code trained on the same 4,040 real images with their real masks, three seeds per architecture, gives SINet … and SINet-v2 …. This is a descriptive anchor, committed before its runs with no decision rule.]
+
+The absolute level is inherited from the protocol and the backbone: synthetic supervision on a ResNet-family detector. Our null concerns a narrower layer inside that protocol, which 1,000 synthetic images to add, and every arm we compare shares the same ceiling.
+
+**Concentration changes the training set, but does it explain accuracy?** It does not, as far as we can measure, and we have split the claim accordingly [abstract, §3.2]. You were also right to discount the boundary result: re-scored at eight seeds, the SINet effect drops from 1.37× to 0.30× its bar, and we withdraw it.
+
+**Scope.** A new paragraph [§4] bounds every claim to LAKE-RED's background-only variation, a fixed foreground pool, the S2R-COD protocol, and SINet/SINet-v2. It names foreground-varying generators and modern backbones as untested.
+
+**"No evidence of benefit" vs "no effect."** See the general comment and the new table [§3.1]: we rule out benefits above +0.0067 S_α on the primary cell, and the same-shape direction contrast is equivalent at ±0.005 while targeted-versus-random is not.
+
+### Caus
+
+Thank you for pressing on the controls. Both of your concrete requests sharpen what the paper can claim.
+
+**"The separation result is only a sanity check."** On its own it would be. It earns its place because of the comparison it enables, which none of the closest systems runs. GAUDA, DisCL and SynQuE each steer a generation or selection budget by a signal, and none reports a control that holds the budget's shape fixed while destroying its aim (Table 4). Without that control, a targeted-versus-random difference can't be attributed to the signal. With it, ours turns out to be concentration. We have also narrowed what we draw from it: the separation is a property of the training sets, and we no longer claim it carries to downstream accuracy. The one post-hoc metric that seemed to suggest it, SINet boundary IoU, does not hold at eight seeds [§3.2].
+
+**An oracle with a different shape.** A fair point: our oracle reused the targeted allocation's shape and only re-aimed it by true error, so it tested aim, not shape. We have pre-registered two further oracles, each with its own shape and each a declared diagnostic that reads test-set error [App. W]:
+- **CORACLE-PROP** allocates in proportion to true per-cluster error through the same rule (Equation 2 at τ = 1.0). It spreads the budget more evenly than the targeted arm (TV from uniform 0.41 against 0.49).
+- **CORACLE-TOP** puts the whole budget on the 5 truly worst clusters (TV 0.93).
+
+Both run on SINet and SINet-v2 with three seeds, against the committed random arm under the same frozen rule. [Results: … (pre-written readings: if neither clears its bar, three oracle shapes now fail to move the endpoint and the constraint is downstream of the score; if either clears it, the null is partly a property of the score's aim, and the paper says so).]
+
+**One modern backbone and one foreground-varying generator.** We could not do either responsibly in this window, and we would rather say that than run a rushed version. Porting a PVTv2- or DINOv2-based detector into the two-round teacher–student loop, with its edge-aware loss and pseudo-label step, takes several days before a first valid run. A generator that varies the foreground, such as RealCamo or CamDiff, is a separate environment with its own failure modes. The revision bounds every claim to LAKE-RED, its fixed foreground pool, and the SINet family, and names both directions as untested [§4].
+
+### A5-sources — every number in the drafts
+
+| Number (draft) | Campaign / meaning | Log block |
+|---|---|---|
+| +0.0024, [−0.0020, +0.0067], TOST p 0.10; "rule out > +0.0067" | SE, 8 seeds/arm, Welch, post-hoc | EXP REBUTTAL_STATS `SINet_COD10K_C10-B`, `rule_out_sentence_X`; Table 6 (EXP DIAG tost part) |
+| p = 0.019 (C10−CSHUF at ±0.005) | SE, post-hoc | EXP REBUTTAL_STATS `SINet_COD10K_C10-CSHUF` |
+| 5/16 at ±0.005; 13/16 at ±0.0071; every C10−B cell at 0.0071; p ≤ 0.021 | SE, post-hoc | EXP REBUTTAL_STATS `equivalent_*`, `C10-B_equivalent_at_0.0071_all_cells`, four `*_C10-B` rows |
+| 0.0059 (MDE) | SE, post-hoc | EXP REBUTTAL_STATS `MDE80_SINet_COD10K_C10-B` |
+| paired [−0.0023, +0.0070], p 0.11; r = −0.04 | SE, post-hoc | EXP REBUTTAL_STATS `SINet_COD10K_C10-B` |
+| 0.0142 (MT → Ours), 0.0071 | repo reproduction; ABC pre-registered sensitivity target | `rebuild/ABC/PREREGISTRATION.md` §1, §2.9 @ 065dac6 |
+| 0.0152 (0.6984 → 0.7136); 0.7136; 0.6984 | S2R-COD Table 1, external | arXiv 2507.18911v3 Tab. 1 (not a log block; cited as external) |
+| 0.0025–0.0049 (seed sd) | SE per-arm sd, B and C10, primary cell | EXP SE verdict block (l.3617ff) / `se/abc_verdict.json` per_arm_sd |
+| 1.37× (3 seeds) → +0.0046, 0.30×, 5/8 (8 seeds) | ABC/T2 3 seeds; SE 8 seeds; post-hoc | EXP DIAG (boundary part) 3-seed; EXP REBUTTAL_STATS `bnd8_SINet_boundary_iou_C10-B` |
+| 76.7%, 14.1%, 8.8% | SE overlaps; C-family overlaps | EXP REBUTTAL_STATS `B_C10_differing_fraction`, `effective_contrast_*` |
+| 50/76, 44 + 6, 44, 50, 3, 16 unchecked | contamination audit | EXP REBUTTAL_CONTAM `protocol_row_1..4`, `tier_counts` |
+| 0.52× → 0.51×, 0.14× → at most 0.15× | 3-seed sweep, post-hoc | EXP DIAG (boundary part) `sweep_*_max_ratio` |
+| "an hour after its runs started, before any result existed" | OR | EXP REBUTTAL_PREREG_PROVENANCE |
+| C10 0.7175, random 0.7151 | SE, eight-seed means | EXP SE verdict block / `se/abc_verdict.json` arm_means |
+| MT 0.6988 | PC, three seeds | EXP PC (l.2658ff) `MT_mean_COD10K` |
+| RISE 0.763 / 0.790, DINOv2 ViT-L/14 | external | arXiv 2510.18437 Tab. 1 |
+| supervised SINet 0.771 | external | SINet (CVPR 2020) COD10K |
+| 34 seeds/arm, power 0.86, "by 14 Nov" | WS5′ plan | EXP REBUTTAL_WS5_POWER; PREREGISTRATION_WS5.md @ 656df58 — **use only if WS5′ launches** |
+| CORPROP TV 0.41 vs C10 0.49; CORTOP 5 clusters, TV 0.93; τ = 1.0 | WS6 design | EXP WS6 (preflight) `armC_reproduces_C1_cell_CORPROP/CORTOP` + measured keys; PREREGISTRATION_WS6.md |
+| 4,447 foregrounds; 3,040 + 1,000 | data layout | `rebuild/common.py` declared counts; EXP REBUTTAL_WS4 preflight |
+| GAUDA, DisCL, SynQuE "none reported" | paper Table 4 | submitted PDF (verified by pdftotext) |
+
+## A6. Go/no-go gate (2026-11-07, end of the no-training work)
+
+| Campaign | Pre-registration | Preflight | Launch | Gate |
+|---|---|---|---|---|
+| WS4 | `23027d9` | EXP REBUTTAL_WS4: hash gate PASS 4040/4040 | `rebuild/REBUTTAL/launch_ws6_ws4.sh` (after WS6) | author's "go WS6+WS4" |
+| WS6 | `39ca6ad` | EXP WS6: gates 6/6, 12 pools | `rebuild/REBUTTAL/launch_ws6_ws4.sh` | author's "go WS6+WS4"; planned 9 Nov 08:00 IST |
+| WS5′ | `656df58` (analysis `c03a2c0`) | EXP WS5: gates 6/6, 102 pools | `rebuild/REBUTTAL/launch_ws5.sh` | author's "go WS5′"; hard gate 10 Nov 06:00 IST, else dropped; disk gate |
+
+**Disk.** 758 GB free now. Projected use: WS6 ≈ 68 GB, WS4 ≈ 15 GB (UNVERIFIED), WS5′ ≈ 610 GB (pools already built). About 675 GB is free at WS5′ launch against 660 GB needed (610 + 50 margin), and about 65 GB remains at the end. That passes, but narrowly. Reclaimable only with the author's approval: 248 GB of per-epoch `Stu_*`/`Tea_<n>` checkpoints in `Snapshot/ABC` (every scored result uses `Tea_epoch_best.pth`), and 234 GB of CLS round-2 pools (`Dataset/Source/ABC/*_iteration2`).
+
+**New since the plan, and decisive for the text:** the SINet boundary-metric effect does not hold at eight seeds (EXP REBUTTAL_STATS `bnd8_*`). D1 and D5b in `diffs/REVISION_DIFFS.md` withdraw it.
+
+**UNVERIFIED, so not claimed:** the tag `prereg-or-fx-se-a79886a` being on GitHub (this environment has no credentials); the numeric OpenReview comment limit; WS4 single-round wall clock; WS7 render throughput (deferred anyway); the SINet-v2 0.815/0.847 and UCOD-DPL numbers until checked against their PDFs; and every restatement of a reviewer concern, because `rebuild/REBUTTAL/reviews/` is empty. RL5B's numbers must be quoted from the original review text.
