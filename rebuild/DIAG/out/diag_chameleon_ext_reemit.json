@@ -1,0 +1,1481 @@
+{
+  "calibration": {
+    "n_negatives": 4000,
+    "n_positives": 41,
+    "stage1_fpr_on_negatives": 0.00025,
+    "stage1_negative_rms": {
+      "mean": 65.11543509427457,
+      "min": 0.23799291253089905
+    },
+    "stage1_positive_rms": {
+      "max": 1.0223336219787598,
+      "mean": 0.30289924508187827,
+      "min": 0.1593443602323532
+    },
+    "stage1_threshold_rms": 1.0223336219787598,
+    "stage2_negative_inliers_max": 8,
+    "stage2_positive_inliers": {
+      "max": 1174,
+      "median": 1129,
+      "min": 525
+    },
+    "stage2_recall_on_knowns": "41/41",
+    "stage2_threshold_inliers": 9
+  },
+  "decides": "nothing already committed; 41/76 stands unchanged",
+  "headline": "41/76 committed + 10 newly matched = 51/76 (67.1%); 15 still unchecked, 10 verifiably clean",
+  "limitations": "Still a LOWER BOUND. Different photographs of one specimen, heavy colour/geometric edits and montages remain undetected. Stage 2 needs texture: a low-keypoint image can fail to match a true partner.",
+  "n_new_matches": 11,
+  "n_new_matches_at_operating_point": 10,
+  "n_unchecked": 25,
+  "negative_control": {
+    "dataset": "NC4K vs COD10K-test",
+    "inlier_max": 19,
+    "inlier_median": 0,
+    "n_flagged": 4,
+    "n_flagged_at_operating_point": 0,
+    "n_sampled": 120,
+    "n_unchecked": 3039,
+    "rows": [
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-272.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "4939.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 40.1311,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2587.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2682.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.0093,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2627.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1784.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.8586,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3046.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2072.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 37.8875,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-23-Cat-1344.jpg",
+        "n_inlier": 12,
+        "nc4k_image": "261.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 29.2451,
+        "stage2_pass": true
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-42-Sciuridae-2384.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5805.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 29.8151,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-283.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2694.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.7116,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3678.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4864.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 35.5179,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-34.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5558.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 35.373,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5275.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 34.2613,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3678.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2553.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 53.9486,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-40-Rabbit-2352.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2830.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 60.8944,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-67-Frog-4800.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2746.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 30.9601,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2719.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 36.6646,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-277.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4660.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 32.1342,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-277.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2593.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 42.3182,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-15-SeaHorse-981.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3839.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 37.4844,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2627.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4995.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 24.8194,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-13-Pipefish-532.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "1305.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 64.6856,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3678.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3934.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.4829,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-65-Owl-4654.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3321.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.075,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "696.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.6672,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-15-SeaHorse-1088.jpg",
+        "n_inlier": 6,
+        "nc4k_image": "2045.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 62.158,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3246.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "322.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.7808,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-45.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "235.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 35.2674,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3733.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1056.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.282,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-6-Fish-157.jpg",
+        "n_inlier": 12,
+        "nc4k_image": "5748.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 40.3423,
+        "stage2_pass": true
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "718.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.8867,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-29-Dog-1816.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3813.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.5875,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-283.jpg",
+        "n_inlier": 6,
+        "nc4k_image": "5308.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.1835,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-61-Katydid-4154.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "38.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 53.5531,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2783.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3738.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 25.6169,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "3338.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 46.9659,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-33-Grouse-1954.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3684.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 32.988,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2783.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5325.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.8297,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-34-Human-2034.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "3956.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.7704,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-4917.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4074.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 42.8948,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-5008.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "46.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.6848,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-6-Fish-157.jpg",
+        "n_inlier": 10,
+        "nc4k_image": "3955.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 40.3367,
+        "stage2_pass": true
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-23-Cat-1498.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4214.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 46.2717,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3046.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1388.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 32.0482,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3901.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2934.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 48.486,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-61-Katydid-3982.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3646.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 40.1966,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-4917.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4696.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 38.4972,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-13-Pipefish-813.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "4411.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 51.5808,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-61-Katydid-4230.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5384.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 36.9273,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2783.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1760.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.5374,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2361.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.3301,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3921.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1133.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.8776,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5762.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.8858,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-6-Fish-157.jpg",
+        "n_inlier": 19,
+        "nc4k_image": "2483.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 45.9705,
+        "stage2_pass": true
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-13-Pipefish-752.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "4032.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 64.6301,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2221.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.7407,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3170.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "3598.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 32.028,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1446.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 44.0963,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-20-Turtle-1231.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3603.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 46.0905,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1439.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.5667,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-24-Caterpillar-1546.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4529.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 26.6577,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-36-Leopard-2068.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "5545.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 48.256,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-29-Dog-1816.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5786.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 36.3215,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3901.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "2394.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 57.6047,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-23-Cat-1344.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1091.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 17.7949,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-4904.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4754.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 47.1243,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3901.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "365.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 42.2433,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-12-Pagurian-474.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "2218.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 57.8015,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2614.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4784.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.9136,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2715.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5564.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 48.0537,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-11-Octopus-444.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "2098.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 44.7469,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3921.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "2693.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 53.5333,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-6-Fish-163.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1679.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.1093,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-277.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2630.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.1779,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "672.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.5298,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-4917.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "1132.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.2422,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-45.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "481.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 23.6175,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-65.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3951.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 27.2801,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-29-Dog-1816.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5835.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.4588,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3056.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5394.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 45.7864,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1992.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 28.7009,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-15-SeaHorse-981.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4538.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 27.393,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-64-Moth-4453.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "4445.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 47.6061,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-62-Mantis-4319.jpg",
+        "n_inlier": 6,
+        "nc4k_image": "1910.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 54.0117,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3880.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1052.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.2225,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-59-Grasshopper-3788.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "3156.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.7178,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-5008.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "4395.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.719,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-23-Cat-1462.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1690.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 37.4952,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-34.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2201.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.1303,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-61-Katydid-3982.jpg",
+        "n_inlier": 6,
+        "nc4k_image": "4429.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 63.8059,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3231.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3346.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 28.2945,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-22-Bug-1283.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2862.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.5125,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "539.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 44.4798,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-46-StickInsect-2807.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3444.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.0181,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-34-Human-2034.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "3309.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 38.333,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3170.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2697.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 55.468,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-292.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4371.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 36.8119,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-29-Dog-1816.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4383.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 22.2899,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-53-Bird-3170.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "636.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.6487,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-36-Leopard-2068.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2384.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 63.7087,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-34-Human-2034.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2260.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.9541,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-34.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "183.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 46.3921,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-29-Dog-1831.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4254.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 49.5299,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4087.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 38.4132,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-62-Mantis-4313.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "877.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 35.0302,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-38.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4146.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 37.1763,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-60-Heron-3921.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "398.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.4314,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2587.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2026.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 41.5941,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-36-Leopard-2068.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2196.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 43.2044,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-292.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5470.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.1997,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2627.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "2984.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.3411,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-56-Cicada-3498.jpg",
+        "n_inlier": 7,
+        "nc4k_image": "1747.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 50.988,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-44-Snake-2440.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "771.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 44.482,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-62-Mantis-4319.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "939.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 35.5344,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-45-Spider-2627.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1503.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 52.7586,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-250.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "905.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 31.1378,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-24-Caterpillar-1543.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "4132.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 33.7831,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-3-Crab-93.jpg",
+        "n_inlier": 4,
+        "nc4k_image": "5176.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 38.7766,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-65-Owl-4522.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5649.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 56.4394,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-3-Flying-62-Mantis-4313.jpg",
+        "n_inlier": 6,
+        "nc4k_image": "2397.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 26.4498,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-2-Terrestrial-23-Cat-1498.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "5126.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 45.4405,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-4-Amphibian-68-Toad-5008.jpg",
+        "n_inlier": 5,
+        "nc4k_image": "4815.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 39.0519,
+        "stage2_pass": false
+      },
+      {
+        "best": "COD10K-CAM-1-Aquatic-7-Flounder-277.jpg",
+        "n_inlier": 0,
+        "nc4k_image": "1433.jpg",
+        "stage1_pass": false,
+        "stage1_rms": 20.7662,
+        "stage2_pass": false
+      }
+    ]
+  },
+  "operating_point_inliers": 20,
+  "rows": [
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00776.jpg",
+      "cham_dims": "1200x811",
+      "chameleon_image": "animal-10.jpg",
+      "inlier_share": 0.4211,
+      "n_good": 19,
+      "n_inlier": 8,
+      "norm_corr": 0.0847,
+      "norm_mean_abs": 38.7183,
+      "norm_p99": 118.0,
+      "norm_rms": 47.9344,
+      "partner_dims": "400x300",
+      "stage1_pass": false,
+      "stage1_rms": 40.353,
+      "stage1_rms_rank1": 40.2725,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00673.jpg",
+      "cham_dims": "815x1188",
+      "chameleon_image": "animal-16.jpg",
+      "inlier_share": 1.0,
+      "n_good": 621,
+      "n_inlier": 621,
+      "norm_corr": 0.2635,
+      "norm_mean_abs": 28.0804,
+      "norm_p99": 93.0,
+      "norm_rms": 35.6565,
+      "partner_dims": "800x613",
+      "stage1_pass": false,
+      "stage1_rms": 25.2663,
+      "stage1_rms_rank1": 25.2663,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-3-Flying-66-Owlfly-4675.jpg",
+      "cham_dims": "1536x1136",
+      "chameleon_image": "animal-18.jpg",
+      "inlier_share": 0.0,
+      "n_good": 3,
+      "n_inlier": 0,
+      "norm_corr": 0.2618,
+      "norm_mean_abs": 28.3707,
+      "norm_p99": 98.0,
+      "norm_rms": 35.8572,
+      "partner_dims": "1024x683",
+      "stage1_pass": false,
+      "stage1_rms": 27.7344,
+      "stage1_rms_rank1": 27.7344,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00876.jpg",
+      "cham_dims": "2272x1704",
+      "chameleon_image": "animal-2.jpg",
+      "inlier_share": 0.0,
+      "n_good": 3,
+      "n_inlier": 0,
+      "norm_corr": 0.1815,
+      "norm_mean_abs": 40.5597,
+      "norm_p99": 124.0,
+      "norm_rms": 50.0629,
+      "partner_dims": "1200x945",
+      "stage1_pass": false,
+      "stage1_rms": 37.7973,
+      "stage1_rms_rank1": 37.7973,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-1-Aquatic-3-Crab-64.jpg",
+      "cham_dims": "620x400",
+      "chameleon_image": "animal-20.jpg",
+      "inlier_share": 0.0,
+      "n_good": 2,
+      "n_inlier": 0,
+      "norm_corr": -0.0009,
+      "norm_mean_abs": 38.7139,
+      "norm_p99": 116.0,
+      "norm_rms": 47.9543,
+      "partner_dims": "1024x768",
+      "stage1_pass": false,
+      "stage1_rms": 35.0876,
+      "stage1_rms_rank1": 35.0876,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg",
+      "cham_dims": "791x568",
+      "chameleon_image": "animal-22.jpg",
+      "inlier_share": 0.9949,
+      "n_good": 783,
+      "n_inlier": 779,
+      "norm_corr": 0.6362,
+      "norm_mean_abs": 30.5751,
+      "norm_p99": 136.0,
+      "norm_rms": 42.755,
+      "partner_dims": "777x557",
+      "stage1_pass": false,
+      "stage1_rms": 18.1281,
+      "stage1_rms_rank1": 18.1281,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-2-Terrestrial-45-Spider-2750.jpg",
+      "cham_dims": "505x360",
+      "chameleon_image": "animal-27.jpg",
+      "inlier_share": 0.0,
+      "n_good": 3,
+      "n_inlier": 0,
+      "norm_corr": -0.0399,
+      "norm_mean_abs": 25.5509,
+      "norm_p99": 81.0,
+      "norm_rms": 31.829,
+      "partner_dims": "1024x768",
+      "stage1_pass": false,
+      "stage1_rms": 21.8716,
+      "stage1_rms_rank1": 21.8716,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00040.jpg",
+      "cham_dims": "610x401",
+      "chameleon_image": "animal-28.jpg",
+      "inlier_share": 0.5556,
+      "n_good": 27,
+      "n_inlier": 15,
+      "norm_corr": 0.1216,
+      "norm_mean_abs": 35.6833,
+      "norm_p99": 127.0,
+      "norm_rms": 45.7018,
+      "partner_dims": "324x400",
+      "stage1_pass": false,
+      "stage1_rms": 40.2256,
+      "stage1_rms_rank1": 37.3519,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-1-Aquatic-6-Fish-177.jpg",
+      "cham_dims": "1200x818",
+      "chameleon_image": "animal-3.jpg",
+      "inlier_share": 0.5,
+      "n_good": 8,
+      "n_inlier": 4,
+      "norm_corr": -0.0068,
+      "norm_mean_abs": 40.5596,
+      "norm_p99": 129.0,
+      "norm_rms": 51.2556,
+      "partner_dims": "742x984",
+      "stage1_pass": false,
+      "stage1_rms": 38.9837,
+      "stage1_rms_rank1": 37.0367,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00656.jpg",
+      "cham_dims": "962x621",
+      "chameleon_image": "animal-36.jpg",
+      "inlier_share": 0.0,
+      "n_good": 6,
+      "n_inlier": 0,
+      "norm_corr": -0.0305,
+      "norm_mean_abs": 19.5588,
+      "norm_p99": 73.65,
+      "norm_rms": 25.4807,
+      "partner_dims": "902x480",
+      "stage1_pass": false,
+      "stage1_rms": 18.4811,
+      "stage1_rms_rank1": 18.4811,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00876.jpg",
+      "cham_dims": "755x352",
+      "chameleon_image": "animal-43.jpg",
+      "inlier_share": 1.0,
+      "n_good": 422,
+      "n_inlier": 422,
+      "norm_corr": 0.3683,
+      "norm_mean_abs": 27.6743,
+      "norm_p99": 93.0,
+      "norm_rms": 34.9863,
+      "partner_dims": "1200x945",
+      "stage1_pass": false,
+      "stage1_rms": 17.0775,
+      "stage1_rms_rank1": 17.0775,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00656.jpg",
+      "cham_dims": "755x487",
+      "chameleon_image": "animal-47.jpg",
+      "inlier_share": 0.4167,
+      "n_good": 12,
+      "n_inlier": 5,
+      "norm_corr": 0.0329,
+      "norm_mean_abs": 42.301,
+      "norm_p99": 122.0,
+      "norm_rms": 51.1005,
+      "partner_dims": "902x480",
+      "stage1_pass": false,
+      "stage1_rms": 40.8881,
+      "stage1_rms_rank1": 40.8881,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00796.jpg",
+      "cham_dims": "580x387",
+      "chameleon_image": "animal-49.jpg",
+      "inlier_share": 0.0,
+      "n_good": 0,
+      "n_inlier": 0,
+      "norm_corr": 0.1525,
+      "norm_mean_abs": 20.5684,
+      "norm_p99": 73.65,
+      "norm_rms": 26.3362,
+      "partner_dims": "852x480",
+      "stage1_pass": false,
+      "stage1_rms": 17.4546,
+      "stage1_rms_rank1": 17.4546,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00230.jpg",
+      "cham_dims": "915x686",
+      "chameleon_image": "animal-59.jpg",
+      "inlier_share": 0.9957,
+      "n_good": 697,
+      "n_inlier": 694,
+      "norm_corr": 0.5176,
+      "norm_mean_abs": 45.56,
+      "norm_p99": 171.0,
+      "norm_rms": 59.8957,
+      "partner_dims": "577x428",
+      "stage1_pass": false,
+      "stage1_rms": 34.2592,
+      "stage1_rms_rank1": 34.2592,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00037.jpg",
+      "cham_dims": "605x362",
+      "chameleon_image": "animal-61.jpg",
+      "inlier_share": 1.0,
+      "n_good": 664,
+      "n_inlier": 664,
+      "norm_corr": 0.4376,
+      "norm_mean_abs": 35.0643,
+      "norm_p99": 138.0,
+      "norm_rms": 48.0353,
+      "partner_dims": "589x366",
+      "stage1_pass": false,
+      "stage1_rms": 33.5205,
+      "stage1_rms_rank1": 33.5205,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00453.jpg",
+      "cham_dims": "1000x628",
+      "chameleon_image": "animal-62.jpg",
+      "inlier_share": 0.0,
+      "n_good": 2,
+      "n_inlier": 0,
+      "norm_corr": 0.435,
+      "norm_mean_abs": 35.838,
+      "norm_p99": 114.0,
+      "norm_rms": 44.9125,
+      "partner_dims": "400x224",
+      "stage1_pass": false,
+      "stage1_rms": 38.4476,
+      "stage1_rms_rank1": 38.4476,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00705.jpg",
+      "cham_dims": "861x633",
+      "chameleon_image": "animal-64.jpg",
+      "inlier_share": 0.1923,
+      "n_good": 26,
+      "n_inlier": 5,
+      "norm_corr": 0.337,
+      "norm_mean_abs": 35.6894,
+      "norm_p99": 131.0,
+      "norm_rms": 47.1688,
+      "partner_dims": "401x267",
+      "stage1_pass": false,
+      "stage1_rms": 43.1476,
+      "stage1_rms_rank1": 43.1476,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg",
+      "cham_dims": "610x409",
+      "chameleon_image": "animal-66.jpg",
+      "inlier_share": 1.0,
+      "n_good": 595,
+      "n_inlier": 595,
+      "norm_corr": 0.3978,
+      "norm_mean_abs": 42.1786,
+      "norm_p99": 152.0,
+      "norm_rms": 55.1568,
+      "partner_dims": "1200x943",
+      "stage1_pass": false,
+      "stage1_rms": 35.1923,
+      "stage1_rms_rank1": 35.1923,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "camourflage_00734.jpg",
+      "cham_dims": "1272x1236",
+      "chameleon_image": "animal-68.jpg",
+      "inlier_share": 0.0,
+      "n_good": 5,
+      "n_inlier": 0,
+      "norm_corr": 0.0885,
+      "norm_mean_abs": 29.8989,
+      "norm_p99": 102.0,
+      "norm_rms": 37.7671,
+      "partner_dims": "400x301",
+      "stage1_pass": false,
+      "stage1_rms": 27.5762,
+      "stage1_rms_rank1": 27.5762,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-2-Terrestrial-24-Caterpillar-1613.jpg",
+      "cham_dims": "847x565",
+      "chameleon_image": "animal-69.jpg",
+      "inlier_share": 0.4375,
+      "n_good": 16,
+      "n_inlier": 7,
+      "norm_corr": 0.1849,
+      "norm_mean_abs": 21.2712,
+      "norm_p99": 82.0,
+      "norm_rms": 27.7721,
+      "partner_dims": "1024x666",
+      "stage1_pass": false,
+      "stage1_rms": 21.4015,
+      "stage1_rms_rank1": 18.2525,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00776.jpg",
+      "cham_dims": "880x968",
+      "chameleon_image": "animal-7.jpg",
+      "inlier_share": 0.431,
+      "n_good": 58,
+      "n_inlier": 25,
+      "norm_corr": 0.0724,
+      "norm_mean_abs": 29.5226,
+      "norm_p99": 97.0,
+      "norm_rms": 37.1595,
+      "partner_dims": "400x300",
+      "stage1_pass": false,
+      "stage1_rms": 33.8195,
+      "stage1_rms_rank1": 31.8029,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "camourflage_00549.jpg",
+      "cham_dims": "2000x977",
+      "chameleon_image": "animal-72.jpg",
+      "inlier_share": 0.9922,
+      "n_good": 386,
+      "n_inlier": 383,
+      "norm_corr": 0.8382,
+      "norm_mean_abs": 17.3342,
+      "norm_p99": 116.0,
+      "norm_rms": 29.7347,
+      "partner_dims": "315x160",
+      "stage1_pass": false,
+      "stage1_rms": 21.7903,
+      "stage1_rms_rank1": 21.7903,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "COD10K-CAM-3-Flying-55-Butterfly-3292.jpg",
+      "cham_dims": "850x701",
+      "chameleon_image": "animal-73.jpg",
+      "inlier_share": 1.0,
+      "n_good": 925,
+      "n_inlier": 925,
+      "norm_corr": 0.6161,
+      "norm_mean_abs": 22.0803,
+      "norm_p99": 102.0,
+      "norm_rms": 31.3041,
+      "partner_dims": "849x677",
+      "stage1_pass": false,
+      "stage1_rms": 16.7052,
+      "stage1_rms_rank1": 16.7052,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": true,
+      "best_partner": "COD10K-CAM-3-Flying-55-Butterfly-3293.jpg",
+      "cham_dims": "933x700",
+      "chameleon_image": "animal-74.jpg",
+      "inlier_share": 0.9964,
+      "n_good": 838,
+      "n_inlier": 835,
+      "norm_corr": 0.748,
+      "norm_mean_abs": 27.7049,
+      "norm_p99": 135.0,
+      "norm_rms": 40.6788,
+      "partner_dims": "932x673",
+      "stage1_pass": false,
+      "stage1_rms": 21.011,
+      "stage1_rms_rank1": 21.011,
+      "stage2_pass": true,
+      "verdict": "MATCH"
+    },
+    {
+      "at_operating_point": false,
+      "best_partner": "COD10K-CAM-3-Flying-57-Dragonfly-3561.jpg",
+      "cham_dims": "549x575",
+      "chameleon_image": "animal-75.jpg",
+      "inlier_share": 0.625,
+      "n_good": 8,
+      "n_inlier": 5,
+      "norm_corr": 0.062,
+      "norm_mean_abs": 37.0147,
+      "norm_p99": 133.0,
+      "norm_rms": 47.5434,
+      "partner_dims": "1024x593",
+      "stage1_pass": false,
+      "stage1_rms": 40.1312,
+      "stage1_rms_rank1": 36.7766,
+      "stage2_pass": false,
+      "verdict": "no match found"
+    }
+  ],
+  "what": "extension of the CHAMELEON audit over the images the released detector reports unchecked"
+}

@@ -4213,3 +4213,76 @@ NOTES      POST-HOC. No verdict is re-decided. The SE campaign's verdicts stand 
            The boundary re-score reads SE-style bars (pooled over B/C10/CSHUF/CINV at eight seeds, sign >= 7/8) for comparability with Table 3's three-seed reading. It is not a pre-registered test.
 ================================================================================
 
+================================================================================
+2026-11-07T15:26:57+05:30 | commit f7673a5 (dirty) | EXP DIAG
+CMD   .venv/bin/python rebuild/REBUTTAL/p2_diag_provenance.py --part boundary   [re-emits: rebuild/DIAG/diag_boundary.py --seeds 42,43,45 [...] --suffix _reemit*; rebuild/DIAG/diag_subgroups.py --suffix _reemit]
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  boundary_per_run_reemit_vs_committed       = max |diff| 1.11e-16 over 36 runs x 5 fields (tolerance 1e-12: float summation order)    (diag_boundary_per_run.csv)
+  boundary_per_run_reemit_t0.40_vs_committed = max |diff| 1.11e-16 over 12 runs x 5 fields (tolerance 1e-12: float summation order)    (diag_boundary_per_run_t0.40.csv)
+  boundary_per_run_reemit_t0.60_vs_committed = max |diff| 1.67e-16 over 12 runs x 5 fields (tolerance 1e-12: float summation order)    (diag_boundary_per_run_t0.60.csv)
+  subgroups_whole_set_max_abs_diff           = 0    (diag_subgroups_reemit.json vs diag_subgroups.json)
+  table3_rows_reproduced                     = 6/6    (table_subgroup_metrics.tex, bar + 4 gaps + sign each)
+  sweep_C10-B_ratio_t0.4/0.5/0.6             = 1.39/1.37/1.23  signs 3/3/3/3/3/3    (paper (hard-coded in diag_emit.py): 1.39/1.37/1.23)
+  sweep_CINV-B_ratio_t0.4/0.5/0.6            = 1.25/1.34/1.26  signs 3/3/3/3/3/3    (paper (hard-coded in diag_emit.py): 1.25/1.34/1.26)
+  sweep_C10-CSHUF_max_ratio                  = 0.5050 (at t=0.4)    (paper: "never exceed 0.52x")
+  sweep_C10-CINV_max_ratio                   = 0.1432 (at t=0.4)    (paper: "never exceed 0.14x")
+THRESHOLD  diag_boundary.py re-emission _reemit equals committed diag_boundary_per_run.csv -> PASS
+THRESHOLD  diag_boundary.py re-emission _reemit_t0.40 equals committed diag_boundary_per_run_t0.40.csv -> PASS
+THRESHOLD  diag_boundary.py re-emission _reemit_t0.60 equals committed diag_boundary_per_run_t0.60.csv -> PASS
+THRESHOLD  diag_subgroups.py re-emission equals the committed whole-set gaps and bars -> PASS
+THRESHOLD  all 6 printed rows of Table 3 reproduced from the re-emission -> PASS
+THRESHOLD  sweep C10-B ratios reproduce the paper's 1.39/1.37/1.23 -> PASS
+THRESHOLD  sweep CINV-B ratios reproduce the paper's 1.25/1.34/1.26 -> PASS
+THRESHOLD  sweep C10-CSHUF: the paper's bound "never exceeds 0.52x" holds -> PASS
+THRESHOLD  sweep C10-CSHUF: the printed 0.52x equals the measured maximum at 2 dp -> FAIL
+THRESHOLD  sweep C10-CINV: the paper's bound "never exceeds 0.14x" holds -> FAIL
+THRESHOLD  sweep C10-CINV: the printed 0.14x equals the measured maximum at 2 dp -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/DIAG/out/diag_boundary_per_run_reemit.csv, rebuild/DIAG/out/diag_boundary_per_run_reemit_t0.40.csv, rebuild/DIAG/out/diag_boundary_per_run_reemit_t0.60.csv, rebuild/DIAG/out/diag_subgroups_reemit.json
+TRAINS     NO
+NOTES      DIAG.3/DIAG.5 RE-EMITTED, POST-HOC (2026-11). The paper's Table 3 and its threshold-sweep sentence, previously traceable to committed JSON/CSV but to no log block. These are THREE-SEED values, exactly as the paper prints them. The eight-seed re-score is EXP REBUTTAL_STATS (bnd8_*), and it does not reproduce the SINet effect: see that block.
+           The sweep ratios were HARD-CODED TEXT in diag_emit.py. Here they are derived from the per-run sweep files by diag_subgroups' own rule. Five of six printed values reproduce. The C10-CSHUF maximum is 0.505x, printed as "0.52x". The bound it states is true; the revision prints 0.51.
+================================================================================
+
+================================================================================
+2026-11-07T15:26:59+05:30 | commit f7673a5 (dirty) | EXP DIAG
+CMD   .venv/bin/python rebuild/REBUTTAL/p2_diag_provenance.py --part tost   [re-emits: runpy rebuild/FinalPaper/AD-PCH-230926/figs/make_tost_table.py (paper_out -> rebuild/REBUTTAL/out/)]
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  table6_reemit_bytes          = 2981 vs 3023    (make_tost_table.py output (LF) vs the compiled table)
+  table6_compiled_line_endings = CRLF    (the compiled copy was saved with Windows line endings)
+THRESHOLD  make_tost_table.py re-emits the submitted Table 6 exactly, line endings normalised -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/REBUTTAL/out/reemit_table_tost_equivalence.tex
+TRAINS     NO
+NOTES      DIAG.1 / Table 6 RE-EMITTED, POST-HOC (2026-11). The committed script runs unchanged; only its output path is redirected so the paper's file is not touched. The 16 rows are also reproduced value by value inside EXP REBUTTAL_STATS.
+================================================================================
+
+================================================================================
+2026-11-07T15:27:01+05:30 | commit f7673a5 (dirty) | EXP DIAG
+CMD   .venv/bin/python rebuild/REBUTTAL/p2_diag_provenance.py --part chamext   [re-emits: .venv/bin/python rebuild/DIAG/diag_chameleon_ext.py --workers 40 --suffix _reemit]
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  chamext_headline                         = 41/76 committed + 10 newly matched = 51/76 (67.1%); 15 still unchecked, 10 verifiably clean    (committed: 41/76 committed + 10 newly matched = 51/76 (67.1%); 15 still unchecked, 10 verifiably clean)
+  chamext_n_new_matches                    = 11    (committed: 11)
+  chamext_n_new_matches_at_operating_point = 10    (committed: 10)
+  chamext_n_unchecked                      = 25    (committed: 25)
+  chamext_operating_point_inliers          = 20    (committed: 20)
+THRESHOLD  re-emitted headline equals committed -> PASS
+THRESHOLD  re-emitted n_new_matches equals committed -> PASS
+THRESHOLD  re-emitted n_new_matches_at_operating_point equals committed -> PASS
+THRESHOLD  re-emitted n_unchecked equals committed -> PASS
+THRESHOLD  re-emitted operating_point_inliers equals committed -> PASS
+THRESHOLD  every candidate row (image, partner, inliers, operating point, verdict) equals committed -> PASS
+THRESHOLD  calibration (positives, negatives, thresholds, recall) equals committed -> PASS
+THRESHOLD  NC4K negative control (sampled, flagged, max inliers) equals committed -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/DIAG/out/diag_chameleon_ext_reemit.json
+TRAINS     NO
+NOTES      DIAG.4 RE-EMITTED, POST-HOC (2026-11). The extension's own headline is 41 + 10 = 51 at its operating point. The paper's 50 comes from the adjudication step, which EXP REBUTTAL_CONTAM re-runs and logs (9 accepted, animal-7 rejected). The two blocks together are the traceable chain 41 -> 41 + 10 candidates -> 41 + 9 = 50.
+================================================================================
+
