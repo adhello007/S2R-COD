@@ -55,7 +55,12 @@ GAPS = {'abc': (('A2', 'B'), ('B', 'C10'), ('A0', 'B'), ('A0', 'C10'), ('A0', 'A
         # against each campaign's own sigma_hat, as FX.1 requires.
         'fx':  (('BFX', 'C10FX'), ('A0FX', 'BFX'), ('A0FX', 'C10FX')),
         # PREREGISTRATION_SE.md SE.1 -- four gaps at n = 8
-        'se':  (('B', 'C10'), ('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF'))}
+        'se':  (('B', 'C10'), ('CSHUF', 'C10'), ('CINV', 'C10'), ('CINV', 'CSHUF')),
+        # rebuild/REBUTTAL/PREREGISTRATION_WS5.md -- three contrasts with fixed roles.
+        # (lo, hi): delta = hi - lo. C10-B total, C10-CSHUF direction, CSHUF-B concentration.
+        'ws5': (('B', 'C10'), ('CSHUF', 'C10'), ('B', 'CSHUF')),
+        # rebuild/REBUTTAL/PREREGISTRATION_WS6.md -- each different-shape oracle vs random
+        'ws6': (('B', 'CORPROP'), ('B', 'CORTOP'))}
 # What T2 cross-checks. C1 measured these in embedding-distance space only.
 OLD_CLAIMS_T2 = [
     ('C1.4 ES contribution vs its own shuffle',
@@ -168,6 +173,9 @@ def main():
                          'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
                          'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--archs', default='',
+                    help='comma list of architectures (additive, 2026-11). EMPTY = SINet,SINetv2, '
+                         'the committed behaviour. WS5\' is SINet-only.')
     args = ap.parse_args()
     SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
              if args.seeds else A.SEEDS)
@@ -193,7 +201,7 @@ def main():
     _p('=== s2 inference ===')
     gpus = [int(g) for g in args.gpus.split(',') if g.strip() != '']
     tasks = []
-    for arch in ('SINet', 'SINetv2'):
+    for arch in A.parse_archs(args.archs):
         for arm in arms:
             for seed in SEEDS:
                 rid = A.runid(arch, arm, seed)
@@ -286,7 +294,7 @@ def main():
 
     _p('=== s3 sigma_hat and the gaps, per the FROZEN rule ===')
     verdicts = {}
-    for arch in ('SINet', 'SINetv2'):
+    for arch in A.parse_archs(args.archs):
         for ep in A.ENDPOINTS:
             sub = [r for r in rows if r['arch'] == arch and r['endpoint'] == ep]
             byarm = {m: {r['seed']: r['Sm'] for r in sub if r['arm'] == m} for m in arms}

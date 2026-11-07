@@ -280,12 +280,17 @@ def gate_pools(runs):
     # and it is the arm every T2 gap is measured against, so its overlap with each
     # new arm has to be gated too (PREREGISTRATION_T2.md T2.7, T2.8).
     cref = list(dict.fromkeys(cfam + ['C10']))
+    # Arm-B draws actually in play. The committed campaigns gated A.SEEDS only; an
+    # additive campaign on fresh seeds (WS5') must have ITS draws' masks and overlaps
+    # gated, so the seeds come from the run set. Falls back to A.SEEDS when no B-type
+    # arm is in the run set (e.g. WS6, whose comparator B is already committed).
+    bseeds = sorted({s for _, m, s in runs if A.base_arm(m) in ('B', 'A2')}) or list(A.SEEDS)
     # the 1000 render masks equal raw_gt, for every distinct arm-B/C stem set
     import numpy as np
     from PIL import Image
     for label, stems in [(m, A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0])
                          for m in cfam] + \
-                        [('B_s%d' % s, A.arm_b_stems(s)) for s in A.SEEDS]:
+                        [('B_s%d' % s, A.arm_b_stems(s)) for s in bseeds]:
         nb = 0
         for st in stems:
             a = np.array(Image.open(os.path.join(C.REPO, A.RAW_GT, st + '.png')).convert('L'))
@@ -301,13 +306,20 @@ def gate_pools(runs):
     for arm in cref:
         alpha = A.ARM_ALPHA[arm]
         _, cell = A.arm_c_stems(alpha, A.ARM_ES_PERM[arm])
+        if arm in A.NEW_SHAPE_ARMS:
+            # WS6: a different shape BY DESIGN. Checked against what its
+            # pre-registration declares, never against C1's cell.
+            keys, ok = A.declared_shape(arm, cell)
+            repro[arm] = dict(measured=cell, c1={}, asserted=keys, match=bool(ok),
+                              declared='PREREGISTRATION_WS6.md')
+            continue
         keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
         repro[arm] = dict(measured=cell, c1=A.C1_CELL[alpha], asserted=list(keys),
                           match=all(cell[k] == A.C1_CELL[alpha][k] for k in keys))
     # pairwise overlap against chance over every distinct selected set in play
     chance = A.BUDGET * A.BUDGET / 4447.0
     sets = {m: set(A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0]) for m in cref}
-    sets.update({'B_s%d' % s: set(A.arm_b_stems(s)) for s in A.SEEDS})
+    sets.update({'B_s%d' % s: set(A.arm_b_stems(s)) for s in bseeds})
     ov = {}
     for a, b in itertools.combinations(sorted(sets), 2):
         x, y = sets[a], sets[b]

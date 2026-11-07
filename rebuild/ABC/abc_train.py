@@ -166,6 +166,9 @@ def main():
     ap.add_argument('--retries', type=int, default=1)
     ap.add_argument('--no-log', action='store_true')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--archs', default='',
+                    help='comma list of architectures (additive, 2026-11). EMPTY = SINet,SINetv2, '
+                         'the committed behaviour. WS5\' is SINet-only.')
     ap.add_argument('--seeds', default='',
                     help='comma list of training seeds. EMPTY = the committed {42,43,45} \n'
                          'exactly, so every prior invocation is unchanged. Non-empty is the \n'
@@ -190,7 +193,7 @@ def main():
     # SINet first (including its A0_s42 sanity run, already done), then SINet-v2
     only = {x.strip() for x in args.only.split(',') if x.strip()}
     todo, done_already = [], []
-    for arch in ('SINet', 'SINetv2'):
+    for arch in A.parse_archs(args.archs):
         for arm in arms:
             for seed in SEEDS:
                 if only and A.runid(arch, arm, seed) not in only:

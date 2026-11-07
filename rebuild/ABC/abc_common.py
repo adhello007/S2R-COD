@@ -48,14 +48,26 @@ OR_ARMS = ('CORACLE',)                   # PREREGISTRATION_OR.md -- additive, da
 FX_SUFFIX = 'FX'
 FX_ARMS = ('A0FX', 'BFX', 'C10FX')
 ARM_ALPHA = {'C10': 1.0, 'C05': 0.5, 'CSHUF': 1.0, 'CINV': 1.0, 'CORACLE': 1.0,
-             'C10FX': 1.0}
+             'C10FX': 1.0, 'CORPROP': 1.0, 'CORTOP': 1.0}
 # T2: how each C-family arm permutes the COMMITTED target_es vector before the
 # softmax. None is C10's identity. BOTH T2 transforms are PERMUTATIONS, so the
 # allocation SHAPE is preserved exactly and only the cluster->budget assignment
 # changes (PREREGISTRATION_T2.md T2.4).
 ARM_ES_PERM = {'C10': None, 'C05': None,
                'CSHUF': 'shuffled', 'CINV': 'rank_reversed',
-               'CORACLE': 'oracle_rank', 'C10FX': None}
+               'CORACLE': 'oracle_rank', 'C10FX': None,
+               'CORPROP': 'oracle_value', 'CORTOP': 'oracle_top'}
+# WS6 (rebuild/REBUTTAL/PREREGISTRATION_WS6.md -- additive, dated 2026-11-07). The two
+# DIFFERENT-SHAPE oracle arms. Unlike CORACLE they are NOT permutations of C10's
+# allocation: each has its own shape, so the same-shape assertion does not apply and
+# their shape is checked against what the pre-registration DECLARES instead
+# (declared_shape()). Both read true endpoint error and are diagnostics, never methods.
+#   CORPROP  Eq. 2 (softmax at tau = alpha * sd) applied to the oracle vector itself
+#   CORTOP   the whole budget on the ORACLE_TOP_K truly worst clusters, split equally
+NEW_SHAPE_ARMS = ('CORPROP', 'CORTOP')
+WS6_ARMS = NEW_SHAPE_ARMS
+ORACLE_TOP_K = 5
+ORACLE_TOP_MIN_NTEST = 2                 # a one-image cluster cannot be "truly worst"
 SHAPE_KEYS = ('clusters_funded', 'max_alloc_share',
               'alloc_entropy_norm', 'tv_from_uniform')   # n_displaced EXCLUDED
 # OR: the oracle vector's only sanctioned source. Per-cluster mean (1 - S_alpha)
@@ -106,6 +118,17 @@ def runid(arch, arm, seed):
 
 def all_runs(arms=ARMS, archs=('SINet', 'SINetv2'), seeds=SEEDS):
     return [(a, m, s) for a in archs for m in arms for s in seeds]
+
+
+def parse_archs(spec):
+    """--archs value -> tuple in ARCHS order. EMPTY = both, the committed behaviour."""
+    if not spec:
+        return ('SINet', 'SINetv2')
+    want = [x.strip() for x in spec.split(',') if x.strip()]
+    bad = [x for x in want if x not in ARCHS]
+    if bad:
+        raise ValueError('unknown arch %s; expected one of %s' % (bad, list(ARCHS)))
+    return tuple(a for a in ARCHS if a in want)
 
 
 def pool_dir(rid):
@@ -268,6 +291,55 @@ def es_permutation(es, kind):
     raise ValueError('unknown es_perm %r' % kind)
 
 
+def _oracle_alloc(sp, alpha, kind, softmax_alloc, largest_remainder):
+    """WS6 allocations (PREREGISTRATION_WS6.md). Returns (es, p, alloc, info).
+
+    oracle_value  p = softmax_alloc(oracle, alpha): Equation 2 applied to TRUE per-cluster
+                  error in place of the ES score. Its own shape, set by the oracle vector.
+    oracle_top    p uniform over the ORACLE_TOP_K clusters with the largest true error
+                  among clusters with n_test >= ORACLE_TOP_MIN_NTEST, 0 elsewhere.
+    Both read the oracle through oracle_error(), the only sanctioned accessor. The
+    returned `es` is the oracle vector, so the desc_nc serving order (which reads alloc
+    only) is unaffected by which vector is passed.
+    """
+    import csv as _csv
+    oracle, prov = oracle_error()
+    if len(oracle) != len(sp.es):
+        raise RuntimeError('WS6 HALT: oracle vector is %d long, es is %d' % (len(oracle), len(sp.es)))
+    if kind == 'oracle_value':
+        p = softmax_alloc(oracle, alpha)
+        info = dict(es_perm='oracle_value', perm_rho=None, perm_fixed_points=None, perm_seed=None,
+                    oracle_provenance=prov)
+    else:
+        with open(os.path.join(C.REPO, ORACLE_CSV), newline='') as fh:
+            nt = {int(r['cluster']): int(r['n_test']) for r in _csv.DictReader(fh)}
+        elig = [c for c in range(len(oracle)) if nt[c] >= ORACLE_TOP_MIN_NTEST]
+        top = sorted(elig, key=lambda c: (-oracle[c], c))[:ORACLE_TOP_K]
+        p = np.zeros(len(oracle))
+        p[top] = 1.0 / len(top)
+        info = dict(es_perm='oracle_top', perm_rho=None, perm_fixed_points=None, perm_seed=None,
+                    top_k=ORACLE_TOP_K, top_clusters=sorted(int(c) for c in top),
+                    top_oracle_values=[round(float(oracle[c]), 6) for c in sorted(top)],
+                    top_n_test=[nt[c] for c in sorted(top)],
+                    excluded_n_test_lt_min=[c for c in range(len(oracle)) if nt[c] < ORACLE_TOP_MIN_NTEST],
+                    oracle_provenance=prov)
+    alloc = largest_remainder(p, BUDGET)
+    return oracle, p, alloc, info
+
+
+def declared_shape(arm, cell):
+    """What PREREGISTRATION_WS6.md declares a new-shape arm's allocation must satisfy.
+    Returns (asserted_keys, passed). Shape statistics are REPORTED, never asserted
+    against C1 -- these arms exist to differ from C10's shape."""
+    if arm == 'CORTOP':
+        return ['clusters_funded', 'n_selected'], (cell['clusters_funded'] == ORACLE_TOP_K
+                                                  and cell['n_selected'] == BUDGET)
+    if arm == 'CORPROP':
+        return ['n_selected', 'clusters_funded>0'], (cell['n_selected'] == BUDGET
+                                                     and cell['clusters_funded'] > 0)
+    raise ValueError(arm)
+
+
 def arm_c_stems(alpha, es_perm=None):
     """Reuse C1's committed selection. Returns (stems, measured_cell).
 
@@ -282,10 +354,13 @@ def arm_c_stems(alpha, es_perm=None):
                                        rank_by_centroid, serving_orders,
                                        greedy_select)
     sp = c1_space.load_space(EMBEDDER)
-    sigma, info = es_permutation(sp.es, es_perm)
-    es = sp.es if es_perm is None else sp.es[sigma]
-    p = softmax_alloc(es, alpha)
-    alloc = largest_remainder(p, BUDGET)
+    if es_perm in ('oracle_value', 'oracle_top'):
+        es, p, alloc, info = _oracle_alloc(sp, alpha, es_perm, softmax_alloc, largest_remainder)
+    else:
+        sigma, info = es_permutation(sp.es, es_perm)
+        es = sp.es if es_perm is None else sp.es[sigma]
+        p = softmax_alloc(es, alpha)
+        alloc = largest_remainder(p, BUDGET)
     _, order = rank_by_centroid(sp)
     serving = serving_orders(alloc, es)[SERVING]      # desc_nc reads alloc only
     idx, disp = greedy_select(alloc, order, serving)
@@ -295,7 +370,7 @@ def arm_c_stems(alpha, es_perm=None):
         alloc_entropy_norm=round(float(-(p[p > 0] * np.log(p[p > 0])).sum()
                                        / np.log(sp.k)), 5),
         tv_from_uniform=round(float(0.5 * np.abs(p - 1.0 / sp.k).sum()), 5),
-        n_displaced=int(disp))
+        n_displaced=int(disp), n_selected=int(len(idx)))
     cell.update(info)
     return [sp.names[i] for i in idx], cell
 

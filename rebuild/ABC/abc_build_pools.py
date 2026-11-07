@@ -90,6 +90,9 @@ def main():
                          'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
                          'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--archs', default='',
+                    help='comma list of architectures (additive, 2026-11). EMPTY = SINet,SINetv2, '
+                         'the committed behaviour. WS5\' is SINet-only.')
     args = ap.parse_args()
     SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
              if args.seeds else A.SEEDS)
@@ -101,7 +104,8 @@ def main():
     # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
     EXP = args.tag.upper() if args.tag else A.EXP
     os.makedirs(OUT, exist_ok=True)
-    runs = A.all_runs(arms=arms, seeds=SEEDS)
+    ARCHS_RUN = A.parse_archs(args.archs)
+    runs = A.all_runs(arms=arms, archs=ARCHS_RUN, seeds=SEEDS)
 
     _p('=== s1 emit the arm stem selections ===')
     sel = {}
@@ -118,6 +122,10 @@ def main():
                 else 'abc_stems_%s.txt' % arm)
         with open(os.path.join(OUT, name), 'w') as fh:
             fh.write('\n'.join(st) + '\n')
+        if arm in A.NEW_SHAPE_ARMS:
+            _p('  arm %-7s %d stems, %-13s OWN shape (declared, PREREGISTRATION_WS6.md) = %s'
+               % (arm, len(st), cell['es_perm'], A.declared_shape(arm, cell)[1]))
+            continue
         keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
         _p('  arm %-6s %d stems, perm=%-13s rho=%+.5f  shape reproduced = %s'
            % (arm, len(st), cell['es_perm'], cell['perm_rho'],
@@ -182,7 +190,7 @@ def main():
                                len(report['gates'])),
                     ', '.join(GATE for GATE in PFA.GATES)))
     metrics.append(('arm_pools_assembled', len(built),
-                    '%d arch x %d arms x %d seeds' % (2, len(arms), len(SEEDS))))
+                    '%d arch x %d arms x %d seeds' % (len(ARCHS_RUN), len(arms), len(SEEDS))))
     metrics.append(('pool_size_A0', 4447, 'base authors\' pool only, unpadded'))
     metrics.append(('pool_size_A2_B_C', 4447 + A.BUDGET,
                     'base + B=%d, identical in A2/B/C' % A.BUDGET))
