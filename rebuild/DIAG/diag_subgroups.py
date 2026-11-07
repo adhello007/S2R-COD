@@ -77,8 +77,14 @@ def gap(byarm, hi, lo, bar):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--suffix', default='',
+                    help='read diag_boundary_per_image<suffix>.csv, write diag_subgroups<suffix>.json '
+                         '(additive, 2026-11). EMPTY = the original paths.')
+    args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
-    per = list(csv.DictReader(open(os.path.join(OUT, 'diag_boundary_per_image.csv'))))
+    per = list(csv.DictReader(open(os.path.join(OUT, 'diag_boundary_per_image%s.csv' % args.suffix))))
     _p('loaded %d per-image boundary rows' % len(per))
 
     # ---- covariates, from the committed per-image endpoint scores ----------
@@ -169,7 +175,7 @@ def main():
                     if 'C10' in byarm and 'B' in byarm else None,
                     iou_arm_mean={a: float(np.mean(list(bya_sa[a].values()))) for a in arms})
 
-    json.dump(res, open(os.path.join(OUT, 'diag_subgroups.json'), 'w'),
+    json.dump(res, open(os.path.join(OUT, 'diag_subgroups%s.json' % args.suffix), 'w'),
               indent=2, sort_keys=True)
 
     # ---- report -----------------------------------------------------------

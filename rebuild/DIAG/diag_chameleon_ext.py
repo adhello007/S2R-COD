@@ -185,6 +185,9 @@ def _geo_job(t):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--workers', type=int, default=24)
+    ap.add_argument('--suffix', default='',
+                    help='output filename suffix (additive, 2026-11), so a re-emit never '
+                         'overwrites the committed JSON. EMPTY = the original paths.')
     args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
     rng = np.random.default_rng(20260918)
@@ -359,9 +362,9 @@ def main():
                      'heavy colour/geometric edits and montages remain undetected. '
                      'Stage 2 needs texture: a low-keypoint image can fail to match '
                      'a true partner.'))
-    json.dump(res, open(os.path.join(OUT, 'diag_chameleon_ext.json'), 'w'),
+    json.dump(res, open(os.path.join(OUT, 'diag_chameleon_ext%s.json' % args.suffix), 'w'),
               indent=2, sort_keys=True)
-    with open(os.path.join(OUT, 'diag_chameleon_ext.csv'), 'w', newline='') as fh:
+    with open(os.path.join(OUT, 'diag_chameleon_ext%s.csv' % args.suffix), 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
@@ -369,7 +372,7 @@ def main():
     _p('RESULT at the operating point    : %d of %d  <- REPORTED' % (n_op, len(unchecked)))
     _p('CHAMELEON contamination: 41/76 -> %d/76 (%.1f%%)  |  unchecked %d  |  clean 10'
        % (41 + n_op, 100.0 * (41 + n_op) / 76, len(unchecked) - n_op))
-    _p('wrote %s' % os.path.join(OUT, 'diag_chameleon_ext.json'))
+    _p('wrote %s' % os.path.join(OUT, 'diag_chameleon_ext%s.json' % args.suffix))
 
 
 if __name__ == '__main__':

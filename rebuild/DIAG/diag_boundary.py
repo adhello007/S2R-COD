@@ -139,6 +139,10 @@ def main():
     ap.add_argument('--arch', default='', help='restrict to runs of one architecture')
     ap.add_argument('--arms', default='', help='comma list of arms to restrict to')
     ap.add_argument('--suffix', default='', help='output filename suffix')
+    ap.add_argument('--seeds', default='',
+                    help='comma list of seeds to restrict to (additive, 2026-11). EMPTY = every '
+                         'run under Result/ABC, the original behaviour. The committed outputs were '
+                         'written before SE\'s seeds 46-50 existed, so re-emitting them needs 42,43,45.')
     args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
 
@@ -149,6 +153,9 @@ def main():
     if args.arms:
         keep = {a.strip() for a in args.arms.split(',') if a.strip()}
         runs = [r for r in runs if r.split('_')[1] in keep]
+    if args.seeds:
+        sk = {int(x) for x in args.seeds.split(',') if x.strip()}
+        runs = [r for r in runs if int(r.split('_')[2][1:]) in sk]
     stems = sorted(os.path.splitext(f)[0] for f in os.listdir(GT_DIR) if f.endswith('.png'))
     if args.limit:
         stems = stems[:args.limit]
