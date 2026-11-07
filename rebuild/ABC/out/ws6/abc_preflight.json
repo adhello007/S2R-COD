@@ -1,0 +1,735 @@
+{
+  "all_passed": true,
+  "commit": "3254ae6 (dirty)",
+  "gates": [
+    {
+      "c1_cluster_source": true,
+      "c1_signal": true,
+      "exempted": [],
+      "gate": "signal",
+      "note": "C1 gate_signal + gate_cluster_source called unchanged; ABC sources scanned with C1's own banned-token declarations",
+      "passed": true,
+      "scanned": 6,
+      "violations": []
+    },
+    {
+      "abc_scripts_seen": 6,
+      "gate": "provenance",
+      "inputs_missing": [],
+      "inputs_resolved": 17,
+      "manifest_bad": [],
+      "manifest_checked": 203,
+      "n_exempted": 4,
+      "n_forbidden": 0,
+      "note": "E0.step_independence() imported and CALLED, not re-implemented; it walks all of rebuild/ so it covers ABC",
+      "passed": true,
+      "scripts_scanned": 61
+    },
+    {
+      "gate": "one_trainer",
+      "identical_gitignored_copies": {
+        "MyTest": [
+          "iclr2027_supplement/MyTest.py"
+        ],
+        "MyTrain": [
+          "iclr2027_supplement/MyTrain.py"
+        ]
+      },
+      "mytest": [
+        "./MyTest.py"
+      ],
+      "mytrain": [
+        "./MyTrain.py"
+      ],
+      "note": "ground rule 2: arms differ only by data dir and seed, so a second trainer anywhere in the tree is a FAIL",
+      "passed": true,
+      "patches_missing": {}
+    },
+    {
+      "COD10K_gt": 2026,
+      "COD10K_imgs": 2026,
+      "NC4K_gt": 4121,
+      "NC4K_imgs": 4121,
+      "camo_gt_n": 250,
+      "camo_n": 250,
+      "endpoints": [
+        "COD10K",
+        "NC4K"
+      ],
+      "gate": "endpoints",
+      "myeval_excludes_chameleon": true,
+      "mytest_excludes_camo": true,
+      "mytest_excludes_chameleon": true,
+      "note": "CHAMELEON withdrawn on D2 (41/76 = 53.9% is training data); CAMO is the checkpoint-selection set and can never be an endpoint",
+      "passed": true,
+      "val_root_is_camo": true
+    },
+    {
+      "armC_reproduces_C1": {
+        "C10": {
+          "asserted": [
+            "clusters_funded",
+            "max_alloc_share",
+            "alloc_entropy_norm",
+            "tv_from_uniform",
+            "n_displaced"
+          ],
+          "c1": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "tv_from_uniform": 0.49253
+          },
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.78644,
+            "clusters_funded": 75,
+            "es_perm": "identity",
+            "max_alloc_share": 0.194,
+            "n_displaced": 370,
+            "n_selected": 1000,
+            "perm_fixed_points": 75,
+            "perm_rho": 1.0,
+            "perm_seed": null,
+            "tv_from_uniform": 0.49253
+          }
+        },
+        "CORPROP": {
+          "asserted": [
+            "n_selected",
+            "clusters_funded>0"
+          ],
+          "c1": {},
+          "declared": "PREREGISTRATION_WS6.md",
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.87985,
+            "clusters_funded": 75,
+            "es_perm": "oracle_value",
+            "max_alloc_share": 0.099,
+            "n_displaced": 559,
+            "n_selected": 1000,
+            "oracle_provenance": {
+              "column": "test_one_minus_sa",
+              "n_clusters": 75,
+              "n_clusters_n_test_eq_1": 1,
+              "n_test_max": 94,
+              "n_test_min": 1,
+              "n_test_sum": 2026,
+              "oracle_uses_endpoint_labels": true,
+              "sha256": "1ff27cd1efdf6ed01be557c1d339547792fdfcc219f8db6ecfd5db9195f693f8",
+              "source": "rebuild/B1/out/b1_cluster_es_dinoL518.csv",
+              "value_max": 0.471405,
+              "value_min": 0.087326
+            },
+            "perm_fixed_points": null,
+            "perm_rho": null,
+            "perm_seed": null,
+            "tv_from_uniform": 0.40676
+          }
+        },
+        "CORTOP": {
+          "asserted": [
+            "clusters_funded",
+            "n_selected"
+          ],
+          "c1": {},
+          "declared": "PREREGISTRATION_WS6.md",
+          "match": true,
+          "measured": {
+            "alloc_entropy_norm": 0.37277,
+            "clusters_funded": 5,
+            "es_perm": "oracle_top",
+            "excluded_n_test_lt_min": [
+              74
+            ],
+            "max_alloc_share": 0.2,
+            "n_displaced": 178,
+            "n_selected": 1000,
+            "oracle_provenance": {
+              "column": "test_one_minus_sa",
+              "n_clusters": 75,
+              "n_clusters_n_test_eq_1": 1,
+              "n_test_max": 94,
+              "n_test_min": 1,
+              "n_test_sum": 2026,
+              "oracle_uses_endpoint_labels": true,
+              "sha256": "1ff27cd1efdf6ed01be557c1d339547792fdfcc219f8db6ecfd5db9195f693f8",
+              "source": "rebuild/B1/out/b1_cluster_es_dinoL518.csv",
+              "value_max": 0.471405,
+              "value_min": 0.087326
+            },
+            "perm_fixed_points": null,
+            "perm_rho": null,
+            "perm_seed": null,
+            "top_clusters": [
+              4,
+              13,
+              18,
+              20,
+              56
+            ],
+            "top_k": 5,
+            "top_n_test": [
+              12,
+              24,
+              50,
+              39,
+              7
+            ],
+            "top_oracle_values": [
+              0.415991,
+              0.411316,
+              0.416354,
+              0.435392,
+              0.471405
+            ],
+            "tv_from_uniform": 0.93333
+          }
+        }
+      },
+      "base_bytes_bad": [
+        [
+          "SINet_CORPROP_s42",
+          0
+        ],
+        [
+          "SINet_CORPROP_s43",
+          0
+        ],
+        [
+          "SINet_CORPROP_s45",
+          0
+        ],
+        [
+          "SINet_CORTOP_s42",
+          0
+        ],
+        [
+          "SINet_CORTOP_s43",
+          0
+        ],
+        [
+          "SINet_CORTOP_s45",
+          0
+        ],
+        [
+          "SINetv2_CORPROP_s42",
+          0
+        ],
+        [
+          "SINetv2_CORPROP_s43",
+          0
+        ],
+        [
+          "SINetv2_CORPROP_s45",
+          0
+        ],
+        [
+          "SINetv2_CORTOP_s42",
+          0
+        ],
+        [
+          "SINetv2_CORTOP_s43",
+          0
+        ],
+        [
+          "SINetv2_CORTOP_s45",
+          0
+        ]
+      ],
+      "gate": "pools",
+      "n_pools": 12,
+      "note": "parity asserted on the REAL SrcDataset for every index, and round-2 parity proved on the full worst-case union",
+      "overlap_B_vs_C": {
+        "B_s42|B_s43": {
+          "chance": 224.9,
+          "jaccard": 0.1403,
+          "kind": "BxB",
+          "n_differing": 754,
+          "overlap": 246,
+          "ratio": 1.094
+        },
+        "B_s42|B_s45": {
+          "chance": 224.9,
+          "jaccard": 0.1287,
+          "kind": "BxB",
+          "n_differing": 772,
+          "overlap": 228,
+          "ratio": 1.014
+        },
+        "B_s42|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1274,
+          "kind": "BxC",
+          "n_differing": 774,
+          "overlap": 226,
+          "ratio": 1.005
+        },
+        "B_s42|CORPROP": {
+          "chance": 224.9,
+          "jaccard": 0.1274,
+          "kind": "BxC",
+          "n_differing": 774,
+          "overlap": 226,
+          "ratio": 1.005
+        },
+        "B_s42|CORTOP": {
+          "chance": 224.9,
+          "jaccard": 0.1319,
+          "kind": "BxC",
+          "n_differing": 767,
+          "overlap": 233,
+          "ratio": 1.036
+        },
+        "B_s43|B_s45": {
+          "chance": 224.9,
+          "jaccard": 0.1357,
+          "kind": "BxB",
+          "n_differing": 761,
+          "overlap": 239,
+          "ratio": 1.063
+        },
+        "B_s43|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1403,
+          "kind": "BxC",
+          "n_differing": 754,
+          "overlap": 246,
+          "ratio": 1.094
+        },
+        "B_s43|CORPROP": {
+          "chance": 224.9,
+          "jaccard": 0.1461,
+          "kind": "BxC",
+          "n_differing": 745,
+          "overlap": 255,
+          "ratio": 1.134
+        },
+        "B_s43|CORTOP": {
+          "chance": 224.9,
+          "jaccard": 0.1217,
+          "kind": "BxC",
+          "n_differing": 783,
+          "overlap": 217,
+          "ratio": 0.965
+        },
+        "B_s45|C10": {
+          "chance": 224.9,
+          "jaccard": 0.1299,
+          "kind": "BxC",
+          "n_differing": 770,
+          "overlap": 230,
+          "ratio": 1.023
+        },
+        "B_s45|CORPROP": {
+          "chance": 224.9,
+          "jaccard": 0.1255,
+          "kind": "BxC",
+          "n_differing": 777,
+          "overlap": 223,
+          "ratio": 0.992
+        },
+        "B_s45|CORTOP": {
+          "chance": 224.9,
+          "jaccard": 0.1211,
+          "kind": "BxC",
+          "n_differing": 784,
+          "overlap": 216,
+          "ratio": 0.961
+        },
+        "C10|CORPROP": {
+          "chance": 224.9,
+          "jaccard": 0.4524,
+          "kind": "CxC",
+          "n_differing": 377,
+          "overlap": 623,
+          "ratio": 2.77
+        },
+        "C10|CORTOP": {
+          "chance": 224.9,
+          "jaccard": 0.2293,
+          "kind": "CxC",
+          "n_differing": 627,
+          "overlap": 373,
+          "ratio": 1.659
+        },
+        "CORPROP|CORTOP": {
+          "chance": 224.9,
+          "jaccard": 0.3158,
+          "kind": "CxC",
+          "n_differing": 520,
+          "overlap": 480,
+          "ratio": 2.135
+        }
+      },
+      "passed": true,
+      "per_pool": [
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORPROP_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORPROP_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORPROP_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORTOP_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORTOP_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINet_CORTOP_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORPROP_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORPROP_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORPROP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORPROP_s45",
+          "seed": 45
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORTOP_s42",
+          "seed": 42
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORTOP_s43",
+          "seed": 43
+        },
+        {
+          "a1_counts": true,
+          "a2_stem_sets": true,
+          "a3_no_dup_stem": true,
+          "a3_no_tif": true,
+          "a4_mismatches": 0,
+          "a4_parity_all_i": true,
+          "a5_spotcheck": true,
+          "a6_round2_n": 9487,
+          "a6_round2_parity": true,
+          "arm": "CORTOP",
+          "expect": 5447,
+          "exts": {
+            "GT": [
+              ".png"
+            ],
+            "Image": [
+              ".jpg"
+            ]
+          },
+          "len_dataset": 5447,
+          "n_gt": 5447,
+          "n_image": 5447,
+          "runid": "SINetv2_CORTOP_s45",
+          "seed": 45
+        }
+      ],
+      "render_mask_bad": [
+        [
+          "CORPROP",
+          1000,
+          0
+        ],
+        [
+          "CORTOP",
+          1000,
+          0
+        ],
+        [
+          "B_s42",
+          1000,
+          0
+        ],
+        [
+          "B_s43",
+          1000,
+          0
+        ],
+        [
+          "B_s45",
+          1000,
+          0
+        ]
+      ]
+    },
+    {
+      "benchmark_false": true,
+      "deterministic_true": true,
+      "gate": "determinism",
+      "hardcoded_42_gone": true,
+      "note": "read from source, not from live flags: the gate runs in a different process than training. REDUCES, does not eliminate, kernel nondeterminism (ABC_PLAN.md A.6)",
+      "passed": true,
+      "seed_from_opt": true
+    }
+  ],
+  "generated": "2026-11-07T15:23:53+05:30",
+  "runs": [
+    "SINet_CORPROP_s42",
+    "SINet_CORPROP_s43",
+    "SINet_CORPROP_s45",
+    "SINet_CORTOP_s42",
+    "SINet_CORTOP_s43",
+    "SINet_CORTOP_s45",
+    "SINetv2_CORPROP_s42",
+    "SINetv2_CORPROP_s43",
+    "SINetv2_CORPROP_s45",
+    "SINetv2_CORTOP_s42",
+    "SINetv2_CORTOP_s43",
+    "SINetv2_CORTOP_s45"
+  ]
+}
