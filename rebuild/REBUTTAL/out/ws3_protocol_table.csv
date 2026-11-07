@@ -1,0 +1,5 @@
+protocol,how,count,detail,labels
+"Supervised training, standard split (COD10K-train 3040 + CAMO-train 1000)",partner photograph trained on with its own mask,50/76,44 COD10K-train + 6 CAMO-train; 16 unchecked,partner mask yes; CHAMELEON GT no
+"Unlabelled target adaptation, S2R-COD as described (COD10K-train target)",partner in the unlabelled target pool,44/76,,no
+"Unlabelled target adaptation, as the released 4040-image pool runs it",partner in the unlabelled target pool,50/76,,no
+Checkpoint selection (CAMO-250),CHAMELEON file byte-identical to a selection image,3/76,animal-17 [tier A]; animal-25 [tier clean_vs_training]; animal-60 [tier A],"selection GT, used to pick the checkpoint"
