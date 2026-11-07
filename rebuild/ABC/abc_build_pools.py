@@ -485,7 +485,10 @@ def main():
                 'stand untouched. B redraws per seed with default_rng(700000 + seed); C10 and CSHUF are '
                 'the committed deterministic selections (CSHUF perm_seed 910004). This block TRAINS NOTHING.',
                 'The pools gate checks render masks and B-vs-C overlap for THIS campaign\'s own B draws '
-                '(abc_preflight.gate_pools follows the run set\'s seeds, 2026-11-07).'],
+                '(abc_preflight.gate_pools follows the run set\'s seeds, 2026-11-07).',
+                'VACUOUS BY CONSTRUCTION: "pool content is identical across the two architectures" passes '
+                'with an empty comparison set, because WS5\' builds SINet only. The C-family '
+                'identical-across-seeds check is non-vacuous and covers all 34 seeds, whatever its label says.'],
         'ws6': ['WS6 PRE-FLIGHT, ADDITIVE (rebuild/REBUTTAL/PREREGISTRATION_WS6.md). CORPROP and CORTOP '
                 'ALLOCATE BY TRUE ENDPOINT ERROR: diagnostics, never methods (OR SS0 applies word for word; '
                 'oracle_uses_endpoint_labels = true). Gate G1 passes on syntax only, because these arms read '
