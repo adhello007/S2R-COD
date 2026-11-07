@@ -1,0 +1,88 @@
+diff --git a/rebuild/OR/PREREGISTRATION_OR.md b/rebuild/OR/PREREGISTRATION_OR.md
+index 213e1a7..0dc557d 100644
+--- a/rebuild/OR/PREREGISTRATION_OR.md
++++ b/rebuild/OR/PREREGISTRATION_OR.md
+@@ -233,3 +233,83 @@ byte-identical C10 stem list; that regression check is part of the OR build, not
+ No p-value, no bootstrap, no multiple-comparison correction, at n = 3. Two gaps are reported per
+ architecture per endpoint, each against the same `2σ̂` bar, with paired per-seed differences and a
+ sign-consistency count.
++
++---
++
++# Addendum A1 — 2026-09-19: the oracle vector is single-architecture, and §OR.2.3 did not say so
++
++**§OR.0 and §OR.1 above are left EXACTLY as frozen. Nothing in either is edited, deleted or
++reinterpreted, and no decision rule, gap, band, bar or interpretation clause changes.** This addendum
++records a disclosure that §OR.2.3 should have carried and did not, so a reader can audit the gap
++rather than discover it.
++
++## Timing, stated plainly
++
++**Written after OR's per-run metrics existed on disk** (`rebuild/ABC/out/or/abc_metrics.csv`,
++written 2026-09-18T18:23) **and before any OR verdict, gap, σ̂ or architecture comparison had been
++read by the author.** The order is recorded here because it is the only thing that makes this
++addendum auditable, and it follows the precedent of `PREREGISTRATION_T2.md` Addendum A1, which was
++written under the same constraint and states its timing the same way.
++
++**The fact below was not discovered from any OR outcome.** It was found by reading committed *input*
++artifacts — `rebuild/B1/out/b1_cluster_assignment_dinoL518.json` and the two committed per-image
++score tables — all of which existed before OR was designed. It was therefore knowable before the
++first OR run and could have been written into §OR.2.3. That it was not is this document's defect,
++not a property of the result.
++
++## The omission
++
++§OR.2.3 records the oracle vector's file, column, sha256, value range and per-cluster `n_test`
++spread. It does **not** record which model's errors the column contains.
++
++It contains **SINet's**. `b1_cluster_assignment_dinoL518.json` declares
++`arch_for_endpoint = "SINet/S2C"`, and `b1_es_error_correlation.py` writes every per-split column of
++`b1_cluster_es_dinoL518.csv` — `target_es` and `test_one_minus_sa` alike — from that one
++architecture's scores.
++
++OR trains **both** architectures. So:
++
++- **The SINet cells are a true oracle.** The vector is that architecture's own endpoint error.
++- **The SINet-v2 cells are not.** They are ranked by *SINet's* error profile. "Perfect information"
++  is the wrong phrase for those three runs, and §OR.1's interpretation clauses should be read on
++  SINet-v2 as *near*-oracle rather than oracle.
++
++## How near, measured
++
++Computed from the two committed per-image score tables under the committed dinoL518 partition, all
++75 clusters scored by both architectures:
++
++```
++rho( SINet per-cluster (1 - S_alpha) , SINet-v2 per-cluster (1 - S_alpha) )  = +0.9211
++rho( ES signal                       , SINet-v2 per-cluster (1 - S_alpha) )  = +0.2623
++rho( ES signal                       , SINet    per-cluster (1 - S_alpha) )  = +0.2372
++```
++
++So on SINet-v2 the substituted vector ranks true error at **ρ = +0.92** where the signal it replaces
++manages **+0.26**. The intervention is a ~3.5× improvement in rank agreement rather than the perfect
++one the SINet cells get. **The contrast remains the intended one; only the word "perfect" is wrong
++for half the cells.**
++
++## Why this does not bias the OR gaps
++
++`target_es` — the vector **C10 itself allocates by** — comes from the same file, the same column
++family and the same single architecture, and the committed campaign already applies it to both
++architectures. **Both arms in Δ(CORACLE − C10) therefore carry identical architecture provenance,
++so it cancels in the difference rather than favouring either arm.** The same holds for
++Δ(CORACLE − B), where B allocates by nothing at all.
++
++This is an inherited property of the campaign's original design, not something OR introduced. It is
++nonetheless **undisclosed in the paper**: no sentence in the manuscript states that the allocation
++signal is measured on one architecture and applied to two. B1's own results document lists the
++cross-architecture axis among its limits, and the paper's third amendment records "one verification
++gate not applicable in scope after it was found to compare two architectures' signals", so the
++project knew; the main text does not tell the reader. **That is a paper-level disclosure owed
++independently of OR**, and it is recorded here so it is not lost.
++
++## What was NOT changed
++
++The arms, the endpoints, the seeds, the σ̂ definition and its df = 6, the two gaps, the four verdict
++bands, the 2σ̂ bar, every interpretation clause, the same-shape assertion, the distinctness gate, and
++the no-optional-stopping and no-p-value rules are all untouched. Nothing here alters what OR
++measures or how its verdict is decided. The only change is that a scope sentence which should have
++sat in §OR.2.3 now exists, with its timing on the record.

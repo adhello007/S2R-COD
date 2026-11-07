@@ -3797,3 +3797,60 @@ NOTES      BLOCK 3 OF 3 -- THE VERDICT. Applied strictly by rebuild/ABC/PREREGIS
            ENDPOINTS. COD10K-test is primary (2/2026 = 0.1% near-duplicate contamination, 7 exact with a measured MAE impact of -1.24e-05). NC4K is secondary and REPORTED ONLY -- it never decides. CHAMELEON is withdrawn (41/76 = 53.9% of it is training data) and CAMO is the checkpoint-selection set, never an endpoint; both are unreachable in code and re-checked by gate G4. Any null inherits D1's scope: it is evidence about targeting under an EXHAUSTED FOREGROUND POOL, and is silent on whether new foregrounds would help.
 ================================================================================
 
+================================================================================
+2026-11-07T15:01:30+05:30 | commit eabbfed (dirty) | EXP REBUTTAL_PREREG_PROVENANCE
+CMD   .venv/bin/python rebuild/REBUTTAL/prereg_provenance.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  a79886a_full_sha                        = a79886a37a271fa17bb940dca3a7d5062cb8d3de
+  tag_prereg-or-fx-se-a79886a_resolves_to = a79886a37a271fa17bb940dca3a7d5062cb8d3de    (git rev-parse prereg-or-fx-se-a79886a^{commit})
+  a79886a_object_type                     = commit    (git cat-file -t)
+  a79886a_author_date                     = 2026-09-18T11:48:26+05:30    (git log -1 --format=%ad)
+  a79886a_committer_date                  = 2026-09-18T11:48:26+05:30    (git log -1 --format=%cd)
+  a79886a_subject                         = Pre-register EXP OR, FX and SE; add the three arm families they need
+  a79886a_on_any_branch                   = NO (reachable only via tag/reflog)    (git branch -a --contains)
+  28cfd84_author_committer_date           = 2026-09-19T10:27:16+05:30 / 2026-09-19T10:27:16+05:30    (re-commit after the 2026-09-18 reset)
+  FX_blob_sha256_a79886a                  = 5f96c844410680654ac02b8ae6ac20c26435387b0c55db9e1993058b0da56953    (rebuild/FX/PREREGISTRATION_FX.md)
+  FX_blob_sha256_28cfd84                  = 5f96c844410680654ac02b8ae6ac20c26435387b0c55db9e1993058b0da56953    (rebuild/FX/PREREGISTRATION_FX.md)
+  SE_blob_sha256_a79886a                  = 45127974d7a98e54f485a0fdc619993237ab77e4816f895df5e3dc49db545f00    (rebuild/SE/PREREGISTRATION_SE.md)
+  SE_blob_sha256_28cfd84                  = 45127974d7a98e54f485a0fdc619993237ab77e4816f895df5e3dc49db545f00    (rebuild/SE/PREREGISTRATION_SE.md)
+  OR_blob_sha256_a79886a                  = 24ff9991e80a5040b72d147414f45a1cf99f06812b7bbef7f863653de0223ada    (rebuild/OR/PREREGISTRATION_OR.md)
+  OR_blob_sha256_28cfd84                  = a17090830319b15d3286a60335beefc224a484e717ea2bbe1deb68d90cdc1ae8    (rebuild/OR/PREREGISTRATION_OR.md)
+  OR_bytes_a79886a_vs_28cfd84             = 14440 -> 19014 (+4574)
+  OR_appended_heading                     = # Addendum A1 — 2026-09-19: the oracle vector is single-architecture, and §OR.2.3 did not say so
+  OR_blob_object_written                  = 2026-09-18T11:47:56+05:30    (mtime of the loose object git wrote at `git add` -- filesystem evidence)
+  OR_file_birth_on_disk                   = 2026-09-18T10:44:13+05:30    (filesystem birth time -- not content-addressed)
+  FX_blob_object_written                  = 2026-09-18T11:47:56+05:30    (mtime of the loose object git wrote at `git add` -- filesystem evidence)
+  FX_file_birth_on_disk                   = 2026-09-18T11:03:17+05:30    (filesystem birth time -- not content-addressed)
+  SE_blob_object_written                  = 2026-09-18T11:47:59+05:30    (mtime of the loose object git wrote at `git add` -- filesystem evidence)
+  SE_file_birth_on_disk                   = 2026-09-18T11:41:14+05:30    (filesystem birth time -- not content-addressed)
+  OR_first_training_step                  = 2026-09-18 10:46:14    (Snapshot/ABC/SINet_CORACLE_s42/training_log.log)
+  FX_first_training_step                  = 2026-09-18 18:23:23    (Snapshot/ABC/SINet_A0FX_s42/training_log.log)
+  SE_first_new_run_step                   = 2026-09-20 03:50:28    (Snapshot/ABC/SINet_B_s46/training_log.log (seeds 46-50 are SE-only))
+  OR_first_endpoint_number                = 2026-09-18T16:51:49+05:30    (rebuild/ABC/infer_SINet_CORACLE_s42_COD10K.log birth: MyTest.py prints a per-image endpoint MAE from its first image)
+  OR_first_avg_MAE_written                = 2026-09-18T16:52:35+05:30    (same log, mtime = Avg_MAE line)
+  OR_first_S_alpha_written                = 2026-09-18T18:23:17+05:30    (rebuild/ABC/out/or/abc_metrics.csv birth; EXP OR scoring block 2026-09-18T18:23:17)
+  remote_origin                           = ssh://git@ssh.github.com:443/adhello007/S2R-COD.git
+  tag_on_remote                           = UNVERIFIED: remote unreachable from this environment (git@ssh.github.com: Permission denied (publickey).)    (git ls-remote --tags origin)
+THRESHOLD  tag prereg-or-fx-se-a79886a resolves to a79886a -> PASS
+THRESHOLD  a79886a is a commit object -> PASS
+THRESHOLD  FX pre-registration byte-identical in a79886a and 28cfd84 -> PASS
+THRESHOLD  SE pre-registration byte-identical in a79886a and 28cfd84 -> PASS
+THRESHOLD  OR a79886a content is an exact prefix of its 28cfd84 content (append-only change) -> PASS
+THRESHOLD  §OR.0 byte-identical between a79886a and 28cfd84 -> PASS
+THRESHOLD  §OR.1 byte-identical between a79886a and 28cfd84 -> PASS
+THRESHOLD  working-tree OR pre-registration equals 28cfd84 (no later edit) -> PASS
+THRESHOLD  FX first training step is after the a79886a commit -> PASS
+THRESHOLD  SE first new-run training step is after the a79886a commit -> PASS
+THRESHOLD  OR first training step is after the a79886a commit -> FAIL
+THRESHOLD  OR first endpoint-derived number is after the a79886a commit -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/REBUTTAL/out/or_prereg_a79886a_to_28cfd84.diff
+TRAINS     NO
+NOTES      POST-HOC PROVENANCE AUDIT, not an experiment. Re-derives from git objects whether the OR/FX/SE decision rules were committed before their campaigns ran, correcting a first audit (2026-11-07) that read branch history only.
+           FINDING: OR, FX and SE pre-registrations were committed together at a79886a. A reset at 2026-09-18 12:05 removed that commit from the branch, and the same files were re-committed as 28cfd84 (2026-09-19). FX and SE are byte-identical between the two. OR differs only by an appended, dated Addendum A1, with §OR.0 and §OR.1 byte-identical.
+           FX and SE trained only after a79886a. OR trained BEFORE it: OR runs launched at 10:46, about 62 min before the commit, from a file whose filesystem birth time is 10:44. Git records OR text only from the 11:47:56 staging, so the content at launch is not established by git. No OR endpoint-derived number existed before the commit: the first is a MyTest per-image MAE at 16:51, and S_alpha follows at 18:23. The OR decision rule is the ABC 2*sigma_hat / sign rule frozen at 065dac6, applied to a new arm.
+           Filesystem times are reported as filesystem evidence and are weaker than git objects. a79886a is on no branch; the tag preserves it locally. Whether the tag is on the remote is the tag_on_remote line.
+================================================================================
+
