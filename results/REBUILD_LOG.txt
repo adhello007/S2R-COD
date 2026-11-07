@@ -3976,3 +3976,31 @@ NOTES      ADJUDICATION REPRODUCED from committed code: 9 of the 10 operating-po
            50 is a floor: unchecked images are not clean.
 ================================================================================
 
+================================================================================
+2026-11-07T15:20:44+05:30 | commit 23027d9 (dirty) | EXP REBUTTAL_WS4
+CMD   rebuild/REBUTTAL/ws4_anchor.py --steps preflight
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  download_source                   = https://drive.google.com/file/d/1M8-Ivd33KslvyehLK9_IUBGJ_Kf52bWG    (SINet-V2 README, "training/validation dataset")
+  download_zip_sha256               = 255146828426e144c54867879824bcef27075b9e2386899fa0220f77551dc7be    (Dataset/_download_ws4/TrainValDataset.zip)
+  downloaded_images                 = 4040    (Dataset/_download_ws4/extract/COD-TrainDataset/Imgs)
+  downloaded_masks                  = 4040    (Dataset/_download_ws4/extract/COD-TrainDataset/GT)
+  target_pool_images                = 4040    (Dataset/Target/Image)
+  image_sha256_mismatches_vs_target = 0    (per file, all 4040)
+  masks_more_than_5pct_grey         = 0    (pixel values in (10, 245))
+  pool_image                        = 4040 files, digest d5b3cd4b0e826e0290e720a1ea6bf101decf81d48f785df5bd96c2f715040a2b    (Dataset/Source/WS4/REAL4040/Image)
+  pool_gt                           = 4040 files, digest f4324017ec486c24188057eb413b47f8b1c179773fa4c3ccd04de8367f648a11    (Dataset/Source/WS4/REAL4040/GT)
+  disk_free_GiB                     = 757    (need ~4 GiB per run)
+  dry_run_commands                  = 6    (rebuild/REBUTTAL/out/ws4/ws4_commands.txt)
+THRESHOLD  downloaded image NAMES equal Dataset/Target/Image, 4040/4040 -> PASS
+THRESHOLD  HASH GATE: downloaded images byte-identical to Dataset/Target/Image, 4040/4040 -> PASS
+THRESHOLD  every image has exactly one mask with the same stem (4040) -> PASS
+THRESHOLD  masks are binary up to edge anti-aliasing -> PASS
+THRESHOLD  pool built: 4040 images and 4040 masks -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/REBUTTAL/out/ws4/ws4_commands.txt
+TRAINS     NO
+NOTES      PREFLIGHT ONLY: nothing trained. WS4 is a DESCRIPTIVE anchor with no decision rule (PREREGISTRATION_WS4.md). The pool is a byte copy of the downloaded images and masks. The images are the same bytes as the unlabelled target pool, so the only difference from the synthetic protocol is real masks in place of synthetic supervision.
+================================================================================
+
