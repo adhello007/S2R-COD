@@ -4123,3 +4123,93 @@ NOTES      COLLISION IS IMPOSSIBLE BY CONSTRUCTION, not by convention. RUNID is 
            one_trainer: byte-identical copies in a gitignored directory reported, not failed: {"MyTrain": ["iclr2027_supplement/MyTrain.py"], "MyTest": ["iclr2027_supplement/MyTest.py"]}
 ================================================================================
 
+================================================================================
+2026-11-07T15:24:44+05:30 | commit 7a2a85d (dirty) | EXP REBUTTAL_STATS
+CMD   .venv/bin/python rebuild/REBUTTAL/ws1_stats.py
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  n/a
+METRICS
+  table6_rows_reproduced               = 16/16    (rebuild/FinalPaper/AD-PCH-230926/table_tost_equivalence.tex)
+  SINet_COD10K_C10-B                   = D +0.0024 | W [-0.0020, +0.0067] p.005 0.1009 p.0071 0.0169 dmin 0.0059 | P [-0.0023, +0.0070] p.005 0.1111 p.0071 0.0236 dmin 0.0061 | r -0.04 | pos 6/8    (Table 6 contrast)
+  SINet_COD10K_C10-CSHUF               = D +0.0003 | W [-0.0041, +0.0047] p.005 0.0189 p.0071 0.0029 dmin 0.0039 | P [-0.0050, +0.0056] p.005 0.0372 p.0071 0.0095 dmin 0.0046 | r -0.31 | pos 3/8    (Table 6 contrast)
+  SINet_COD10K_C10-CINV                = D -0.0021 | W [-0.0066, +0.0023] p.005 0.0905 p.0071 0.0154 dmin 0.0057 | P [-0.0076, +0.0034] p.005 0.1257 p.0071 0.0339 dmin 0.0065 | r -0.33 | pos 4/8    (Table 6 contrast)
+  SINet_COD10K_CSHUF-CINV              = D -0.0024 | W [-0.0055, +0.0007] p.005 0.0486 p.0071 0.0031 dmin 0.0050 | P [-0.0044, -0.0004] p.005 0.0095 p.0071 0.0004 dmin 0.0040 | r +0.66 | pos 1/8    (Table 6 contrast)
+  SINet_COD10K_CINV-B                  = D +0.0045 | W [+0.0015, +0.0074] p.005 0.3515 p.0071 0.0394 dmin 0.0069 | P [+0.0015, +0.0074] p.005 0.3383 p.0071 0.0357 dmin 0.0068 | r +0.20 | pos 7/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINet_COD10K_CSHUF-B                 = D +0.0020 | W [-0.0008, +0.0049] p.005 0.0211 p.0071 0.0009 dmin 0.0044 | P [-0.0011, +0.0052] p.005 0.0306 p.0071 0.0033 dmin 0.0046 | r -0.01 | pos 6/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINet_NC4K_C10-B                     = D +0.0003 | W [-0.0033, +0.0040] p.005 0.0084 p.0071 0.0008 dmin 0.0033 | P [-0.0038, +0.0045] p.005 0.0165 p.0071 0.0032 dmin 0.0037 | r -0.09 | pos 4/8    (Table 6 contrast)
+  SINet_NC4K_C10-CSHUF                 = D +0.0007 | W [-0.0029, +0.0042] p.005 0.0106 p.0071 0.0010 dmin 0.0036 | P [-0.0036, +0.0050] p.005 0.0249 p.0071 0.0049 dmin 0.0041 | r -0.30 | pos 5/8    (Table 6 contrast)
+  SINet_NC4K_C10-CINV                  = D -0.0031 | W [-0.0067, +0.0006] p.005 0.1314 p.0071 0.0155 dmin 0.0060 | P [-0.0075, +0.0014] p.005 0.1666 p.0071 0.0337 dmin 0.0066 | r -0.30 | pos 3/8    (Table 6 contrast)
+  SINet_NC4K_CSHUF-CINV                = D -0.0037 | W [-0.0064, -0.0011] p.005 0.1622 p.0071 0.0083 dmin 0.0059 | P [-0.0059, -0.0016] p.005 0.1042 p.0071 0.0039 dmin 0.0055 | r +0.46 | pos 0/8    (Table 6 contrast)
+  SINet_NC4K_CINV-B                    = D +0.0034 | W [+0.0006, +0.0062] p.005 0.1232 p.0071 0.0072 dmin 0.0057 | P [-0.0003, +0.0071] p.005 0.1691 p.0071 0.0246 dmin 0.0064 | r -0.39 | pos 6/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINet_NC4K_CSHUF-B                   = D -0.0003 | W [-0.0031, +0.0024] p.005 0.0014 p.0071 0.0001 dmin 0.0026 | P [-0.0034, +0.0028] p.005 0.0046 p.0071 0.0007 dmin 0.0028 | r -0.05 | pos 3/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINetv2_COD10K_C10-B                 = D -0.0011 | W [-0.0067, +0.0045] p.005 0.0764 p.0071 0.0183 dmin 0.0057 | P [-0.0081, +0.0059] p.005 0.1141 p.0071 0.0409 dmin 0.0067 | r -0.36 | pos 3/8    (Table 6 contrast)
+  SINetv2_COD10K_C10-CSHUF             = D -0.0033 | W [-0.0087, +0.0020] p.005 0.2516 p.0071 0.0734 dmin 0.0077 | P [-0.0087, +0.0021] p.005 0.2437 p.0071 0.0710 dmin 0.0076 | r +0.13 | pos 3/8    (Table 6 contrast)
+  SINetv2_COD10K_C10-CINV              = D -0.0035 | W [-0.0101, +0.0031] p.005 0.3143 p.0071 0.1296 dmin 0.0089 | P [-0.0082, +0.0013] p.005 0.2363 p.0071 0.0570 dmin 0.0073 | r +0.58 | pos 2/8    (Table 6 contrast)
+  SINetv2_COD10K_CSHUF-CINV            = D -0.0001 | W [-0.0057, +0.0054] p.005 0.0402 p.0071 0.0095 dmin 0.0047 | P [-0.0060, +0.0057] p.005 0.0449 p.0071 0.0129 dmin 0.0048 | r +0.04 | pos 3/8    (Table 6 contrast)
+  SINetv2_COD10K_CINV-B                = D +0.0024 | W [-0.0034, +0.0082] p.005 0.1717 p.0071 0.0504 dmin 0.0071 | P [-0.0028, +0.0076] p.005 0.1365 p.0071 0.0346 dmin 0.0066 | r +0.34 | pos 6/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINetv2_COD10K_CSHUF-B               = D +0.0022 | W [-0.0017, +0.0062] p.005 0.0775 p.0071 0.0098 dmin 0.0055 | P [-0.0011, +0.0055] p.005 0.0438 p.0071 0.0051 dmin 0.0049 | r +0.43 | pos 6/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINetv2_NC4K_C10-B                   = D -0.0009 | W [-0.0068, +0.0049] p.005 0.0790 p.0071 0.0205 dmin 0.0057 | P [-0.0077, +0.0058] p.005 0.1003 p.0071 0.0345 dmin 0.0064 | r -0.14 | pos 4/8    (Table 6 contrast)
+  SINetv2_NC4K_C10-CSHUF               = D -0.0023 | W [-0.0078, +0.0031] p.005 0.1534 p.0071 0.0412 dmin 0.0068 | P [-0.0062, +0.0015] p.005 0.0753 p.0071 0.0117 dmin 0.0055 | r +0.71 | pos 3/8    (Table 6 contrast)
+  SINetv2_NC4K_C10-CINV                = D -0.0043 | W [-0.0102, +0.0016] p.005 0.3945 p.0071 0.1580 dmin 0.0091 | P [-0.0086, +0.0000] p.005 0.3471 p.0071 0.0807 dmin 0.0077 | r +0.59 | pos 1/8    (Table 6 contrast)
+  SINetv2_NC4K_CSHUF-CINV              = D -0.0019 | W [-0.0061, +0.0022] p.005 0.0655 p.0071 0.0092 dmin 0.0053 | P [-0.0054, +0.0016] p.005 0.0381 p.0071 0.0050 dmin 0.0047 | r +0.42 | pos 3/8    (Table 6 contrast)
+  SINetv2_NC4K_CINV-B                  = D +0.0033 | W [-0.0014, +0.0080] p.005 0.2269 p.0071 0.0531 dmin 0.0072 | P [-0.0005, +0.0071] p.005 0.1619 p.0071 0.0245 dmin 0.0063 | r +0.47 | pos 5/8    (NOT in Table 6 -- new post-hoc contrast)
+  SINetv2_NC4K_CSHUF-B                 = D +0.0014 | W [-0.0027, +0.0054] p.005 0.0383 p.0071 0.0048 dmin 0.0047 | P [-0.0023, +0.0051] p.005 0.0268 p.0071 0.0040 dmin 0.0043 | r +0.33 | pos 5/8    (NOT in Table 6 -- new post-hoc contrast)
+  equivalent_welch_at_0.005            = 5/16    (Table 6 contrasts, TOST p < 0.05)
+  equivalent_paired_at_0.005           = 6/16    (Table 6 contrasts, TOST p < 0.05)
+  equivalent_welch_at_0.0071           = 13/16    (Table 6 contrasts, TOST p < 0.05)
+  equivalent_paired_at_0.0071          = 13/16    (Table 6 contrasts, TOST p < 0.05)
+  C10-B_equivalent_at_0.0071_all_cells = True    (Welch and paired)
+  intervals_excluding_zero             = SINet COD10K CSHUF-CINV (W [-0.0055,+0.0007], P [-0.0044,-0.0004]); SINet COD10K CINV-B (W [+0.0015,+0.0074], P [+0.0015,+0.0074]); SINet NC4K CSHUF-CINV (W [-0.0064,-0.0011], P [-0.0059,-0.0016]); SINet NC4K CINV-B (W [+0.0006,+0.0062], P [-0.0003,+0.0071])    (unadjusted, 24 comparisons)
+  MDE80_SINet_COD10K_C10-B             = 0.0059    (pooled sd(B, C10) 0.00389, df 14)
+  MDE80_SINet_NC4K_C10-B               = 0.0051    (pooled sd(B, C10) 0.00338, df 14)
+  MDE80_SINetv2_COD10K_C10-B           = 0.0077    (pooled sd(B, C10) 0.00512, df 14)
+  MDE80_SINetv2_NC4K_C10-B             = 0.0081    (pooled sd(B, C10) 0.00539, df 14)
+  overlap_B_C10_per_seed               = s42:226 s43:246 s45:230 s46:234 s47:238 s48:209 s49:245 s50:239    (of 1000; chance 224.9)
+  B_C10_differing_fraction             = 0.7666    (mean over 8 seeds)
+  injected_share_of_pool               = 0.1836 (1000/5447)
+  effective_contrast_C10-B             = 0.1407    (share x differing fraction; corrects App. C "8.8%")
+  effective_contrast_C_family          = 0.0830 .. 0.0938    (C10|CSHUF, C10|CINV, CSHUF|CINV overlaps [548, 489, 546] -- what App. C's 48% / 8.8% actually describe)
+  bnd8_SINet_boundary_iou_C10-B        = +0.0046  bar 0.0153 (0.30x)  sign 5/8  WITHIN NOISE  | W [-0.0056, +0.0147]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_iou_CINV-B       = +0.0098  bar 0.0153 (0.64x)  sign 7/8  WITHIN NOISE  | W [+0.0046, +0.0150]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_iou_CSHUF-B      = +0.0046  bar 0.0153 (0.30x)  sign 6/8  WITHIN NOISE  | W [-0.0015, +0.0106]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_iou_C10-CSHUF    = +0.0000  bar 0.0153 (0.00x)  sign 4/8  WITHIN NOISE  | W [-0.0107, +0.0107]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_iou_C10-CINV     = -0.0052  bar 0.0153 (0.34x)  sign 4/8  WITHIN NOISE  | W [-0.0157, +0.0052]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_f_C10-B          = +0.0056  bar 0.0234 (0.24x)  sign 5/8  WITHIN NOISE  | W [-0.0096, +0.0208]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_f_CINV-B         = +0.0122  bar 0.0234 (0.52x)  sign 7/8  WITHIN NOISE  | W [+0.0043, +0.0201]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_f_CSHUF-B        = +0.0069  bar 0.0234 (0.30x)  sign 6/8  WITHIN NOISE  | W [-0.0028, +0.0167]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_f_C10-CSHUF      = -0.0013  bar 0.0234 (0.06x)  sign 5/8  WITHIN NOISE  | W [-0.0175, +0.0149]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_boundary_f_C10-CINV       = -0.0066  bar 0.0234 (0.28x)  sign 5/8  WITHIN NOISE  | W [-0.0221, +0.0090]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_iou_C10-B                 = +0.0038  bar 0.0135 (0.28x)  sign 5/8  WITHIN NOISE  | W [-0.0049, +0.0125]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_iou_CINV-B                = +0.0083  bar 0.0135 (0.62x)  sign 7/8  WITHIN NOISE  | W [+0.0029, +0.0138]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_iou_CSHUF-B               = +0.0044  bar 0.0135 (0.33x)  sign 6/8  WITHIN NOISE  | W [-0.0009, +0.0098]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_iou_C10-CSHUF             = -0.0007  bar 0.0135 (0.05x)  sign 5/8  WITHIN NOISE  | W [-0.0096, +0.0083]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINet_iou_C10-CINV              = -0.0045  bar 0.0135 (0.34x)  sign 4/8  WITHIN NOISE  | W [-0.0135, +0.0044]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_iou_C10-B      = +0.0002  bar 0.0095 (0.02x)  sign 4/8  WITHIN NOISE  | W [-0.0052, +0.0056]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_iou_CINV-B     = +0.0033  bar 0.0095 (0.34x)  sign 6/8  WITHIN NOISE  | W [-0.0019, +0.0084]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_iou_CSHUF-B    = +0.0032  bar 0.0095 (0.34x)  sign 5/8  WITHIN NOISE  | W [-0.0004, +0.0069]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_iou_C10-CSHUF  = -0.0031  bar 0.0095 (0.33x)  sign 5/8  WITHIN NOISE  | W [-0.0084, +0.0022]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_iou_C10-CINV   = -0.0031  bar 0.0095 (0.33x)  sign 6/8  WITHIN NOISE  | W [-0.0093, +0.0031]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_f_C10-B        = +0.0022  bar 0.0093 (0.24x)  sign 5/8  WITHIN NOISE  | W [-0.0023, +0.0068]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_f_CINV-B       = +0.0056  bar 0.0093 (0.61x)  sign 7/8  WITHIN NOISE  | W [+0.0008, +0.0105]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_f_CSHUF-B      = +0.0049  bar 0.0093 (0.53x)  sign 6/8  WITHIN NOISE  | W [+0.0005, +0.0094]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_f_C10-CSHUF    = -0.0027  bar 0.0093 (0.29x)  sign 6/8  WITHIN NOISE  | W [-0.0079, +0.0026]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_boundary_f_C10-CINV     = -0.0034  bar 0.0093 (0.37x)  sign 6/8  WITHIN NOISE  | W [-0.0089, +0.0021]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_iou_C10-B               = -0.0017  bar 0.0139 (0.12x)  sign 5/8  WITHIN NOISE  | W [-0.0096, +0.0063]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_iou_CINV-B              = +0.0026  bar 0.0139 (0.18x)  sign 5/8  WITHIN NOISE  | W [-0.0050, +0.0101]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_iou_CSHUF-B             = +0.0022  bar 0.0139 (0.16x)  sign 5/8  WITHIN NOISE  | W [-0.0036, +0.0080]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_iou_C10-CSHUF           = -0.0039  bar 0.0139 (0.28x)  sign 5/8  WITHIN NOISE  | W [-0.0115, +0.0037]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  bnd8_SINetv2_iou_C10-CINV            = -0.0042  bar 0.0139 (0.31x)  sign 5/8  WITHIN NOISE  | W [-0.0130, +0.0046]    (SE-style 2*sigma_hat pooled over 4 arms x 8 seeds, df 28, sign >= 7/8; POST-HOC)
+  rule_out_sentence_X                  = +0.0067 (95% CI upper, Welch); +0.0059 at the one-sided 5% TOST bound    (SINet COD10K C10-B)
+THRESHOLD  all 16 printed rows of Table 6 parsed -> PASS
+THRESHOLD  all 16 Welch rows of Table 6 reproduced exactly (Delta, CI, TOST p, smallest delta) -> PASS
+THRESHOLD  8-seed boundary re-score reproduces the committed 3-seed per-run values at seeds 42/43/45 -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/REBUTTAL/out/ws1_intervals.csv, rebuild/REBUTTAL/out/ws1_boundary8.csv
+TRAINS     NO
+NOTES      POST-HOC. No verdict is re-decided. The SE campaign's verdicts stand on its frozen 2*sigma_hat / >=7/8 rule. Every interval, TOST and boundary number here is a non-decisional supplement and is labelled post-hoc wherever reported.
+           0.0071 is the ABC campaign's pre-registered SENSITIVITY TARGET (half the MT->Ours gap of 0.0142, PREREGISTRATION.md SS2.9). It is not a declared equivalence margin. 0.005 is the reviewers' margin.
+           No multiplicity correction: 24 interval comparisons on Sa and 30 on boundary metrics are reported unadjusted. Intervals that exclude zero are listed, not promoted.
+           CINV-B and CSHUF-B are NOT in Table 6 and NOT among SE's frozen gaps.
+           The boundary re-score reads SE-style bars (pooled over B/C10/CSHUF/CINV at eight seeds, sign >= 7/8) for comparability with Table 3's three-seed reading. It is not a pre-registered test.
+================================================================================
+
