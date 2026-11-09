@@ -1,0 +1,204 @@
+# Environment record, RL5B rebuttal, generated 2026-11-09T07:34:22+05:30
+## git
+branch: rebuttal/iclr27/wip2
+base commit: 8d1d0795fc4e19474d51f89adf0c2d8fb977f313
+
+## OS / CPU / RAM
+Linux ai-server-System-Product-Name 7.0.0-42-generic #42~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Oct 19 14:43:01 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+model name	: AMD Ryzen Threadripper PRO 7965WX 24-Cores
+nproc: 48
+               total        used        free      shared  buff/cache   available
+Mem:             251          18         202           0          31         232
+
+## GPUs
+index, name, driver_version, memory.total [MiB]
+0, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.99.02, 97887 MiB
+1, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.99.02, 97887 MiB
+| NVIDIA-SMI 595.99.02              Driver Version: 595.99.02      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+
+## training env (.venv)
+Python 3.12.3
+torch 2.11.0+cu128 cuda 12.8 cudnn 91900 gpus 2
+
+### uv pip freeze (.venv)
+beautifulsoup4==4.15.0
+certifi==2026.7.22
+charset-normalizer==3.4.9
+contourpy==1.4.0
+cuda-bindings==12.9.7
+cuda-pathfinder==1.6.0
+cuda-toolkit==12.8.1
+cycler==0.12.1
+filelock==3.32.2
+fonttools==4.65.0
+fsspec==2026.7.0
+gdown==6.1.0
+idna==3.18
+jinja2==3.1.6
+joblib==1.5.3
+kiwisolver==1.5.1
+-e file:///home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED
+markupsafe==3.0.3
+matplotlib==3.11.2
+mpmath==1.3.0
+narwhals==2.24.0
+networkx==3.6.1
+numpy==2.5.1
+nvidia-cublas-cu12==12.8.4.1
+nvidia-cuda-cupti-cu12==12.8.90
+nvidia-cuda-nvrtc-cu12==12.8.93
+nvidia-cuda-runtime-cu12==12.8.90
+nvidia-cudnn-cu12==9.19.0.56
+nvidia-cufft-cu12==11.3.3.83
+nvidia-cufile-cu12==1.13.1.3
+nvidia-curand-cu12==10.3.9.90
+nvidia-cusolver-cu12==11.7.3.90
+nvidia-cusparse-cu12==12.5.8.93
+nvidia-cusparselt-cu12==0.7.1
+nvidia-nccl-cu12==2.28.9
+nvidia-nvjitlink-cu12==12.8.93
+nvidia-nvshmem-cu12==3.4.5
+nvidia-nvtx-cu12==12.8.90
+opencv-python==5.0.0.93
+packaging==26.3
+pillow==12.3.0
+prettytable==3.18.0
+pyparsing==3.3.2
+pysocks==1.7.1
+python-dateutil==2.9.0.post0
+requests==2.34.2
+-e file:///home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD
+scikit-learn==1.9.0
+scipy==1.18.0
+setuptools==81.0.0
+six==1.17.0
+soupsieve==2.9.2
+sympy==1.14.0
+threadpoolctl==3.6.0
+torch==2.11.0+cu128
+torchaudio==2.11.0+cu128
+torchvision==0.26.0+cu128
+tqdm==4.70.0
+triton==3.6.0
+typing-extensions==4.16.0
+urllib3==2.7.0
+wcwidth==0.8.2
+
+## embedding env (LAKE-RED/.venv)
+Python 3.12.3
+### uv pip freeze (LAKE-RED/.venv)
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.3
+aiosignal==1.4.0
+albucore==0.0.24
+albumentations==2.0.8
+annotated-doc==0.0.5
+annotated-types==0.8.0
+antlr4-python3-runtime==4.9.3
+anyio==4.14.2
+attrs==26.1.0
+beautifulsoup4==4.15.0
+blobfile==3.3.0
+certifi==2026.7.22
+charset-normalizer==3.5.1
+click==8.4.2
+contourpy==1.3.3
+cuda-bindings==12.9.7
+cuda-pathfinder==1.6.1
+cuda-toolkit==12.8.1
+cycler==0.12.1
+einops==0.8.2
+filelock==3.32.3
+fonttools==4.63.0
+frozenlist==1.8.0
+fsspec==2026.7.0
+gdown==6.1.0
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface-hub==1.28.0
+idna==3.19
+imageio==2.37.4
+jinja2==3.1.6
+joblib==1.5.3
+kiwisolver==1.5.0
+-e file:///home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/LAKE-RED
+lazy-loader==0.5
+lightning-utilities==0.15.3
+lxml==6.1.2
+markdown-it-py==4.2.0
+markupsafe==3.0.3
+matplotlib==3.11.1
+mdurl==0.1.2
+mpmath==1.3.0
+multidict==6.7.1
+narwhals==2.25.0
+networkx==3.6.1
+numpy==2.5.2
+nvidia-cublas-cu12==12.8.4.1
+nvidia-cuda-cupti-cu12==12.8.90
+nvidia-cuda-nvrtc-cu12==12.8.93
+nvidia-cuda-runtime-cu12==12.8.90
+nvidia-cudnn-cu12==9.19.0.56
+nvidia-cufft-cu12==11.3.3.83
+nvidia-cufile-cu12==1.13.1.3
+nvidia-curand-cu12==10.3.9.90
+nvidia-cusolver-cu12==11.7.3.90
+nvidia-cusparse-cu12==12.5.8.93
+nvidia-cusparselt-cu12==0.7.1
+nvidia-nccl-cu12==2.28.9
+nvidia-nvjitlink-cu12==12.8.93
+nvidia-nvshmem-cu12==3.4.5
+nvidia-nvtx-cu12==12.8.90
+omegaconf==2.3.1
+opencv-python-headless==5.0.0.93
+packaging==26.3
+pillow==12.3.0
+propcache==0.5.2
+pycryptodomex==3.23.0
+pydantic==2.13.4
+pydantic-core==2.46.4
+pygments==2.21.0
+pyparsing==3.3.2
+pysocks==1.7.1
+python-dateutil==2.9.0.post0
+pytorch-lightning==2.6.5
+pyyaml==6.0.3
+regex==2026.7.19
+requests==2.34.2
+rich==15.0.0
+safetensors==0.8.0
+scikit-image==0.26.0
+scikit-learn==1.9.0
+scipy==1.18.0
+setuptools==81.0.0
+shellingham==1.5.4
+simsimd==6.5.16
+six==1.17.0
+soupsieve==2.9.2
+stringzilla==5.1.2
+sympy==1.14.0
+taming-transformers-rom1504==0.0.6
+threadpoolctl==3.6.0
+tifffile==2026.8.16
+timm==1.0.28
+tokenizers==0.22.2
+torch==2.11.0+cu128
+torch-fidelity==0.4.0
+torchaudio==2.11.0+cu128
+torchmetrics==1.9.0
+torchvision==0.26.0+cu128
+tqdm==4.70.0
+transformers==5.15.1
+triton==3.6.0
+typer==0.27.1
+typing-extensions==4.16.0
+typing-inspection==0.4.4
+urllib3==2.7.0
+yarl==1.24.5
+
+## LaTeX
+pdfTeX 3.141592653-2.6-1.40.29 (TeX Live 2026)
+Latexmk, John Collins, 9 March 2026. Version 4.88
