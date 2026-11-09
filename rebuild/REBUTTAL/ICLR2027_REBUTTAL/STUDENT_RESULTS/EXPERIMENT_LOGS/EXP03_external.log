@@ -1,0 +1,4 @@
+E3-a SINet-V2 (released maps)    COD10K n=2026 shape_mismatch=0 Sa 0.815121 meanEm 0.886996 wFm 0.679620 MAE 0.036773
+E3-a SINet-V2 (released maps)    NC4K   n=4121 shape_mismatch=0 Sa 0.847236 meanEm 0.902678 wFm 0.769817 MAE 0.047611
+E3-d RISE (released maps)        COD10K n=2026 shape_mismatch=0 Sa 0.763437 meanEm 0.840117 wFm 0.600491 MAE 0.048803
+E3-d RISE (released maps)        NC4K   n=4121 shape_mismatch=0 Sa 0.805269 meanEm 0.868006 wFm 0.704814 MAE 0.061204
