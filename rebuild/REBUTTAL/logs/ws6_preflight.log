@@ -1,0 +1,144 @@
+=== s1 emit the arm stem selections ===
+  arm CORPROP 1000 stems, oracle_value  OWN shape (declared, PREREGISTRATION_WS6.md) = True
+  arm CORTOP  1000 stems, oracle_top    OWN shape (declared, PREREGISTRATION_WS6.md) = True
+=== s2 assemble 12 arm pools ===
+  SINet_CORPROP_s42      kept-existing  n_image=5447
+  SINet_CORPROP_s43      kept-existing  n_image=5447
+  SINet_CORPROP_s45      kept-existing  n_image=5447
+  SINet_CORTOP_s42       kept-existing  n_image=5447
+  SINet_CORTOP_s43       kept-existing  n_image=5447
+  SINet_CORTOP_s45       kept-existing  n_image=5447
+  SINetv2_CORPROP_s42    kept-existing  n_image=5447
+  SINetv2_CORPROP_s43    kept-existing  n_image=5447
+  SINetv2_CORPROP_s45    kept-existing  n_image=5447
+  SINetv2_CORTOP_s42     kept-existing  n_image=5447
+  SINetv2_CORTOP_s43     kept-existing  n_image=5447
+  SINetv2_CORTOP_s45     kept-existing  n_image=5447
+=== s3 gates G1-G6 ===
+  gate signal         PASS
+  gate provenance     PASS
+  gate one_trainer    PASS
+  gate endpoints      PASS
+  gate pools          PASS
+  gate determinism    PASS
+=== s4 manifests ===
+=== s5 log block ===
+================================================================================
+2026-11-07T15:24:06+05:30 | commit 3254ae6 (dirty) | EXP WS6
+CMD   .venv/bin/python rebuild/ABC/abc_build_pools.py --arms CORPROP,CORTOP --tag ws6
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training pools on disk: authors' pool (R1 full images, object=WHITE masks) + B=1000 LAKE-RED renders selected in R2 (grey-128 cutout) by the target-side signal
+METRICS
+  preflight_gates_passed                      = 6/6    (signal, provenance, one_trainer, endpoints, pools, determinism)
+  arm_pools_assembled                         = 12    (2 arch x 2 arms x 3 seeds)
+  pool_size_A0                                = 4447    (base authors' pool only, unpadded)
+  pool_size_A2_B_C                            = 5447    (base + B=1000, identical in A2/B/C)
+  arm_B_draw_coupling                         = per-seed rng 700000+seed    (ABC_PLAN.md A.4 -- "random" is a distribution over draws, not one draw)
+  pools_counts_ok                             = 12/12
+  pools_stem_sets_identical                   = 12/12
+  pools_SrcDataset_parity_all_i               = 12/12    (REAL SrcDataset, every index, not sampled)
+  pools_total_parity_mismatches               = 0
+  pools_round2_worstcase_parity               = 12/12    (pool UNION all 4040 target names as .png in BOTH dirs; parity on the full union proves it for every subset)
+  pools_round2_simulated_n                    = 9487    (worst case = 4447/5447 + 4040)
+  base_bytes_mismatched_vs_E0_manifest        = 0    (per-file sha256 of the 4447+4447 base subset of every pool)
+  render_mask_equals_raw_gt_CORPROP           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CORTOP            = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s42             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s43             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s45             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  armC_reproduces_C1_cell_C10                 = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform/n_displaced vs rebuild/C1/out/c1_cells.csv)
+    C10_clusters_funded                       = 75    (C1 logged 75)
+    C10_max_alloc_share                       = 0.194    (C1 logged 0.194)
+    C10_alloc_entropy_norm                    = 0.78644    (C1 logged 0.78644)
+    C10_tv_from_uniform                       = 0.49253    (C1 logged 0.49253)
+    C10_n_displaced                           = 370    (C1 logged 370)
+    C10_n_selected                            = 1000    (T2 provenance; not a C1 quantity)
+    C10_es_perm                               = identity    (T2 provenance; not a C1 quantity)
+    C10_perm_rho                              = 1.0    (T2 provenance; not a C1 quantity)
+    C10_perm_fixed_points                     = 75    (T2 provenance; not a C1 quantity)
+    C10_perm_seed                             = None    (T2 provenance; not a C1 quantity)
+  armC_reproduces_C1_cell_CORPROP             = True    (n_selected/clusters_funded>0 vs rebuild/C1/out/c1_cells.csv)
+    CORPROP_clusters_funded                   = 75    (T2 provenance; not a C1 quantity)
+    CORPROP_max_alloc_share                   = 0.099    (T2 provenance; not a C1 quantity)
+    CORPROP_alloc_entropy_norm                = 0.87985    (T2 provenance; not a C1 quantity)
+    CORPROP_tv_from_uniform                   = 0.40676    (T2 provenance; not a C1 quantity)
+    CORPROP_n_displaced                       = 559    (T2 provenance; not a C1 quantity)
+    CORPROP_n_selected                        = 1000    (T2 provenance; not a C1 quantity)
+    CORPROP_es_perm                           = oracle_value    (T2 provenance; not a C1 quantity)
+    CORPROP_perm_rho                          = None    (T2 provenance; not a C1 quantity)
+    CORPROP_perm_fixed_points                 = None    (T2 provenance; not a C1 quantity)
+    CORPROP_perm_seed                         = None    (T2 provenance; not a C1 quantity)
+    CORPROP_oracle_provenance                 = {'source': 'rebuild/B1/out/b1_cluster_es_dinoL518.csv', 'column': 'test_one_minus_sa', 'n_clusters': 75, 'sha256': '1ff27cd1efdf6ed01be557c1d339547792fdfcc219f8db6ecfd5db9195f693f8', 'n_test_min': 1, 'n_test_max': 94, 'n_test_sum': 2026, 'n_clusters_n_test_eq_1': 1, 'value_min': 0.087326, 'value_max': 0.471405, 'oracle_uses_endpoint_labels': True}    (T2 provenance; not a C1 quantity)
+  armC_reproduces_C1_cell_CORTOP              = True    (clusters_funded/n_selected vs rebuild/C1/out/c1_cells.csv)
+    CORTOP_clusters_funded                    = 5    (T2 provenance; not a C1 quantity)
+    CORTOP_max_alloc_share                    = 0.2    (T2 provenance; not a C1 quantity)
+    CORTOP_alloc_entropy_norm                 = 0.37277    (T2 provenance; not a C1 quantity)
+    CORTOP_tv_from_uniform                    = 0.93333    (T2 provenance; not a C1 quantity)
+    CORTOP_n_displaced                        = 178    (T2 provenance; not a C1 quantity)
+    CORTOP_n_selected                         = 1000    (T2 provenance; not a C1 quantity)
+    CORTOP_es_perm                            = oracle_top    (T2 provenance; not a C1 quantity)
+    CORTOP_perm_rho                           = None    (T2 provenance; not a C1 quantity)
+    CORTOP_perm_fixed_points                  = None    (T2 provenance; not a C1 quantity)
+    CORTOP_perm_seed                          = None    (T2 provenance; not a C1 quantity)
+    CORTOP_top_k                              = 5    (T2 provenance; not a C1 quantity)
+    CORTOP_top_clusters                       = [4, 13, 18, 20, 56]    (T2 provenance; not a C1 quantity)
+    CORTOP_top_oracle_values                  = [0.415991, 0.411316, 0.416354, 0.435392, 0.471405]    (T2 provenance; not a C1 quantity)
+    CORTOP_top_n_test                         = [12, 24, 50, 39, 7]    (T2 provenance; not a C1 quantity)
+    CORTOP_excluded_n_test_lt_min             = [74]    (T2 provenance; not a C1 quantity)
+    CORTOP_oracle_provenance                  = {'source': 'rebuild/B1/out/b1_cluster_es_dinoL518.csv', 'column': 'test_one_minus_sa', 'n_clusters': 75, 'sha256': '1ff27cd1efdf6ed01be557c1d339547792fdfcc219f8db6ecfd5db9195f693f8', 'n_test_min': 1, 'n_test_max': 94, 'n_test_sum': 2026, 'n_clusters_n_test_eq_1': 1, 'value_min': 0.087326, 'value_max': 0.471405, 'oracle_uses_endpoint_labels': True}    (T2 provenance; not a C1 quantity)
+  overlap_B_s42|B_s43                         = 246 of 224.9 expected by chance (ratio 1.094, Jaccard 0.1403, n_differing 754)    (BxB)
+  overlap_B_s42|B_s45                         = 228 of 224.9 expected by chance (ratio 1.014, Jaccard 0.1287, n_differing 772)    (BxB)
+  overlap_B_s42|C10                           = 226 of 224.9 expected by chance (ratio 1.005, Jaccard 0.1274, n_differing 774)    (BxC)
+  overlap_B_s42|CORPROP                       = 226 of 224.9 expected by chance (ratio 1.005, Jaccard 0.1274, n_differing 774)    (BxC)
+  overlap_B_s42|CORTOP                        = 233 of 224.9 expected by chance (ratio 1.036, Jaccard 0.1319, n_differing 767)    (BxC)
+  overlap_B_s43|B_s45                         = 239 of 224.9 expected by chance (ratio 1.063, Jaccard 0.1357, n_differing 761)    (BxB)
+  overlap_B_s43|C10                           = 246 of 224.9 expected by chance (ratio 1.094, Jaccard 0.1403, n_differing 754)    (BxC)
+  overlap_B_s43|CORPROP                       = 255 of 224.9 expected by chance (ratio 1.134, Jaccard 0.1461, n_differing 745)    (BxC)
+  overlap_B_s43|CORTOP                        = 217 of 224.9 expected by chance (ratio 0.965, Jaccard 0.1217, n_differing 783)    (BxC)
+  overlap_B_s45|C10                           = 230 of 224.9 expected by chance (ratio 1.023, Jaccard 0.1299, n_differing 770)    (BxC)
+  overlap_B_s45|CORPROP                       = 223 of 224.9 expected by chance (ratio 0.992, Jaccard 0.1255, n_differing 777)    (BxC)
+  overlap_B_s45|CORTOP                        = 216 of 224.9 expected by chance (ratio 0.961, Jaccard 0.1211, n_differing 784)    (BxC)
+  overlap_C10|CORPROP                         = 623 of 224.9 expected by chance (ratio 2.770, Jaccard 0.4524, n_differing 377)    (CxC)
+  overlap_C10|CORTOP                          = 373 of 224.9 expected by chance (ratio 1.659, Jaccard 0.2293, n_differing 627)    (CxC)
+  overlap_CORPROP|CORTOP                      = 480 of 224.9 expected by chance (ratio 2.135, Jaccard 0.3158, n_differing 520)    (CxC)
+  forbidden_path_references                   = 0    (E0.step_independence() CALLED, 61 scripts incl. 6 in rebuild/ABC)
+  provenance_pragma_exemptions                = 4    (reported, not suppressed)
+  manifest_spotcheck                          = 203/203    (random sample across raw/auth/tgt/local, re-hashed)
+  MyTrain_py_copies_in_tree                   = 1
+  MyTest_py_copies_in_tree                    = 1
+  patches_missing                             = {}
+  cudnn_declared                              = deterministic=True benchmark_false=True seed_from_opt=True
+  endpoints                                   = COD10K 2026/2026 (primary), NC4K 4121/4121 (secondary)    (CHAMELEON withdrawn (D2 41/76); CAMO selection-only)
+  allocation_signal                           = target-side, from rebuild/B1/out/b1_cluster_es_dinoL518.csv    (C1 gate_signal + gate_cluster_source called unchanged)
+  pool_content_identical_across_architectures = 6/6 arm x seed pairs    (pool content is architecture-independent by construction)
+  armC_pool_identical_across_seeds_CORPROP    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CORTOP     = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+THRESHOLD  every arm pool has equal Image/ and GT/ counts at its expected size -> PASS
+THRESHOLD  every arm pool has identical stem sets in Image/ and GT/ -> PASS
+THRESHOLD  the REAL SrcDataset pairs stem(images[i]) == stem(gts[i]) for EVERY i in EVERY arm pool -> PASS
+THRESHOLD  round-2 positional parity holds on the full worst-case CLS union -> PASS
+THRESHOLD  every pool's base subset matches E0's manifest byte for byte -> PASS
+THRESHOLD  every selected render mask is pixel-identical to raw_gt -> PASS
+THRESHOLD  arm C10 reproduces C1's committed allocation cell exactly (all five keys) -> PASS
+THRESHOLD  arm CORPROP satisfies its DECLARED shape (n_selected, clusters_funded>0, PREREGISTRATION_WS6.md) -- a different shape by design, never asserted against C1 -> PASS
+THRESHOLD  arm CORTOP satisfies its DECLARED shape (clusters_funded, n_selected, PREREGISTRATION_WS6.md) -- a different shape by design, never asserted against C1 -> PASS
+THRESHOLD  arms B and C overlap at the chance rate (0.7-1.3x), so they are genuinely different sets -> PASS
+THRESHOLD  no two C-family arms overlap above Jaccard 0.50, so a WITHIN NOISE result cannot be mechanical (PREREGISTRATION_T2.md T2.7) -> PASS
+THRESHOLD  no script under rebuild/ references the archive or a /tmp scratchpad -> PASS
+THRESHOLD  every declared primary input resolves and re-hashes clean -> PASS
+THRESHOLD  exactly one MyTrain.py and one MyTest.py exist, and all six patches are present -> PASS
+THRESHOLD  MyTrain.py declares cudnn determinism and a CLI seed -> PASS
+THRESHOLD  CHAMELEON and CAMO are unreachable as endpoints in code -> PASS
+THRESHOLD  the endpoint-measured signal appears nowhere in ABC, and ABC fits no partition of its own -> PASS
+THRESHOLD  pool content is identical across the two architectures for every (arm, seed) -> PASS
+THRESHOLD  every deterministic C-family arm has an identical pool at all three seeds (vacuous pass excluded) -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/ws6/abc_preflight.json, rebuild/ABC/out/ws6/abc_pools.json, rebuild/ABC/out/ws6/abc_stems_B_s42.txt, rebuild/ABC/out/ws6/abc_stems_B_s43.txt, rebuild/ABC/out/ws6/abc_stems_B_s45.txt, rebuild/ABC/out/ws6/abc_stems_CORPROP.txt, rebuild/ABC/out/ws6/abc_stems_CORTOP.txt
+TRAINS     NO
+NOTES      COLLISION IS IMPOSSIBLE BY CONSTRUCTION, not by convention. RUNID is a pure function of (arch, arm, seed); every path a run writes is RUNID-prefixed, INCLUDING the CLS round-2 pool, because CLS.py:16 derives it from source_root alone. Under released code every arm collapses onto Dataset/Source/HKU-IS_iteration2/ and each run rmtree's the previous run's pseudo-label pool (CLS.py:19-23) -- which is also why patch P0 was required before any arm could be built.
+           ROUND-2 PARITY IS PROVED, NOT SAMPLED. CLS appends images as .png (CLS.py:156, via the .jpg->.png rename at Dataloader.py:141-142), so round 2 trains on a MIXED-EXTENSION pool that no prior experiment ever checked. SrcDataset pairs image to mask by sorted-list INDEX, not by name (Dataloader.py:14-17,29-37), and filter_files is not a pairing guard -- it checks only equal lengths and drops positional pairs whose sizes differ, so a mis-pairing between two images of equal dimensions passes silently. Parity is therefore asserted on the union of each pool with ALL 4040 target names; sorted order is preserved under deletion of the same stems from both lists, and CLS writes image and GT together or skips both (CLS.py:151,155-156), so the union case proves every possible subset.
+           WS6 PRE-FLIGHT, ADDITIVE (rebuild/REBUTTAL/PREREGISTRATION_WS6.md). CORPROP and CORTOP ALLOCATE BY TRUE ENDPOINT ERROR: diagnostics, never methods (OR SS0 applies word for word; oracle_uses_endpoint_labels = true). Gate G1 passes on syntax only, because these arms read test_one_minus_sa, not the ES column. That is disclosed here, not offered as evidence.
+           DIFFERENT SHAPE BY DESIGN. The same-shape assertion does not apply; each arm is checked against its DECLARED shape (abc_common.declared_shape): CORTOP funds exactly 5 clusters, and both select exactly 1000 distinct renders. Comparator arm B (seeds 42/43/45) is committed and is NOT rebuilt or retrained here. This block TRAINS NOTHING.
+           one_trainer: byte-identical copies in a gitignored directory reported, not failed: {"MyTrain": ["iclr2027_supplement/MyTrain.py"], "MyTest": ["iclr2027_supplement/MyTest.py"]}
+================================================================================
+

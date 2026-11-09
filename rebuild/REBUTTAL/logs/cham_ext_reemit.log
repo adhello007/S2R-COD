@@ -1,0 +1,52 @@
+committed: 41 confirmed pairs, 25 unchecked declared
+CHAMELEON 76   training pool 4040
+unchecked (no same-dimension training candidate): 25
+  describing 4040 images (training pool)
+  describing 76 images (CHAMELEON)
+calibration positives resolvable: 41 of 41
+stage-1 calibration: positives rms max 1.022 mean 0.303 | negatives mean 65.115 min 0.238
+stage-1 threshold (100% recall on 41 knowns) = 1.022  -> FPR on negatives 0.0003
+stage-2 calibration: SIFT+RANSAC on 41 positives and 300 sampled negatives
+  positives inliers: min 525 median 1129 max 1174
+  negatives inliers: max 8  -> threshold = 9 inliers
+  recall of that threshold on the 41 knowns: 41/41
+  animal-10.jpg          rms  40.353  inliers    8  -> no match found
+  animal-16.jpg          rms  25.266  inliers  621  -> MATCH
+  animal-18.jpg          rms  27.734  inliers    0  -> no match found
+  animal-2.jpg           rms  37.797  inliers    0  -> no match found
+  animal-20.jpg          rms  35.088  inliers    0  -> no match found
+  animal-22.jpg          rms  18.128  inliers  779  -> MATCH
+  animal-27.jpg          rms  21.872  inliers    0  -> no match found
+  animal-28.jpg          rms  40.226  inliers   15  -> MATCH
+  animal-3.jpg           rms  38.984  inliers    4  -> no match found
+  animal-36.jpg          rms  18.481  inliers    0  -> no match found
+  animal-43.jpg          rms  17.077  inliers  422  -> MATCH
+  animal-47.jpg          rms  40.888  inliers    5  -> no match found
+  animal-49.jpg          rms  17.455  inliers    0  -> no match found
+  animal-59.jpg          rms  34.259  inliers  694  -> MATCH
+  animal-61.jpg          rms  33.521  inliers  664  -> MATCH
+  animal-62.jpg          rms  38.448  inliers    0  -> no match found
+  animal-64.jpg          rms  43.148  inliers    5  -> no match found
+  animal-66.jpg          rms  35.192  inliers  595  -> MATCH
+  animal-68.jpg          rms  27.576  inliers    0  -> no match found
+  animal-69.jpg          rms  21.402  inliers    7  -> no match found
+  animal-7.jpg           rms  33.819  inliers   25  -> MATCH
+  animal-72.jpg          rms  21.790  inliers  383  -> MATCH
+  animal-73.jpg          rms  16.705  inliers  925  -> MATCH
+  animal-74.jpg          rms  21.011  inliers  835  -> MATCH
+  animal-75.jpg          rms  40.131  inliers    5  -> no match found
+
+negative control: NC4K vs COD10K-test under the identical extension
+  describing 2026 images (COD10K-test)
+  describing 120 images (NC4K unchecked sample)
+  NC4K unchecked total 3039, sampled 120, flagged at the declared threshold: 4
+  NC4K control inliers: median 0  max 19
+  declared stage-2 threshold 9 -> OPERATING POINT 20 inliers
+  recall of the operating point on the 41 knowns: 41/41
+  NC4K flagged AT the operating point: 0 of 120
+  CHAMELEON matched at the operating point: 10 of 25
+
+RESULT at the declared threshold : 11 of 25
+RESULT at the operating point    : 10 of 25  <- REPORTED
+CHAMELEON contamination: 41/76 -> 51/76 (67.1%)  |  unchecked 15  |  clean 10
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out/diag_chameleon_ext_reemit.json

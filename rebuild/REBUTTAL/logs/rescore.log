@@ -1,0 +1,127 @@
+runs 36  images/run 2026  total jobs 72936  workers 40
+  10000 / 72936
+  20000 / 72936
+  30000 / 72936
+  40000 / 72936
+  50000 / 72936
+  60000 / 72936
+  70000 / 72936
+done: 72936 rows, 0 errors
+wrote per-image, per-run and meta under /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out
+loaded 72936 per-image boundary rows
+covariates: SINet 2026 images, SINetv2 2026 images
+rows with covariates: 72936
+
+==============================================================================
+DIAG.5  boundary metrics -- whole set (POST-HOC, decides nothing)
+==============================================================================
+
+--- SINetv2|boundary_f   sigma_hat 0.003227  bar 0.006454 (df 8) ---
+  arm means: A0 0.4125  A2 0.4160  B 0.4177  C10 0.4203  CINV 0.4227  CSHUF 0.4205
+    A2-A0        delta +0.003557   0.55x bar  2/3  WITHIN NOISE
+    B-A2         delta +0.001687   0.26x bar  2/3  WITHIN NOISE
+    C10-B        delta +0.002559   0.40x bar  2/3  WITHIN NOISE
+    C10-CINV     delta -0.002467   0.38x bar  3/3  WITHIN NOISE
+    C10-CSHUF    delta -0.000249   0.04x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.005026   0.78x bar  3/3  WITHIN NOISE
+    CSHUF-B      delta +0.002807   0.43x bar  2/3  WITHIN NOISE
+
+--- SINetv2|boundary_iou   sigma_hat 0.003104  bar 0.006207 (df 8) ---
+  arm means: A0 0.3207  A2 0.3247  B 0.3249  C10 0.3260  CINV 0.3275  CSHUF 0.3262
+    A2-A0        delta +0.004047   0.65x bar  2/3  WITHIN NOISE
+    B-A2         delta +0.000237   0.04x bar  2/3  WITHIN NOISE
+    C10-B        delta +0.001013   0.16x bar  2/3  WITHIN NOISE
+    C10-CINV     delta -0.001505   0.24x bar  3/3  WITHIN NOISE
+    C10-CSHUF    delta -0.000202   0.03x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.002518   0.41x bar  2/3  WITHIN NOISE
+    CSHUF-B      delta +0.001214   0.20x bar  2/3  WITHIN NOISE
+
+--- SINetv2|iou   sigma_hat 0.005018  bar 0.010036 (df 8) ---
+  arm means: A0 0.4292  A2 0.4331  B 0.4370  C10 0.4367  CINV 0.4377  CSHUF 0.4380
+    A2-A0        delta +0.003898   0.39x bar  2/3  WITHIN NOISE
+    B-A2         delta +0.003910   0.39x bar  2/3  WITHIN NOISE
+    C10-B        delta -0.000340   0.03x bar  2/3  WITHIN NOISE
+    C10-CINV     delta -0.000980   0.10x bar  2/3  WITHIN NOISE
+    C10-CSHUF    delta -0.001310   0.13x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.000640   0.06x bar  2/3  WITHIN NOISE
+    CSHUF-B      delta +0.000971   0.10x bar  2/3  WITHIN NOISE
+
+--- SINet|boundary_f   sigma_hat 0.007531  bar 0.015062 (df 8) ---
+  arm means: A0 0.3566  A2 0.3797  B 0.3929  C10 0.4119  CINV 0.4103  CSHUF 0.4074
+    A2-A0        delta +0.023128   1.54x bar  2/3  INCONCLUSIVE
+    B-A2         delta +0.013233   0.88x bar  2/3  WITHIN NOISE
+    C10-B        delta +0.019012   1.26x bar  3/3  REAL EFFECT
+    C10-CINV     delta +0.001673   0.11x bar  2/3  WITHIN NOISE
+    C10-CSHUF    delta +0.004538   0.30x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.017339   1.15x bar  3/3  REAL EFFECT
+    CSHUF-B      delta +0.014474   0.96x bar  3/3  WITHIN NOISE
+
+--- SINet|boundary_iou   sigma_hat 0.005036  bar 0.010072 (df 8) ---
+  arm means: A0 0.3037  A2 0.3174  B 0.3251  C10 0.3389  CINV 0.3386  CSHUF 0.3352
+    A2-A0        delta +0.013718   1.36x bar  2/3  INCONCLUSIVE
+    B-A2         delta +0.007742   0.77x bar  3/3  WITHIN NOISE
+    C10-B        delta +0.013821   1.37x bar  3/3  REAL EFFECT
+    C10-CINV     delta +0.000369   0.04x bar  2/3  WITHIN NOISE
+    C10-CSHUF    delta +0.003759   0.37x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.013452   1.34x bar  3/3  REAL EFFECT
+    CSHUF-B      delta +0.010062   1.00x bar  3/3  WITHIN NOISE
+
+--- SINet|iou   sigma_hat 0.005432  bar 0.010864 (df 8) ---
+  arm means: A0 0.4187  A2 0.4320  B 0.4441  C10 0.4553  CINV 0.4569  CSHUF 0.4534
+    A2-A0        delta +0.013338   1.23x bar  2/3  INCONCLUSIVE
+    B-A2         delta +0.012072   1.11x bar  3/3  REAL EFFECT
+    C10-B        delta +0.011186   1.03x bar  3/3  REAL EFFECT
+    C10-CINV     delta -0.001556   0.14x bar  2/3  WITHIN NOISE
+    C10-CSHUF    delta +0.001890   0.17x bar  2/3  WITHIN NOISE
+    CINV-B       delta +0.012742   1.17x bar  3/3  REAL EFFECT
+    CSHUF-B      delta +0.009296   0.86x bar  3/3  WITHIN NOISE
+
+==============================================================================
+DIAG.5  subgroups -- boundary IoU, C10 vs B (EXPLORATORY)
+==============================================================================
+  SINetv2|difficulty|q1        n= 675  delta +0.002789   0.33x bar  2/3  WITHIN NOISE
+  SINetv2|difficulty|q2        n= 675  delta -0.001331   0.18x bar  2/3  WITHIN NOISE
+  SINetv2|difficulty|q3        n= 676  delta +0.001579   0.20x bar  2/3  WITHIN NOISE
+  SINetv2|es|q1                n= 675  delta +0.002483   0.25x bar  2/3  WITHIN NOISE
+  SINetv2|es|q2                n= 675  delta +0.000438   0.06x bar  2/3  WITHIN NOISE
+  SINetv2|es|q3                n= 676  delta +0.000118   0.01x bar  2/3  WITHIN NOISE
+  SINetv2|size|q1              n= 675  delta -0.001079   0.10x bar  2/3  WITHIN NOISE
+  SINetv2|size|q2              n= 675  delta -0.001014   0.13x bar  2/3  WITHIN NOISE
+  SINetv2|size|q3              n= 676  delta +0.005125   0.62x bar  2/3  WITHIN NOISE
+  SINet|difficulty|q1          n= 675  delta +0.018113   2.17x bar  3/3  REAL EFFECT
+  SINet|difficulty|q2          n= 675  delta +0.014728   1.00x bar  3/3  REAL EFFECT
+  SINet|difficulty|q3          n= 676  delta +0.008629   1.00x bar  3/3  REAL EFFECT
+  SINet|es|q1                  n= 675  delta +0.016277   1.22x bar  3/3  REAL EFFECT
+  SINet|es|q2                  n= 675  delta +0.015990   1.57x bar  3/3  REAL EFFECT
+  SINet|es|q3                  n= 676  delta +0.009203   1.09x bar  3/3  REAL EFFECT
+  SINet|size|q1                n= 675  delta +0.011879   0.89x bar  3/3  WITHIN NOISE
+  SINet|size|q2                n= 675  delta +0.015515   1.55x bar  3/3  REAL EFFECT
+  SINet|size|q3                n= 676  delta +0.014069   1.27x bar  3/3  REAL EFFECT
+
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out/diag_subgroups.json
+runs 12  images/run 2026  total jobs 24312  workers 40
+  10000 / 24312
+  20000 / 24312
+done: 24312 rows, 0 errors
+wrote per-image, per-run and meta under /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out
+runs 12  images/run 2026  total jobs 24312  workers 40
+  10000 / 24312
+  20000 / 24312
+done: 24312 rows, 0 errors
+wrote per-image, per-run and meta under /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out
+runs 64  images/run 2026  total jobs 129664  workers 40
+  10000 / 129664
+  20000 / 129664
+  30000 / 129664
+  40000 / 129664
+  50000 / 129664
+  60000 / 129664
+  70000 / 129664
+  80000 / 129664
+  90000 / 129664
+  100000 / 129664
+  110000 / 129664
+  120000 / 129664
+done: 129664 rows, 0 errors
+wrote per-image, per-run and meta under /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/rebuild/DIAG/out
+RESCORE_DONE
