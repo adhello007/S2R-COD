@@ -1,0 +1,5 @@
+diag_boundary_per_run.csv            thr 0.5  36 runs  max |diff| 1.11e-16 -> MATCH
+diag_boundary_per_run_t0.40.csv      thr 0.4  12 runs  max |diff| 1.11e-16 -> MATCH
+diag_boundary_per_run_t0.60.csv      thr 0.6  12 runs  max |diff| 1.11e-16 -> MATCH
+Boundary-IoU unit test vs Cheng et al. mask_to_boundary on 25 images: max |diff| 0 -> PASS
+AN-01 reproduction gate: PASS

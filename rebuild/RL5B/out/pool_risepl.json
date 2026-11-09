@@ -1,0 +1,15 @@
+{
+  "commit": "34c4b3a (dirty)",
+  "generated": "2026-11-09T08:17:08+05:30",
+  "gt_digest": "d066e5fd98badaaa27460479d3d4f295862234dbec31ea56bf471f6d6bc90048",
+  "image_digest": "d5b3cd4b0e826e0290e720a1ea6bf101decf81d48f785df5bd96c2f715040a2b",
+  "missing_examples": [],
+  "missing_pseudo": 0,
+  "n_gt": 4040,
+  "n_image": 4040,
+  "n_pseudo": 4041,
+  "n_target": 4040,
+  "pool": "Dataset/Source/RL5B/RISEPL",
+  "pseudo_dir": "Dataset/External/RISE/extract/RISE/PseudoMask",
+  "verified": true
+}

@@ -1,0 +1,29 @@
+{
+  "diag_boundary_per_run.csv": {
+    "threshold": 0.5,
+    "runs": 36,
+    "values_compared": 180,
+    "max_abs_diff": 1.1102230246251565e-16,
+    "passed": true
+  },
+  "diag_boundary_per_run_t0.40.csv": {
+    "threshold": 0.4,
+    "runs": 12,
+    "values_compared": 60,
+    "max_abs_diff": 1.1102230246251565e-16,
+    "passed": true
+  },
+  "diag_boundary_per_run_t0.60.csv": {
+    "threshold": 0.6,
+    "runs": 12,
+    "values_compared": 60,
+    "max_abs_diff": 1.1102230246251565e-16,
+    "passed": true
+  },
+  "unit_test_reference_biou": {
+    "images": 25,
+    "max_abs_diff": 0.0,
+    "passed": true
+  },
+  "GATE": "PASS"
+}
