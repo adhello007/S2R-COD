@@ -1,0 +1,407 @@
+=== s1 emit the arm stem selections ===
+  arm CDRLU  1000 stems, perm=uniform       rho=+nan  shape reproduced = True
+  arm CDRL1P1 1000 stems, perm=cdr:CDRL1P1   rho=+0.01568  shape reproduced = True
+  arm CDRL1P2 1000 stems, perm=cdr:CDRL1P2   rho=+0.04191  shape reproduced = True
+  arm CDRL1P3 1000 stems, perm=cdr:CDRL1P3   rho=+0.09135  shape reproduced = True
+  arm CDRL1P4 1000 stems, perm=cdr:CDRL1P4   rho=-0.05198  shape reproduced = True
+  arm CDRL1P5 1000 stems, perm=cdr:CDRL1P5   rho=+0.01613  shape reproduced = True
+  arm CDRLHP1 1000 stems, perm=cdr:CDRLHP1   rho=-0.00700  shape reproduced = True
+  arm CDRLHP2 1000 stems, perm=cdr:CDRLHP2   rho=-0.09898  shape reproduced = True
+  arm CDRLHP3 1000 stems, perm=cdr:CDRLHP3   rho=+0.00131  shape reproduced = True
+  arm CDRLHP4 1000 stems, perm=cdr:CDRLHP4   rho=-0.01141  shape reproduced = True
+  arm CDRLHP5 1000 stems, perm=cdr:CDRLHP5   rho=-0.06350  shape reproduced = True
+=== s2 assemble 66 arm pools ===
+  SINet_CDRLU_s42        built          n_image=5447
+  SINet_CDRLU_s43        built          n_image=5447
+  SINet_CDRLU_s45        built          n_image=5447
+  SINet_CDRL1P1_s42      built          n_image=5447
+  SINet_CDRL1P1_s43      built          n_image=5447
+  SINet_CDRL1P1_s45      built          n_image=5447
+  SINet_CDRL1P2_s42      built          n_image=5447
+  SINet_CDRL1P2_s43      built          n_image=5447
+  SINet_CDRL1P2_s45      built          n_image=5447
+  SINet_CDRL1P3_s42      built          n_image=5447
+  SINet_CDRL1P3_s43      built          n_image=5447
+  SINet_CDRL1P3_s45      built          n_image=5447
+  SINet_CDRL1P4_s42      built          n_image=5447
+  SINet_CDRL1P4_s43      built          n_image=5447
+  SINet_CDRL1P4_s45      built          n_image=5447
+  SINet_CDRL1P5_s42      built          n_image=5447
+  SINet_CDRL1P5_s43      built          n_image=5447
+  SINet_CDRL1P5_s45      built          n_image=5447
+  SINet_CDRLHP1_s42      built          n_image=5447
+  SINet_CDRLHP1_s43      built          n_image=5447
+  SINet_CDRLHP1_s45      built          n_image=5447
+  SINet_CDRLHP2_s42      built          n_image=5447
+  SINet_CDRLHP2_s43      built          n_image=5447
+  SINet_CDRLHP2_s45      built          n_image=5447
+  SINet_CDRLHP3_s42      built          n_image=5447
+  SINet_CDRLHP3_s43      built          n_image=5447
+  SINet_CDRLHP3_s45      built          n_image=5447
+  SINet_CDRLHP4_s42      built          n_image=5447
+  SINet_CDRLHP4_s43      built          n_image=5447
+  SINet_CDRLHP4_s45      built          n_image=5447
+  SINet_CDRLHP5_s42      built          n_image=5447
+  SINet_CDRLHP5_s43      built          n_image=5447
+  SINet_CDRLHP5_s45      built          n_image=5447
+  SINetv2_CDRLU_s42      built          n_image=5447
+  SINetv2_CDRLU_s43      built          n_image=5447
+  SINetv2_CDRLU_s45      built          n_image=5447
+  SINetv2_CDRL1P1_s42    built          n_image=5447
+  SINetv2_CDRL1P1_s43    built          n_image=5447
+  SINetv2_CDRL1P1_s45    built          n_image=5447
+  SINetv2_CDRL1P2_s42    built          n_image=5447
+  SINetv2_CDRL1P2_s43    built          n_image=5447
+  SINetv2_CDRL1P2_s45    built          n_image=5447
+  SINetv2_CDRL1P3_s42    built          n_image=5447
+  SINetv2_CDRL1P3_s43    built          n_image=5447
+  SINetv2_CDRL1P3_s45    built          n_image=5447
+  SINetv2_CDRL1P4_s42    built          n_image=5447
+  SINetv2_CDRL1P4_s43    built          n_image=5447
+  SINetv2_CDRL1P4_s45    built          n_image=5447
+  SINetv2_CDRL1P5_s42    built          n_image=5447
+  SINetv2_CDRL1P5_s43    built          n_image=5447
+  SINetv2_CDRL1P5_s45    built          n_image=5447
+  SINetv2_CDRLHP1_s42    built          n_image=5447
+  SINetv2_CDRLHP1_s43    built          n_image=5447
+  SINetv2_CDRLHP1_s45    built          n_image=5447
+  SINetv2_CDRLHP2_s42    built          n_image=5447
+  SINetv2_CDRLHP2_s43    built          n_image=5447
+  SINetv2_CDRLHP2_s45    built          n_image=5447
+  SINetv2_CDRLHP3_s42    built          n_image=5447
+  SINetv2_CDRLHP3_s43    built          n_image=5447
+  SINetv2_CDRLHP3_s45    built          n_image=5447
+  SINetv2_CDRLHP4_s42    built          n_image=5447
+  SINetv2_CDRLHP4_s43    built          n_image=5447
+  SINetv2_CDRLHP4_s45    built          n_image=5447
+  SINetv2_CDRLHP5_s42    built          n_image=5447
+  SINetv2_CDRLHP5_s43    built          n_image=5447
+  SINetv2_CDRLHP5_s45    built          n_image=5447
+=== s3 gates G1-G6 ===
+  gate signal         PASS
+  gate provenance     PASS
+  gate one_trainer    PASS
+  gate endpoints      PASS
+  gate pools          PASS
+  gate determinism    PASS
+=== s4 manifests ===
+=== s5 log block ===
+================================================================================
+2026-11-09T07:59:29+05:30 | commit 138ad30 (dirty) | EXP CDR
+CMD   .venv/bin/python rebuild/ABC/abc_build_pools.py --arms CDRLU,CDRL1P1,CDRL1P2,CDRL1P3,CDRL1P4,CDRL1P5,CDRLHP1,CDRLHP2,CDRLHP3,CDRLHP4,CDRLHP5 --tag cdr
+ENV   py3.12.3 torch2.11.0+cu128 cu12.8 timmn/a numpy2.5.1 | 2x NVIDIA RTX PRO 6000 Blackwell Workstation Edition | seed 0
+REPR  training pools on disk: authors' pool (R1 full images, object=WHITE masks) + B=1000 LAKE-RED renders selected in R2 (grey-128 cutout) by the target-side signal
+METRICS
+  preflight_gates_passed                      = 6/6    (signal, provenance, one_trainer, endpoints, pools, determinism)
+  arm_pools_assembled                         = 66    (2 arch x 11 arms x 3 seeds)
+  pool_size_A0                                = 4447    (base authors' pool only, unpadded)
+  pool_size_A2_B_C                            = 5447    (base + B=1000, identical in A2/B/C)
+  arm_B_draw_coupling                         = per-seed rng 700000+seed    (ABC_PLAN.md A.4 -- "random" is a distribution over draws, not one draw)
+  pools_counts_ok                             = 66/66
+  pools_stem_sets_identical                   = 66/66
+  pools_SrcDataset_parity_all_i               = 66/66    (REAL SrcDataset, every index, not sampled)
+  pools_total_parity_mismatches               = 0
+  pools_round2_worstcase_parity               = 66/66    (pool UNION all 4040 target names as .png in BOTH dirs; parity on the full union proves it for every subset)
+  pools_round2_simulated_n                    = 9487    (worst case = 4447/5447 + 4040)
+  base_bytes_mismatched_vs_E0_manifest        = 0    (per-file sha256 of the 4447+4447 base subset of every pool)
+  render_mask_equals_raw_gt_CDRLU             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRL1P1           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRL1P2           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRL1P3           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRL1P4           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRL1P5           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRLHP1           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRLHP2           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRLHP3           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRLHP4           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_CDRLHP5           = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s42             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s43             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  render_mask_equals_raw_gt_B_s45             = 1000/1000    (maxdiff == 0, all selected stems, not sampled)
+  armC_reproduces_C1_cell_C10                 = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform/n_displaced vs rebuild/C1/out/c1_cells.csv)
+    C10_clusters_funded                       = 75    (C1 logged 75)
+    C10_max_alloc_share                       = 0.194    (C1 logged 0.194)
+    C10_alloc_entropy_norm                    = 0.78644    (C1 logged 0.78644)
+    C10_tv_from_uniform                       = 0.49253    (C1 logged 0.49253)
+    C10_n_displaced                           = 370    (C1 logged 370)
+    C10_es_perm                               = identity    (T2 provenance; not a C1 quantity)
+    C10_perm_rho                              = 1.0    (T2 provenance; not a C1 quantity)
+    C10_perm_fixed_points                     = 75    (T2 provenance; not a C1 quantity)
+    C10_perm_seed                             = None    (T2 provenance; not a C1 quantity)
+  armC_reproduces_C1_cell_CDRL1P1             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRL1P1_clusters_funded                   = 75    (C1 logged 75)
+    CDRL1P1_max_alloc_share                   = 0.194    (C1 logged 0.194)
+    CDRL1P1_alloc_entropy_norm                = 0.78644    (C1 logged 0.78644)
+    CDRL1P1_tv_from_uniform                   = 0.49253    (C1 logged 0.49253)
+    CDRL1P1_n_displaced                       = 385    (C1 logged 370)
+    CDRL1P1_es_perm                           = cdr:CDRL1P1    (C1 logged identity)
+    CDRL1P1_perm_rho                          = 0.01568    (C1 logged 1.0)
+    CDRL1P1_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRL1P1_perm_seed                         = 125    (C1 logged None)
+  armC_reproduces_C1_cell_CDRL1P2             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRL1P2_clusters_funded                   = 75    (C1 logged 75)
+    CDRL1P2_max_alloc_share                   = 0.194    (C1 logged 0.194)
+    CDRL1P2_alloc_entropy_norm                = 0.78644    (C1 logged 0.78644)
+    CDRL1P2_tv_from_uniform                   = 0.49253    (C1 logged 0.49253)
+    CDRL1P2_n_displaced                       = 482    (C1 logged 370)
+    CDRL1P2_es_perm                           = cdr:CDRL1P2    (C1 logged identity)
+    CDRL1P2_perm_rho                          = 0.04191    (C1 logged 1.0)
+    CDRL1P2_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRL1P2_perm_seed                         = 561    (C1 logged None)
+  armC_reproduces_C1_cell_CDRL1P3             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRL1P3_clusters_funded                   = 75    (C1 logged 75)
+    CDRL1P3_max_alloc_share                   = 0.194    (C1 logged 0.194)
+    CDRL1P3_alloc_entropy_norm                = 0.78644    (C1 logged 0.78644)
+    CDRL1P3_tv_from_uniform                   = 0.49253    (C1 logged 0.49253)
+    CDRL1P3_n_displaced                       = 478    (C1 logged 370)
+    CDRL1P3_es_perm                           = cdr:CDRL1P3    (C1 logged identity)
+    CDRL1P3_perm_rho                          = 0.09135    (C1 logged 1.0)
+    CDRL1P3_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRL1P3_perm_seed                         = 822    (C1 logged None)
+  armC_reproduces_C1_cell_CDRL1P4             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRL1P4_clusters_funded                   = 75    (C1 logged 75)
+    CDRL1P4_max_alloc_share                   = 0.194    (C1 logged 0.194)
+    CDRL1P4_alloc_entropy_norm                = 0.78644    (C1 logged 0.78644)
+    CDRL1P4_tv_from_uniform                   = 0.49253    (C1 logged 0.49253)
+    CDRL1P4_n_displaced                       = 386    (C1 logged 370)
+    CDRL1P4_es_perm                           = cdr:CDRL1P4    (C1 logged identity)
+    CDRL1P4_perm_rho                          = -0.05198    (C1 logged 1.0)
+    CDRL1P4_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRL1P4_perm_seed                         = 922    (C1 logged None)
+  armC_reproduces_C1_cell_CDRL1P5             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRL1P5_clusters_funded                   = 75    (C1 logged 75)
+    CDRL1P5_max_alloc_share                   = 0.194    (C1 logged 0.194)
+    CDRL1P5_alloc_entropy_norm                = 0.78644    (C1 logged 0.78644)
+    CDRL1P5_tv_from_uniform                   = 0.49253    (C1 logged 0.49253)
+    CDRL1P5_n_displaced                       = 398    (C1 logged 370)
+    CDRL1P5_es_perm                           = cdr:CDRL1P5    (C1 logged identity)
+    CDRL1P5_perm_rho                          = 0.01613    (C1 logged 1.0)
+    CDRL1P5_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRL1P5_perm_seed                         = 1058    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLHP1             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLHP1_clusters_funded                   = 71    (C1 logged 71)
+    CDRLHP1_max_alloc_share                   = 0.308    (C1 logged 0.308)
+    CDRLHP1_alloc_entropy_norm                = 0.62641    (C1 logged 0.62641)
+    CDRLHP1_tv_from_uniform                   = 0.65524    (C1 logged 0.65524)
+    CDRLHP1_n_displaced                       = 266    (C1 logged 312)
+    CDRLHP1_es_perm                           = cdr:CDRLHP1    (C1 logged identity)
+    CDRLHP1_perm_rho                          = -0.007    (C1 logged 1.0)
+    CDRLHP1_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRLHP1_perm_seed                         = 1071    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLHP2             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLHP2_clusters_funded                   = 71    (C1 logged 71)
+    CDRLHP2_max_alloc_share                   = 0.308    (C1 logged 0.308)
+    CDRLHP2_alloc_entropy_norm                = 0.62641    (C1 logged 0.62641)
+    CDRLHP2_tv_from_uniform                   = 0.65524    (C1 logged 0.65524)
+    CDRLHP2_n_displaced                       = 337    (C1 logged 312)
+    CDRLHP2_es_perm                           = cdr:CDRLHP2    (C1 logged identity)
+    CDRLHP2_perm_rho                          = -0.09898    (C1 logged 1.0)
+    CDRLHP2_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRLHP2_perm_seed                         = 1076    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLHP3             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLHP3_clusters_funded                   = 71    (C1 logged 71)
+    CDRLHP3_max_alloc_share                   = 0.308    (C1 logged 0.308)
+    CDRLHP3_alloc_entropy_norm                = 0.62641    (C1 logged 0.62641)
+    CDRLHP3_tv_from_uniform                   = 0.65524    (C1 logged 0.65524)
+    CDRLHP3_n_displaced                       = 366    (C1 logged 312)
+    CDRLHP3_es_perm                           = cdr:CDRLHP3    (C1 logged identity)
+    CDRLHP3_perm_rho                          = 0.00131    (C1 logged 1.0)
+    CDRLHP3_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRLHP3_perm_seed                         = 1083    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLHP4             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLHP4_clusters_funded                   = 71    (C1 logged 71)
+    CDRLHP4_max_alloc_share                   = 0.308    (C1 logged 0.308)
+    CDRLHP4_alloc_entropy_norm                = 0.62641    (C1 logged 0.62641)
+    CDRLHP4_tv_from_uniform                   = 0.65524    (C1 logged 0.65524)
+    CDRLHP4_n_displaced                       = 408    (C1 logged 312)
+    CDRLHP4_es_perm                           = cdr:CDRLHP4    (C1 logged identity)
+    CDRLHP4_perm_rho                          = -0.01141    (C1 logged 1.0)
+    CDRLHP4_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRLHP4_perm_seed                         = 1088    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLHP5             = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLHP5_clusters_funded                   = 71    (C1 logged 71)
+    CDRLHP5_max_alloc_share                   = 0.308    (C1 logged 0.308)
+    CDRLHP5_alloc_entropy_norm                = 0.62641    (C1 logged 0.62641)
+    CDRLHP5_tv_from_uniform                   = 0.65524    (C1 logged 0.65524)
+    CDRLHP5_n_displaced                       = 421    (C1 logged 312)
+    CDRLHP5_es_perm                           = cdr:CDRLHP5    (C1 logged identity)
+    CDRLHP5_perm_rho                          = -0.0635    (C1 logged 1.0)
+    CDRLHP5_perm_fixed_points                 = 0    (C1 logged 75)
+    CDRLHP5_perm_seed                         = 1089    (C1 logged None)
+  armC_reproduces_C1_cell_CDRLU               = True    (clusters_funded/max_alloc_share/alloc_entropy_norm/tv_from_uniform vs rebuild/C1/out/c1_cells.csv)
+    CDRLU_clusters_funded                     = 75    (C1 logged 75)
+    CDRLU_max_alloc_share                     = 0.014    (C1 logged 0.014)
+    CDRLU_alloc_entropy_norm                  = 1.0    (C1 logged 1.0)
+    CDRLU_tv_from_uniform                     = 0.0    (C1 logged 0.0)
+    CDRLU_n_displaced                         = 469    (T2 provenance; not a C1 quantity)
+    CDRLU_es_perm                             = uniform    (T2 provenance; not a C1 quantity)
+    CDRLU_perm_rho                            = nan    (T2 provenance; not a C1 quantity)
+    CDRLU_perm_fixed_points                   = 75    (T2 provenance; not a C1 quantity)
+    CDRLU_perm_seed                           = None    (T2 provenance; not a C1 quantity)
+  overlap_B_s42|B_s43                         = 246 of 224.9 expected by chance (ratio 1.094, Jaccard 0.1403, n_differing 754)    (BxB)
+  overlap_B_s42|B_s45                         = 228 of 224.9 expected by chance (ratio 1.014, Jaccard 0.1287, n_differing 772)    (BxB)
+  overlap_B_s42|C10                           = 226 of 224.9 expected by chance (ratio 1.005, Jaccard 0.1274, n_differing 774)    (BxC)
+  overlap_B_s42|CDRL1P1                       = 230 of 224.9 expected by chance (ratio 1.023, Jaccard 0.1299, n_differing 770)    (BxC)
+  overlap_B_s42|CDRL1P2                       = 221 of 224.9 expected by chance (ratio 0.983, Jaccard 0.1242, n_differing 779)    (BxC)
+  overlap_B_s42|CDRL1P3                       = 229 of 224.9 expected by chance (ratio 1.018, Jaccard 0.1293, n_differing 771)    (BxC)
+  overlap_B_s42|CDRL1P4                       = 217 of 224.9 expected by chance (ratio 0.965, Jaccard 0.1217, n_differing 783)    (BxC)
+  overlap_B_s42|CDRL1P5                       = 201 of 224.9 expected by chance (ratio 0.894, Jaccard 0.1117, n_differing 799)    (BxC)
+  overlap_B_s42|CDRLHP1                       = 219 of 224.9 expected by chance (ratio 0.974, Jaccard 0.1230, n_differing 781)    (BxC)
+  overlap_B_s42|CDRLHP2                       = 202 of 224.9 expected by chance (ratio 0.898, Jaccard 0.1123, n_differing 798)    (BxC)
+  overlap_B_s42|CDRLHP3                       = 224 of 224.9 expected by chance (ratio 0.996, Jaccard 0.1261, n_differing 776)    (BxC)
+  overlap_B_s42|CDRLHP4                       = 233 of 224.9 expected by chance (ratio 1.036, Jaccard 0.1319, n_differing 767)    (BxC)
+  overlap_B_s42|CDRLHP5                       = 222 of 224.9 expected by chance (ratio 0.987, Jaccard 0.1249, n_differing 778)    (BxC)
+  overlap_B_s42|CDRLU                         = 227 of 224.9 expected by chance (ratio 1.009, Jaccard 0.1280, n_differing 773)    (BxC)
+  overlap_B_s43|B_s45                         = 239 of 224.9 expected by chance (ratio 1.063, Jaccard 0.1357, n_differing 761)    (BxB)
+  overlap_B_s43|C10                           = 246 of 224.9 expected by chance (ratio 1.094, Jaccard 0.1403, n_differing 754)    (BxC)
+  overlap_B_s43|CDRL1P1                       = 226 of 224.9 expected by chance (ratio 1.005, Jaccard 0.1274, n_differing 774)    (BxC)
+  overlap_B_s43|CDRL1P2                       = 254 of 224.9 expected by chance (ratio 1.130, Jaccard 0.1455, n_differing 746)    (BxC)
+  overlap_B_s43|CDRL1P3                       = 236 of 224.9 expected by chance (ratio 1.049, Jaccard 0.1338, n_differing 764)    (BxC)
+  overlap_B_s43|CDRL1P4                       = 233 of 224.9 expected by chance (ratio 1.036, Jaccard 0.1319, n_differing 767)    (BxC)
+  overlap_B_s43|CDRL1P5                       = 233 of 224.9 expected by chance (ratio 1.036, Jaccard 0.1319, n_differing 767)    (BxC)
+  overlap_B_s43|CDRLHP1                       = 236 of 224.9 expected by chance (ratio 1.049, Jaccard 0.1338, n_differing 764)    (BxC)
+  overlap_B_s43|CDRLHP2                       = 220 of 224.9 expected by chance (ratio 0.978, Jaccard 0.1236, n_differing 780)    (BxC)
+  overlap_B_s43|CDRLHP3                       = 211 of 224.9 expected by chance (ratio 0.938, Jaccard 0.1179, n_differing 789)    (BxC)
+  overlap_B_s43|CDRLHP4                       = 210 of 224.9 expected by chance (ratio 0.934, Jaccard 0.1173, n_differing 790)    (BxC)
+  overlap_B_s43|CDRLHP5                       = 236 of 224.9 expected by chance (ratio 1.049, Jaccard 0.1338, n_differing 764)    (BxC)
+  overlap_B_s43|CDRLU                         = 250 of 224.9 expected by chance (ratio 1.112, Jaccard 0.1429, n_differing 750)    (BxC)
+  overlap_B_s45|C10                           = 230 of 224.9 expected by chance (ratio 1.023, Jaccard 0.1299, n_differing 770)    (BxC)
+  overlap_B_s45|CDRL1P1                       = 205 of 224.9 expected by chance (ratio 0.912, Jaccard 0.1142, n_differing 795)    (BxC)
+  overlap_B_s45|CDRL1P2                       = 218 of 224.9 expected by chance (ratio 0.969, Jaccard 0.1223, n_differing 782)    (BxC)
+  overlap_B_s45|CDRL1P3                       = 223 of 224.9 expected by chance (ratio 0.992, Jaccard 0.1255, n_differing 777)    (BxC)
+  overlap_B_s45|CDRL1P4                       = 215 of 224.9 expected by chance (ratio 0.956, Jaccard 0.1204, n_differing 785)    (BxC)
+  overlap_B_s45|CDRL1P5                       = 217 of 224.9 expected by chance (ratio 0.965, Jaccard 0.1217, n_differing 783)    (BxC)
+  overlap_B_s45|CDRLHP1                       = 224 of 224.9 expected by chance (ratio 0.996, Jaccard 0.1261, n_differing 776)    (BxC)
+  overlap_B_s45|CDRLHP2                       = 229 of 224.9 expected by chance (ratio 1.018, Jaccard 0.1293, n_differing 771)    (BxC)
+  overlap_B_s45|CDRLHP3                       = 242 of 224.9 expected by chance (ratio 1.076, Jaccard 0.1377, n_differing 758)    (BxC)
+  overlap_B_s45|CDRLHP4                       = 215 of 224.9 expected by chance (ratio 0.956, Jaccard 0.1204, n_differing 785)    (BxC)
+  overlap_B_s45|CDRLHP5                       = 219 of 224.9 expected by chance (ratio 0.974, Jaccard 0.1230, n_differing 781)    (BxC)
+  overlap_B_s45|CDRLU                         = 216 of 224.9 expected by chance (ratio 0.961, Jaccard 0.1211, n_differing 784)    (BxC)
+  overlap_C10|CDRL1P1                         = 515 of 224.9 expected by chance (ratio 2.290, Jaccard 0.3468, n_differing 485)    (CxC)
+  overlap_C10|CDRL1P2                         = 515 of 224.9 expected by chance (ratio 2.290, Jaccard 0.3468, n_differing 485)    (CxC)
+  overlap_C10|CDRL1P3                         = 501 of 224.9 expected by chance (ratio 2.228, Jaccard 0.3342, n_differing 499)    (CxC)
+  overlap_C10|CDRL1P4                         = 513 of 224.9 expected by chance (ratio 2.281, Jaccard 0.3450, n_differing 487)    (CxC)
+  overlap_C10|CDRL1P5                         = 518 of 224.9 expected by chance (ratio 2.304, Jaccard 0.3495, n_differing 482)    (CxC)
+  overlap_C10|CDRLHP1                         = 450 of 224.9 expected by chance (ratio 2.001, Jaccard 0.2903, n_differing 550)    (CxC)
+  overlap_C10|CDRLHP2                         = 457 of 224.9 expected by chance (ratio 2.032, Jaccard 0.2962, n_differing 543)    (CxC)
+  overlap_C10|CDRLHP3                         = 468 of 224.9 expected by chance (ratio 2.081, Jaccard 0.3055, n_differing 532)    (CxC)
+  overlap_C10|CDRLHP4                         = 478 of 224.9 expected by chance (ratio 2.126, Jaccard 0.3141, n_differing 522)    (CxC)
+  overlap_C10|CDRLHP5                         = 440 of 224.9 expected by chance (ratio 1.957, Jaccard 0.2821, n_differing 560)    (CxC)
+  overlap_C10|CDRLU                           = 652 of 224.9 expected by chance (ratio 2.899, Jaccard 0.4837, n_differing 348)    (CxC)
+  overlap_CDRL1P1|CDRL1P2                     = 527 of 224.9 expected by chance (ratio 2.344, Jaccard 0.3578, n_differing 473)    (CxC)
+  overlap_CDRL1P1|CDRL1P3                     = 618 of 224.9 expected by chance (ratio 2.748, Jaccard 0.4472, n_differing 382)    (CxC)
+  overlap_CDRL1P1|CDRL1P4                     = 657 of 224.9 expected by chance (ratio 2.922, Jaccard 0.4892, n_differing 343)    (CxC)
+  overlap_CDRL1P1|CDRL1P5                     = 574 of 224.9 expected by chance (ratio 2.553, Jaccard 0.4025, n_differing 426)    (CxC)
+  overlap_CDRL1P1|CDRLHP1                     = 508 of 224.9 expected by chance (ratio 2.259, Jaccard 0.3405, n_differing 492)    (CxC)
+  overlap_CDRL1P1|CDRLHP2                     = 527 of 224.9 expected by chance (ratio 2.344, Jaccard 0.3578, n_differing 473)    (CxC)
+  overlap_CDRL1P1|CDRLHP3                     = 525 of 224.9 expected by chance (ratio 2.335, Jaccard 0.3559, n_differing 475)    (CxC)
+  overlap_CDRL1P1|CDRLHP4                     = 465 of 224.9 expected by chance (ratio 2.068, Jaccard 0.3029, n_differing 535)    (CxC)
+  overlap_CDRL1P1|CDRLHP5                     = 458 of 224.9 expected by chance (ratio 2.037, Jaccard 0.2970, n_differing 542)    (CxC)
+  overlap_CDRL1P1|CDRLU                       = 655 of 224.9 expected by chance (ratio 2.913, Jaccard 0.4870, n_differing 345)    (CxC)
+  overlap_CDRL1P2|CDRL1P3                     = 662 of 224.9 expected by chance (ratio 2.944, Jaccard 0.4948, n_differing 338)    (CxC)
+  overlap_CDRL1P2|CDRL1P4                     = 599 of 224.9 expected by chance (ratio 2.664, Jaccard 0.4276, n_differing 401)    (CxC)
+  overlap_CDRL1P2|CDRL1P5                     = 559 of 224.9 expected by chance (ratio 2.486, Jaccard 0.3879, n_differing 441)    (CxC)
+  overlap_CDRL1P2|CDRLHP1                     = 540 of 224.9 expected by chance (ratio 2.401, Jaccard 0.3699, n_differing 460)    (CxC)
+  overlap_CDRL1P2|CDRLHP2                     = 478 of 224.9 expected by chance (ratio 2.126, Jaccard 0.3141, n_differing 522)    (CxC)
+  overlap_CDRL1P2|CDRLHP3                     = 489 of 224.9 expected by chance (ratio 2.175, Jaccard 0.3236, n_differing 511)    (CxC)
+  overlap_CDRL1P2|CDRLHP4                     = 486 of 224.9 expected by chance (ratio 2.161, Jaccard 0.3210, n_differing 514)    (CxC)
+  overlap_CDRL1P2|CDRLHP5                     = 628 of 224.9 expected by chance (ratio 2.793, Jaccard 0.4577, n_differing 372)    (CxC)
+  overlap_CDRL1P2|CDRLU                       = 644 of 224.9 expected by chance (ratio 2.864, Jaccard 0.4749, n_differing 356)    (CxC)
+  overlap_CDRL1P3|CDRL1P4                     = 600 of 224.9 expected by chance (ratio 2.668, Jaccard 0.4286, n_differing 400)    (CxC)
+  overlap_CDRL1P3|CDRL1P5                     = 554 of 224.9 expected by chance (ratio 2.464, Jaccard 0.3831, n_differing 446)    (CxC)
+  overlap_CDRL1P3|CDRLHP1                     = 543 of 224.9 expected by chance (ratio 2.415, Jaccard 0.3727, n_differing 457)    (CxC)
+  overlap_CDRL1P3|CDRLHP2                     = 469 of 224.9 expected by chance (ratio 2.086, Jaccard 0.3063, n_differing 531)    (CxC)
+  overlap_CDRL1P3|CDRLHP3                     = 481 of 224.9 expected by chance (ratio 2.139, Jaccard 0.3167, n_differing 519)    (CxC)
+  overlap_CDRL1P3|CDRLHP4                     = 454 of 224.9 expected by chance (ratio 2.019, Jaccard 0.2937, n_differing 546)    (CxC)
+  overlap_CDRL1P3|CDRLHP5                     = 575 of 224.9 expected by chance (ratio 2.557, Jaccard 0.4035, n_differing 425)    (CxC)
+  overlap_CDRL1P3|CDRLU                       = 646 of 224.9 expected by chance (ratio 2.873, Jaccard 0.4771, n_differing 354)    (CxC)
+  overlap_CDRL1P4|CDRL1P5                     = 554 of 224.9 expected by chance (ratio 2.464, Jaccard 0.3831, n_differing 446)    (CxC)
+  overlap_CDRL1P4|CDRLHP1                     = 486 of 224.9 expected by chance (ratio 2.161, Jaccard 0.3210, n_differing 514)    (CxC)
+  overlap_CDRL1P4|CDRLHP2                     = 623 of 224.9 expected by chance (ratio 2.770, Jaccard 0.4524, n_differing 377)    (CxC)
+  overlap_CDRL1P4|CDRLHP3                     = 502 of 224.9 expected by chance (ratio 2.232, Jaccard 0.3351, n_differing 498)    (CxC)
+  overlap_CDRL1P4|CDRLHP4                     = 475 of 224.9 expected by chance (ratio 2.112, Jaccard 0.3115, n_differing 525)    (CxC)
+  overlap_CDRL1P4|CDRLHP5                     = 551 of 224.9 expected by chance (ratio 2.450, Jaccard 0.3803, n_differing 449)    (CxC)
+  overlap_CDRL1P4|CDRLU                       = 656 of 224.9 expected by chance (ratio 2.917, Jaccard 0.4881, n_differing 344)    (CxC)
+  overlap_CDRL1P5|CDRLHP1                     = 468 of 224.9 expected by chance (ratio 2.081, Jaccard 0.3055, n_differing 532)    (CxC)
+  overlap_CDRL1P5|CDRLHP2                     = 477 of 224.9 expected by chance (ratio 2.121, Jaccard 0.3132, n_differing 523)    (CxC)
+  overlap_CDRL1P5|CDRLHP3                     = 469 of 224.9 expected by chance (ratio 2.086, Jaccard 0.3063, n_differing 531)    (CxC)
+  overlap_CDRL1P5|CDRLHP4                     = 492 of 224.9 expected by chance (ratio 2.188, Jaccard 0.3263, n_differing 508)    (CxC)
+  overlap_CDRL1P5|CDRLHP5                     = 552 of 224.9 expected by chance (ratio 2.455, Jaccard 0.3812, n_differing 448)    (CxC)
+  overlap_CDRL1P5|CDRLU                       = 652 of 224.9 expected by chance (ratio 2.899, Jaccard 0.4837, n_differing 348)    (CxC)
+  overlap_CDRLHP1|CDRLHP2                     = 411 of 224.9 expected by chance (ratio 1.828, Jaccard 0.2587, n_differing 589)    (CxC)
+  overlap_CDRLHP1|CDRLHP3                     = 429 of 224.9 expected by chance (ratio 1.908, Jaccard 0.2731, n_differing 571)    (CxC)
+  overlap_CDRLHP1|CDRLHP4                     = 419 of 224.9 expected by chance (ratio 1.863, Jaccard 0.2650, n_differing 581)    (CxC)
+  overlap_CDRLHP1|CDRLHP5                     = 456 of 224.9 expected by chance (ratio 2.028, Jaccard 0.2953, n_differing 544)    (CxC)
+  overlap_CDRLHP1|CDRLU                       = 525 of 224.9 expected by chance (ratio 2.335, Jaccard 0.3559, n_differing 475)    (CxC)
+  overlap_CDRLHP2|CDRLHP3                     = 401 of 224.9 expected by chance (ratio 1.783, Jaccard 0.2508, n_differing 599)    (CxC)
+  overlap_CDRLHP2|CDRLHP4                     = 444 of 224.9 expected by chance (ratio 1.974, Jaccard 0.2853, n_differing 556)    (CxC)
+  overlap_CDRLHP2|CDRLHP5                     = 430 of 224.9 expected by chance (ratio 1.912, Jaccard 0.2739, n_differing 570)    (CxC)
+  overlap_CDRLHP2|CDRLU                       = 544 of 224.9 expected by chance (ratio 2.419, Jaccard 0.3736, n_differing 456)    (CxC)
+  overlap_CDRLHP3|CDRLHP4                     = 456 of 224.9 expected by chance (ratio 2.028, Jaccard 0.2953, n_differing 544)    (CxC)
+  overlap_CDRLHP3|CDRLHP5                     = 434 of 224.9 expected by chance (ratio 1.930, Jaccard 0.2771, n_differing 566)    (CxC)
+  overlap_CDRLHP3|CDRLU                       = 562 of 224.9 expected by chance (ratio 2.499, Jaccard 0.3908, n_differing 438)    (CxC)
+  overlap_CDRLHP4|CDRLHP5                     = 420 of 224.9 expected by chance (ratio 1.868, Jaccard 0.2658, n_differing 580)    (CxC)
+  overlap_CDRLHP4|CDRLU                       = 547 of 224.9 expected by chance (ratio 2.433, Jaccard 0.3765, n_differing 453)    (CxC)
+  overlap_CDRLHP5|CDRLU                       = 545 of 224.9 expected by chance (ratio 2.424, Jaccard 0.3746, n_differing 455)    (CxC)
+  forbidden_path_references                   = 0    (E0.step_independence() CALLED, 64 scripts incl. 7 in rebuild/ABC)
+  provenance_pragma_exemptions                = 4    (reported, not suppressed)
+  manifest_spotcheck                          = 203/203    (random sample across raw/auth/tgt/local, re-hashed)
+  MyTrain_py_copies_in_tree                   = 2
+  MyTest_py_copies_in_tree                    = 2
+  patches_missing                             = {}
+  cudnn_declared                              = deterministic=True benchmark_false=True seed_from_opt=True
+  endpoints                                   = COD10K 2026/2026 (primary), NC4K 4121/4121 (secondary)    (CHAMELEON withdrawn (D2 41/76); CAMO selection-only)
+  allocation_signal                           = target-side, from rebuild/B1/out/b1_cluster_es_dinoL518.csv    (C1 gate_signal + gate_cluster_source called unchanged)
+  pool_content_identical_across_architectures = 33/33 arm x seed pairs    (pool content is architecture-independent by construction)
+  armC_pool_identical_across_seeds_CDRL1P1    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRL1P2    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRL1P3    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRL1P4    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRL1P5    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLHP1    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLHP2    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLHP3    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLHP4    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLHP5    = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+  armC_pool_identical_across_seeds_CDRLU      = True    (3/3 seed digests compared; the selection is deterministic -- no RNG)
+THRESHOLD  every arm pool has equal Image/ and GT/ counts at its expected size -> PASS
+THRESHOLD  every arm pool has identical stem sets in Image/ and GT/ -> PASS
+THRESHOLD  the REAL SrcDataset pairs stem(images[i]) == stem(gts[i]) for EVERY i in EVERY arm pool -> PASS
+THRESHOLD  round-2 positional parity holds on the full worst-case CLS union -> PASS
+THRESHOLD  every pool's base subset matches E0's manifest byte for byte -> PASS
+THRESHOLD  every selected render mask is pixel-identical to raw_gt -> PASS
+THRESHOLD  arm C10 reproduces C1's committed allocation cell exactly (all five keys) -> PASS
+THRESHOLD  arm CDRL1P1 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRL1P2 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRL1P3 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRL1P4 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRL1P5 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLHP1 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLHP2 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLHP3 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLHP4 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLHP5 reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arm CDRLU reproduces C1's committed allocation SHAPE exactly -- the same-shape assertion, n_displaced reported not asserted (PREREGISTRATION_T2.md T2.4) -> PASS
+THRESHOLD  arms B and C overlap at the chance rate (0.7-1.3x), so they are genuinely different sets -> PASS
+THRESHOLD  no two C-family arms overlap above Jaccard 0.50, so a WITHIN NOISE result cannot be mechanical (PREREGISTRATION_T2.md T2.7) -> PASS
+THRESHOLD  no script under rebuild/ references the archive or a /tmp scratchpad -> PASS
+THRESHOLD  every declared primary input resolves and re-hashes clean -> PASS
+THRESHOLD  exactly one MyTrain.py and one MyTest.py exist, and all six patches are present -> PASS
+THRESHOLD  MyTrain.py declares cudnn determinism and a CLI seed -> PASS
+THRESHOLD  CHAMELEON and CAMO are unreachable as endpoints in code -> PASS
+THRESHOLD  the endpoint-measured signal appears nowhere in ABC, and ABC fits no partition of its own -> PASS
+THRESHOLD  pool content is identical across the two architectures for every (arm, seed) -> PASS
+THRESHOLD  every deterministic C-family arm has an identical pool at all three seeds (vacuous pass excluded) -> PASS
+OLD CLAIM  none pinned
+ARTIFACTS  rebuild/ABC/out/cdr/abc_preflight.json, rebuild/ABC/out/cdr/abc_pools.json, rebuild/ABC/out/cdr/abc_stems_B_s42.txt, rebuild/ABC/out/cdr/abc_stems_B_s43.txt, rebuild/ABC/out/cdr/abc_stems_B_s45.txt, rebuild/ABC/out/cdr/abc_stems_CDRL1P1.txt, rebuild/ABC/out/cdr/abc_stems_CDRL1P2.txt, rebuild/ABC/out/cdr/abc_stems_CDRL1P3.txt, rebuild/ABC/out/cdr/abc_stems_CDRL1P4.txt, rebuild/ABC/out/cdr/abc_stems_CDRL1P5.txt, rebuild/ABC/out/cdr/abc_stems_CDRLHP1.txt, rebuild/ABC/out/cdr/abc_stems_CDRLHP2.txt, rebuild/ABC/out/cdr/abc_stems_CDRLHP3.txt, rebuild/ABC/out/cdr/abc_stems_CDRLHP4.txt, rebuild/ABC/out/cdr/abc_stems_CDRLHP5.txt, rebuild/ABC/out/cdr/abc_stems_CDRLU.txt
+TRAINS     NO
+NOTES      BLOCK 1 OF 3, AND THE FIRST ABC BLOCK. Unlike E0-C1, where a later block SUPERSEDED an earlier one, ABC's three blocks are sequential STAGES: #1 is this pre-flight, #2 is run accounting, #3 is the verdict. None supersedes another. This block TRAINS NOTHING; block #2 is the first in the whole rebuild with TRAINS YES.
+           COLLISION IS IMPOSSIBLE BY CONSTRUCTION, not by convention. RUNID is a pure function of (arch, arm, seed); every path a run writes is RUNID-prefixed, INCLUDING the CLS round-2 pool, because CLS.py:16 derives it from source_root alone. Under released code every arm collapses onto Dataset/Source/HKU-IS_iteration2/ and each run rmtree's the previous run's pseudo-label pool (CLS.py:19-23) -- which is also why patch P0 was required before any arm could be built.
+           ROUND-2 PARITY IS PROVED, NOT SAMPLED. CLS appends images as .png (CLS.py:156, via the .jpg->.png rename at Dataloader.py:141-142), so round 2 trains on a MIXED-EXTENSION pool that no prior experiment ever checked. SrcDataset pairs image to mask by sorted-list INDEX, not by name (Dataloader.py:14-17,29-37), and filter_files is not a pairing guard -- it checks only equal lengths and drops positional pairs whose sizes differ, so a mis-pairing between two images of equal dimensions passes silently. Parity is therefore asserted on the union of each pool with ALL 4040 target names; sorted order is preserved under deletion of the same stems from both lists, and CLS writes image and GT together or skips both (CLS.py:151,155-156), so the union case proves every possible subset.
+           ARM-B DRAW COUPLING IS PER-SEED, and this is a decision with a cost. "Random" is a distribution over draws, not one draw -- C1 averaged its random arm over 20 draws for exactly this reason, and REBUILD_PLAN 0.2 discarded "seed 0, single draw" as an inherited defect. The cost: arm B carries selection variance that arms A0 and C do not, so pooled sigma_hat will be INFLATED by arm B, making the pre-registered bar harder rather than easier. Per-arm sds are reported beside the pooled value in block #3.
+           A2-vs-B CARRIES A MASK-PROVENANCE ASYMMETRY, quantified rather than hidden. A2's added masks are the AUTHORS' GT (mean white fraction 0.18557); B's and C's are the render's own output masks, pixel-identical to RAW GT (0.19132). So Delta(B - A2) confounds "LAKE-RED background" with a 0.00575 mean-white-fraction difference on 1000 of 5447 images (18.4%). It is unavoidable under the approved A2 definition: the authors' image was rendered with the authors' mask, and pairing it with the raw mask would mislabel it. Delta(C - B) -- the campaign's actual claim -- is unaffected: B and C share mask provenance, budget and render pool.
+           WHAT ARM C IS AND IS NOT. C1's attribution audit measured the ES signal's contribution at +0.0073 of d paired against its own shuffle (13/20, a coin flip) and -0.0649 against an arbitrary cluster (4/20). So this campaign tests whether a CONCENTRATED, more-proximal, lower-effective-rank arm trains better than a dispersed one. It is NOT a test of whether the uncertainty signal specifically helps, and no result from it may be reported as evidence about that signal.
+           THE agg VALUES IN REBUILD_PLAN 1 ARE NOT AN ASSERTABLE AUTHORITY, found while building the first arm pool and recorded because it is a defect in the rebuild's own work. common.py:248-263 claims dir_digest "Matches the agg values pinned in REBUILD_PLAN.md 1." It does not: measured d7f6de696d5c223e against the pinned b42e5f44b5f2b0db on the authors' Image pool. The pinned values were computed over a listing carrying the FULL RELATIVE PATH; dir_digest hashes the BARE FILENAME. Reproduced exactly: the path-prefixed variant returns b42e5f44b5f2b0db and 95a0b4ed8ce47903. Never caught because no .py in the repo references those values. PRIMARY DATA IS UNCHANGED -- all 4447+4447 verify per-file against E0's manifest. ABC therefore asserts against E0's manifest, and common.py's docstring plus REBUILD_PLAN 1 need correcting (pending REVISION_TABLE R16).
+           PREREGISTRATION.md was committed before this block and is FROZEN. This script neither reads it as an input nor writes it.
+================================================================================
+

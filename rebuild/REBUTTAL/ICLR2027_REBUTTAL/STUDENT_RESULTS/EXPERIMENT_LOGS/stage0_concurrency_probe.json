@@ -1,0 +1,70 @@
+{
+  "SINet_k1": {
+    "n_proc": 2,
+    "n_measured": 2,
+    "per_proc_steps_per_s": [
+      3.5014,
+      3.2529
+    ],
+    "aggregate_steps_per_s": 6.7544,
+    "pth_written": false,
+    "speedup_vs_k1": 1.0,
+    "per_run_slowdown_vs_k1": 1.0
+  },
+  "SINet_k2": {
+    "n_proc": 4,
+    "n_measured": 4,
+    "per_proc_steps_per_s": [
+      1.642,
+      1.6417,
+      1.5782,
+      1.5783
+    ],
+    "aggregate_steps_per_s": 6.4402,
+    "pth_written": false,
+    "speedup_vs_k1": 0.953,
+    "per_run_slowdown_vs_k1": 2.098
+  },
+  "SINet_k3": {
+    "n_proc": 6,
+    "n_measured": 6,
+    "per_proc_steps_per_s": [
+      1.095,
+      1.1006,
+      1.0948,
+      1.0536,
+      1.0552,
+      1.0526
+    ],
+    "aggregate_steps_per_s": 6.4517,
+    "pth_written": false,
+    "speedup_vs_k1": 0.955,
+    "per_run_slowdown_vs_k1": 3.141
+  },
+  "SINetv2_k1": {
+    "n_proc": 2,
+    "n_measured": 2,
+    "per_proc_steps_per_s": [
+      4.1702,
+      3.8819
+    ],
+    "aggregate_steps_per_s": 8.0521,
+    "pth_written": false,
+    "speedup_vs_k1": 1.0,
+    "per_run_slowdown_vs_k1": 1.0
+  },
+  "SINetv2_k2": {
+    "n_proc": 4,
+    "n_measured": 4,
+    "per_proc_steps_per_s": [
+      1.1962,
+      1.2117,
+      1.1853,
+      1.2281
+    ],
+    "aggregate_steps_per_s": 4.8213,
+    "pth_written": false,
+    "speedup_vs_k1": 0.599,
+    "per_run_slowdown_vs_k1": 3.34
+  }
+}

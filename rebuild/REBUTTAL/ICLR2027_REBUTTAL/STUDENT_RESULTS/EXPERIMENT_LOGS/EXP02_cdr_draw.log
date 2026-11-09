@@ -1,0 +1,14 @@
+L1 tau 1.000: candidates 0-1058, relaxation step 0 (J_C10 <= 0.35), acceptance rate 0.0047, rejections {'examined': 1059, 'fixed_point': 664, 'rho': 155, 'jaccard_c10': 234, 'jaccard_pair': 1}
+LH tau 0.758: candidates 1059-1089, relaxation step 0 (J_C10 <= 0.35), acceptance rate 0.1613, rejections {'examined': 31, 'fixed_point': 20, 'rho': 5, 'jaccard_c10': 1, 'jaccard_pair': 0}
+  CDRLU     draw None  rho +nan J(C10) 0.4837 N_eff nominal 74.95 induced 50.27 max quota  14 fill mean 0.8005
+  CDRL1P1   draw 125   rho +0.0157 J(C10) 0.3468 N_eff nominal 29.86 induced 45.02 max quota 194 fill mean 0.8407
+  CDRL1P2   draw 561   rho +0.0419 J(C10) 0.3468 N_eff nominal 29.86 induced 42.80 max quota 194 fill mean 0.8295
+  CDRL1P3   draw 822   rho +0.0914 J(C10) 0.3342 N_eff nominal 29.86 induced 40.43 max quota 194 fill mean 0.7757
+  CDRL1P4   draw 922   rho -0.0520 J(C10) 0.3450 N_eff nominal 29.86 induced 46.07 max quota 194 fill mean 0.8434
+  CDRL1P5   draw 1058  rho +0.0161 J(C10) 0.3495 N_eff nominal 29.86 induced 48.38 max quota 194 fill mean 0.8709
+  CDRLHP1   draw 1071  rho -0.0070 J(C10) 0.2903 N_eff nominal 14.91 induced 37.31 max quota 308 fill mean 0.8295
+  CDRLHP2   draw 1076  rho -0.0990 J(C10) 0.2962 N_eff nominal 14.91 induced 46.12 max quota 308 fill mean 0.8729
+  CDRLHP3   draw 1083  rho +0.0013 J(C10) 0.3055 N_eff nominal 14.91 induced 39.94 max quota 308 fill mean 0.8810
+  CDRLHP4   draw 1088  rho -0.0114 J(C10) 0.3141 N_eff nominal 14.91 induced 39.13 max quota 308 fill mean 0.8564
+  CDRLHP5   draw 1089  rho -0.0635 J(C10) 0.2821 N_eff nominal 14.91 induced 41.98 max quota 308 fill mean 0.8587
+set-distinctness gate: PASS (max pair Jaccard 0.4948)

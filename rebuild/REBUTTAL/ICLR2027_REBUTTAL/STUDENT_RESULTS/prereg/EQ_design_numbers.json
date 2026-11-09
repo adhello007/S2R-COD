@@ -1,0 +1,20 @@
+{
+  "n": 29,
+  "power_C10-B_point_d0.0000_at_n29": ">=0.92 before n",
+  "power_C10-B_point_d0.0012_at_n29": ">=0.92 before n",
+  "power_C10-B_point_d0.0024_at_n29": 0.8094,
+  "power_C10-B_sd_upper80_d0.0000_at_n29": ">=0.92 before n",
+  "power_C10-B_sd_upper80_d0.0012_at_n29": 0.8524,
+  "power_C10-B_sd_upper80_d0.0024_at_n29": 0.5812,
+  "power_C10-CSHUF_point_d0.0000_at_n29": ">=0.92 before n",
+  "power_C10-CSHUF_point_d0.0012_at_n29": ">=0.92 before n",
+  "power_C10-CSHUF_point_d0.0024_at_n29": 0.7915,
+  "power_C10-CSHUF_sd_upper80_d0.0000_at_n29": ">=0.92 before n",
+  "power_C10-CSHUF_sd_upper80_d0.0012_at_n29": 0.8405,
+  "power_C10-CSHUF_sd_upper80_d0.0024_at_n29": 0.5675,
+  "expected_90ci_halfwidth_C10-B": 0.0017174551581006896,
+  "expected_95ci_halfwidth_C10-B": 0.002060760781345431,
+  "k_star": 20,
+  "P_tail_k_star": 0.03071417286992073,
+  "P_tail_k_star_minus1": 0.06802297383546829
+}

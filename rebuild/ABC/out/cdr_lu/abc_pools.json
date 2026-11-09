@@ -1,0 +1,85 @@
+{
+  "arm_B_draw_coupling": "per-seed (numpy default_rng(700000 + seed))",
+  "arm_C_alpha": {
+    "C05": 0.5,
+    "C10": 1.0,
+    "C10FX": 1.0,
+    "CDRL1P1": 1.0,
+    "CDRL1P2": 1.0,
+    "CDRL1P3": 1.0,
+    "CDRL1P4": 1.0,
+    "CDRL1P5": 1.0,
+    "CDRLHP1": 0.758,
+    "CDRLHP2": 0.758,
+    "CDRLHP3": 0.758,
+    "CDRLHP4": 0.758,
+    "CDRLHP5": 0.758,
+    "CDRLU": 1.0,
+    "CINV": 1.0,
+    "CORACLE": 1.0,
+    "CSHUF": 1.0
+  },
+  "budget": 1000,
+  "commit": "138ad30 (dirty)",
+  "embedder": "dinoL518",
+  "generated": "2026-11-09T07:59:41+05:30",
+  "pools": {
+    "SINet_CDRLU_s46": {
+      "added": 1000,
+      "arch": "SINet",
+      "arm": "CDRLU",
+      "cls_dir": "Dataset/Source/ABC/SINet_CDRLU_s46_iteration2",
+      "gt_digest": "72867050c8a7f103dd3c2ad2e4ebeaa315eb5843b9378f9b7cf5746c51e794cb",
+      "image_digest": "28f84edd4e62d1295b331bb0146f06e244719503adae3ca01597d976e44bf1b0",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINet_CDRLU_s46/",
+      "seed": 46,
+      "source_root": "Dataset/Source/ABC/SINet_CDRLU_s46/"
+    },
+    "SINet_CDRLU_s47": {
+      "added": 1000,
+      "arch": "SINet",
+      "arm": "CDRLU",
+      "cls_dir": "Dataset/Source/ABC/SINet_CDRLU_s47_iteration2",
+      "gt_digest": "72867050c8a7f103dd3c2ad2e4ebeaa315eb5843b9378f9b7cf5746c51e794cb",
+      "image_digest": "28f84edd4e62d1295b331bb0146f06e244719503adae3ca01597d976e44bf1b0",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINet_CDRLU_s47/",
+      "seed": 47,
+      "source_root": "Dataset/Source/ABC/SINet_CDRLU_s47/"
+    },
+    "SINetv2_CDRLU_s46": {
+      "added": 1000,
+      "arch": "SINetv2",
+      "arm": "CDRLU",
+      "cls_dir": "Dataset/Source/ABC/SINetv2_CDRLU_s46_iteration2",
+      "gt_digest": "72867050c8a7f103dd3c2ad2e4ebeaa315eb5843b9378f9b7cf5746c51e794cb",
+      "image_digest": "28f84edd4e62d1295b331bb0146f06e244719503adae3ca01597d976e44bf1b0",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINetv2_CDRLU_s46/",
+      "seed": 46,
+      "source_root": "Dataset/Source/ABC/SINetv2_CDRLU_s46/"
+    },
+    "SINetv2_CDRLU_s47": {
+      "added": 1000,
+      "arch": "SINetv2",
+      "arm": "CDRLU",
+      "cls_dir": "Dataset/Source/ABC/SINetv2_CDRLU_s47_iteration2",
+      "gt_digest": "72867050c8a7f103dd3c2ad2e4ebeaa315eb5843b9378f9b7cf5746c51e794cb",
+      "image_digest": "28f84edd4e62d1295b331bb0146f06e244719503adae3ca01597d976e44bf1b0",
+      "n_gt": 5447,
+      "n_image": 5447,
+      "save_model": "Snapshot/ABC/SINetv2_CDRLU_s47/",
+      "seed": 47,
+      "source_root": "Dataset/Source/ABC/SINetv2_CDRLU_s47/"
+    }
+  },
+  "seeds": [
+    46,
+    47
+  ],
+  "serving": "desc_nc"
+}

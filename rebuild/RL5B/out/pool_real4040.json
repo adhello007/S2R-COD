@@ -1,0 +1,19 @@
+{
+  "archive_extra_images": 0,
+  "commit": "138ad30 (dirty)",
+  "generated": "2026-11-09T08:03:38+05:30",
+  "gt_digest": "f4324017ec486c24188057eb413b47f8b1c179773fa4c3ccd04de8367f648a11",
+  "image_digest": "d5b3cd4b0e826e0290e720a1ea6bf101decf81d48f785df5bd96c2f715040a2b",
+  "images_not_byte_identical_to_target": [],
+  "missing_images": [],
+  "missing_masks": [],
+  "n_camo": 1000,
+  "n_cod10k": 3040,
+  "n_gt": 4040,
+  "n_image": 4040,
+  "n_target": 4040,
+  "pool": "Dataset/Source/RL5B/REAL4040",
+  "source_archive": "Dataset/_download_ws4/TrainValDataset.zip",
+  "source_archive_sha256": "255146828426e144c54867879824bcef27075b9e2386899fa0220f77551dc7be",
+  "verified": true
+}

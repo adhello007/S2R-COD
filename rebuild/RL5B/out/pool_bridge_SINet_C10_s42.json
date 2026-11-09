@@ -1,0 +1,13 @@
+{
+  "commit": "138ad30 (dirty)",
+  "committed_gt_digest": "6a0fc06295fd28b835aa8e2ed517b0ed036f30179cbeb239a4658493efd20302",
+  "committed_image_digest": "5fcfd9aeecfe29e0eebae7a6f1f1b5b854d71119f81ad2ff8a3deb039597583a",
+  "digests_match_committed": true,
+  "generated": "2026-11-09T08:03:35+05:30",
+  "gt_digest": "6a0fc06295fd28b835aa8e2ed517b0ed036f30179cbeb239a4658493efd20302",
+  "image_digest": "5fcfd9aeecfe29e0eebae7a6f1f1b5b854d71119f81ad2ff8a3deb039597583a",
+  "n_gt": 5447,
+  "n_image": 5447,
+  "pool": "Dataset/Source/RL5B/bridge/SINet_C10_s42",
+  "source": "Dataset/Source/ABC/SINet_C10_s42"
+}

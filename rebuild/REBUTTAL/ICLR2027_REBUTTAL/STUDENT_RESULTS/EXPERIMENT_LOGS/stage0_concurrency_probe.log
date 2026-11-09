@@ -1,0 +1,6 @@
+Stage-0 concurrency probe (aggregate over both GPUs; K = processes per GPU)
+  SINet_k1    procs 2 (measured 2): aggregate 6.754 steps/s, speed-up vs K=1 1.000x, each run 1.00x slower; checkpoint written: False
+  SINet_k2    procs 4 (measured 4): aggregate 6.440 steps/s, speed-up vs K=1 0.953x, each run 2.10x slower; checkpoint written: False
+  SINet_k3    procs 6 (measured 6): aggregate 6.452 steps/s, speed-up vs K=1 0.955x, each run 3.14x slower; checkpoint written: False
+  SINetv2_k1  procs 2 (measured 2): aggregate 8.052 steps/s, speed-up vs K=1 1.000x, each run 1.00x slower; checkpoint written: False
+  SINetv2_k2  procs 4 (measured 4): aggregate 4.821 steps/s, speed-up vs K=1 0.599x, each run 3.34x slower; checkpoint written: False
