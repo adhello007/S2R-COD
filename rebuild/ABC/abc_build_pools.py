@@ -90,6 +90,11 @@ def main():
                          'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
                          'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
+    ap.add_argument('--archs', default='SINet,SINetv2',
+                    help='RL5B (additive): comma list of architectures to build. The DEFAULT '
+                         'is both, exactly as every committed invocation. A single-architecture '
+                         'build makes the cross-architecture identity check vacuous; it is '
+                         'reported as such, never as evidence.')
     args = ap.parse_args()
     SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
              if args.seeds else A.SEEDS)
@@ -101,7 +106,8 @@ def main():
     # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
     EXP = args.tag.upper() if args.tag else A.EXP
     os.makedirs(OUT, exist_ok=True)
-    runs = A.all_runs(arms=arms, seeds=SEEDS)
+    ARCHS = tuple(a.strip() for a in args.archs.split(',') if a.strip())
+    runs = A.all_runs(arms=arms, seeds=SEEDS, archs=ARCHS)
 
     _p('=== s1 emit the arm stem selections ===')
     sel = {}
@@ -118,10 +124,11 @@ def main():
                 else 'abc_stems_%s.txt' % arm)
         with open(os.path.join(OUT, name), 'w') as fh:
             fh.write('\n'.join(st) + '\n')
-        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
+        exp = A.expected_cell(arm)      # == C1_CELL[alpha] for every committed arm
+        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(exp)
         _p('  arm %-6s %d stems, perm=%-13s rho=%+.5f  shape reproduced = %s'
            % (arm, len(st), cell['es_perm'], cell['perm_rho'],
-              all(cell[k] == A.C1_CELL[alpha][k] for k in keys)))
+              all(cell[k] == exp[k] for k in keys)))
 
     _p('=== s2 assemble %d arm pools ===' % len(runs))
     built = []
@@ -182,7 +189,7 @@ def main():
                                len(report['gates'])),
                     ', '.join(GATE for GATE in PFA.GATES)))
     metrics.append(('arm_pools_assembled', len(built),
-                    '%d arch x %d arms x %d seeds' % (2, len(arms), len(SEEDS))))
+                    '%d arch x %d arms x %d seeds' % (len(ARCHS), len(arms), len(SEEDS))))
     metrics.append(('pool_size_A0', 4447, 'base authors\' pool only, unpadded'))
     metrics.append(('pool_size_A2_B_C', 4447 + A.BUDGET,
                     'base + B=%d, identical in A2/B/C' % A.BUDGET))

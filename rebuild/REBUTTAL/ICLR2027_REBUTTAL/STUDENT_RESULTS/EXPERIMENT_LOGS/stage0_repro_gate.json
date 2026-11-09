@@ -1,0 +1,40 @@
+{
+  "anchor": {
+    "Sm": 0.7172156230064066,
+    "MAE": 0.07446323197740462,
+    "expect": {
+      "Sm": 0.717216,
+      "MAE": 0.074463
+    },
+    "passed": true
+  },
+  "SINet_C10_s46": {
+    "Sm": "0.717257",
+    "committed_Sm": "0.717257",
+    "n": 2026,
+    "mismatches": {},
+    "passed": true
+  },
+  "SINet_B_s49": {
+    "Sm": "0.717064",
+    "committed_Sm": "0.717064",
+    "n": 2026,
+    "mismatches": {},
+    "passed": true
+  },
+  "SINetv2_CSHUF_s47": {
+    "Sm": "0.700072",
+    "committed_Sm": "0.700072",
+    "n": 2026,
+    "mismatches": {},
+    "passed": true
+  },
+  "SINetv2_CINV_s50": {
+    "Sm": "0.704411",
+    "committed_Sm": "0.704411",
+    "n": 2026,
+    "mismatches": {},
+    "passed": true
+  },
+  "GATE": "PASS"
+}

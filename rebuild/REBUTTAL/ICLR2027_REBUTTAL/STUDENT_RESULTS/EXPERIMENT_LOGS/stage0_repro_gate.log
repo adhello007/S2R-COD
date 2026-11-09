@@ -1,0 +1,6 @@
+Stage-0 reproduction gate: PASS
+anchor Result/SINet/S2C: Sa 0.717216 MAE 0.074463 (expect 0.717216 / 0.074463) -> PASS
+SINet_C10_s46      COD10K n=2026  Sa rescored 0.717257 committed 0.717257  all 9 metrics at 6 dp: MATCH
+SINet_B_s49        COD10K n=2026  Sa rescored 0.717064 committed 0.717064  all 9 metrics at 6 dp: MATCH
+SINetv2_CSHUF_s47  COD10K n=2026  Sa rescored 0.700072 committed 0.700072  all 9 metrics at 6 dp: MATCH
+SINetv2_CINV_s50   COD10K n=2026  Sa rescored 0.704411 committed 0.704411  all 9 metrics at 6 dp: MATCH

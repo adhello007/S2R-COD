@@ -90,6 +90,54 @@ C1_CELL = {
               alloc_entropy_norm=0.36203, tv_from_uniform=0.85906, n_displaced=115),
 }
 
+# CDR (RL5B rebuttal, concentration dose-response; STUDENT_RESULTS/prereg/CDR.md). ADDITIVE.
+# Each CDR arm is one committed allocation: either the cluster-uniform quota vector, or a
+# softmax at temperature tau over target_es permuted by an EXPLICIT, pre-drawn sigma. The
+# sigmas are drawn once by rebuild/ABC/cdr_allocate.py under the pre-registered rule and
+# committed in CDR_MANIFEST; every script reads them from there, so pools, gates and
+# training can never disagree about an arm. Without the manifest no CDR arm exists.
+CDR_MANIFEST = 'rebuild/ABC/out/cdr/cdr_permutations.json'
+CDR_PREFIX = 'CDR'
+
+
+def _load_cdr():
+    import json
+    path = os.path.join(C.REPO, CDR_MANIFEST)
+    if not os.path.isfile(path):
+        return {}
+    arms = json.load(open(path))['arms']
+    for arm, spec in arms.items():
+        if not arm.startswith(CDR_PREFIX) or arm.endswith(FX_SUFFIX):
+            raise RuntimeError('CDR manifest: illegal arm name %r' % arm)
+        if spec['mode'] not in ('uniform', 'permuted'):
+            raise RuntimeError('CDR manifest: %s has unknown mode %r' % (arm, spec['mode']))
+    return arms
+
+
+CDR = _load_cdr()
+for _arm, _spec in CDR.items():
+    # uniform ignores alpha; 1.0 is a placeholder that no uniform code path reads
+    ARM_ALPHA[_arm] = 1.0 if _spec['mode'] == 'uniform' else float(_spec['tau'])
+    ARM_ES_PERM[_arm] = 'uniform' if _spec['mode'] == 'uniform' else 'cdr:' + _arm
+UNIFORM_CELL = dict(clusters_funded=75, max_alloc_share=0.014,
+                    alloc_entropy_norm=1.0, tv_from_uniform=0.0)
+
+
+def is_cdr(arm):
+    return arm in CDR
+
+
+def expected_cell(arm):
+    """The shape an arm's allocation must reproduce (gate G5 and the pool builder).
+    Committed arms: C1's committed cell at their alpha, exactly as before. CDR arms: the
+    analytic uniform cell, or the IDENTITY permutation's cell at the same tau -- a
+    permutation of the scores permutes p, so the shape keys must be identical."""
+    if not is_cdr(arm):
+        return C1_CELL[ARM_ALPHA[arm]]
+    if CDR[arm]['mode'] == 'uniform':
+        return UNIFORM_CELL
+    return arm_c_stems(ARM_ALPHA[arm], None)[1]
+
 
 def set_out(tag=''):
     """Point OUT at a subdirectory so an additive campaign cannot overwrite a
@@ -265,6 +313,18 @@ def es_permutation(es, kind):
         raise RuntimeError('T2 HALT: no permutation in %d draws from %d met the '
                            'declared rule (no fixed point, |rho| <= %.2f)'
                            % (SHUF_TRIES, SHUF_NS, SHUF_MAX_RHO))
+    if kind == 'uniform':
+        # CDR LU: no direction at all -- the scores are not used (arm_c_stems sets p = 1/k)
+        return np.arange(k), dict(es_perm='uniform', perm_rho=float('nan'),
+                                  perm_fixed_points=k, perm_seed=None)
+    if isinstance(kind, str) and kind.startswith('cdr:'):
+        spec = CDR[kind[4:]]
+        sigma = np.asarray(spec['sigma'], dtype=np.int64)
+        if sorted(sigma.tolist()) != list(range(k)):
+            raise RuntimeError('CDR HALT: %s sigma is not a permutation of 0..%d' % (kind, k - 1))
+        return sigma, dict(es_perm=kind, perm_rho=round(_spearman_perm(es, sigma), 5),
+                           perm_fixed_points=int((sigma == np.arange(k)).sum()),
+                           perm_seed=spec.get('draw_index'))
     raise ValueError('unknown es_perm %r' % kind)
 
 
@@ -284,7 +344,9 @@ def arm_c_stems(alpha, es_perm=None):
     sp = c1_space.load_space(EMBEDDER)
     sigma, info = es_permutation(sp.es, es_perm)
     es = sp.es if es_perm is None else sp.es[sigma]
-    p = softmax_alloc(es, alpha)
+    # CDR LU (additive): exact uniform shares; largest_remainder breaks the equal
+    # remainders by ascending cluster index (stable), so clusters 0..24 receive 14.
+    p = np.full(sp.k, 1.0 / sp.k) if es_perm == 'uniform' else softmax_alloc(es, alpha)
     alloc = largest_remainder(p, BUDGET)
     _, order = rank_by_centroid(sp)
     serving = serving_orders(alloc, es)[SERVING]      # desc_nc reads alloc only

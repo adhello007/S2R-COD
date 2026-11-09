@@ -1,0 +1,18 @@
+test_alloc_modes: 17/17 PASS
+PASS T1a quotas(tau=1, identity) == committed 75 quotas sum 1000 max 194
+PASS T1b C10 stem list byte-identical to committed sha 58333d3c36db0891
+PASS T1c C10 cell == C1_CELL[1.0] (all 5 keys) {'clusters_funded': 75, 'max_alloc_share': 0.194, 'alloc_entropy_norm': 0.78644, 'tv_from_uniform': 0.49253, 'n_displaced': 370}
+PASS T2 CSHUF stem list byte-identical to committed 
+PASS T2 CINV stem list byte-identical to committed 
+PASS T2 CORACLE stem list byte-identical to committed 
+PASS T2 B_s42 stem list byte-identical to committed 
+PASS T2 B_s50 stem list byte-identical to committed 
+PASS T3 cdr: kind with CSHUF sigma == committed CSHUF stems rho -0.03351 (CSHUF -0.03351)
+PASS T4a uniform quotas: 14 x clusters 0-24, 13 x clusters 25-74, sum 1000 
+PASS T4b uniform cell == UNIFORM_CELL {'clusters_funded': 75, 'max_alloc_share': 0.014, 'alloc_entropy_norm': 1.0, 'tv_from_uniform': 0.0}
+PASS T4c uniform selects 1000 distinct stems 
+PASS T5 expected_cell(C10) is C1_CELL[alpha] 
+PASS T5 expected_cell(CSHUF) is C1_CELL[alpha] 
+PASS T5 expected_cell(CINV) is C1_CELL[alpha] 
+PASS T5 expected_cell(CORACLE) is C1_CELL[alpha] 
+PASS T5 expected_cell(C10FX) is C1_CELL[alpha] 

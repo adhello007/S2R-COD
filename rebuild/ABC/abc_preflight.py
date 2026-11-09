@@ -150,6 +150,9 @@ PATCH_MARKS = {
     'preflight.py': ['Test/COD10K/Imgs'],
 }
 SKIP_DIRS = ('.venv', 'LAKE-RED', os.path.join('rebuild', 'reference'), '__pycache__')
+# RL5B: archived submission bundle; its trainer copy must equal the trainer at this commit
+ARCHIVE_DIRS = ('iclr2027_supplement',)
+ARCHIVE_REF_COMMIT = '8d1d079'
 
 
 def gate_one_trainer():
@@ -169,11 +172,41 @@ def gate_one_trainer():
         absent = [m for m in marks if m not in src]
         if absent:
             missing[f] = absent
-    ok = bool(len(found['MyTrain']) == 1 and len(found['MyTest']) == 1 and not missing)
+    # RL5B amendment (additive): a gitignored copy that is BYTE-IDENTICAL to the root
+    # trainer/tester is not a second trainer -- it cannot make arms differ. It is listed,
+    # never skipped. The archived submission bundle (iclr2027_supplement/, never executed by
+    # the pipeline) may instead be byte-identical to the root file AS COMMITTED AT THE
+    # SUBMISSION BASE (ARCHIVE_REF_COMMIT), i.e. it must be the frozen submitted trainer, not
+    # an edited one. Any other copy whose bytes differ still FAILs.
+    import hashlib
+    import subprocess
+    root_of = {'MyTrain': 'MyTrain.py', 'MyTest': 'MyTest.py'}
+    root_present, identical_copies, archival, divergent = {}, [], [], []
+    for key, paths in found.items():
+        norm = [os.path.normpath(p) for p in paths]
+        root_present[key] = root_of[key] in norm
+        ref = C.sha256(os.path.join(C.REPO, root_of[key]))
+        blob = subprocess.run(['git', '-C', C.REPO, 'show', '%s:%s' % (ARCHIVE_REF_COMMIT, root_of[key])],
+                              capture_output=True).stdout
+        ref_archive = hashlib.sha256(blob).hexdigest() if blob else None
+        for p in norm:
+            if p == root_of[key]:
+                continue
+            h = C.sha256(os.path.join(C.REPO, p))
+            if h == ref:
+                identical_copies.append(p)
+            elif p.split(os.sep)[0] in ARCHIVE_DIRS and h == ref_archive:
+                archival.append(p)
+            else:
+                divergent.append(p)
+    ok = bool(all(root_present.values()) and not divergent and not missing)
     return dict(gate='one_trainer', passed=ok, mytrain=found['MyTrain'],
                 mytest=found['MyTest'], patches_missing=missing,
+                byte_identical_copies=identical_copies, divergent_copies=divergent,
+                archival_copies_equal_to_submission=archival, archive_ref_commit=ARCHIVE_REF_COMMIT,
                 note='ground rule 2: arms differ only by data dir and seed, so a '
-                     'second trainer anywhere in the tree is a FAIL')
+                     'second trainer anywhere in the tree is a FAIL; byte-identical '
+                     'copies of the root files are reported, not counted')
 
 
 # --- G4 ---------------------------------------------------------------------
@@ -301,9 +334,10 @@ def gate_pools(runs):
     for arm in cref:
         alpha = A.ARM_ALPHA[arm]
         _, cell = A.arm_c_stems(alpha, A.ARM_ES_PERM[arm])
-        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
-        repro[arm] = dict(measured=cell, c1=A.C1_CELL[alpha], asserted=list(keys),
-                          match=all(cell[k] == A.C1_CELL[alpha][k] for k in keys))
+        exp = A.expected_cell(arm)      # == C1_CELL[alpha] for every committed arm
+        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(exp)
+        repro[arm] = dict(measured=cell, c1=exp, asserted=list(keys),
+                          match=all(cell[k] == exp[k] for k in keys))
     # pairwise overlap against chance over every distinct selected set in play
     chance = A.BUDGET * A.BUDGET / 4447.0
     sets = {m: set(A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0]) for m in cref}

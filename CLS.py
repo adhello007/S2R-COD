@@ -10,7 +10,7 @@ from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network
 from Src.model.SegMaR.SegMaR import Generator
 from Src.utils.Dataloader import test_dataset
 
-def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteration=1, testsize=352, dataset_name='COD10K', network='SINet'):
+def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteration=1, testsize=352, dataset_name='COD10K', network='SINet', link=False):
 
     # Copy source and GT directories to avoid overwriting
     source_copy_root = source_root.rstrip('/\\') + f'_iteration{iteration + 1}/'
@@ -19,14 +19,19 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
     if os.path.exists(source_copy_root):
         print(f'[Info] Source folder already exists. Removing: {source_copy_root}')
         shutil.rmtree(source_copy_root)
-    print(f'[Info] Copying source image folder: {source_root} -> {source_copy_root}')
-    shutil.copytree(source_root, source_copy_root)
+    # PATCH P9 (RL5B rebuttal, disk footprint), OPT-IN via MyTrain.py --link_pool: hardlink
+    # the round-1 pool instead of byte-copying it. Every write below unlinks its destination
+    # first, so a file shared with the round-1 pool (and the render pool behind it) is never
+    # modified in place. link=False is the committed behaviour, byte for byte.
+    _copy = dict(copy_function=os.link) if link else {}
+    print(f'[Info] {"Linking" if link else "Copying"} source image folder: {source_root} -> {source_copy_root}')
+    shutil.copytree(source_root, source_copy_root, **_copy)
 
     if os.path.exists(gt_copy_root):
         print(f'[Info] GT folder already exists. Removing: {gt_copy_root}')
         shutil.rmtree(gt_copy_root)
-    print(f'[Info] Copying GT folder: {gt_root} -> {gt_copy_root}')
-    shutil.copytree(gt_root, gt_copy_root)
+    print(f'[Info] {"Linking" if link else "Copying"} GT folder: {gt_root} -> {gt_copy_root}')
+    shutil.copytree(gt_root, gt_copy_root, **_copy)
 
     # Define save paths for images and pseudo-labels
     image_save_dir = os.path.join(source_copy_root, 'Image')
@@ -152,6 +157,10 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
             cam[cam < tau] = 0
             cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
 
+            if link:   # PATCH P9: never write through a hardlink
+                for _dst in (os.path.join(pgt_save_dir, name), os.path.join(image_save_dir, name)):
+                    if os.path.lexists(_dst):
+                        os.remove(_dst)
             cv2.imwrite(os.path.join(pgt_save_dir, name), cam * 255)
             original_image.save(os.path.join(image_save_dir, name))
 

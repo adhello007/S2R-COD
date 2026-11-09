@@ -156,17 +156,25 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
     os.makedirs(save_path, exist_ok=True)
 
 
-    if (epoch+1) % opt.save_epoch == 0:
-        torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
-        torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
+    if getattr(opt, 'save_ckpts', 'all') == 'minimal':
+        # PATCH P7 (RL5B rebuttal, disk footprint). OPT-IN ONLY. Save just the final
+        # epoch's student -- the Stu_<last>.pth that CLS.py loads; val() still writes
+        # the selected checkpoint. Saving fewer files touches no RNG and no weights.
+        if epoch + 1 == opt.epoch:
+            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
+    else:
+        if (epoch+1) % opt.save_epoch == 0:
+            torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
+            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
 
-    if (epoch+1) > 35 and opt.network == 'SINet':
-        torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
-        torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
+        if (epoch+1) > 35 and opt.network == 'SINet':
+            torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
+            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
 
-def val(test_loader, ema_model, network, epoch, save_path):
+def val(test_loader, ema_model, network, epoch, save_path, ckpt_name='Tea_epoch_best.pth'):
     """
-    validation function
+    validation function. PATCH P8: ckpt_name defaults to the committed name; with
+    --val_net student the caller passes the student as ema_model and 'Stu_epoch_best.pth'.
     """
     global best_teamae, best_epoch
     ema_model.eval()
@@ -198,7 +206,7 @@ def val(test_loader, ema_model, network, epoch, save_path):
             if mae < best_teamae:
                 best_teamae = mae
                 best_epoch = epoch
-                torch.save(ema_model.state_dict(), save_path + 'Tea_epoch_best.pth')
+                torch.save(ema_model.state_dict(), save_path + ckpt_name)
                 print('Save state_dict successfully! Best epoch:{}.'.format(epoch))
 
 
@@ -248,6 +256,23 @@ if __name__ == "__main__":
                              'target loader is cycled, so every source image is '
                              'seen once per epoch and the optimisation budget '
                              'scales with the pool.')
+    # PATCHES P7-P9 (RL5B rebuttal). All three are OPT-IN; their defaults reproduce the
+    # behaviour every committed run executed.
+    parser.add_argument('--save_ckpts', type=str, default='all', choices=['all', 'minimal'],
+                        help='PATCH P7. all (DEFAULT): the per-epoch Stu/Tea snapshots. '
+                             'minimal: only the final-epoch Stu_<last>.pth, the file CLS.py '
+                             'reads; the selected best checkpoint is still saved by val(). '
+                             'Training is unchanged.')
+    parser.add_argument('--val_net', type=str, default='teacher', choices=['teacher', 'student'],
+                        help='PATCH P8. teacher (DEFAULT): CAMO-MAE selection scores the EMA '
+                             'teacher and saves Tea_epoch_best.pth. student: scores the '
+                             'student and saves Stu_epoch_best.pth. Needed for source_only, '
+                             'whose EMA teacher never receives BatchNorm buffers '
+                             '(update_ema copies parameters only; Explanations/SOURCE_ONLY.md).')
+    parser.add_argument('--link_pool', action='store_true',
+                        help='PATCH P9. CLS.py builds its round-2 pool with hardlinks instead '
+                             'of byte copies and unlinks any destination before writing, so '
+                             'no linked file is ever modified. Pool content is identical.')
     opt = parser.parse_args()
 
     # Override hyperparameters for S2C
@@ -370,9 +395,14 @@ if __name__ == "__main__":
                     opt=opt, loss_func=LogitsBCE, total_step=total_step, alpha=opt.alpha, log_file_path=log_file_path)
             if epoch_iter > 20:
                 val_loader.index = 0
-                val(test_loader=val_loader, ema_model=model_ema, network=opt.network, epoch=epoch_iter, save_path=opt.save_model)
+                if opt.val_net == 'student':      # PATCH P8, opt-in
+                    val(test_loader=val_loader, ema_model=model, network=opt.network, epoch=epoch_iter,
+                        save_path=opt.save_model, ckpt_name='Stu_epoch_best.pth')
+                else:
+                    val(test_loader=val_loader, ema_model=model_ema, network=opt.network, epoch=epoch_iter, save_path=opt.save_model)
 
         # Confident label selection
         if i < opt.iteration:
-            new_source_root = cls(opt.save_model, opt.source_root, opt.source_root, opt.target_root, PGT_Loss, opt.u, opt.tau, iteration=i, network=opt.network)
+            new_source_root = cls(opt.save_model, opt.source_root, opt.source_root, opt.target_root, PGT_Loss, opt.u, opt.tau, iteration=i, network=opt.network,
+                                  link=opt.link_pool)
             opt.source_root = new_source_root

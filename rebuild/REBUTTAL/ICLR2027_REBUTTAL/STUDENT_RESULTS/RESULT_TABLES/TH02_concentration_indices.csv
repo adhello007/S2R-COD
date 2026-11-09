@@ -1,0 +1,21 @@
+allocation,basis,n_eff,n_eff_over_k,max_share,gini,tv_from_uniform,clusters_funded,fill_dist_mean,fill_dist_p90,fill_dist_max
+C10,nominal quota,29.8595,0.398126,0.194,0.627333,0.492667,75,,,
+C10,induced nearest-centroid,37.5023,0.500031,0.134,0.602587,0.461667,75,,,
+CSHUF,nominal quota,29.8595,0.398126,0.194,0.627333,0.492667,75,,,
+CSHUF,induced nearest-centroid,40.5092,0.540123,0.115,0.557387,0.404667,75,,,
+CINV,nominal quota,29.8595,0.398126,0.194,0.627333,0.492667,75,,,
+CINV,induced nearest-centroid,47.0569,0.627426,0.096,0.51168,0.385333,75,,,
+B_s42,induced nearest-centroid,38.9572,0.51943,0.124,0.579387,0.433667,73,,,
+B_s43,induced nearest-centroid,43.6302,0.581736,0.101,0.53144,0.401,75,,,
+B_s45,induced nearest-centroid,42.3702,0.564936,0.12,0.539627,0.407333,75,,,
+B_s46,induced nearest-centroid,41.5579,0.554105,0.113,0.55208,0.418333,74,,,
+B_s47,induced nearest-centroid,41.7615,0.55682,0.131,0.54328,0.407667,75,,,
+B_s48,induced nearest-centroid,44.3427,0.591236,0.098,0.532453,0.398333,74,,,
+B_s49,induced nearest-centroid,45.2588,0.60345,0.11,0.51448,0.386667,74,,,
+B_s50,induced nearest-centroid,42.34,0.564534,0.126,0.540907,0.402,75,,,
+B (mean over 8 seeds),induced nearest-centroid,42.5273,0.567031,0.115375,0.541707,0.406875,74.375,,,
+LU,nominal quota,74.9535,0.99938,0.014,0.0166667,0.0166667,75,,,
+LU,induced nearest-centroid,50.266,0.670214,0.081,0.474427,0.362667,75,,,
+C10 (tau=1),nominal quota + fill distance,29.8595,0.398126,0.194,0.627333,0.492667,75,0.832703,0.931765,0.93972
+"LH shape (tau_H, identity)",nominal quota + fill distance,14.9086,0.198782,0.308,0.788187,0.654667,71,0.854688,0.941358,0.948096
+LU,nominal quota + fill distance,74.9535,0.99938,0.014,0.0166667,0.0166667,75,0.800472,0.921311,0.93445

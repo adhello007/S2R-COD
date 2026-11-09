@@ -43,6 +43,15 @@ EPOCH = re.compile(r'Epoch Num: (\d+/\d+)')
 STEP = re.compile(r'Global Step: \d+/(\d+)')
 
 
+# RL5B rebuttal (additive). rebuild/RL5B/rl5b_queue.py sets these for NEW campaigns only;
+# the defaults reproduce every committed invocation exactly.
+#   EXTRA_TRAIN_FLAGS  appended to the MyTrain.py command (e.g. --save_ckpts minimal --link_pool)
+#   WALL_MULT          replaces the 2x (3x for FX) wall-clock ceiling in verify_run when
+#                      several runs share a GPU; it never relaxes any other check
+EXTRA_TRAIN_FLAGS = []
+WALL_MULT = None
+
+
 def _p(m):
     print('[%s] %s' % (time.strftime('%H:%M:%S'), m), flush=True)
 
@@ -57,7 +66,7 @@ def cmd_for(arch, arm, seed):
             '--source_root', './' + A.pool_dir(rid) + '/',
             '--target_root', './Dataset/Target/',
             '--val_root', './Dataset/Val/CAMO/'] + (
-        ['--exposure', 'fixed_exposures'] if A.is_fx(arm) else [])
+        ['--exposure', 'fixed_exposures'] if A.is_fx(arm) else []) + list(EXTRA_TRAIN_FLAGS)
 
 
 def assert_ready(arch, arm, seed):
@@ -129,7 +138,7 @@ def verify_run(arch, arm, seed):
         last_epoch=d['last_epoch'] == spec['last_epoch'],
         tea_best=bool(d['tea_best']),
         wall=bool(d['wall_min'] is not None
-                  and d['wall_min'] < (3 if A.is_fx(arm) else 2) * spec['ref_min']),
+                  and d['wall_min'] < (WALL_MULT or (3 if A.is_fx(arm) else 2)) * spec['ref_min']),
         pool_r1=d['pool_r1'] == (4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET),
         target=d['target_loaded_4040'] == 2)
     d['checks'] = checks
