@@ -24,10 +24,12 @@ def main():
     for r in csv.DictReader(open(os.path.join(R.REPO, 'rebuild', 'ABC', 'out', 'abc_metrics.csv'))):
         if r['arch'] == 'SINet' and r['arm'] == 'C10' and r['seed'] == '42':
             ref[r['endpoint']] = r
-    out = dict(metrics={})
+    job = [j for j in json.load(open(os.path.join(R.REPO, 'rebuild', 'RL5B', 'queue_jobs.json')))['jobs']
+           if j.get('campaign') == 'bridge'][0]           # paths exactly as the queue executed them
+    out = dict(metrics={}, job_id=job['id'], pred_root=job['pred_root'], snapshot=job['snap'])
     for ep in ('COD10K', 'NC4K'):
         got = E.score(os.path.join(R.REPO, 'Dataset', 'Test', ep, 'GT'),
-                      os.path.join(R.REPO, 'Result', 'RL5B', 'bridge', 'SINet_C10_s42', ep))
+                      os.path.join(R.REPO, job['pred_root'], ep))
         out['metrics'][ep] = {k: dict(bridge='%.6f' % got[k], committed=ref[ep][k],
                                       equal='%.6f' % got[k] == ref[ep][k]) for k in KEYS}
     d_sa = abs(float(out['metrics']['COD10K']['Sm']['bridge']) - float(ref['COD10K']['Sm']))

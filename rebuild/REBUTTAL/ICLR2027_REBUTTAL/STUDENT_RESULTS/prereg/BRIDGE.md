@@ -34,3 +34,10 @@ reference is `rebuild/ABC/out/abc_metrics.csv`, row SINet/C10/42.
   everything.
 
 Analysis: `analysis/bridge_check.py`.
+
+---
+*Amendment 2026-11-09 08:15 IST (written after launch, before any bridge number exists). As executed,
+the queue names the run directories after the job id, so the snapshot is
+`Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42` and the predictions are under
+`Result/RL5B/bridge/BRIDGE_SINet_C10_s42/`. `bridge_check.py` reads these paths from
+`rebuild/RL5B/queue_jobs.json`. The pool, the command and the rule are unchanged.*

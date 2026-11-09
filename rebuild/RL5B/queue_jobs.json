@@ -1,0 +1,216 @@
+{
+ "jobs": [
+  {
+   "id": "BRIDGE_SINet_C10_s42",
+   "kind": "custom",
+   "campaign": "bridge",
+   "commit": "49383c0",
+   "priority": 1,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "ours",
+   "iteration": 2,
+   "seed": 42,
+   "pool": "Dataset/Source/RL5B/bridge/SINet_C10_s42",
+   "snap": "Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42",
+   "log": "rebuild/RL5B/BRIDGE_SINet_C10_s42.log",
+   "extra": [
+    "--save_ckpts",
+    "minimal",
+    "--link_pool"
+   ],
+   "ckpt": "Tea_epoch_best.pth",
+   "pred_root": "Result/RL5B/bridge/BRIDGE_SINet_C10_s42",
+   "expect": {
+    "rounds": 2,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 5447
+   }
+  },
+  {
+   "id": "E3_SINet_SUPREAL_s42",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 42,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_SUPREAL_s42",
+   "log": "rebuild/RL5B/E3_SINet_SUPREAL_s42.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_SUPREAL_s42",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINet_SUPREAL_s43",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 43,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_SUPREAL_s43",
+   "log": "rebuild/RL5B/E3_SINet_SUPREAL_s43.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_SUPREAL_s43",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINet_SUPREAL_s45",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 45,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_SUPREAL_s45",
+   "log": "rebuild/RL5B/E3_SINet_SUPREAL_s45.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_SUPREAL_s45",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_SUPREAL_s42",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 42,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_SUPREAL_s42",
+   "log": "rebuild/RL5B/E3_SINetv2_SUPREAL_s42.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_SUPREAL_s42",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_SUPREAL_s43",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 43,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_SUPREAL_s43",
+   "log": "rebuild/RL5B/E3_SINetv2_SUPREAL_s43.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_SUPREAL_s43",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_SUPREAL_s45",
+   "kind": "custom",
+   "campaign": "e3c",
+   "commit": "49383c0",
+   "priority": 2,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 45,
+   "pool": "Dataset/Source/RL5B/REAL4040",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_SUPREAL_s45",
+   "log": "rebuild/RL5B/E3_SINetv2_SUPREAL_s45.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_SUPREAL_s45",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  }
+ ],
+ "campaigns": {
+  "bridge": {
+   "commit": "49383c0",
+   "n_jobs": 1
+  },
+  "e3c": {
+   "commit": "49383c0",
+   "n_jobs": 6
+  }
+ }
+}
