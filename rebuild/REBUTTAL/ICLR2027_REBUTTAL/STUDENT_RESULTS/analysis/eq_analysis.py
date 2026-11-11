@@ -2,10 +2,12 @@
 EQ number exists. Run ONCE, after all 87 runs have verified.
 
 Steps
-  1. Completeness: every (arm, seed) in {B, C10, CSHUF} x {101..129} must pass rebuild/ABC/abc_train.verify_run
-     and have complete COD10K/NC4K predictions. Otherwise the script stops, unless
-     --allow-incomplete is given; that path is a DEVIATION, is labelled as such in every output, and
-     analyses only seeds complete for all three arms.
+  1. Completeness: every (arm, seed) in {B, C10, CSHUF} x {101..127} (Amendment 1: n = 27) must pass
+     rebuild/ABC/abc_train.verify_run and have complete COD10K/NC4K predictions. Otherwise the script stops,
+     unless --allow-incomplete is given (the cutoff case of Amendment 1): then EVERY completed run is
+     analysed as pre-registered and every output is labelled INCOMPLETE; no completed run is dropped.
+     Welch and the pooled sigma-hat use all completed runs of each arm; the seed-paired quantities (sign
+     count, paired CI) use the seeds completed by both arms of a contrast.
   2. Scorer check: the committed scorer must reproduce Sa 0.717216 / MAE 0.074463 on Result/SINet/S2C.
   3. Score every run with the committed scorer (abc_evaluate.score), 6 dp -> RESULT_TABLES/EXP01_EQ_metrics.csv.
   4. Analysis exactly as EQ.4; decision sentence exactly as EQ.5.
@@ -27,9 +29,10 @@ from scipy import stats
 import _repo as R
 
 ARMS = ('B', 'C10', 'CSHUF')
-SEEDS = tuple(range(101, 130))
+SEEDS = tuple(range(101, 128))   # Amendment 1 (prereg/EQ.md): n = 27, seeds 101-127
 DELTA = 0.005
-K_STAR = 20                    # prereg EQ.4: smallest k with P(Bin(29,1/2) >= k) <= 9/256
+N_PER_ARM = 27
+K_STAR = 19                    # Amendment 1: smallest k with P(Bin(27,1/2) >= k) <= 9/256 (EQ.4 rule at n = 27)
 KEYS = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm', 'maxFm')
 CONTRASTS = (('C10', 'B', 'H1 (primary)'), ('C10', 'CSHUF', 'H1b (secondary)'))
 LOG = []
@@ -70,21 +73,29 @@ def paired(a, b):
                 p_tost=float(p_tost))
 
 
+def kstar(n):
+    return K_STAR if n == 27 else next(k for k in range(n + 1) if stats.binom.sf(k - 1, n, 0.5) <= 9 / 256)
+
+
 def rule(data, seeds):
-    """Manuscript 2-sigma rule with sigma pooled over B, C10, CSHUF; abc_evaluate sign definition; k* = 20
-    (scaled with n if --allow-incomplete reduced n: smallest k with binomial tail <= 9/256)."""
-    n = len(seeds)
-    k = next(k for k in range(n + 1) if stats.binom.sf(k - 1, n, 0.5) <= 9 / 256) if n != 29 else K_STAR
+    """Manuscript 2-sigma rule with sigma pooled over B, C10, CSHUF (all completed runs of each arm);
+    abc_evaluate sign definition over the seeds both arms of a contrast completed; k* from EQ.4's tail rule
+    (19 at n = 27). `seeds` is either one list (all arms) or a dict arm -> completed seeds."""
+    by = seeds if isinstance(seeds, dict) else {a: list(seeds) for a in ARMS}
     ss, df = 0.0, 0
     for a in ARMS:
-        xs = np.array([data[a][s] for s in seeds])
+        xs = np.array([data[a][s] for s in by[a]])
         ss += float(((xs - xs.mean()) ** 2).sum())
-        df += n - 1
+        df += len(xs) - 1
     sig = math.sqrt(ss / df)
-    out = dict(sigma_hat=sig, df=df, bar=2 * sig, k_star=k, gaps={})
+    out = dict(sigma_hat=sig, df=df, bar=2 * sig, k_star=None, gaps={})
     for hi, lo, _ in CONTRASTS:
-        d = float(np.mean([data[hi][s] for s in seeds]) - np.mean([data[lo][s] for s in seeds]))
-        pdiff = [data[hi][s] - data[lo][s] for s in seeds]
+        d = float(np.mean([data[hi][s] for s in by[hi]]) - np.mean([data[lo][s] for s in by[lo]]))
+        pseeds = [s for s in by[hi] if s in by[lo]]
+        n = len(pseeds)
+        k = kstar(n)
+        out['k_star'] = k
+        pdiff = [data[hi][s] - data[lo][s] for s in pseeds]
         cons = sum(1 for x in pdiff if (x > 0) == (d > 0) and x != 0)
         if abs(d) <= 2 * sig:
             v = 'WITHIN NOISE'
@@ -111,10 +122,10 @@ def decision(w, hi, lo):
             s += ' The difference is smaller than the +/-0.005 margin.'
         return 'iii (detected)' + (' + equivalent' if eq else ''), s
     if eq:
-        return 'i (equivalent)', ('A separately pre-registered confirmatory campaign with 29 fresh seeds per arm '
+        return 'i (equivalent)', ('A separately pre-registered confirmatory campaign with %d fresh seeds per arm '
                                   'establishes that targeted and %s allocation are equivalent within +/-0.005 S_alpha '
                                   'on the primary cell (Delta = %s, 90%% CI [%s, %s]).'
-                                  % (arm, f(w['delta']), f(w['ci90'][0]), f(w['ci90'][1])))
+                                  % (N_PER_ARM, arm, f(w['delta']), f(w['ci90'][0]), f(w['ci90'][1])))
     return 'ii (neither)', ('The confirmatory campaign neither detects an advantage nor establishes equivalence at '
                             '+/-0.005 (Delta = %s, 95%% CI [%s, %s]). Effects as large as %s are not excluded at '
                             'this precision.' % (f(w['delta']), f(w['ci95'][0]), f(w['ci95'][1]), f(w['ci95'][1])))
@@ -160,8 +171,10 @@ def main():
     deviation = bool(missing)
     if missing and not a.allow_incomplete:
         raise SystemExit('EQ incomplete (%d runs): %s -- not analysed (prereg EQ.6)' % (len(missing), missing[:10]))
-    seeds = [s for s in SEEDS if all(A.runid('SINet', arm, s) not in missing for arm in ARMS)]
-    log('# EXP-01 EQ analysis (prereg/EQ.md). %s' % ('DEVIATION: incomplete, %d runs missing: %s' % (len(missing), missing)
+    seeds_by = {arm: [s for s in SEEDS if A.runid('SINet', arm, s) not in missing] for arm in ARMS}
+    global N_PER_ARM
+    N_PER_ARM = min(len(v) for v in seeds_by.values())
+    log('# EXP-01 EQ analysis (prereg/EQ.md). %s' % ('INCOMPLETE (cutoff reached first; Amendment 1): %d runs not completed: %s; all completed runs analysed' % (len(missing), missing)
                                                        if deviation else 'All 87 runs verified, predictions complete.'))
     # 2. scorer check
     import abc_evaluate as E
@@ -169,7 +182,7 @@ def main():
     assert abs(anc['Sm'] - 0.717216) <= 1e-5 and abs(anc['MAE'] - 0.074463) <= 1e-5, anc
     log('scorer check: Sa %.6f MAE %.6f -> PASS' % (anc['Sm'], anc['MAE']))
     # 3. score
-    jobs = [(arm, s, ep) for arm in ARMS for s in seeds for ep in ('COD10K', 'NC4K')]
+    jobs = [(arm, s, ep) for arm in ARMS for s in seeds_by[arm] for ep in ('COD10K', 'NC4K')]
     with ProcessPoolExecutor(a.workers) as ex:
         res = list(ex.map(_score, [(os.path.join(R.REPO, 'Dataset/Test/%s/GT' % ep),
                                     os.path.join(R.REPO, A.pred_dir(A.runid('SINet', arm, s), ep))) for arm, s, ep in jobs]))
@@ -184,21 +197,23 @@ def main():
         w.writeheader()
         w.writerows(rows)
     # 4. analysis (from the 6-dp CSV, as written)
-    summary = dict(deviation_incomplete=deviation, missing=missing, seeds=seeds, n_per_arm=len(seeds), endpoints={})
+    summary = dict(incomplete=deviation, missing=missing, seeds_by_arm=seeds_by,
+                   n_by_arm={a: len(v) for a, v in seeds_by.items()}, endpoints={})
     table = []
     for ep in ('COD10K', 'NC4K'):
         data = {arm: {} for arm in ARMS}
         for r in rows:
             if r['endpoint'] == ep:
                 data[r['arm']][r['seed']] = float(r['Sm'])
-        sd = {arm: float(np.std([data[arm][s] for s in seeds], ddof=1)) for arm in ARMS}
-        mean = {arm: float(np.mean([data[arm][s] for s in seeds])) for arm in ARMS}
-        rq = rule(data, seeds)
+        sd = {arm: float(np.std([data[arm][s] for s in seeds_by[arm]], ddof=1)) for arm in ARMS}
+        mean = {arm: float(np.mean([data[arm][s] for s in seeds_by[arm]])) for arm in ARMS}
+        rq = rule(data, seeds_by)
         epd = dict(arm_mean=mean, arm_sd=sd, rule=rq, contrasts={})
         se_d = se_campaign(ep)
         for hi, lo, role in CONTRASTS:
-            wv = welch([data[hi][s] for s in seeds], [data[lo][s] for s in seeds])
-            pv = paired([data[hi][s] for s in seeds], [data[lo][s] for s in seeds])
+            wv = welch([data[hi][s] for s in seeds_by[hi]], [data[lo][s] for s in seeds_by[lo]])
+            ps = [s for s in seeds_by[hi] if s in seeds_by[lo]]
+            pv = paired([data[hi][s] for s in ps], [data[lo][s] for s in ps])
             ws = welch([se_d[hi][s] for s in sorted(se_d[hi])], [se_d[lo][s] for s in sorted(se_d[lo])])
             wts = (1 / wv['se'] ** 2, 1 / ws['se'] ** 2)
             dp = (wts[0] * wv['delta'] + wts[1] * ws['delta']) / sum(wts)
@@ -211,7 +226,8 @@ def main():
             epd['contrasts'][key] = dict(role=role if ep == 'COD10K' else role + ' -- NC4K, secondary', welch=wv,
                                          paired_secondary=pv, pooled_EQ_SE_secondary=pooled, decision=code,
                                          sentence=sentence, rule=rq['gaps'][key])
-            table.append(dict(endpoint=ep, contrast=key, role=epd['contrasts'][key]['role'], n_per_arm=len(seeds),
+            table.append(dict(endpoint=ep, contrast=key, role=epd['contrasts'][key]['role'],
+                              n_per_arm='%d/%d' % (len(seeds_by[hi]), len(seeds_by[lo])),
                               delta=wv['delta'], ci95_lo=wv['ci95'][0], ci95_hi=wv['ci95'][1], ci90_lo=wv['ci90'][0],
                               ci90_hi=wv['ci90'][1], welch_df=wv['df'], p_tost=wv['p_tost'], decision=code,
                               rule_2sigma=rq['bar'], rule_xbar=rq['gaps'][key]['xbar'], rule_sign=rq['gaps'][key]['sign'],
@@ -233,12 +249,12 @@ def main():
     f = lambda x: '%+.4f' % x
     md = ['# EXP-01 (EQ): confirmatory equivalence campaign -- results', '',
           '*Pre-registered in `prereg/EQ.md`; generated by `analysis/eq_analysis.py`.%s*'
-          % (' DEVIATION: incomplete -- %d runs missing.' % len(missing) if deviation else ''), '',
+          % (' INCOMPLETE -- the cutoff came first; %d runs not completed; every completed run is analysed.' % len(missing) if deviation else ''), '',
           '**H1 (primary, SINet COD10K-test, C10 - B): decision %s.** %s' % (prim['decision'], prim['sentence']), '',
           '| Endpoint | Contrast | Role | n/arm | Delta | Welch 95% CI | Welch 90% CI | TOST p | decision | 2-sigma rule (x bar, sign, verdict) | paired 95% CI (secondary) | pooled EQ+SE 90% CI (secondary) |',
           '|---|---|---|---|---|---|---|---|---|---|---|---|']
     for t in table:
-        md.append('| %s | %s | %s | %d | %s | [%s, %s] | [%s, %s] | %.4f | %s | %.2f, %s, %s | [%s, %s] | [%s, %s] |'
+        md.append('| %s | %s | %s | %s | %s | [%s, %s] | [%s, %s] | %.4f | %s | %.2f, %s, %s | [%s, %s] | [%s, %s] |'
                   % (t['endpoint'], t['contrast'], t['role'], t['n_per_arm'], f(t['delta']), f(t['ci95_lo']), f(t['ci95_hi']),
                      f(t['ci90_lo']), f(t['ci90_hi']), t['p_tost'], t['decision'], t['rule_xbar'], t['rule_sign'],
                      t['rule_verdict'], f(t['paired_ci95_lo']), f(t['paired_ci95_hi']), f(t['pooled_ci90_lo']), f(t['pooled_ci90_hi'])))

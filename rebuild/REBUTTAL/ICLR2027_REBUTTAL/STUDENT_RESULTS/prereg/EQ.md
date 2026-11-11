@@ -131,3 +131,27 @@ The manuscript's 2σ̂-rule verdict is reported next to whichever statement appl
 
 ---
 *Amendments (dated, append-only) go below this line.*
+
+### Amendment 1: 2026-11-11, committed before any EQ run has started (no EQ run has been trained, inferred or scored)
+
+1. **n = 27 per arm**, seeds **101–127**; arms **B, C10, CSHUF**; **SINet only**. Seeds 128 and 129 are removed
+   from the campaign and are never run.
+2. **Reason.** n is capped below the 80% power target (29) for two reasons: the 2026-11-09 power outage, which
+   cost about 57 GPU-hours, and GPU time given to other campaigns. The corresponding author authorised the cap
+   on 2026-11-11.
+3. **Expected precision at n = 27** (Welch-simulated, 40,000 draws, eight-seed SDs B 0.00251 and C10 0.00489;
+   `prereg/EQ_amendment1_numbers.json`, from `RESULT_TABLES/TH01_power.csv`):
+   - TOST power at a true Δ = +0.0024 is **0.78** for H1 (C10 − B) and 0.76 for H1b. It is at least 0.92 for a
+     true Δ ≤ +0.0012. If the true SDs are at their 80% upper bounds, power at Δ = +0.0024 is 0.55.
+   - Expected 90% CI half-width for C10 − B: **0.00178**. Expected 95% CI half-width: 0.00214.
+   - The 2σ̂ rule's sign threshold at n = 27 is **k\* = 19** (P(Bin(27, ½) ≥ 19) = 0.026 ≤ 9/256; the EQ.4 rule).
+4. **Equivalence at ±0.005 may not be reachable at this n.**
+5. **Order.** Runs go seed by seed, with all three arms for each seed (101: B, C10, CSHUF; then 102; …).
+6. **If the cutoff comes first** (2026-11-17 06:00 IST), every completed run is analysed as pre-registered and
+   the result is reported as **INCOMPLETE**, with the missing runs named. No completed run is dropped. Welch
+   and the pooled σ̂ use all completed runs of each arm; the seed-paired quantities use the seeds both arms of
+   a contrast completed.
+7. **No interim looks.** No COD10K-test or NC4K number for any EQ run is computed or opened before all 81 runs
+   are trained. That includes the MAE lines `MyTest.py` writes into the inference logs.
+8. After this commit, n never changes. `analysis/eq_analysis.py` is updated in the same commit (seeds 101–127,
+   k\* = 19, the INCOMPLETE path) and re-passes its self-test on SE data only.

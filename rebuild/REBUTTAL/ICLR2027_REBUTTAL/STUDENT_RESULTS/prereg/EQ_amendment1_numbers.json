@@ -1,0 +1,14 @@
+{
+  "n": 27,
+  "seeds": "101-127",
+  "power_C10B_d0024": 0.7787,
+  "power_C10B_d0012": ">=0.92",
+  "power_C10B_d0": ">=0.92",
+  "power_C10CSHUF_d0024": 0.7619,
+  "power_C10B_d0024_sd_upper80": 0.5504,
+  "expected_90ci_halfwidth_C10B": 0.0017830390252790936,
+  "expected_95ci_halfwidth_C10B": 0.002140627771424726,
+  "welch_df_expected": 38.78393365505714,
+  "k_star": 19,
+  "P_tail_k_star": 0.026119492948055267
+}
