@@ -1,50 +1,43 @@
-# RL5B GPU schedule after the 2026-11-09 outage (projected 2026-11-11 18:16 IST)
+# RL5B GPU schedule (runner v2, projected 2026-11-11 23:25 IST)
 
-**Cutoff:** 2026-11-17 06:00 IST (author decision 11-11).
+**Cutoff:** 2026-11-17 06:00 IST. Nothing new starts after it.
 
-**Basis.** One job per GPU on 2 GPUs, in queue-priority order. Run times are measured:
+**Basis.** One job per GPU, with measured run times:
 
 | Run type | Time per run |
 |---|---|
-| SINet, two rounds | 1.77 h |
-| SINet, single round | 0.64 h |
-| SINet-v2, single round | ≈0.75 h (estimated) |
-| Inference, both endpoints | about 3 min |
+| Two-round SINet | 1.82 h, including inference |
+| Single-round anchor | 0.70 h (SINet) / ≈0.85 h (SINet-v2) |
+| Caus script | budgeted at 1.82 h each |
+| Caus pilot | 0.5 h (assumed) |
 
-**Schedule rule.** EQ n is the largest value ≤ 29 that leaves at least 12 h of slack before the cutoff.
-EQ is **held** until the author approves this schedule.
-
-**Order.**
-1. Running: the bridge re-train (GPU 0, ends about 11-11 19:50) and E3-c SINet s43 (GPU 1, about 18:45).
+**Order** (`rebuild/RL5B/rl5b_runner.py`):
+1. Caus `00_*` pilot, on the next free GPU, without interrupting anything.
 2. CDR SINet: 35 runs.
-3. Caus different-shape oracle arms: K arms × 3 seeds. **Specification pending from the author.**
-4. Supervised anchors (E3-c): the remaining 4 runs.
-5. EQ: B, C10, CSHUF × n seeds.
-6. Only if slack remains: E3-e (RISE pseudo-label runs, 6) and the new-foreground campaign (specification
-   pending).
+3. Supervised anchors (E3-c): the 4 remaining runs.
+4. Caus scripts: at most 12, in filename order.
+5. EQ: 81 runs, seed by seed (seeds 101–127, n = 27 per Amendment 1, `808988b`).
+6. E3-e: 6 runs, only if each can finish before the cutoff.
 
-**Dropped:** CDR SINet-v2 (35 runs), under the sacrifice order and by the author's decision. EXP-04 and E3-b
-were dropped before launch.
+Caus scripts take precedence over EQ jobs that have not started, but EQ does not wait for scripts that
+have not arrived.
 
-| Caus arms K | CDR SINet ends | Caus ends | Anchors end | EQ n | Power at true Δ = +0.0024 | EQ ends | Slack |
-|---|---|---|---|---|---|---|---|
-| 0 | 11-13 03:28 | — | 11-13 05:03 | 29 | 0.81 | 11-16 12:21 | 17.6 h |
-| 1 | 11-13 03:28 | 11-13 06:24 | 11-13 07:35 | 29 | 0.81 | 11-16 15:17 | 14.7 h |
-| 2 | 11-13 03:28 | 11-13 08:56 | 11-13 10:31 | 29 | 0.81 | 11-16 17:49 | 12.2 h |
-| 3 | 11-13 03:28 | 11-13 11:52 | 11-13 13:02 | 28 | 0.79 | 11-16 17:29 | 12.5 h |
-| 4 | 11-13 03:28 | 11-13 14:23 | 11-13 15:59 | 27 | 0.78 | 11-16 17:49 | 12.2 h |
+| Milestone | No Caus scripts | Caus pilot + 12 scripts |
+|---|---|---|
+| CDR SINet ends | Fri 11-13 04:28 | Fri 11-13 04:58 |
+| Anchors end | Fri 11-13 06:10 | Fri 11-13 06:40 |
+| Caus scripts end | — | Fri 11-13 17:35 |
+| **EQ ends** | **Mon 11-16 08:38** | **Mon 11-16 19:33** |
+| Slack before the cutoff | 21.4 h | **10.4 h** (below the 12 h target, because ≈3 GPU-h were lost to the 11-11 guard pause) |
+| E3-e ends | Mon 11-16 10:20 | Mon 11-16 21:29 |
 
-Power is the Welch-simulated TOST power at ±0.005, from `RESULT_TABLES/TH01_power.csv`. At every n ≥ 22,
-power is at least 0.92 for a true Δ ≤ +0.0012.
+EQ's n is fixed at 27 by Amendment 1 and does not change. If an outage pushes EQ past the cutoff, every
+completed run is analysed and reported as INCOMPLETE.
 
-If n falls below 29, a dated amendment to `prereg/EQ.md`, stating the new n and its power, is committed
-before any EQ run starts.
+**Disk** (`df`, 2026-11-11 23:25): 798 GB free (743 GiB).
+- Remaining RL5B footprint, measured per run: about 357 GB.
+- Caus allowance, assuming default checkpointing: about 72 GB.
+- Projected free disk at the cutoff: **about 441 GB without Caus, about 369 GB with**.
+- The runner starts no job unless free disk is at least the remaining queue plus 50 GB.
 
-**Protection.**
-- `@reboot` restarts the queue.
-- A watchdog runs every 10 minutes (`rebuild/RL5B/watchdog.sh`); its heartbeat is at
-  `rebuild/RL5B/out/heartbeat.txt`.
-- Any run interrupted mid-training is discarded and re-run from scratch with the same seed, and logged as a
-  `discard` in `rebuild/RL5B/out/queue_events.jsonl`.
-- One more outage of more than about 12 h would push EQ past the cutoff. If that happens, the n decision is
-  revisited with the author before any further EQ run.
+**EQ power at n = 27:** 0.78 at a true Δ = +0.0024; ≥ 0.92 at Δ ≤ +0.0012. Expected 90% CI half-width 0.00178.

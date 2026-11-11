@@ -3,3 +3,5 @@ heartbeat.txt.tmp
 queue.pid
 watchdog.lock
 watchdog_idle_count
+runner_state.json
+runner_state.json.tmp

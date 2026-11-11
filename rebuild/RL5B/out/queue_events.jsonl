@@ -44,3 +44,233 @@
 {"at": "2026-11-11T20:20:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
 {"at": "2026-11-11T20:30:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
 {"at": "2026-11-11T20:40:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T20:50:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "125cef0d3d899b2ed9f734e7f8d4e5ee0b1ebdf9"}
+{"at": "2026-11-11T21:00:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "125cef0d3d899b2ed9f734e7f8d4e5ee0b1ebdf9"}
+{"at": "2026-11-11T21:10:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "125cef0d3d899b2ed9f734e7f8d4e5ee0b1ebdf9"}
+{"at": "2026-11-11T21:20:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T21:30:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T21:37:41", "kind": "train_ok", "job": "SINet_CDRL1P1_s42", "verify": {"runid": "SINet_CDRL1P1_s42", "arch": "SINet", "arm": "CDRL1P1", "seed": 42, "rounds": 2, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 106.0, "tea_best": true, "pool_r1": 5447, "pool_r2": 7483, "n_appended": 2036, "target_loaded_4040": 2, "best_epoch": 25, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "tea_best": true, "wall": true, "pool_r1": true, "target": true}, "failed_checks": []}}
+{"at": "2026-11-11T21:38:41", "kind": "infer_done", "job": "SINet_CDRL1P1_s42", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T21:40:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T21:40:11", "kind": "infer_done", "job": "SINet_CDRL1P1_s42", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T21:40:11", "kind": "job_done", "job": "SINet_CDRL1P1_s42"}
+{"at": "2026-11-11T21:40:11", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:40:41", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:41:11", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:41:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:42:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:42:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:43:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:43:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:44:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:44:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:45:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:45:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:46:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:46:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:47:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:47:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:48:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:48:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:49:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:49:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:50:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T21:50:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:50:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:51:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:51:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:52:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:52:42", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:53:12", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:53:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:54:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:54:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:55:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:55:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:56:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:56:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:57:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:57:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:58:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:58:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:59:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T21:59:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:00:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:00:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:00:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:01:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:01:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:02:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:02:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:03:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:03:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:04:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:04:43", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:05:13", "kind": "train_ok", "job": "SINet_CDRL1P2_s42", "verify": {"runid": "SINet_CDRL1P2_s42", "arch": "SINet", "arm": "CDRL1P2", "seed": 42, "rounds": 2, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 106.3, "tea_best": true, "pool_r1": 5447, "pool_r2": 7402, "n_appended": 1955, "target_loaded_4040": 2, "best_epoch": 28, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "tea_best": true, "wall": true, "pool_r1": true, "target": true}, "failed_checks": []}}
+{"at": "2026-11-11T22:05:13", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:05:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:06:14", "kind": "infer_done", "job": "SINet_CDRL1P2_s42", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T22:06:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:06:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:07:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:07:44", "kind": "infer_done", "job": "SINet_CDRL1P2_s42", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T22:07:44", "kind": "job_done", "job": "SINet_CDRL1P2_s42"}
+{"at": "2026-11-11T22:07:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:08:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:08:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:09:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:09:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:10:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:10:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:10:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:11:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:11:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:12:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:12:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:13:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:13:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:14:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:14:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:15:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:15:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:16:14", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:16:44", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:17:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:17:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:18:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:18:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:19:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:19:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:20:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:20:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:20:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:21:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:21:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:22:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:22:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:23:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:23:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:24:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:24:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:25:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:25:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:26:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:26:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:27:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:27:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:28:15", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:28:45", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:29:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:29:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:30:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:30:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:30:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:31:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:31:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:32:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:32:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:33:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:33:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:34:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:34:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:35:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:35:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:36:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:36:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:37:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:37:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:38:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:38:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:39:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:39:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:40:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:40:16", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:40:46", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:41:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:41:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:42:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:42:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:43:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:43:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:44:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:44:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:45:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:45:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:46:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:46:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:47:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:47:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:48:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:48:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:49:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:49:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:50:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T22:50:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:50:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:51:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:51:47", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:52:17", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:52:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:53:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:53:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:54:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:54:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:55:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:55:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:56:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:56:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:57:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:57:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:58:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:58:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:59:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T22:59:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:00:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T23:00:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:00:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:01:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:01:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:02:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:02:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:03:18", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:03:48", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:04:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:04:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:05:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:05:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:06:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:06:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:07:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:07:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:08:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:08:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:09:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:09:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:10:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T23:10:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:10:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:11:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:11:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:12:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:12:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:13:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:13:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:14:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:14:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:15:19", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:15:49", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:16:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:16:50", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:17:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:17:50", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:18:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:18:50", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:19:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:19:50", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:20:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T23:20:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:20:50", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:21:20", "kind": "guard_pause", "job": "SINet_CDRL1P3_s42", "why": "pipeline files differ from campaign commit 2137849"}
+{"at": "2026-11-11T23:21:49", "kind": "runner_v2_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "281e42b8c66b3a74", "adopted": 0, "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae"}
+{"at": "2026-11-11T23:21:49", "kind": "train_start", "job": "SINet_CDRL1P3_s42", "gpu": 0, "pid": 996423, "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae", "pipeline_hash": "281e42b8c66b3a74", "campaign": "cdr", "commit": "2137849"}
+{"at": "2026-11-11T23:21:49", "kind": "train_start", "job": "SINet_CDRL1P4_s42", "gpu": 1, "pid": 996445, "head": "808988b95b6f0292ea80f90edc2c3b5de47660ae", "pipeline_hash": "281e42b8c66b3a74", "campaign": "cdr", "commit": "2137849"}

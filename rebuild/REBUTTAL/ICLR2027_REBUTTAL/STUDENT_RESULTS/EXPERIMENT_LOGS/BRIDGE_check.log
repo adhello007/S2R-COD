@@ -1,0 +1,4 @@
+BRIDGE: WITHIN NOISE BAND (|dSa| 0.000062 <= 0.0069): residual nondeterminism, campaigns continue
+integrity of hardlinked sources: PASS (21828 files re-hashed, 0 changed)
+  COD10K Sa bridge 0.717103 committed 0.717165
+  NC4K Sa bridge 0.772016 committed 0.765296

@@ -23,10 +23,10 @@ STATE="$OUT/watchdog_idle_count"
 NVS=/usr/bin/nvidia-smi
 now=$(date '+%Y-%m-%d %H:%M:%S')
 PIDF="$OUT/queue.pid"
-is_runner() { [ -r "/proc/$1/cmdline" ] && tr '\0' ' ' < "/proc/$1/cmdline" | grep -q '^\.venv/bin/python rebuild/RL5B/rl5b_queue\.py --jobs'; }
+is_runner() { [ -r "/proc/$1/cmdline" ] && { tr '\0' ' ' < "/proc/$1/cmdline"; } 2>/dev/null | grep -q '^\.venv/bin/python rebuild/RL5B/rl5b_runner\.py --jobs'; }
 runner=""
 if [ -f "$PIDF" ] && is_runner "$(cat "$PIDF")"; then runner=$(cat "$PIDF"); fi
-pend_line=$(.venv/bin/python rebuild/RL5B/rl5b_queue.py --jobs rebuild/RL5B/queue_jobs.json --dry-run 2>/dev/null | tail -1)
+pend_line=$(.venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json --dry-run 2>/dev/null | tail -1)
 pending=$(echo "$pend_line" | sed -n 's/.*pending \([0-9]*\).*/\1/p'); pending=${pending:-0}
 done_n=$(echo "$pend_line" | sed -n 's/.*done \([0-9]*\),.*/\1/p'); done_n=${done_n:-0}
 ours() {  # our MyTrain/MyTest parent processes on GPU $1 (workers share the cmdline; count >0 means busy)
@@ -46,12 +46,16 @@ for g in 0 1; do
     if [ -n "$free_mb" ] && [ "$free_mb" -lt 24576 ]; then explained="$explained GPU$g-held-by-another-user"; fi
   fi
 done
-recent_pause=$(tail -40 rebuild/RL5B/queue.log | grep PAUSE | tail -1)
+recent_pause=$(tail -40 rebuild/RL5B/queue.log | grep -E 'PAUSE|TRAIN|DONE|OK |launched|ADOPT|EXT ' | tail -1 | grep PAUSE)   # paused only if the latest event is a PAUSE
 if [ -n "$recent_pause" ]; then
   ts=$(echo "$recent_pause" | sed -n 's/^\[\([0-9-]* [0-9:]*\)\].*/\1/p')
   if [ -n "$ts" ] && [ $(( $(date +%s) - $(date -d "$(date +%Y)-$ts" +%s 2>/dev/null || echo 0) )) -lt 1200 ]; then explained="$explained recent-PAUSE"; fi
 fi
 [ "$pending" -lt "$idle" ] && explained="$explained fewer-pending-than-idle"
+hold=$( { .venv/bin/python -c "import json;print(json.load(open('$OUT/runner_state.json')).get('hold') or '')"; } 2>/dev/null )
+[ -n "$hold" ] && explained="$explained runner-hold:$hold"
+alert=""
+if [ -n "$hold" ] || [ -n "$recent_pause" ]; then alert="ALERT: the runner is holding or paused (${hold:-$recent_pause}) -- jobs are NOT starting; see rebuild/RL5B/queue.log"; fi
 cnt=$(cat "$STATE" 2>/dev/null || echo 0)
 action="none"
 if [ -z "$runner" ] && [ "$pending" -gt 0 ]; then
@@ -76,7 +80,7 @@ else
 fi
 last=$(tail -3 rebuild/RL5B/queue.log)
 disk=$(df -h "$REPO" | tail -1 | awk '{print $4" free of "$2}')
-printf "RL5B heartbeat %s\nrunner pid: %s\njobs: done %s, pending %s (active jobs file; EQ held: see queue_jobs_held.json)\n%b\nexplained idle: %s\naction: %s\ndisk: %s\nlast queue log lines:\n%s\n" \
-  "$now" "${runner:-NONE}" "$done_n" "$pending" "$gpu_lines" "${explained:-n/a}" "$action" "$disk" "$last" > "$HB.tmp" && mv "$HB.tmp" "$HB"
+printf "%bRL5B heartbeat %s\nrunner pid: %s\njobs: done %s, pending %s (active jobs file; EQ held: see queue_jobs_held.json)\n%b\nexplained idle: %s\naction: %s\ndisk: %s\nlast queue log lines:\n%s\n" \
+  "${alert:+$alert\n}" "$now" "${runner:-NONE}" "$done_n" "$pending" "$gpu_lines" "${explained:-n/a}" "$action" "$disk" "$last" > "$HB.tmp" && mv "$HB.tmp" "$HB"
 [ "$action" != "none" ] && echo "[$now] $action" >> "$WLOG"
 exit 0

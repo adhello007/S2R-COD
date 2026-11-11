@@ -83,17 +83,27 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
 
 ## Deviations from the instruction file (each with its reason)
 
-1. **Branch and working copy.** The work is on `rebuttal/iclr27/wip2`, in place, not on a new branch
-   `rebuttal-RL5B` in a separate clone. The corresponding author decided this. About 600 GB of gitignored
-   data and the pipeline's repo-relative paths make a clone impractical. Originals are preserved through
-   new run IDs, new output tags and copy-only manuscript edits. The queue refuses to launch if the branch
-   or the pipeline files change.
+1. **Branch and working copy (§0.4)** (decided 2026-11-09, restated 2026-11-11).
+   - The branch is `rebuttal/iclr27/wip2`, not `rebuttal-RL5B`. It was kept to avoid touching a running
+     queue; the author confirmed this on 11-11.
+   - **This is not a separate working copy.** RL5B works in the main working copy
+     `/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD`. The Caus and dypE sessions use their own git
+     worktrees (`../S2R-COD-Caus`, `../S2R-COD-dypE`), which RL5B never reads.
+   - About 600 GB of gitignored data and the pipeline's repo-relative paths make a separate clone
+     impractical.
+   - Originals are preserved through new run IDs, new output tags and copy-only manuscript edits. The
+     runner refuses to launch if the branch or the training code changes.
 2. **Pushes.** This session has no GitHub credentials (no SSH key or agent, no `gh`), so it cannot push.
    The author pushes `rebuttal/iclr27/wip2` (never `main`).
 3. **No co-author or attribution lines in commits**, by the author's instruction.
-4. **Disk footprint.** New runs use `--save_ckpts minimal --link_pool`. This is opt-in, the defaults are
-   unchanged, and the bridge run checks that it is numerically neutral. About 0.6 GB per run instead of
-   about 5.5 GB, on a shared machine.
+4. **Disk footprint.** New runs use `--save_ckpts minimal --link_pool`. This is opt-in and the defaults are
+   unchanged.
+   - **Bridge check (2026-11-11):** COD10K |ΔS_α| = 0.00006, within the declared band, so the campaigns
+     continue. All 21,828 linked source files are unchanged.
+   - **Measured footprint** (correcting the planning estimate of 0.6 GB): about **3.1 GB per two-round SINet
+     run**, against about 5.5 GB by default. The unavoidable part is CLS's committed choice to save the
+     about 2,000 pseudo-labelled target images as full-resolution PNG (≈2.35 GB). Single-round anchors take
+     about 0.65 GB.
 5. **Gate G3 amended.** A trainer copy is accepted only if it is byte-identical to the root trainer, or, in
    the archived `iclr2027_supplement/`, to the submitted trainer at `8d1d079`. Without the amendment the
    gate fails today on that archive.
@@ -114,8 +124,45 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     in two punctuation hunks in the AI-use statement. It is treated as the submitted source, as the
     instructions direct.
 
-## Pushes the author must make
+11. **EXP-04 (higher operating point) not run** (decided 2026-11-09, before launch).
+    - Reason: budget. The concurrency probe showed no throughput gain from running several jobs per GPU, and
+      EXP-04 is first in the sacrifice order. It was never pre-registered.
+    - Posted Part 3 promised to say so if it was not completed; the final rebuttal says it plainly.
+12. **EXP-02 SINet-v2 replication not run** (decided 2026-11-11 by the author, before any of its runs
+    started).
+    - Reason: the 2026-11-09 power loss cost about 57 GPU-h; this is step 2 of the sacrifice order. Its 35
+      jobs are recorded as cancelled in `rebuild/RL5B/queue_jobs_held.json`.
+    - Posted Part 2 promised this replication. The final rebuttal says it was not run, and does **not** say
+      "consistent across architectures".
+13. **E3-b (official SINet-V2 recipe) skipped** (decided 2026-11-09, before launch). The reason at decision
+    time was budget. E3-a then matched every published SINet-V2 COD10K value within 0.002, which meets the
+    instructions' own skip condition ("skip if E3-a matches and the budget is short").
+14. **EQ capped at n = 27 per arm** (2026-11-11, Amendment 1 in `prereg/EQ.md`, commit `808988b`, before any
+    EQ run).
+    - Reason: the outage, and GPU time given to other campaigns.
+    - Power 0.78 at Δ = +0.0024; expected 90% CI half-width 0.00178.
+15. **Runner guard refined** (2026-11-11 23:21).
+    - What happened: commit `125cef0` moved `LICENSE` to `Src/LICENSE`. That is a non-code file inside a
+      guarded directory, and the original guard paused every launch from 21:40 (GPU 0) and 22:07 (GPU 1)
+      until 23:21. About 3 GPU-h were lost.
+    - Fix: runner v2 (`rebuild/RL5B/rl5b_runner.py`, which imports the unmodified `rl5b_queue.py`) guards
+      the same paths but only the `.py` files under `Src/`. All job commits still pass it, and no training
+      code changed.
+16. **Runner v2** (2026-11-11) adds:
+    - adoption of in-flight runs;
+    - the Caus external slots (`rebuild/REBUTTAL/EXTERNAL_JOBS/Caus/`, GPU-h counted separately);
+    - the hard cutoff (2026-11-17 06:00 IST);
+    - the disk rule (remaining queue + 50 GB);
+    - E3-e only if it can finish before the cutoff.
+17. **Removed from scope** (author, 2026-11-11):
+    - the new-foreground campaign; it is not an RL5B task, and posted Part 4 rules out a weaker substitute
+      for a new generator;
+    - the 8.8%/14.1% effective-contrast check and the CHAMELEON count. **Neither was computed in this
+      session**; no file exists, and neither is used in any RL5B output.
 
-- `git push origin rebuttal/iclr27/wip2`, as soon as possible. Commits `138ad30` (the CDR rule, before the
-  draw), `49383c0` (BRIDGE/E3 preregistrations) and `2137849` (EQ/CDR preregistrations) carry the
-  provenance timestamps of the pre-registrations.
+## Pushes
+
+- Confirmed on `origin/rebuttal/iclr27/wip2` (`git branch -r --contains`, 2026-11-11 21:14): `138ad30`,
+  `49383c0`, `2137849`, `de3746f`, `223fa14`, `e43a5e9`, `125cef0`.
+- This session still cannot push (no credentials). **`808988b` (EQ Amendment 1) and later commits need the
+  author's push.**

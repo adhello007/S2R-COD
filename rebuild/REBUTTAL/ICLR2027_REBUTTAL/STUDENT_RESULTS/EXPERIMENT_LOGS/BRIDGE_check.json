@@ -1,0 +1,111 @@
+{
+  "metrics": {
+    "COD10K": {
+      "Sm": {
+        "bridge": "0.717103",
+        "committed": "0.717165",
+        "equal": false
+      },
+      "wFm": {
+        "bridge": "0.476678",
+        "committed": "0.489664",
+        "equal": false
+      },
+      "MAE": {
+        "bridge": "0.077422",
+        "committed": "0.073184",
+        "equal": false
+      },
+      "adpEm": {
+        "bridge": "0.747743",
+        "committed": "0.759609",
+        "equal": false
+      },
+      "meanEm": {
+        "bridge": "0.747039",
+        "committed": "0.751058",
+        "equal": false
+      },
+      "maxEm": {
+        "bridge": "0.787124",
+        "committed": "0.792598",
+        "equal": false
+      },
+      "adpFm": {
+        "bridge": "0.534544",
+        "committed": "0.546726",
+        "equal": false
+      },
+      "meanFm": {
+        "bridge": "0.553530",
+        "committed": "0.559297",
+        "equal": false
+      },
+      "maxFm": {
+        "bridge": "0.588733",
+        "committed": "0.592030",
+        "equal": false
+      }
+    },
+    "NC4K": {
+      "Sm": {
+        "bridge": "0.772016",
+        "committed": "0.765296",
+        "equal": false
+      },
+      "wFm": {
+        "bridge": "0.608812",
+        "committed": "0.609419",
+        "equal": false
+      },
+      "MAE": {
+        "bridge": "0.086055",
+        "committed": "0.086273",
+        "equal": false
+      },
+      "adpEm": {
+        "bridge": "0.822580",
+        "committed": "0.822312",
+        "equal": false
+      },
+      "meanEm": {
+        "bridge": "0.797633",
+        "committed": "0.793044",
+        "equal": false
+      },
+      "maxEm": {
+        "bridge": "0.834261",
+        "committed": "0.829203",
+        "equal": false
+      },
+      "adpFm": {
+        "bridge": "0.685378",
+        "committed": "0.684831",
+        "equal": false
+      },
+      "meanFm": {
+        "bridge": "0.678180",
+        "committed": "0.674991",
+        "equal": false
+      },
+      "maxFm": {
+        "bridge": "0.710087",
+        "committed": "0.704569",
+        "equal": false
+      }
+    }
+  },
+  "job_id": "BRIDGE_SINet_C10_s42",
+  "pred_root": "Result/RL5B/bridge/BRIDGE_SINet_C10_s42",
+  "snapshot": "Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42",
+  "integrity": {
+    "bridge_pool_image_digest_ok": true,
+    "bridge_pool_gt_digest_ok": true,
+    "source_files_checked": 21828,
+    "source_files_changed": [],
+    "n_changed": 0
+  },
+  "delta_Sa_COD10K": 6.20000000000065e-05,
+  "verdict": "WITHIN NOISE BAND (|dSa| 0.000062 <= 0.0069): residual nondeterminism, campaigns continue",
+  "integrity_ok": true
+}
