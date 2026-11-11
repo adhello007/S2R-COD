@@ -1,0 +1,24 @@
+--- committed AD-PCHG-250926_Final.tex (09add3d)
++++ S2R-COD/AD-PCHGS-250926.tex
+@@ -506,8 +506,8 @@
+ and pre-registration checks reported here, in exchanges directed by the authors, who made every
+ design decision. We did not use generative AI tools to formulate the hypotheses this work tests, to
+ select or alter any experimental result, or to clean or reformat datasets. The remaining disclosure
+-categories --- theoretical frameworks, mathematical claims and proofs, translation, and qualitative
+-data analysis --- do not apply. The synthetic training images studied here were produced by the
++categories theoretical frameworks, mathematical claims and proofs, translation, and qualitative
++data analysis do not apply. The synthetic training images studied here were produced by the
+ released LAKE-RED diffusion model (Section~\ref{sec:method}); they are the object of study, not an
+ assistant use. We additionally used generative AI tools to draft and edit prose, to search and
+ summarise related literature, and to format references.
+@@ -515,8 +515,8 @@
+ The authors reviewed all AI-assisted work, which is itself committed and can be audited rather than
+ taken on trust. No reported number originates from a language model: every number is emitted by a
+ committed script and is traceable to a log block, and no result was transcribed by hand. The
+-decision rules governing every verdict --- the arms, the endpoints, the seeds, the noise estimate,
+-and the verdict bands --- were pre-registered before the runs they govern
++decision rules governing every verdict: the arms, the endpoints, the seeds, the noise estimate,
++and the verdict bands, were pre-registered before the runs they govern
+ (Appendix~\ref{app:method}), with amendments append-only and dated; any analysis outside those rules
+ is reported as post-hoc and marked as deciding nothing (Tables~\ref{tab:tost}
+ and~\ref{tab:boundary}). The authors checked every reference against its published version. We take
