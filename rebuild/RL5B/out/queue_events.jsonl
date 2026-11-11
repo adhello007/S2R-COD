@@ -14,3 +14,33 @@
 {"at": "2026-11-11T18:12:52", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
 {"at": "2026-11-11T18:14:06", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
 {"at": "2026-11-11T18:14:23", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
+{"at": "2026-11-11T18:20:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T18:23:11", "kind": "train_ok", "job": "E3_SINet_SUPREAL_s43", "verify": {"runid": "E3_SINet_SUPREAL_s43", "rounds": 1, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 21.0, "pool_r1": 4040, "pool_r2": null, "n_appended": null, "best_epoch": 22, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "ckpt": true, "pool_r1": true}, "failed_checks": []}}
+{"at": "2026-11-11T18:24:41", "kind": "infer_done", "job": "E3_SINet_SUPREAL_s43", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T18:26:41", "kind": "infer_done", "job": "E3_SINet_SUPREAL_s43", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T18:26:41", "kind": "job_done", "job": "E3_SINet_SUPREAL_s43"}
+{"at": "2026-11-11T18:26:41", "kind": "train_start", "job": "SINet_CDRLU_s42", "gpu": 1, "pid": 688780, "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e", "pipeline_hash": "932316bb37320bfd", "campaign": "cdr", "commit": "2137849"}
+{"at": "2026-11-11T18:30:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T18:40:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T18:50:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:00:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:10:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:20:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:30:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:40:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:47:41", "kind": "train_ok", "job": "BRIDGE_SINet_C10_s42", "verify": {"runid": "BRIDGE_SINet_C10_s42", "rounds": 2, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 108.2, "pool_r1": 5447, "pool_r2": 7386, "n_appended": 1939, "best_epoch": 24, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "ckpt": true, "pool_r1": true}, "failed_checks": []}}
+{"at": "2026-11-11T19:49:11", "kind": "infer_done", "job": "BRIDGE_SINet_C10_s42", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T19:50:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T19:51:11", "kind": "infer_done", "job": "BRIDGE_SINet_C10_s42", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T19:51:11", "kind": "job_done", "job": "BRIDGE_SINet_C10_s42"}
+{"at": "2026-11-11T19:51:11", "kind": "train_start", "job": "SINet_CDRL1P1_s42", "gpu": 0, "pid": 773805, "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e", "pipeline_hash": "932316bb37320bfd", "campaign": "cdr", "commit": "2137849"}
+{"at": "2026-11-11T20:00:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T20:10:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T20:16:11", "kind": "train_ok", "job": "SINet_CDRLU_s42", "verify": {"runid": "SINet_CDRLU_s42", "arch": "SINet", "arm": "CDRLU", "seed": 42, "rounds": 2, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 108.9, "tea_best": true, "pool_r1": 5447, "pool_r2": 7493, "n_appended": 2046, "target_loaded_4040": 2, "best_epoch": 25, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "tea_best": true, "wall": true, "pool_r1": true, "target": true}, "failed_checks": []}}
+{"at": "2026-11-11T20:17:11", "kind": "infer_done", "job": "SINet_CDRLU_s42", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T20:18:41", "kind": "infer_done", "job": "SINet_CDRLU_s42", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T20:18:41", "kind": "job_done", "job": "SINet_CDRLU_s42"}
+{"at": "2026-11-11T20:18:41", "kind": "train_start", "job": "SINet_CDRL1P2_s42", "gpu": 1, "pid": 796534, "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e", "pipeline_hash": "932316bb37320bfd", "campaign": "cdr", "commit": "2137849"}
+{"at": "2026-11-11T20:20:02", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T20:30:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}
+{"at": "2026-11-11T20:40:01", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "e43a5e9ce0cee0be8c016e17e4b1ef3c6873862e"}

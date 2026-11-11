@@ -1,0 +1,34 @@
+{
+  "consistency_3seed": [
+    {
+      "arch": "SINet",
+      "contrast": "C10-B",
+      "ratio_recomputed": 1.3722060461300458,
+      "ratio_committed": 1.3722455936284024,
+      "match": false
+    },
+    {
+      "arch": "SINet",
+      "contrast": "CINV-B",
+      "ratio_recomputed": 1.335634625253221,
+      "ratio_committed": 1.3356540110001187,
+      "match": false
+    },
+    {
+      "arch": "SINetv2",
+      "contrast": "C10-B",
+      "ratio_recomputed": 0.16314095825148414,
+      "ratio_committed": 0.16314145705600738,
+      "match": false
+    },
+    {
+      "arch": "SINetv2",
+      "contrast": "CINV-B",
+      "ratio_recomputed": 0.40565069079384464,
+      "ratio_committed": 0.4056474376563272,
+      "match": false
+    }
+  ],
+  "missing": [],
+  "label": "EXPLORATORY / POST HOC -- decides nothing"
+}
