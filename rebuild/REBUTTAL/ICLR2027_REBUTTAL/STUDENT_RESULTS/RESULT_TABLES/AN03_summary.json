@@ -1,0 +1,58 @@
+{
+  "source": {
+    "base_pool_foregrounds": 4447,
+    "lakered_renders": 4447,
+    "raw_photographs": 4447,
+    "renders_equal_base_stems": true,
+    "raw_equal_base_stems": true,
+    "hkuis_split_files": [
+      "testImgSet.mat",
+      "trainImgSet.mat",
+      "valImgSet.mat"
+    ],
+    "d1_is_bijection_local": true,
+    "d1_is_bijection_auth": true,
+    "raw_unique_images": 4443
+  },
+  "variance": {
+    "embedding": "DINOv2 ViT-L/14, 518 px, CLS (rebuild/E0/cache/dinoL518_*)",
+    "n_foregrounds": 4447,
+    "two_renders": {
+      "r2": 0.8562767712570191,
+      "icc": 0.7126088925656716,
+      "perm_r2_mean": 0.4994032745235538,
+      "perm_icc_mean": -0.0010810032233102744
+    },
+    "renders_and_photo": {
+      "r2": 0.7510373642453003,
+      "icc": 0.6266191194656517,
+      "perm_r2_mean": 0.32891360096868,
+      "perm_icc_mean": -0.006555133966059567
+    },
+    "cos_render_own_base": [
+      0.7296330226120153,
+      0.18451625751069786
+    ],
+    "cos_render_random_base": [
+      0.05655883941833196,
+      0.0721186883159198
+    ],
+    "cos_render_own_photo": [
+      0.6394999066073305,
+      0.24113018642664652
+    ],
+    "cos_render_random_photo": [
+      0.008152268818601599,
+      0.04977959088296815
+    ]
+  },
+  "n_clusters": 75,
+  "clusters_nearest_cutout_farther_than_median_member": 52,
+  "d1_median": 0.6689060906332043,
+  "median_member_distance_median": 0.21890375167163906,
+  "coverage_cited": {
+    "note": "cited from committed outputs, not re-derived here",
+    "a3_coverage": "rebuild/A3/out/a3_coverage.csv",
+    "silhouette": "rebuild/B1/out/b1_k_sweep_dinoL518.csv"
+  }
+}

@@ -1,0 +1,1104 @@
+{
+ "held": [
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 101
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 101
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 101
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 102
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 102
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 102
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 103
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 103
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 103
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 104
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 104
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 104
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 105
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 105
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 105
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 106
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 106
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 106
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 107
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 107
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 107
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 108
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 108
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 108
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 109
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 109
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 109
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 110
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 110
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 110
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 111
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 111
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 111
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 112
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 112
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 112
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 113
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 113
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 113
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 114
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 114
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 114
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 115
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 115
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 115
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 116
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 116
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 116
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 117
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 117
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 117
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 118
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 118
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 118
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 119
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 119
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 119
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 120
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 120
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 120
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 121
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 121
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 121
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 122
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 122
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 122
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 123
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 123
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 123
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 124
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 124
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 124
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 125
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 125
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 125
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 126
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 126
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 126
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 127
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 127
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 127
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 128
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 128
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 128
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "B",
+   "seed": 129
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "C10",
+   "seed": 129
+  },
+  {
+   "kind": "abc",
+   "campaign": "eq",
+   "commit": "2137849",
+   "priority": 4,
+   "arch": "SINet",
+   "arm": "CSHUF",
+   "seed": 129
+  }
+ ],
+ "cancelled_cdrv2": [
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLU",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P1",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P2",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P3",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P4",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P5",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP1",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP2",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP3",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP4",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP5",
+   "seed": 42
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLU",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P1",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P2",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P3",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P4",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P5",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP1",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP2",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP3",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP4",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP5",
+   "seed": 43
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLU",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P1",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P2",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P3",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P4",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRL1P5",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP1",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP2",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP3",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP4",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLHP5",
+   "seed": 45
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLU",
+   "seed": 46
+  },
+  {
+   "kind": "abc",
+   "campaign": "cdrv2",
+   "commit": "2137849",
+   "priority": 6,
+   "arch": "SINetv2",
+   "arm": "CDRLU",
+   "seed": 47
+  }
+ ]
+}

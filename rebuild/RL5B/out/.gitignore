@@ -1,0 +1,5 @@
+heartbeat.txt
+heartbeat.txt.tmp
+queue.pid
+watchdog.lock
+watchdog_idle_count

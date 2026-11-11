@@ -3,7 +3,38 @@
 *Living document. The final report to the corresponding author (§11 of the instructions) replaces this
 header block when the work is complete.*
 
-**Status at 2026-11-09 08:20 IST: campaigns running; nothing has been scored.**
+**Status at 2026-11-11 18:30 IST: campaigns running; nothing campaign-related has been scored.**
+
+## Outage, 2026-11-09 08:48 to 2026-11-11 17:59, and the author's re-budget
+
+**What happened.**
+- **The outage.** The workstation lost power abruptly at 2026-11-09 08:48:29. The journal simply stops: there is
+  no shutdown sequence and no GPU, thermal or MCE errors. Whether the combined load (two GPUs training, plus
+  CPU scoring) contributed cannot be determined.
+- **Restart.** The queue runner did not restart, and the machine rebooted three more times on 11-10. The queue
+  was restarted at 2026-11-11 17:59. About 57 h of GPU time were lost.
+- **Interrupted runs.** The bridge run was interrupted mid-training; it was discarded and re-run from scratch
+  with the same seed (event `discard`, 11-11 17:59). E3 SINet s42 had finished training at 08:48:10; only its
+  inference was interrupted, and it was redone.
+- **Integrity.** `git fsck` is clean, and the EQ pools and manifests are intact (87 pools, gates 6/6).
+
+**Author decisions, 2026-11-11.**
+1. GPU cutoff extended to **2026-11-17 06:00 IST**.
+2. **CDR SINet-v2 dropped**, before any of its runs started (sacrifice order, step 2).
+3. **Order:** CDR SINet and the Caus different-shape oracle arms first, then the supervised anchors (E3-c),
+   then EQ.
+4. **EQ n** is the largest value that fits with at least 12 h of slack. If it is below 29, a dated
+   pre-registration amendment, stating the new n and its power, is committed before any EQ run. All three
+   arms are kept.
+5. **The new-foreground campaign** is trained only if slack remains; otherwise its pool is built and
+   validated, and the training is reported as not run.
+6. An `@reboot` auto-restart and a 10-minute watchdog are added, with a heartbeat at
+   `rebuild/RL5B/out/heartbeat.txt`.
+7. **The final schedule is shown to the author before EQ launches.** EQ's jobs are held in
+   `rebuild/RL5B/queue_jobs_held.json` until then.
+
+**Blocked (input missing).** The Caus EXP-01 specification (the minimum set of different-shape oracle arms) and
+the new-foreground campaign specification are not in the repository. The author has been asked for them.
 
 ## Compute budget (§6 of the instructions), filled at Stage 0 before launch
 

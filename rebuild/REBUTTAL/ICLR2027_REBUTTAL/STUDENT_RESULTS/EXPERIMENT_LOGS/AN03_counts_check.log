@@ -1,0 +1,24 @@
+B_s42     pool SINet_B_s42        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s43     pool SINet_B_s43        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s45     pool SINet_B_s45        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s46     pool SINet_B_s46        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s47     pool SINet_B_s47        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s48     pool SINet_B_s48        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s49     pool SINet_B_s49        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+B_s50     pool SINet_B_s50        injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+C10       pool SINet_C10_s42      injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CSHUF     pool SINet_CSHUF_s42    injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CINV      pool SINet_CINV_s42     injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CORACLE   pool SINet_CORACLE_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLU     pool SINet_CDRLU_s42    injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRL1P1   pool SINet_CDRL1P1_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRL1P2   pool SINet_CDRL1P2_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRL1P3   pool SINet_CDRL1P3_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRL1P4   pool SINet_CDRL1P4_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRL1P5   pool SINet_CDRL1P5_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLHP1   pool SINet_CDRLHP1_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLHP2   pool SINet_CDRLHP2_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLHP3   pool SINet_CDRLHP3_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLHP4   pool SINet_CDRLHP4_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+CDRLHP5   pool SINet_CDRLHP5_s42  injected 1000 (ref 1000), in base 1000 (ref 1000), images 5447 (ref 5447), base set intact True -> MATCH
+AN-03 independent count check: PASS (23 arms)

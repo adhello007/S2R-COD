@@ -17,7 +17,7 @@ def _find_repo(start):
 
 REPO = _find_repo(HERE)
 for _p in (os.path.join(REPO, 'rebuild', 'ABC'), os.path.join(REPO, 'rebuild'), REPO,
-           os.path.join(REPO, 'Eval')):
+           os.path.join(REPO, 'Eval'), os.path.join(REPO, 'rebuild', 'C1')):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 

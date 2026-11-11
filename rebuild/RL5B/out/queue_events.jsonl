@@ -1,0 +1,16 @@
+{"at": "2026-11-09T08:08:51", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "49383c0022faacba45de735a7db373e46846d0cc"}
+{"at": "2026-11-09T08:09:10", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "49383c0022faacba45de735a7db373e46846d0cc"}
+{"at": "2026-11-09T08:09:10", "kind": "train_start", "job": "BRIDGE_SINet_C10_s42", "gpu": 0, "pid": 3689620, "head": "49383c0022faacba45de735a7db373e46846d0cc", "pipeline_hash": "932316bb37320bfd", "campaign": "bridge", "commit": "49383c0"}
+{"at": "2026-11-09T08:09:10", "kind": "train_start", "job": "E3_SINet_SUPREAL_s42", "gpu": 1, "pid": 3689643, "head": "49383c0022faacba45de735a7db373e46846d0cc", "pipeline_hash": "932316bb37320bfd", "campaign": "e3c", "commit": "49383c0"}
+{"at": "2026-11-09T08:48:10", "kind": "train_ok", "job": "E3_SINet_SUPREAL_s42", "verify": {"runid": "E3_SINet_SUPREAL_s42", "rounds": 1, "total_step_set": "0253", "last_epoch": "039/040", "wall_min": 38.4, "pool_r1": 4040, "pool_r2": null, "n_appended": null, "best_epoch": 25, "checks": {"rounds": true, "total_step": true, "last_epoch": true, "ckpt": true, "pool_r1": true}, "failed_checks": []}}
+{"at": "2026-11-11T17:59:10", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
+{"at": "2026-11-11T17:59:11", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
+{"at": "2026-11-11T17:59:11", "kind": "discard", "job": "BRIDGE_SINet_C10_s42", "why": "pre-launch: snapshot dir already holds .pth"}
+{"at": "2026-11-11T17:59:11", "kind": "train_start", "job": "BRIDGE_SINet_C10_s42", "gpu": 0, "pid": 653895, "head": "0146abc59fde7a40609ffd1ef60599d1995cd415", "pipeline_hash": "932316bb37320bfd", "campaign": "bridge", "commit": "49383c0"}
+{"at": "2026-11-11T18:00:11", "kind": "infer_done", "job": "E3_SINet_SUPREAL_s42", "endpoint": "COD10K", "rc": 0}
+{"at": "2026-11-11T18:01:41", "kind": "infer_done", "job": "E3_SINet_SUPREAL_s42", "endpoint": "NC4K", "rc": 0}
+{"at": "2026-11-11T18:01:41", "kind": "job_done", "job": "E3_SINet_SUPREAL_s42"}
+{"at": "2026-11-11T18:01:41", "kind": "train_start", "job": "E3_SINet_SUPREAL_s43", "gpu": 1, "pid": 656439, "head": "0146abc59fde7a40609ffd1ef60599d1995cd415", "pipeline_hash": "932316bb37320bfd", "campaign": "e3c", "commit": "49383c0"}
+{"at": "2026-11-11T18:12:52", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
+{"at": "2026-11-11T18:14:06", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
+{"at": "2026-11-11T18:14:23", "kind": "queue_start", "slots": [[0, 0], [1, 0]], "pipeline_hash": "932316bb37320bfd", "head": "0146abc59fde7a40609ffd1ef60599d1995cd415"}
