@@ -1,0 +1,48 @@
+# CMD /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/rebuild/CAUS/exp01_smoke.py /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/logs/smoke.json --gpu 0
+/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/rebuild/CAUS/exp01_smoke.py:56: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  rec.append(dict(step=step, loss_sup=float(ls), loss_con=float(lc), grad_norm=gn,
+[INFO] initialize weights from resnet50
+[INFO] initialize weights from resnet50
+[Source Loader] Loaded 5447 image-mask pairs from /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/Image/ and /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/GT/
+[Target Loader] Loaded 4040 images from ./Dataset/Target/Image/
+{
+ "passed": true,
+ "steps": [
+  {
+   "step": 0,
+   "loss_sup": 1.4350162744522095,
+   "loss_con": 0.2568507790565491,
+   "grad_norm": 13.537218922883643,
+   "batch": [
+    16,
+    3,
+    352,
+    352
+   ],
+   "gt_range": [
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "step": 1,
+   "loss_sup": 1.3947255611419678,
+   "loss_con": 0.258664608001709,
+   "grad_norm": 2.965294480690158,
+   "batch": [
+    16,
+    3,
+    352,
+    352
+   ],
+   "gt_range": [
+    0.0,
+    1.0
+   ]
+  }
+ ],
+ "peak_gpu_gb": 11.68,
+ "n_source": 5447,
+ "n_target": 4040
+}

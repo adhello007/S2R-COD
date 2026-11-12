@@ -44,6 +44,59 @@ def log(fh, m):
     fh.flush()
 
 
+def _proc_start(pid):
+    """Process start time in clock ticks since boot (field 22 of /proc/<pid>/stat), or None."""
+    try:
+        s = open('/proc/%d/stat' % pid).read()
+        return int(s[s.rindex(')') + 2:].split()[19])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def _boot_id():
+    try:
+        return open('/proc/sys/kernel/random/boot_id').read().strip()
+    except OSError:
+        return 'unknown'
+
+
+def acquire_lock(script):
+    """One live instance per queue script (PREREGISTRATION_EXP01.md Addendum A1).
+
+    The queue runner was observed (pilot, 2026-11-12) to re-run a script it had recorded as
+    INTERRUPTED while the original process was still alive, so two copies ran concurrently. A start
+    that finds a LIVE holder (same boot, same pid, same process start time, cmdline naming this
+    script) yields with exit 6 and trains nothing. A stale lock (dead holder, or a different boot) is
+    renamed aside, never deleted, and the new start proceeds."""
+    d = os.path.join(K.RUNS_ROOT, script)
+    K.assert_writable(d)
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, 'RUN_LOCK.json')
+    me = dict(pid=os.getpid(), proc_start=_proc_start(os.getpid()), boot_id=_boot_id(),
+              script=script, acquired=K.now())
+    for _ in range(2):
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            with os.fdopen(fd, 'w') as fh:
+                json.dump(me, fh)
+            return True, me, None
+        except FileExistsError:
+            try:
+                held = json.load(open(path))
+            except (OSError, ValueError):
+                held = {}
+            pid = int(held.get('pid', -1))
+            alive = (held.get('boot_id') == me['boot_id'] and pid > 0
+                     and _proc_start(pid) == held.get('proc_start')
+                     and script in open('/proc/%d/cmdline' % pid).read().replace('\0', ' ')
+                     if os.path.exists('/proc/%d' % pid) else False)
+            if alive:
+                return False, me, held
+            os.rename(path, os.path.join(d, 'RUN_LOCK.stale.%s.json'
+                                         % datetime.datetime.now().strftime('%Y%m%dT%H%M%S')))
+    raise SystemExit('EXP01 HALT: could not acquire %s' % path)
+
+
 def new_run_dir(script):
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
     d = os.path.join(K.RUNS_ROOT, script, '%s_%d' % (stamp, os.getpid()))
@@ -155,6 +208,14 @@ def main():
     ap.add_argument('--gpu', type=int, default=0)
     args = ap.parse_args()
     rid = 'SINet_%s_s%d' % (args.arm, args.seed)
+    ok_lock, me, held = acquire_lock(args.script)
+    if not ok_lock:
+        rec = dict(runid=rid, script=args.script, status='DUPLICATE START YIELDED', at=K.now(),
+                   this_start=me, live_holder=held)
+        K.save_json(os.path.join(K.RUNS_ROOT, args.script, 'duplicate_start_%d.json' % os.getpid()), rec)
+        print('EXP-01 %s: a live instance (pid %s) already holds this script; yielding, nothing trained'
+              % (rid, held.get('pid')), flush=True)
+        sys.exit(6)
     run = new_run_dir(args.script)
     L = os.path.join(run, 'logs')
     fh = open(os.path.join(L, 'driver.log'), 'w')

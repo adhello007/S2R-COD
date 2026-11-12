@@ -252,3 +252,48 @@ number is never evidence about any arm.
 It cannot show that any allocation is optimal. Nor can it show that closed-loop or
 foreground-generating pipelines would behave alike, that the result transfers to SINet-v2 or to a
 modern detector, or that a leaky oracle's COD10K gain would be achievable without labels.
+
+---
+
+# Addendum A1 — 2026-11-12 (IST): pilot outcome, reuse gate R5/R6, duplicate starts
+
+**§0–§6 above are unchanged.** No arm, seed, contrast, σ̂ definition, bar, band or interpretation
+clause is altered. **Written after the pilot and before any EXP-01 training run had started.** No
+EXP-01 run script existed when it was written.
+
+**Pilot (§4): gate PASSED.**
+- Steps 1–6 passed in both pilot starts, and every loss was finite.
+- 253 steps per epoch.
+- R6: the replay of SINet_CORACLE_s42 reproduces the committed step-0 line exactly
+  (`1.7062 / 1.4462 / 0.2600`).
+- Re-inference of the historical CORACLE_s42 checkpoint gives 2,026/2,026 PNGs byte-identical to
+  the committed predictions.
+- Evidence: `STUDENT_RESULTS/EXPERIMENT_LOGS/EXP-01/00_pilot/`.
+
+**R5: PASSED.** Re-scoring the committed predictions reproduces all nine metrics at 6 dp in 24/24
+run × endpoint cells (B, C10, CORACLE, CSHUF × 42/43/45 × COD10K/NC4K): `EXP-01_reuse_R5_rescore.csv`.
+The reuse gate R1–R6 therefore passes, and B, C10 and CORACLE are reused under §3.
+
+**What R6 does not show.** Training is not bit-reproducible on this hardware. Two same-seed runs of
+the *current* code diverge from logged step 10 (mean |ΔLoss_all| 0.056 over epoch 1). The historical
+replay diverges by a similar amount (0.088). Step 0 is identical in every case. The reuse claim is
+therefore "same code, data, configuration and first forward pass; run-to-run GPU nondeterminism
+within the range a same-code repeat shows", not "bit-identical".
+
+**Optional step 7 (CLS smoke) timed out; this is not a failure of the layout.** Its 8-minute budget
+was shorter than CLS's own duration (8.5 minutes in the committed SINet_CORACLE_s42 run). Before the
+timeout, the copy of the symlinked pool into `pool_iteration2/` had completed with real files (0
+symlinks). Pseudo-labels were being written, and the real `SrcDataset` read the partial
+mixed-extension round-2 pool (6,868 pairs) with 0 positional mismatches. The full runs exercise CLS in
+full, and their completion assertions (2 rounds; round-2 pool loaded) catch any failure.
+
+**Duplicate starts (new protocol rule, declared before any run).** The queue recorded the first pilot
+start as INTERRUPTED and re-ran it, but the original process was still alive and ran to completion.
+Two pilots shared GPU 0 for about 5.5 minutes, together using about 27 GPU-minutes, within the
+30-minute allocation. To keep the full runs inside the 12-run allocation:
+- `exp01_run.py` takes a per-script lock (pid, process start time, boot id).
+- A start that finds a live holder yields (exit 6) and trains nothing.
+- A stale lock (dead holder or a new boot) is renamed aside and the start proceeds.
+- **Run of record** for an (arm, seed) is the earliest start whose run passes the §5 completion
+  assertions. Any other completed start of the same script is recorded and never used. The rule
+  depends on start order and completion only, never on a score.

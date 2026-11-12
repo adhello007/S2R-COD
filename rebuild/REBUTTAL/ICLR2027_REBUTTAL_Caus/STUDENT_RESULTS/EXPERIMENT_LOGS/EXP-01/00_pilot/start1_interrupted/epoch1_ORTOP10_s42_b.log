@@ -1,0 +1,35 @@
+# CMD /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 1 --epoch 2 --seed 42 --save_model ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/snap_b/ --source_root ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu 0
+
+==================== Iteration 1/1 started ====================
+
+[INFO] initialize weights from resnet50
+[INFO] initialize weights from resnet50
+[Info] Using network: SINet
+[Source Loader] Loaded 5447 image-mask pairs from ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/Image/ and ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/GT/
+[Target Loader] Loaded 4040 images from ./Dataset/Target/Image/
+[2026-11-12 02:04:17.649022] => [Epoch Num: 001/002] => [Global Step: 0000/0253] => [Loss_all: 1.7113 Loss_sup: 1.4512 Loss_con: 0.2600]
+[2026-11-12 02:04:21.142529] => [Epoch Num: 001/002] => [Global Step: 0010/0253] => [Loss_all: 1.4853 Loss_sup: 1.2124 Loss_con: 0.2729]
+[2026-11-12 02:04:24.613496] => [Epoch Num: 001/002] => [Global Step: 0020/0253] => [Loss_all: 1.3811 Loss_sup: 1.1091 Loss_con: 0.2720]
+[2026-11-12 02:04:28.091965] => [Epoch Num: 001/002] => [Global Step: 0030/0253] => [Loss_all: 1.1483 Loss_sup: 0.8913 Loss_con: 0.2570]
+[2026-11-12 02:04:31.573989] => [Epoch Num: 001/002] => [Global Step: 0040/0253] => [Loss_all: 1.1214 Loss_sup: 0.8225 Loss_con: 0.2989]
+[2026-11-12 02:04:35.087144] => [Epoch Num: 001/002] => [Global Step: 0050/0253] => [Loss_all: 0.9135 Loss_sup: 0.6551 Loss_con: 0.2584]
+[2026-11-12 02:04:38.185862] => [Epoch Num: 001/002] => [Global Step: 0060/0253] => [Loss_all: 0.9695 Loss_sup: 0.6466 Loss_con: 0.3229]
+[2026-11-12 02:04:41.032186] => [Epoch Num: 001/002] => [Global Step: 0070/0253] => [Loss_all: 0.9330 Loss_sup: 0.6634 Loss_con: 0.2696]
+[2026-11-12 02:04:43.960724] => [Epoch Num: 001/002] => [Global Step: 0080/0253] => [Loss_all: 0.8702 Loss_sup: 0.6076 Loss_con: 0.2626]
+[2026-11-12 02:04:47.006743] => [Epoch Num: 001/002] => [Global Step: 0090/0253] => [Loss_all: 1.3349 Loss_sup: 0.6577 Loss_con: 0.6772]
+[2026-11-12 02:04:50.127478] => [Epoch Num: 001/002] => [Global Step: 0100/0253] => [Loss_all: 0.9883 Loss_sup: 0.5853 Loss_con: 0.4030]
+[2026-11-12 02:04:54.233095] => [Epoch Num: 001/002] => [Global Step: 0110/0253] => [Loss_all: 0.6740 Loss_sup: 0.4392 Loss_con: 0.2349]
+[2026-11-12 02:04:58.362633] => [Epoch Num: 001/002] => [Global Step: 0120/0253] => [Loss_all: 0.7702 Loss_sup: 0.5236 Loss_con: 0.2466]
+[2026-11-12 02:05:02.350322] => [Epoch Num: 001/002] => [Global Step: 0130/0253] => [Loss_all: 0.8257 Loss_sup: 0.6048 Loss_con: 0.2209]
+[2026-11-12 02:05:06.412207] => [Epoch Num: 001/002] => [Global Step: 0140/0253] => [Loss_all: 0.6921 Loss_sup: 0.4472 Loss_con: 0.2450]
+[2026-11-12 02:05:10.429995] => [Epoch Num: 001/002] => [Global Step: 0150/0253] => [Loss_all: 0.6449 Loss_sup: 0.4218 Loss_con: 0.2231]
+[2026-11-12 02:05:14.449697] => [Epoch Num: 001/002] => [Global Step: 0160/0253] => [Loss_all: 0.6813 Loss_sup: 0.4381 Loss_con: 0.2432]
+[2026-11-12 02:05:18.527085] => [Epoch Num: 001/002] => [Global Step: 0170/0253] => [Loss_all: 0.6554 Loss_sup: 0.4381 Loss_con: 0.2173]
+[2026-11-12 02:05:22.588210] => [Epoch Num: 001/002] => [Global Step: 0180/0253] => [Loss_all: 0.6561 Loss_sup: 0.4152 Loss_con: 0.2409]
+[2026-11-12 02:05:26.460424] => [Epoch Num: 001/002] => [Global Step: 0190/0253] => [Loss_all: 0.7259 Loss_sup: 0.5062 Loss_con: 0.2197]
+[2026-11-12 02:05:30.457634] => [Epoch Num: 001/002] => [Global Step: 0200/0253] => [Loss_all: 0.6067 Loss_sup: 0.3925 Loss_con: 0.2142]
+[2026-11-12 02:05:34.399048] => [Epoch Num: 001/002] => [Global Step: 0210/0253] => [Loss_all: 0.5882 Loss_sup: 0.3830 Loss_con: 0.2052]
+[2026-11-12 02:05:38.425452] => [Epoch Num: 001/002] => [Global Step: 0220/0253] => [Loss_all: 0.6425 Loss_sup: 0.4405 Loss_con: 0.2020]
+[2026-11-12 02:05:42.460390] => [Epoch Num: 001/002] => [Global Step: 0230/0253] => [Loss_all: 0.6502 Loss_sup: 0.4488 Loss_con: 0.2014]
+[2026-11-12 02:05:46.364113] => [Epoch Num: 001/002] => [Global Step: 0240/0253] => [Loss_all: 0.6785 Loss_sup: 0.4635 Loss_con: 0.2149]
+[2026-11-12 02:05:50.365225] => [Epoch Num: 001/002] => [Global Step: 0250/0253] => [Loss_all: 0.5628 Loss_sup: 0.3420 Loss_con: 0.2208]

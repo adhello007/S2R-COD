@@ -1,0 +1,27 @@
+# 00_pilot.sh START 2026-11-12T01:52:21 gpu 0 sha256 3cd5209bc0a95bae
+pilot start 2026-11-12T01:52:21+05:30 CUDA_VISIBLE_DEVICES=0 head cebf128
+[pilot   0.0 min] 1_env: True
+[pilot   0.1 min] 2_pool_ORTOP10: True
+[pilot   0.1 min] 2_pool_CORACLE: True
+[pilot   0.1 min] 2_trainer_gates: True
+[pilot   0.2 min] 3_smoke: True
+[pilot   1.5 min] 4_epoch1_ORTOP10: True
+[pilot   2.8 min] 5_R6_replay_CORACLE_s42: True
+[pilot   3.8 min] 6_infer_parity: True
+# 00_pilot.sh START 2026-11-12T02:00:24 gpu 0 sha256 3cd5209bc0a95bae
+pilot start 2026-11-12T02:00:24+05:30 CUDA_VISIBLE_DEVICES=0 head cebf128
+[pilot   0.0 min] 1_env: True
+[pilot   0.1 min] 2_pool_ORTOP10: True
+[pilot   0.1 min] 2_pool_CORACLE: True
+[pilot   0.1 min] 2_trainer_gates: True
+[pilot   0.2 min] 3_smoke: True
+[pilot   1.7 min] 4_epoch1_ORTOP10: True
+[pilot   3.1 min] 5_R6_replay_CORACLE_s42: True
+[pilot  11.8 min] 7_cls_smoke: False
+[pilot   4.2 min] 6_infer_parity: True
+[pilot  13.5 min] 8_determinism_repeat: True
+PILOT gate-critical passed: True (13.5 min)
+[pilot  12.2 min] 7_cls_smoke: False
+[pilot  13.5 min] 8_determinism_repeat: True
+PILOT gate-critical passed: True (13.5 min)
+pilot end 2026-11-12T02:13:57+05:30 rc=0

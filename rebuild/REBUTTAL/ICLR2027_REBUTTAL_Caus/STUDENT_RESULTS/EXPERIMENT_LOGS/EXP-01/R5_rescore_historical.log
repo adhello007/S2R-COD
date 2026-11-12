@@ -1,0 +1,26 @@
+SINet_B_s42          COD10K Sm 0.711554 (committed 0.711554) True
+SINet_B_s42          NC4K   Sm 0.764108 (committed 0.764108) True
+SINet_B_s43          COD10K Sm 0.713632 (committed 0.713632) True
+SINet_B_s43          NC4K   Sm 0.768972 (committed 0.768972) True
+SINet_B_s45          COD10K Sm 0.715155 (committed 0.715155) True
+SINet_B_s45          NC4K   Sm 0.767632 (committed 0.767632) True
+SINet_C10_s42        COD10K Sm 0.717165 (committed 0.717165) True
+SINet_C10_s42        NC4K   Sm 0.765296 (committed 0.765296) True
+SINet_C10_s43        COD10K Sm 0.723034 (committed 0.723034) True
+SINet_C10_s43        NC4K   Sm 0.771241 (committed 0.771241) True
+SINet_C10_s45        COD10K Sm 0.715243 (committed 0.715243) True
+SINet_C10_s45        NC4K   Sm 0.770503 (committed 0.770503) True
+SINet_CORACLE_s42    COD10K Sm 0.712710 (committed 0.712710) True
+SINet_CORACLE_s42    NC4K   Sm 0.765344 (committed 0.765344) True
+SINet_CORACLE_s43    COD10K Sm 0.712519 (committed 0.712519) True
+SINet_CORACLE_s43    NC4K   Sm 0.765748 (committed 0.765748) True
+SINet_CORACLE_s45    COD10K Sm 0.717644 (committed 0.717644) True
+SINet_CORACLE_s45    NC4K   Sm 0.765913 (committed 0.765913) True
+SINet_CSHUF_s42      COD10K Sm 0.718602 (committed 0.718602) True
+SINet_CSHUF_s42      NC4K   Sm 0.766713 (committed 0.766713) True
+SINet_CSHUF_s43      COD10K Sm 0.716974 (committed 0.716974) True
+SINet_CSHUF_s43      NC4K   Sm 0.767983 (committed 0.767983) True
+SINet_CSHUF_s45      COD10K Sm 0.715291 (committed 0.715291) True
+SINet_CSHUF_s45      NC4K   Sm 0.767229 (committed 0.767229) True
+R5: 24/24 run x endpoint cells reproduce all 9 metrics at 6 dp
+exit 0
