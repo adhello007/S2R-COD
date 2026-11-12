@@ -1,0 +1,24 @@
+\begin{table}[t]
+\caption{Arm differences on \emph{boundary} metrics, COD10K-test, same pooled-$\hat{\sigma}$ rule. \textbf{Post-hoc: not pre-registered, and no verdict is re-decided.} On SINet the concentration gap $\mathrm{C10}-\mathrm{B}$ clears its bar --- and so does the \emph{anti}-targeted $\mathrm{CINV}-\mathrm{B}$, by as much --- while both direction contrasts stay within noise. SINet-v2 resolves none of it. \emph{Source:} \texttt{diag\_subgroups.json}.}
+\label{tab:boundary}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+Arch. & Metric & $2\hat{\sigma}$ & $\mathrm{C10}\!-\!\mathrm{B}$ & $\mathrm{CINV}\!-\!\mathrm{B}$ & $\mathrm{C10}\!-\!\mathrm{CSHUF}$ & $\mathrm{C10}\!-\!\mathrm{CINV}$ \\
+\midrule
+SINet & Boundary IoU & $0.0101$ & \textbf{$+0.0138$ 3/3} & \textbf{$+0.0135$ 3/3} & $+0.0038$ 2/3 & $+0.0004$ 2/3 \\
+SINet & Boundary $F$ & $0.0151$ & \textbf{$+0.0190$ 3/3} & \textbf{$+0.0173$ 3/3} & $+0.0045$ 2/3 & $+0.0017$ 2/3 \\
+SINet & IoU & $0.0109$ & \textbf{$+0.0112$ 3/3} & \textbf{$+0.0127$ 3/3} & $+0.0019$ 2/3 & $-0.0016$ 2/3 \\
+\midrule
+SINet-v2 & Boundary IoU & $0.0062$ & $+0.0010$ 2/3 & $+0.0025$ 2/3 & $-0.0002$ 2/3 & $-0.0015$ 3/3 \\
+SINet-v2 & Boundary $F$ & $0.0065$ & $+0.0026$ 2/3 & $+0.0050$ 3/3 & $-0.0002$ 2/3 & $-0.0025$ 3/3 \\
+SINet-v2 & IoU & $0.0100$ & $-0.0003$ 2/3 & $+0.0006$ 2/3 & $-0.0013$ 2/3 & $-0.0010$ 2/3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize Bold marks a gap exceeding $2\hat{\sigma}$ with $3/3$ sign consistency; counts after
+each $\Delta$ are sign-consistency across the three seeds. The pattern is not an artifact of where
+predictions are binarised --- Appendix~\ref{app:diag} gives the threshold sweep.
+\end{table}

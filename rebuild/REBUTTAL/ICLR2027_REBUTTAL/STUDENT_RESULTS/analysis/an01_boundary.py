@@ -110,12 +110,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--stage', choices=['gate', 'full'], required=True)
     ap.add_argument('--workers', type=int, default=32)
+    ap.add_argument('--reuse', action='store_true', help='full stage: rebuild tables from the committed per-run CSV')
     a = ap.parse_args()
     if a.stage == 'gate':
         gate(a.workers)
     else:
         import an01_full
-        an01_full.run(a.workers)
+        an01_full.run(a.workers, reuse=a.reuse)
 
 
 if __name__ == '__main__':

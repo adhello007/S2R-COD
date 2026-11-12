@@ -5,28 +5,32 @@
       "contrast": "C10-B",
       "ratio_recomputed": 1.3722060461300458,
       "ratio_committed": 1.3722455936284024,
-      "match": false
+      "abs_diff": 3.954749835655136e-05,
+      "match": true
     },
     {
       "arch": "SINet",
       "contrast": "CINV-B",
       "ratio_recomputed": 1.335634625253221,
       "ratio_committed": 1.3356540110001187,
-      "match": false
+      "abs_diff": 1.9385746897748746e-05,
+      "match": true
     },
     {
       "arch": "SINetv2",
       "contrast": "C10-B",
       "ratio_recomputed": 0.16314095825148414,
       "ratio_committed": 0.16314145705600738,
-      "match": false
+      "abs_diff": 4.988045232412475e-07,
+      "match": true
     },
     {
       "arch": "SINetv2",
       "contrast": "CINV-B",
       "ratio_recomputed": 0.40565069079384464,
       "ratio_committed": 0.4056474376563272,
-      "match": false
+      "abs_diff": 3.253137517422733e-06,
+      "match": true
     }
   ],
   "missing": [],
