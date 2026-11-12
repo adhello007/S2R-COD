@@ -5,6 +5,22 @@ header block when the work is complete.*
 
 **Status at 2026-11-11 18:30 IST: campaigns running; nothing campaign-related has been scored.**
 
+## Author's binding rules for the revised manuscript and the final rebuttal (checked in the Phase 6 audit)
+
+1. **Report what was not run, plainly.** The SINet-v2 replication (posted Part 2) and the higher operating point
+   (posted Part 3) were not run. Never write "consistent across architectures". (11-11)
+2. **Correct the posted 1.37× / 1.34×** with AN-01's eight-seed result. (11-11)
+3. **TH-01 corrections to the posted sensitivity figures** are stated explicitly ("we stated X; the correct value
+   is Y"). (11-11)
+4. **RISE:** if AN-02 step 5 confirms it, add an explicit §8.2 correction of the posted description. (11-11)
+5. **The pooled boundary regression** (AN01_regression.md: degenerate fit, post-treatment covariates) stays in
+   RESULT_TABLES, labelled EXPLORATORY. In the rebuttal, report **only the per-contrast eight-seed boundary
+   numbers**, and never present the pooled interval as evidence for a concentration effect; the pre-registered
+   CDR test decides that. (11-12)
+6. **EQ:** the section is held as the pre-written decision sentences until all 81 runs are trained; INCOMPLETE
+   rule if the cutoff comes first. (11-11, 11-12)
+7. **Appendix B of the paper** goes under §11 item 6. (11-11)
+
 ## Incidents on 2026-11-12 (≈11.9 GPU-h lost; no committed data lost)
 
 | When | What happened | GPU-h lost |

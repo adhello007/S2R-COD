@@ -1,4 +1,6 @@
-# AN-01 exploratory regression (EXPLORATORY / POST HOC; covariates are post-treatment; not causal)
+# AN-01 exploratory regression -- EXPLORATORY / POST HOC, DESCRIPTIVE ONLY
+
+**Caveats, all binding.** (1) The fits are degenerate: the seed random-effect variance is at the boundary (singular covariance) and several optimisations did not converge (warnings per table), so standard errors and intervals are unreliable. (2) The covariates (pseudo-label count, overlap with the C10 set) are post-treatment, so no coefficient is causal. (3) The model pools both architectures, which the pre-registered rule never does. **No coefficient here, including the pooled "concentrated" interval, is evidence for a concentration effect; the pre-registered dose-response test (CDR) decides that.** The rebuttal reports only the per-contrast eight-seed boundary numbers from AN01_boundary_8seed.md (author instruction, 2026-11-12).
 
 ## COD10K, boundary_f
 
