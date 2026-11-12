@@ -1,0 +1,7 @@
+construction,weights,pr_exact,erank_exact,pr_montecarlo,erank_montecarlo
+"C1: isotropic + rank-1 cluster, equal means, d=10, s=10","uniform (1/2,1/2)",3.0769,5.3489,3.1097,5.3929
+"C1: isotropic + rank-1 cluster, equal means, d=10, s=10","concentrated on isotropic (0.9,0.1)",9.1743,9.6405,9.1708,9.6389
+"C1: isotropic + rank-1 cluster, equal means, d=10, s=10","concentrated on rank-1 (0.1,0.9)",1.2063,1.6492,1.2102,1.6603
+"C2: equal isotropic clusters, means on one axis (+-4), d=10","uniform (1/3,1/3,1/3)",2.9433,5.1637,2.9462,5.1677
+"C2: equal isotropic clusters, means on one axis (+-4), d=10","concentrated (0.9,0.05,0.05)",8.5381,9.3637,8.5139,9.3528
+"C2: equal isotropic clusters, means on one axis (+-4), d=10","all on one cluster (1,0,0)",10.0,10.0,9.9994,9.9997

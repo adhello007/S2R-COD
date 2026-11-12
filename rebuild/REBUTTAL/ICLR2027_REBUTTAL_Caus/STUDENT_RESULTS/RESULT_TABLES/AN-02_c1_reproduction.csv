@@ -1,0 +1,5 @@
+file,rows,rows_committed,n_cells,max_abs_diff
+c1_attribution.csv,100,100,600,3.3306690738754696e-16
+c1_spread.csv,20,20,260,3.126388037344441e-13
+c1_coverage.csv,20,20,180,1.1102230246251565e-16
+c1_occupancy.csv,20,20,220,0.0
