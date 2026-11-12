@@ -17,6 +17,8 @@ dated at handoff.*
 | `02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md` | **Not supplied, and not created.** The concern-to-action mapping used is §2 of the 03 guide. |
 | Code changes | New code under `rebuild/CAUS/` only; no committed file was edited. `CODE_CHANGES.patch` is generated at handoff (`git diff 8d1d079 -- rebuild/CAUS`). |
 
+**CPU constraint (owner, 2026-11-12 14:09 IST):** until 2026-11-17 06:00 IST, all CPU work runs under `nice -n 19` on at most 8 cores (`taskset -c 0-7`, worker pools and BLAS threads <= 8). Earlier CPU work (before this instruction) used nice 10-15 with 8 worker processes.
+
 ## Task status (vocabulary of guide §6)
 
 | Task | Status | Note |
