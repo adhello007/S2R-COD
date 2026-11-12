@@ -1,0 +1,38 @@
+{
+ "n": 76,
+ "in_training_pools": 50,
+ "in_cod10k_test": 32,
+ "in_cod10k_test_by_training_status": {
+  "unchecked": 16,
+  "tierA_checked_no_match": 8,
+  "confirmed": 8
+ },
+ "in_both_training_and_cod10k_test": 8,
+ "in_camo250": 4,
+ "camo250_names": [
+  "animal-17",
+  "animal-25",
+  "animal-28",
+  "animal-60"
+ ],
+ "camo250_byte_identical": 3,
+ "in_nc4k": 0,
+ "duplicated_somewhere": 74,
+ "not_found_anywhere": [
+  "animal-38",
+  "animal-54"
+ ],
+ "cod10k_test_nn_gap": {
+  "above": 30.91,
+  "below": 4.49,
+  "n_below": 32,
+  "ratio": 6.88
+ },
+ "camo250_nn_gap": {
+  "above": 47.657,
+  "below": 0.607,
+  "n_below": 4,
+  "ratio": 78.51
+ }
+}
+rc=0

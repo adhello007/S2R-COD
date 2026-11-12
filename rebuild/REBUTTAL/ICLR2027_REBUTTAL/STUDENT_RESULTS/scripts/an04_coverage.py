@@ -58,8 +58,8 @@ def pr(real, fake, k):
 
 
 def stems_of(arm, s=None):
-    fn = {'B': 'abc_stems_B_s%d.txt' % s, 'C10': 'abc_stems_C_a1.0.txt', 'CSHUF': 'abc_stems_CSHUF.txt',
-          'CINV': 'abc_stems_CINV.txt'}[arm]
+    fn = ('abc_stems_B_s%d.txt' % s) if arm == 'B' else {
+        'C10': 'abc_stems_C_a1.0.txt', 'CSHUF': 'abc_stems_CSHUF.txt', 'CINV': 'abc_stems_CINV.txt'}[arm]
     return [l.strip() for l in open(os.path.join(OUT_SE, fn)) if l.strip()]
 
 

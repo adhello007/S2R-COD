@@ -41,3 +41,216 @@ stage-2 calibration: SIFT+RANSAC on 41 positives and 300 sampled negatives
 
 negative control: NC4K vs COD10K-test under the identical extension
   describing 2026 images (COD10K-test)
+  describing 120 images (NC4K unchecked sample)
+  NC4K unchecked total 3039, sampled 120, flagged at the declared threshold: 4
+  NC4K control inliers: median 0  max 19
+  declared stage-2 threshold 9 -> OPERATING POINT 20 inliers
+  recall of the operating point on the 41 knowns: 41/41
+  NC4K flagged AT the operating point: 0 of 120
+  CHAMELEON matched at the operating point: 10 of 25
+
+RESULT at the declared threshold : 11 of 25
+RESULT at the operating point    : 10 of 25  <- REPORTED
+CHAMELEON contamination: 41/76 -> 51/76 (67.1%)  |  unchecked 15  |  clean 10
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierB/diag_chameleon_ext.json
+rc=0
+## stage adjudicate
+[12:53:47] Adjudication (unchanged adjudicate.main)
+extension reports 11 MATCH rows (10 at its operating point)
+
+=== ANCHOR: 8 of the 41 confirmed same-dimension pairs ===
+cham             known   resid   corr    scale   ovlp   
+animal-76.jpg    0.603   0.603   1.000   1.0000  1.00   
+animal-50.jpg    0.645   0.646   1.000   1.0000  1.00   
+animal-34.jpg    0.653   0.653   1.000   1.0000  1.00   
+animal-14.jpg    0.692   0.692   1.000   1.0000  1.00   
+animal-31.jpg    5.512   5.514   0.998   1.0000  1.00   
+animal-8.jpg     4.490   4.490   0.999   1.0000  1.00   
+animal-19.jpg    3.750   3.751   0.999   1.0000  1.00   
+animal-57.jpg    3.062   3.061   0.998   1.0000  1.00   
+
+=== ADJUDICATION: the extension matches ===
+cham             inl    share  resid    corr    sx      sy      shear   ovlp  
+animal-73.jpg    3332   1.00   3.927    0.996   1.0000  1.0000  -0.00   0.96  
+animal-74.jpg    3403   1.00   4.168    0.998   1.0000  1.0000  -0.00   0.96  
+animal-22.jpg    3097   1.00   5.839    0.996   1.0000  1.0000  -0.00   0.95  
+animal-59.jpg    1017   0.99   12.114   0.971   1.5247  1.5244  -0.00   0.91  
+animal-61.jpg    1456   1.00   8.919    0.969   0.9791  0.9793  -0.00   0.93  
+animal-16.jpg    2015   1.00   3.761    0.992   1.0189  1.0198  0.01    0.52  
+animal-66.jpg    860    0.99   10.716   0.972   0.5087  0.3866  -0.01   0.88  
+animal-43.jpg    263    1.00   9.535    0.963   0.5283  0.5283  -0.00   0.83  
+animal-72.jpg    396    0.92   6.600    0.986   6.3572  6.3783  0.09    0.99  
+animal-7.jpg     0      0.00   -1.000   0.000   0.0000  0.0000  0.00    0.00  
+animal-28.jpg    0      0.00   -1.000   0.000   0.0000  0.0000  0.00    0.00  
+
+wrote out/adjudication.{csv,json}  (19 rows)
+
+rendering contact sheets
+  wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/adjudicate/sheet_anchor.png
+  wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/adjudicate/sheet_extension.png
+
+anchor residual range 0.603 .. 5.514 (known mean_abs range 0.603 .. 5.512)
+extension residuals, ascending:
+   animal-16.jpg    3.761
+   animal-73.jpg    3.927
+   animal-74.jpg    4.168
+   animal-22.jpg    5.839
+   animal-72.jpg    6.600
+   animal-61.jpg    8.919
+   animal-43.jpg    9.535
+   animal-66.jpg    10.716
+   animal-59.jpg    12.114
+   animal-28.jpg    1000000000.000
+   animal-7.jpg     1000000000.000
+rc=0
+## stage tables
+{
+ "generated_utc": "2026-11-12T07:24:13Z",
+ "tierA_selftest_rc": [
+  "self-test",
+  0
+ ],
+ "tierA": {
+  "target_4040": {
+   "contaminated": 41,
+   "sweep": {
+    "1.0": 11,
+    "2.0": 26,
+    "3.0": 37,
+    "5.0": 40,
+    "6.0": 41
+   },
+   "n_unchecked": 25,
+   "pairs": 42
+  },
+  "source_hkuis_4447": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "source_hkuis_raw": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "renders_4447": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "camo250_val": {
+   "contaminated": 4,
+   "sweep": {
+    "1.0": 4,
+    "2.0": 4,
+    "3.0": 4,
+    "5.0": 4,
+    "6.0": 4
+   },
+   "n_unchecked": 65,
+   "pairs": 4
+  },
+  "cod10k_test": {
+   "contaminated": 32,
+   "sweep": {
+    "1.0": 6,
+    "2.0": 23,
+    "3.0": 29,
+    "5.0": 32,
+    "6.0": 32
+   },
+   "n_unchecked": 33,
+   "pairs": 32
+  },
+  "nc4k_test": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 56,
+   "pairs": 0
+  }
+ },
+ "tierB_operating_point": null,
+ "tierB_keys": [
+  "calibration",
+  "decides",
+  "headline",
+  "limitations",
+  "n_new_matches",
+  "n_new_matches_at_operating_point",
+  "n_unchecked",
+  "negative_control",
+  "operating_point_inliers",
+  "rows",
+  "what"
+ ],
+ "confirmed_floor": 50,
+ "in_cod10k_train": 44,
+ "unchecked": 16,
+ "tierA_checked_no_match": 10,
+ "exact_sha_matches": {
+  "target_4040": 0,
+  "source_hkuis_4447": 0,
+  "source_hkuis_raw": 0,
+  "renders_4447": 0,
+  "camo250_val": 3,
+  "cod10k_test": 0,
+  "nc4k_test": 0
+ },
+ "pixel_identical_matches": {
+  "target_4040": 0,
+  "source_hkuis_4447": 0,
+  "source_hkuis_raw": 0,
+  "renders_4447": 0,
+  "camo250_val": 3,
+  "cod10k_test": 0,
+  "nc4k_test": 0
+ },
+ "camo250_exact_names": [
+  "animal-17",
+  "animal-25",
+  "animal-60"
+ ],
+ "author_release_equals_repo_copy": 76,
+ "masks": {
+  "author_polarity": "object_black",
+  "author_white_frac": 0.7187348889045598,
+  "repo_polarity": "object_white",
+  "repo_white_frac": 0.13997752485263715,
+  "mean_iou_as_stored": 0.0,
+  "mean_iou_aligned": 0.6932359595769725,
+  "n_identical_after_alignment": 27,
+  "n_iou_ge_0p9": 40,
+  "mae_author": 0.21964816590659705,
+  "mae_repo": 0.08163096507620692,
+  "n_preds": 76,
+  "preds_source": "rebuild/D2_reaudit/preds (SINet S2C Tea_epoch_best, committed)"
+ }
+}
+rc=0

@@ -216,22 +216,32 @@ def stage_tables():
         w.writeheader()
         w.writerows(rows)
     # ---- protocol pathways
+    # Tier-A matches against the validation and test splits (released detector, unchanged tolerance)
+    def tierA_names(pool):
+        j = tA.get(pool)
+        return {stem(p['image_a']) for p in j['pairs']} if j else set()
+    camo_tA, test_tA = tierA_names('camo250_val'), tierA_names('cod10k_test')
     paths = []
     for r in rows:
         dup = r['status'] == 'confirmed'
-        camo250 = bool(r['exact_sha_camo250'] or r['pixel_identical_camo250'])
-        unknown = r['status'] != 'confirmed'
+        camo250 = bool(r['exact_sha_camo250'] or r['pixel_identical_camo250'] or r['chameleon'] in camo_tA)
+        in_test = r['chameleon'] in test_tA
+
         def lvl(hit):
-            return 'direct' if hit else ('unknown' if unknown else 'absent')
+            return 'direct' if hit else 'unknown'
         paths.append(dict(
             chameleon=r['chameleon'], status=r['status'], partner_pools=r['partner_pools'],
-            this_paper_supervised_source_labels=('absent' if not r['exact_sha_source'] else 'direct') +
-            ' (source = HKU-IS + renders; exact/pixel check and Tier A vs source pools)',
-            this_paper_unlabelled_target_image=lvl(dup) + (' (photo in 4040 target pool; image only, no label)' if dup else ''),
-            this_paper_checkpoint_selection=('direct (byte-identical in CAMO-250)' if camo250 else 'absent (exact/pixel)'),
+            this_paper_supervised_source_labels=('direct' if r['exact_sha_source'] else 'not-detected') +
+            ' (source = HKU-IS authors pool + raw + renders; exact/pixel identity: none; Tier A: no same-dimension '
+            'candidates in source pools; Tier B not run against source)',
+            this_paper_unlabelled_target_image=lvl(dup) + (' (photo in the 4040-image target pool; image only, no label)' if dup else
+                                                           ' (no partner found in the target pool; not shown absent)'),
+            this_paper_checkpoint_selection=('direct (%s in CAMO-250)' % ('byte-identical' if r['exact_sha_camo250'] else 're-encoded')
+                                             if camo250 else 'not-detected (exact/pixel/Tier A vs CAMO-250)'),
             this_paper_test_endpoint='absent (CHAMELEON is not an endpoint here)',
-            common_supervised_protocol_train_labels=lvl(dup) + (' (partner in public %s with mask)' % r['partner_pools'] if dup else ''),
-            common_protocol_checkpoint_selection=('direct if CAMO-test is the selection split' if camo250 else 'protocol-dependent'),
+            cross_benchmark_cod10k_test=('direct (re-encode of a COD10K-test image)' if in_test else 'not-detected (Tier A)'),
+            common_supervised_protocol_train_labels=lvl(dup) + (' (partner in public %s, mask available)' % r['partner_pools'] if dup else ''),
+            common_protocol_checkpoint_selection=('direct if CAMO-test is used for selection' if camo250 else 'protocol-dependent'),
             common_protocol_test='CHAMELEON is the evaluated test set'))
     with open(os.path.join(rt, 'AN-05_protocol_paths.csv'), 'w', newline='') as f:
         w = csv.DictWriter(f, fieldnames=list(paths[0]))
