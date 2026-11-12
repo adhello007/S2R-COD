@@ -1,0 +1,3496 @@
+# All source added for Reviewer Caus: git diff 8d1d079 HEAD -- rebuild/CAUS
+# No committed file outside rebuild/CAUS was modified by this work.
+diff --git a/rebuild/CAUS/PREREGISTRATION_EXP01.md b/rebuild/CAUS/PREREGISTRATION_EXP01.md
+new file mode 100644
+index 0000000..ddf3842
+--- /dev/null
++++ b/rebuild/CAUS/PREREGISTRATION_EXP01.md
+@@ -0,0 +1,299 @@
++# PREREGISTRATION_EXP01.md — different-shape oracle allocation (Reviewer Caus, QA-01)
++
++> **Committed before any EXP-01 run script exists and before any EXP-01 training run.** Never edited
++> after the first EXP-01 number exists; later corrections go in dated, append-only addenda.
++>
++> **Additive and post-review.** `rebuild/ABC/PREREGISTRATION.md`, `PREREGISTRATION_T2.md`,
++> `rebuild/OR/PREREGISTRATION_OR.md`, `PREREGISTRATION_FX.md` and `rebuild/SE/PREREGISTRATION_SE.md`
++> are frozen and are not altered, superseded or reinterpreted. No committed arm, verdict, σ̂ or bar
++> is restated or replaced. EXP-01 is a separate campaign with its own σ̂ and verdicts, reported beside
++> the committed ones and never in place of them, and never merged into the 103-run figures.
++>
++> Dated **2026-11-12 (IST)**, branch `rebuttal/Caus-oracle-scope`, base commit `8d1d079`. Written after
++> the quota/selection preflight below (inputs only) and **before** any EXP-01 pool was trained on.
++
++---
++
++## §0 Declaration
++
++**Every new oracle arm deliberately uses COD10K-test labels to choose training data.** The error
++vector is CORACLE's: per-cluster mean (1 − Sα) of the committed SINet/S2C model on COD10K-test,
++`rebuild/B1/out/b1_cluster_es_dinoL518.csv:test_one_minus_sa`, sha256
++`1ff27cd1efdf6ed01be557c1d339547792fdfcc219f8db6ecfd5db9195f693f8` (identical to the value
++`PREREGISTRATION_OR.md` recorded; one commit in its history, `470e224`).
++
++- Every EXP-01 arm is a **diagnostic stress test, never a method**. COD10K-test is therefore **not an
++  unbiased endpoint** for any of them. `oracle_score_source = endpoint-label-leaky` for OR-PROP,
++  OR-TOP10, OR-TOP5 and CORACLE. It is `endpoint-label-leaky (shape only)` for the shuffles, whose
++  sorted multiset comes from the leaky vector but whose cluster assignment is destroyed.
++- **The leak can only favour the oracle arms.** A null is therefore conservative. A COD10K gain is
++  checked against NC4K, whose labels no allocation reads. NC4K is still domain-coupled to COD10K
++  (both are camouflage photography), so an NC4K difference is "not label-driven", not "independent".
++- **Why not disjoint calibration labels.** The only endpoint-disjoint labelled images that fall in the
++  target clusters are the 4,040 target images' own masks (COD10K-train + CAMO-train). Those masks are
++  **not in the pre-rebuttal workspace**. The one local copy is a 7 Nov download made by another
++  reviewer's workstream, which this work does not use. A 12-run budget also cannot carry two error
++  sources and still keep the exact shape contrast against CORACLE. A CPU-only comparison of
++  calibration-label quotas is attempted separately if the official masks can be obtained; it trains
++  nothing.
++
++## §1 The rule
++
++```
++Question     : CORACLE kept C10's quota multiset and only re-aimed it by true error. Does an
++               oracle that changes the SHAPE of the allocation -- error-proportional, or
++               concentrated on the truly worst clusters -- train a better SINet at the same
++               N = 1000, generator, pool, selector and protocol?
++
++Arms trained : OR-PROP, OR-TOP10, OR-TOP10-SHUF, OR-TOP5  x  seeds {42, 43, 45}  = 12 SINet runs
++Arms reused  : B, C10, CORACLE (SINet, seeds 42, 43, 45), conditional on reuse gate R1-R6 (§3)
++Reference    : CSHUF (SINet, 42/43/45) is reported beside them and decides nothing
++Quota-only   : OR-PROP-SHUF, OR-PROP-INV, OR-TOP5-SHUF -- built and audited, never trained
++Architecture : SINet only (SINet-v2 is not in the budget)
++
++Definitions (err = the §0 vector, 75 clusters, cluster order 0..74):
++  OR-PROP      w_j = max(err_j, 0) + eps, eps = 1e-6 * max(err);  q = largest_remainder(w/sum(w), 1000)
++               (C1's committed largest_remainder; ties by ascending cluster index)
++  OR-TOP10     100 to each of the 10 largest err (stable argsort of -err), 0 elsewhere
++  OR-TOP5      200 to each of the 5 largest err, 0 elsewhere
++  *-SHUF       q[sigma] for the FIRST offset off in 0..63 such that
++               sigma = numpy.random.default_rng(NS + off).permutation(75) has no fixed point and
++               |scipy spearmanr(q[sigma], err)| <= 0.10;  NS = 920000 PROP, 930000 TOP10,
++               940000 TOP5.  Realised: OR-PROP-SHUF 920004, OR-TOP10-SHUF 930000, OR-TOP5-SHUF 940007.
++  OR-PROP-INV  q rank-reversed against err (deterministic; the CINV device)
++  Selector     unchanged and identical to C10/CORACLE: R2 grey-128 cutout dinoL518 embedding,
++               per-cluster cosine ranking to the committed centroid, desc_nc serving order, greedy
++               distinct selection over all 4,447 LAKE-RED renders. No per-cluster cap.
++  Pool         HKU-IS base 4447 pairs + the 1000 selected renders (render masks); target 4040.
++  Training     MyTrain.py --network SINet --task S2C --method ours --iteration 2 --seed s, all
++               other flags default: the command line of every committed SINet run except paths.
++  Checkpoint   Tea_epoch_best.pth of the final round (selected on CAMO-250 MAE).
++
++Endpoints    : COD10K-test S-alpha (primary, leaky for every oracle arm -- §0);
++               NC4K S-alpha (secondary, reported, never decides).
++               MAE, wF, E-phi on both, reported as exploratory.
++
++Noise        : sigma_hat = pooled within-arm sd of S-alpha over the 7 analysis arms
++               {B, C10, CORACLE, OR-PROP, OR-TOP10, OR-TOP10-SHUF, OR-TOP5}, per endpoint,
++               df = 7 x 2 = 14. Per-arm sds, the new-arms-only sigma_hat (df = 8) and OR's own
++               sigma_hat are reported beside it and replace nothing.
++
++Primary contrasts (Delta = mean S-alpha of first arm minus second):
++  P1  OR-TOP10 - CORACLE        shape at true-error aim (C10 multiset -> top-10 equal split)
++  P2  OR-TOP10 - OR-TOP10-SHUF  aim at the top-10 shape (same multiset, Jaccard 0.2158)
++  P3  OR-PROP  - CORACLE        shape (flat); MECHANICALLY OVERLAPPING: Jaccard 0.5232,
++                                313 of 1000 images differ -- flagged wherever reported
++  P4  OR-TOP5  - CORACLE        shape-PLUS-aim (see the smaller-plan clause); never aim-isolated
++Secondary: each oracle arm - B and - C10; OR-TOP10-SHUF - B. All on both endpoints.
++
++Rule (identical to A/B/C, T2, OR):
++  REAL EFFECT     iff Delta >  2*sigma_hat AND per-seed sign consistent 3/3
++  WITHIN NOISE    iff |Delta| <= 2*sigma_hat
++  REAL REGRESSION iff Delta < -2*sigma_hat AND per-seed sign consistent 3/3
++  INCONCLUSIVE    iff |Delta| >  2*sigma_hat but sign not 3/3 -> reported as-is, NO seeds added
++  Per-seed sign: sign(S_a(s) - S_b(s)) for s in {42,43,45}, pairing by training seed only.
++  Four primary contrasts are judged with no multiplicity correction, as in every committed
++  campaign; this is stated beside the verdicts.
++
++Interpretation, fixed before any EXP-01 number exists:
++  P1-P4 all WITHIN NOISE
++    -> no true-error allocation shape tested here (flat, C10, top-10, top-5) buys a gain over the
++       C10-shaped oracle resolvable at this sensitivity, although the leak favours every one of
++       them. Consistent with the binding constraint sitting downstream of allocation in THIS
++       pipeline (offline LAKE-RED fixed-foreground pool, two-round S2R-COD, SINet). Reported as
++       "no effect resolvable at this sensitivity", never "no effect", with the largest effect the
++       bar could have missed.
++  P1 REAL EFFECT and P2 REAL EFFECT
++    -> a concentrated, error-aimed allocation helps, and aim matters at that shape. The paper's
++       "concentration, not uncertainty" reading must be qualified: once the allocation is
++       concentrated, the quality of the score becomes binding. This is the outcome most damaging
++       to the current framing and is reported prominently, with the leak caveat and the NC4K read.
++  P1 REAL EFFECT, P2 WITHIN NOISE
++    -> a shape effect with no resolvable aim specificity: concentration, not aim, at top-10.
++  P2 REAL EFFECT, P1 WITHIN NOISE
++    -> aim matters at the top-10 shape, but the top-10 oracle does not beat the C10-shaped one.
++  Any REAL REGRESSION
++    -> reported as a regression and not explained away.
++  A COD10K REAL EFFECT whose NC4K Delta has the opposite sign is reported as possibly
++  label-leak-driven.
++  Whichever occurs is reported. No arm is dropped, no seed added, no contrast redefined, no
++  endpoint or metric substituted, no result reclassified once seen.
++
++Report       : 2*sigma_hat rule primary; paired per-seed differences; sign counts; NO p-value at
++               n = 3. Supplementary, labelled post-review EXPLORATORY: Welch 95% CI with
++               arm-specific sds, and the paired-seed t interval (df = 2, flagged unstable).
++```
++
++### Smaller plan, predeclared with its rationale
++
++The guide's full EXP-01 table has nine arms. Its stated priority is B, C10, CORACLE, OR-PROP,
++OR-PROP-SHUF, OR-TOP10, OR-TOP10-SHUF. This campaign departs from that table as follows, before
++any training:
++
++1. **OR-PROP-SHUF is not trained because it is uninformative, not because of cost.** Per-cluster
++   error spans only 0.087–0.471, so the error-proportional quota is almost flat (4–24 per
++   cluster, normalised entropy 0.989; its selection overlaps a flat centroid allocation at Jaccard
++   0.837). Its frozen shuffle shares 897 of 1000 images (Jaccard 0.8132). The deterministic
++   rank-reversed alternative, OR-PROP-INV, still shares 844 (Jaccard 0.7301). Both fail the
++   inherited same-shape distinctness gate (Jaccard ≤ 0.50; T2.7 / OR.2.4). No permutation of this
++   multiset can move more than about 16% of the images, so the aim at the flat shape cannot be
++   tested with this selector. That is reported as a finding (TH-01 / AN-02), not as a run.
++2. **OR-TOP5 takes the three runs freed by OR-PROP-SHUF.** It extends the shape axis to the
++   reviewer's "concentrated on the truly worst clusters" at its strongest (5 clusters × 200).
++3. **OR-TOP5 has no same-shape shuffle in training.** OR-TOP5-SHUF is built and passes the gate
++   (Jaccard 0.1983), but it is not trained. **Every OR-TOP5 contrast is therefore shape-plus-aim
++   and is never reported as aim-isolated.** The only aim-isolated contrast at a new shape is P2.
++4. B, C10 and CORACLE are reused rather than retrained, under §3. If §3 fails, contrasts against
++   them are labelled "not fully comparable", and P2, which is within this campaign, stays primary.
++
++## §2 Frozen inputs (inputs only; no outcome existed when these were computed)
++
++Produced by `rebuild/CAUS/exp01_tables.py`. The full tables are in
++`STUDENT_RESULTS/RESULT_TABLES/{TH-01_quota_properties,AN-02_selection_overlap,EXP-01_quota_manifests}.csv`.
++The stem lists are in `STUDENT_RESULTS/RESULT_TABLES/EXP-01_stems/`. Entropy and HHI are computed on
++the realised integer shares.
++
++| Arm | funded | max q | top-5 share | entropy_norm | HHI | Gini | Spearman(q, err) | n_displaced | quota sha256[:12] | stems sha256[:12] |
++|---|---|---|---|---|---|---|---|---|---|---|
++| C10 (reused) | 75 | 194 | 0.505 | 0.78668 | 0.07395 | 0.627 | +0.235 | 370 | 115a28800ae9 | 477033501309 |
++| CORACLE (reused) | 75 | 194 | 0.505 | 0.78668 | 0.07395 | 0.627 | +0.996 | 509 | 33bc03e0de08 | d07054377fc6 |
++| OR-PROP | 75 | 24 | 0.109 | 0.98855 | 0.01462 | 0.174 | +0.996 | 514 | 56a17e9bbb47 | 29f2685f96f7 |
++| OR-TOP10 | 10 | 100 | 0.500 | 0.53332 | 0.10000 | 0.867 | +0.589 | 447 | 270e03260f7b | 84d38af6f5a4 |
++| OR-TOP10-SHUF | 10 | 100 | 0.500 | 0.53332 | 0.10000 | 0.867 | −0.094 | 210 | e68449c660a0 | 705815acf05a |
++| OR-TOP5 | 5 | 200 | 1.000 | 0.37277 | 0.20000 | 0.933 | +0.432 | 178 | 7e047cd15109 | 94eb645d0d40 |
++| OR-PROP-SHUF (quota-only) | 75 | 24 | 0.109 | 0.98855 | 0.01462 | 0.174 | −0.045 | 477 | 2250786dccff | 47afdcaf846f |
++| OR-PROP-INV (quota-only) | 75 | 24 | 0.109 | 0.98855 | 0.01462 | 0.174 | −0.996 | 474 | 157075d538b5 | 21c4ef172bfa |
++| OR-TOP5-SHUF (quota-only) | 5 | 200 | 1.000 | 0.37277 | 0.20000 | 0.933 | −0.005 | 190 | 7ea6fc95a1dc | a9a63aa6b82d |
++
++Distinctness of the decisive pairs (chance overlap = 1000²/4447 = 224.9):
++
++| Pair | Jaccard | images differing | gate |
++|---|---|---|---|
++| OR-TOP10 vs OR-TOP10-SHUF | 0.2158 | 645 | PASS |
++| OR-TOP5 vs OR-TOP5-SHUF | 0.1983 | 669 | PASS (not trained) |
++| OR-PROP vs OR-PROP-SHUF | 0.8132 | 103 | **FAIL** |
++| OR-PROP vs OR-PROP-INV | 0.7301 | 156 | **FAIL** |
++| OR-TOP10 vs CORACLE | 0.4695 | 361 | disclosed |
++| OR-PROP vs CORACLE | 0.5232 | 313 | disclosed (overlapping) |
++| OR-TOP5 vs CORACLE | 0.4276 | 401 | disclosed |
++| each new arm vs B_s42 | 0.124–0.133 | 765–780 | at chance (0.98–1.05×) |
++
++Spearman(q, err) for the top-k arms is below 1 by construction: it ranks a vector with 65 or 70
++tied zeros.
++
++## §3 Reuse gate for the historical B / C10 / CORACLE runs
++
++| Gate | What must hold | Status when this was committed |
++|---|---|---|
++| R1 code | Trainer-path source at each run's recorded commit differs from HEAD only by the opt-in `--exposure` patch (default branch untouched) and comments | PASS: 065dac6, 617a2e1, 80d2e0f, b755aa9, e16d649; each differs by the same 31-line P6 patch |
++| R2 env | Shared venv training packages predate the first run | PASS: torch 2.11.0+cu128, numpy, scipy, opencv, pillow installed 8–10 Aug |
++| R3 data | Every file of every primary input matches E0's manifest | PASS: 0 mismatches over raw, raw_gt, auth, auth_gt, renders, render masks, target, COD10K, CAMO-250, NC4K images |
++| R4 stems | Committed C10, CORACLE, CSHUF, CINV and B_s42/43/45 stems are reproduced byte-for-byte | PASS (`exp01_alloc_test.py`) |
++| R5 metrics | Re-scoring the committed predictions reproduces committed `abc_metrics.csv` at 6 dp on both endpoints | run before the pilot; recorded in `EXP-01_reuse_R5_rescore.csv` |
++| R6 replay | Pilot: the historical CORACLE_s42 configuration, re-run for one epoch, reproduces the committed step-0 loss line at 4 dp | pilot |
++
++The historical driver logs record each commit as "(dirty)" without recording what was uncommitted.
++R6 is the behavioural check on that. A pass shows that initialisation, data order and the first
++forward pass are identical; it does not show bit-identical training thereafter (cuDNN determinism
++reduces nondeterminism but does not remove it). If R5 or R6 fails, §1 clause 4 applies.
++
++## §4 Pilot gate (`00_pilot.sh`, ≤ 30 min, hard-capped)
++
++The whole pilot runs under `timeout 30m`, and each step under its own `timeout`. Gate-critical
++steps run first. Optional steps are skipped, with the skip recorded, once elapsed time leaves no
++room for them. Every pilot output goes to a fresh folder per start. Steps:
++
++1. Environment report: GPU, torch/CUDA, free disk, free GPU memory.
++2. Pools built and gated for OR-TOP10_s42 (new code path) and CORACLE_s42 (replay).
++3. Smoke test: two batches of forward, loss and backward for SINet on the OR-TOP10 pool. Losses
++   must be finite.
++4. One-epoch pilot: `MyTrain.py --epoch 2 --iteration 1` on OR-TOP10_s42. Must log 253 steps, with
++   finite losses.
++5. R6 replay: the same on CORACLE_s42, compared with the committed log.
++6. Scorer and inference parity: `MyTest.py` on the historical SINet_CORACLE_s42 checkpoint for
++   COD10K. PNGs are compared with the committed predictions, and Sα is re-scored against the
++   committed 0.712710.
++7. Optional: a CLS round-2 smoke (pseudo-labelling with the historical CORACLE_s42 checkpoint on
++   this campaign's pool layout; parity and counts).
++8. Optional: a rerun-from-scratch determinism repeat of step 4.
++
++**Gate:** steps 1–6 exit 0; step 3–5 losses finite; step 4 total_step = 0253; step 5 step-0 line
++equal at 4 dp; step 6 Sα re-scored from re-inferred PNGs within 1e-4 of 0.712710 (exact PNG
++equality is reported, not required). A failure blocks the run scripts until it is diagnosed. A pilot
++number is never evidence about any arm.
++
++## §5 Run protocol
++
++- Twelve scripts, one run each, ordered by seed so that a partial campaign stays balanced:
++  `01..04` = s42 {OR-TOP10, OR-TOP10-SHUF, OR-PROP, OR-TOP5}, `05..08` = s43 (same order),
++  `09..12` = s45 (same order).
++- Each start writes into a new folder, `Result/CAUS_RUNS/<script>/<UTC stamp>_<pid>/`, holding
++  `pool/` (leaf symlinks to the base pool and renders), `pool_iteration2/` (the trainer's CLS copy),
++  `snap/`, `pred/{COD10K,NC4K}/` and `logs/`. A re-run never overwrites anything.
++- Before training: the pool gates (counts; Image/GT stem parity; positional parity of the real
++  `SrcDataset`; round-2 worst-case union parity; base bytes against E0's manifest; render mask equal
++  to raw GT; stems equal to the frozen list).
++- After training, the completion assertions of `abc_train.verify_run`: 2 rounds; total_step 0253;
++  last epoch 039/040; Tea_epoch_best present; round-1 pool 5447; 4040 targets loaded twice. Then
++  `MyTest.py` on COD10K and NC4K. Then `run_record.json` with hashes.
++- Scoring happens on CPU afterwards, with `caus_score.py` (the committed scorer), checked by an
++  independent S-measure on a subset.
++- **Failures:** a failed run is preserved and never deleted.
++  - If the cause is recoverable (I/O, OOM, environment, or an interruption that did not re-run), the
++    corresponding author is told immediately, so a same-seed, same-config retry can be authorised.
++    The retry is a new script with a new run folder.
++  - A protocol violation is recorded as FAILED.
++  - The retry needs compute beyond the 12-run allocation, so it is the author's decision.
++- **Partial completion:** contrasts use only seeds complete for both arms, and the campaign status is
++  PARTIAL. No arm or seed is substituted.
++
++## §6 What EXP-01 cannot show
++
++It cannot show that any allocation is optimal. Nor can it show that closed-loop or
++foreground-generating pipelines would behave alike, that the result transfers to SINet-v2 or to a
++modern detector, or that a leaky oracle's COD10K gain would be achievable without labels.
++
++---
++
++# Addendum A1 — 2026-11-12 (IST): pilot outcome, reuse gate R5/R6, duplicate starts
++
++**§0–§6 above are unchanged.** No arm, seed, contrast, σ̂ definition, bar, band or interpretation
++clause is altered. **Written after the pilot and before any EXP-01 training run had started.** No
++EXP-01 run script existed when it was written.
++
++**Pilot (§4): gate PASSED.**
++- Steps 1–6 passed in both pilot starts, and every loss was finite.
++- 253 steps per epoch.
++- R6: the replay of SINet_CORACLE_s42 reproduces the committed step-0 line exactly
++  (`1.7062 / 1.4462 / 0.2600`).
++- Re-inference of the historical CORACLE_s42 checkpoint gives 2,026/2,026 PNGs byte-identical to
++  the committed predictions.
++- Evidence: `STUDENT_RESULTS/EXPERIMENT_LOGS/EXP-01/00_pilot/`.
++
++**R5: PASSED.** Re-scoring the committed predictions reproduces all nine metrics at 6 dp in 24/24
++run × endpoint cells (B, C10, CORACLE, CSHUF × 42/43/45 × COD10K/NC4K): `EXP-01_reuse_R5_rescore.csv`.
++The reuse gate R1–R6 therefore passes, and B, C10 and CORACLE are reused under §3.
++
++**What R6 does not show.** Training is not bit-reproducible on this hardware. Two same-seed runs of
++the *current* code diverge from logged step 10 (mean |ΔLoss_all| 0.056 over epoch 1). The historical
++replay diverges by a similar amount (0.088). Step 0 is identical in every case. The reuse claim is
++therefore "same code, data, configuration and first forward pass; run-to-run GPU nondeterminism
++within the range a same-code repeat shows", not "bit-identical".
++
++**Optional step 7 (CLS smoke) timed out; this is not a failure of the layout.** Its 8-minute budget
++was shorter than CLS's own duration (8.5 minutes in the committed SINet_CORACLE_s42 run). Before the
++timeout, the copy of the symlinked pool into `pool_iteration2/` had completed with real files (0
++symlinks). Pseudo-labels were being written, and the real `SrcDataset` read the partial
++mixed-extension round-2 pool (6,868 pairs) with 0 positional mismatches. The full runs exercise CLS in
++full, and their completion assertions (2 rounds; round-2 pool loaded) catch any failure.
++
++**Duplicate starts (new protocol rule, declared before any run).** The queue recorded the first pilot
++start as INTERRUPTED and re-ran it, but the original process was still alive and ran to completion.
++Two pilots shared GPU 0 for about 5.5 minutes, together using about 27 GPU-minutes, within the
++30-minute allocation. To keep the full runs inside the 12-run allocation:
++- `exp01_run.py` takes a per-script lock (pid, process start time, boot id).
++- A start that finds a live holder yields (exit 6) and trains nothing.
++- A stale lock (dead holder or a new boot) is renamed aside and the start proceeds.
++- **Run of record** for an (arm, seed) is the earliest start whose run passes the §5 completion
++  assertions. Any other completed start of the same script is recorded and never used. The rule
++  depends on start order and completion only, never on a score.
+diff --git a/rebuild/CAUS/an03_provenance_coverage.py b/rebuild/CAUS/an03_provenance_coverage.py
+new file mode 100644
+index 0000000..2490183
+--- /dev/null
++++ b/rebuild/CAUS/an03_provenance_coverage.py
+@@ -0,0 +1,156 @@
++#!/usr/bin/env python
++"""CAUS AN-03 -- foreground provenance, mask QC and target-manifold coverage, re-measured independently.
++
++1. Provenance (own code; D1's committed per-image table is the cross-check). For every stem: the LAKE-RED
++   render vs its raw HKU-IS photograph under raw_gt, and the authors' pool image vs the raw photograph
++   under auth_gt. Interior = mask eroded 3 px (cv2.erode, 3x3 cross... applied 3 times), scored when
++   >= 50 px. "Regenerated" = interior mean|diff| > 40 on 0-255 (D1's threshold, reused so the counts
++   are comparable). Also: background mean|diff|, foreground identity count (unique raw sha256).
++2. Mask QC on the 4447 render masks (= raw_gt): empty / full masks, foreground fraction, connected
++   components, holes, binary-ness. Same gate for every arm: these masks are shared by all arms.
++3. Coverage (own k-NN recall implementation, Kynkaenniemi et al. 2019): fraction of the 4040 target
++   embeddings inside the union of k-NN balls of a compared set, frozen E0 embeddings, L2-normalised,
++   Euclidean; k in {3, 5, 10, 20}; compared against rebuild/A3/out/a3_coverage.csv.
++Writes RESULT_TABLES/AN-03_foreground_provenance.csv, AN-03_coverage_and_qc.csv.
++"""
++
++import csv
++import os
++import sys
++from multiprocessing import Pool
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++import numpy as np                                             # noqa: E402
++
++RAW = 'Dataset/Source/HKU-IS_raw/imgs'
++RAW_GT = 'Dataset/Source/HKU-IS_raw/gt'
++REN = 'Dataset/LAKERED/output/HKU-IS/images'
++REN_MSK = 'Dataset/LAKERED/output/HKU-IS/masks'
++AUTH = 'Dataset/Source/HKU-IS/Image'
++AUTH_GT = 'Dataset/Source/HKU-IS/GT'
++
++
++def _trace(args):
++    import cv2
++    stem, raw_p, gt_p, cand_p = args
++    raw = cv2.imread(raw_p, cv2.IMREAD_COLOR)
++    cand = cv2.imread(cand_p, cv2.IMREAD_COLOR)
++    gt = cv2.imread(gt_p, cv2.IMREAD_GRAYSCALE)
++    if raw is None or cand is None or gt is None:
++        return dict(stem=stem, status='UNREADABLE')
++    if raw.shape != cand.shape:
++        return dict(stem=stem, status='SHAPE-MISMATCH')
++    if gt.shape != raw.shape[:2]:
++        gt = cv2.resize(gt, (raw.shape[1], raw.shape[0]), interpolation=cv2.INTER_NEAREST)
++    fg = (gt >= 128).astype(np.uint8)
++    if fg.sum() == 0 or fg.sum() == fg.size:
++        return dict(stem=stem, status='DEGENERATE-MASK')
++    d = np.abs(raw.astype(np.int16) - cand.astype(np.int16))
++    er = cv2.erode(fg, cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3)), iterations=3).astype(bool)
++    rec = dict(stem=stem, status='OK', obj_mean=float(d[fg.astype(bool)].mean()),
++               bg_mean=float(d[~fg.astype(bool)].mean()), interior_px=int(er.sum()), interior_mean='')
++    if er.sum() >= 50:
++        rec['interior_mean'] = float(d[er].mean())
++    return rec
++
++
++def _mask_qc(p):
++    import cv2
++    m = cv2.imread(p, cv2.IMREAD_GRAYSCALE)
++    b = (m >= 128).astype(np.uint8)
++    frac = float(b.mean())
++    n_fg, _ = cv2.connectedComponents(b)
++    n_bg, _ = cv2.connectedComponents(1 - b)
++    nonbinary = float(((m > 10) & (m < 245)).mean())
++    return dict(frac=frac, comps=n_fg - 1, holes=max(n_bg - 2, 0), nonbinary=nonbinary)
++
++
++def knn_recall(real, other, k):
++    """Fraction of `real` points inside the union of k-NN balls of `other` (radius = distance from each
++    `other` point to its k-th nearest neighbour within `other`)."""
++    o2 = (other ** 2).sum(1)
++    D = np.sqrt(np.maximum(o2[:, None] + o2[None, :] - 2 * other @ other.T, 0))
++    np.fill_diagonal(D, np.inf)
++    rad = np.sort(D, axis=1)[:, k - 1]
++    r2 = (real ** 2).sum(1)
++    inside = np.zeros(len(real), bool)
++    for s in range(0, len(real), 1024):
++        Dr = np.sqrt(np.maximum(r2[s:s + 1024, None] + o2[None, :] - 2 * real[s:s + 1024] @ other.T, 0))
++        inside[s:s + 1024] = (Dr <= rad[None, :]).any(1)
++    return float(inside.mean())
++
++
++def main():
++    stems = sorted(os.path.splitext(f)[0] for f in os.listdir(os.path.join(K.REPO, RAW)))
++    raw_ext = {os.path.splitext(f)[0]: f for f in os.listdir(os.path.join(K.REPO, RAW))}
++    j = lambda *a: os.path.join(K.REPO, *a)                    # noqa: E731
++    jobs_local = [(s, j(RAW, raw_ext[s]), j(RAW_GT, s + '.png'), j(REN, 'SOD_%s.jpg' % s)) for s in stems]
++    jobs_auth = [(s, j(RAW, raw_ext[s]), j(AUTH_GT, s + '.png'), j(AUTH, s + '.jpg')) for s in stems]
++    with Pool(8) as pool:
++        loc = pool.map(_trace, jobs_local, chunksize=32)
++        aut = pool.map(_trace, jobs_auth, chunksize=32)
++        qc = pool.map(_mask_qc, [j(REN_MSK, 'SOD_%s.png' % s) for s in stems], chunksize=64)
++    prov = []
++    for pool_name, recs, d1 in (('local renders (LAKE-RED, this campaign)', loc, 'rebuild/D1/out/d1_trace_local.csv'),
++                                ("authors' pool", aut, 'rebuild/D1/out/d1_trace_auth.csv')):
++        ok = [r for r in recs if r['status'] == 'OK']
++        inter = [r for r in ok if r['interior_mean'] != '']
++        ref = {r['stem']: r for r in csv.DictReader(open(j(d1)))}
++        diffs = [abs(r['interior_mean'] - float(ref[r['stem']]['obj_interior_mean'])) for r in inter
++                 if ref.get(r['stem'], {}).get('obj_interior_mean') not in (None, '')]
++        prov.append(dict(pool=pool_name, n_files=len(recs), traced_ok=len(ok), interior_scored=len(inter),
++                         regenerated_interior_gt40=sum(r['interior_mean'] > 40 for r in inter),
++                         max_interior_mean=round(max(r['interior_mean'] for r in inter), 3),
++                         mean_interior=round(float(np.mean([r['interior_mean'] for r in inter])), 3),
++                         mean_background=round(float(np.mean([r['bg_mean'] for r in ok])), 3),
++                         interior_3x_closer=sum(r['interior_mean'] * 3 < r['bg_mean'] for r in inter),
++                         vs_D1_interior_mean_absdiff_median=round(float(np.median(diffs)), 4) if diffs else '',
++                         vs_D1_interior_mean_absdiff_max=round(float(np.max(diffs)), 4) if diffs else ''))
++    raw_sha = [K.sha256(j(RAW, raw_ext[s])) for s in stems]
++    prov.append(dict(pool='foreground identities (raw HKU-IS photographs)', n_files=len(stems),
++                     traced_ok=len(set(raw_sha)), interior_scored='', regenerated_interior_gt40='',
++                     max_interior_mean='', mean_interior='', mean_background='', interior_3x_closer='',
++                     vs_D1_interior_mean_absdiff_median='unique sha256 count in traced_ok',
++                     vs_D1_interior_mean_absdiff_max=''))
++    K.write_csv(os.path.join(K.TABLES, 'AN-03_foreground_provenance.csv'), prov)
++    for r in prov:
++        print(r)
++
++    rows = []
++    fr = np.array([q['frac'] for q in qc])
++    rows += [dict(block='mask QC (4447 render masks, shared by every arm)', item=k, value=v) for k, v in (
++        ('empty masks (fg fraction = 0)', int((fr == 0).sum())), ('full masks (fg fraction = 1)', int((fr == 1).sum())),
++        ('fg fraction median', round(float(np.median(fr)), 4)), ('fg fraction 5th-95th pct',
++                                                                 '%.4f-%.4f' % tuple(np.percentile(fr, [5, 95]))),
++        ('masks with >1 connected component', int(sum(q['comps'] > 1 for q in qc))),
++        ('masks with >=1 hole', int(sum(q['holes'] >= 1 for q in qc))),
++        ('mean share of non-binary pixels (10<v<245)', round(float(np.mean([q['nonbinary'] for q in qc])), 5)))]
++    # coverage
++    cache = os.path.join(K.REPO, 'rebuild/E0/cache')
++    a3 = list(csv.DictReader(open(j('rebuild/A3/out/a3_coverage.csv'))))
++    setmap = {'local renders': 'local', "authors' pool": 'auth', 'raw HKU-IS (pre-LAKE-RED)': 'raw'}
++    for emb in ('dinoL224', 'dinoL518', 'clipL224'):
++        T = np.load(os.path.join(cache, '%s_tgt_cls.npy' % emb)).astype(np.float64)
++        T /= np.linalg.norm(T, axis=1, keepdims=True)
++        for label, key in setmap.items():
++            O = np.load(os.path.join(cache, '%s_%s_cls.npy' % (emb, key))).astype(np.float64)
++            O /= np.linalg.norm(O, axis=1, keepdims=True)
++            for k in (3, 5, 10, 20):
++                rec = knn_recall(T, O, k)
++                ref = next((float(r['recall']) for r in a3 if r['embedder'] == emb and r['set'] == label
++                            and int(r['k']) == k), None)
++                rows.append(dict(block='coverage: kNN recall of the 4040 target images', item='%s | %s | k=%d' % (emb, label, k),
++                                 value=round(rec, 4), committed_a3=round(ref, 4) if ref is not None else '',
++                                 abs_diff=round(abs(rec - ref), 5) if ref is not None else ''))
++                print('%-9s %-28s k=%2d recall %.4f (A3 %s)' % (emb, label, k, rec, ref))
++    K.write_csv(os.path.join(K.TABLES, 'AN-03_coverage_and_qc.csv'), rows,
++                ['block', 'item', 'value', 'committed_a3', 'abs_diff'])
++    for r in rows[:7]:
++        print(r)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/an05_split_audit.py b/rebuild/CAUS/an05_split_audit.py
+new file mode 100644
+index 0000000..f823202
+--- /dev/null
++++ b/rebuild/CAUS/an05_split_audit.py
+@@ -0,0 +1,150 @@
++#!/usr/bin/env python
++"""CAUS AN-05 -- split, exposure and leakage audit, computed independently of D2's code.
++
++1. Every split re-hashed from the bytes on disk (sha256); per-split counts and content digests.
++2. Exact cross-split collisions by sha256, every pair of splits.
++3. Re-encode-tolerant near-duplicates: 64-bit difference hash (9x8 grey, PIL LANCZOS), every pair of
++   splits that matters for leakage, Hamming <= 6 shortlisted, then CONFIRMED when the two images,
++   resized to 256x256 grey, differ by mean |.| < 8/255. Own implementation; D2's committed counts
++   are the cross-check, not an input.
++4. The role ledger: which labelled image sets influence quotas, weights, pseudo-labels, checkpoint
++   selection and endpoints, per arm family.
++Writes RESULT_TABLES/AN-05_split_audit.csv, AN-05_cross_split_pairs.csv, AN-05_role_ledger.csv.
++"""
++
++import csv
++import os
++import sys
++from multiprocessing import Pool
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++import numpy as np                                             # noqa: E402
++
++SPLITS = {
++    'tgt': 'Dataset/Target/Image', 'test': 'Dataset/Test/COD10K/Imgs', 'test_gt': 'Dataset/Test/COD10K/GT',
++    'nc4k': 'Dataset/Test/NC4K/Imgs', 'nc4k_gt': 'Dataset/Test/NC4K/GT', 'val': 'Dataset/Val/CAMO/Imgs',
++    'val_gt': 'Dataset/Val/CAMO/GT', 'raw': 'Dataset/Source/HKU-IS_raw/imgs', 'auth': 'Dataset/Source/HKU-IS/Image',
++    'local': 'Dataset/LAKERED/output/HKU-IS/images', 'cham': 'Dataset/Test/CHAMELEON/Imgs',
++}
++IMAGE_SPLITS = ('tgt', 'test', 'nc4k', 'val', 'raw', 'auth', 'local', 'cham')
++NEAR_PAIRS = (('tgt', 'test'), ('tgt', 'nc4k'), ('tgt', 'val'), ('test', 'nc4k'), ('test', 'val'),
++              ('nc4k', 'val'), ('raw', 'test'), ('raw', 'nc4k'), ('raw', 'val'), ('local', 'test'),
++              ('local', 'nc4k'), ('local', 'val'), ('auth', 'test'), ('auth', 'nc4k'), ('cham', 'val'))
++HAM = 6
++MAD = 8.0
++
++
++def _hash_one(path):
++    from PIL import Image
++    h = K.sha256(path)
++    im = Image.open(path).convert('L')
++    small = np.asarray(im.resize((9, 8), Image.LANCZOS), dtype=np.int16)
++    bits = (small[:, 1:] > small[:, :-1]).flatten()
++    dh = int(np.packbits(bits).view('>u8')[0])
++    return h, dh, im.size
++
++
++def _mad(pair):
++    from PIL import Image
++    a, b = pair
++    x = np.asarray(Image.open(a).convert('L').resize((256, 256), Image.BILINEAR), dtype=np.float64)
++    y = np.asarray(Image.open(b).convert('L').resize((256, 256), Image.BILINEAR), dtype=np.float64)
++    return float(np.abs(x - y).mean())
++
++
++def popcount64(x):
++    x = x - ((x >> np.uint64(1)) & np.uint64(0x5555555555555555))
++    x = (x & np.uint64(0x3333333333333333)) + ((x >> np.uint64(2)) & np.uint64(0x3333333333333333))
++    x = (x + (x >> np.uint64(4))) & np.uint64(0x0F0F0F0F0F0F0F0F)
++    return ((x * np.uint64(0x0101010101010101)) >> np.uint64(56)).astype(np.int64)
++
++
++def main():
++    files = {k: sorted(os.listdir(os.path.join(K.REPO, v))) for k, v in SPLITS.items()}
++    paths = {k: [os.path.join(K.REPO, SPLITS[k], f) for f in files[k]] for k in SPLITS}
++    H, D = {}, {}
++    with Pool(8) as pool:
++        for k in SPLITS:
++            if k in IMAGE_SPLITS:
++                out = pool.map(_hash_one, paths[k], chunksize=64)
++                H[k] = [o[0] for o in out]
++                D[k] = np.array([o[1] for o in out], dtype=np.uint64)
++            else:
++                H[k] = pool.map(K.sha256, paths[k], chunksize=64)
++    split_rows = [dict(split=k, path=SPLITS[k], n_files=len(files[k]),
++                       content_sha256=K.list_digest(['%s %s' % (h, f) for h, f in zip(H[k], files[k])]),
++                       n_unique_sha=len(set(H[k]))) for k in SPLITS]
++    # exact collisions, every image-split pair
++    pairs = []
++    keys = list(IMAGE_SPLITS)
++    for i, a in enumerate(keys):
++        sa = {}
++        for h, f in zip(H[a], files[a]):
++            sa.setdefault(h, []).append(f)
++        for b in keys[i + 1:]:
++            for h, f in zip(H[b], files[b]):
++                for fa in sa.get(h, []):
++                    pairs.append(dict(split_a=a, file_a=fa, split_b=b, file_b=f, tier='exact sha256',
++                                      hamming=0, mad_256=0.0))
++    exact = {(p['split_a'], p['split_b']) for p in pairs}
++    # near duplicates
++    cand = []
++    for a, b in NEAR_PAIRS:
++        da, db = D[a], D[b]
++        for s in range(0, len(da), 512):
++            x = popcount64(da[s:s + 512, None] ^ db[None, :])
++            ii, jj = np.nonzero(x <= HAM)
++            for i, j in zip(ii, jj):
++                cand.append((a, s + i, b, j, int(x[i, j])))
++    with Pool(8) as pool:
++        mads = pool.map(_mad, [(paths[a][i], paths[b][j]) for a, i, b, j, _ in cand], chunksize=16)
++    have = {(p['split_a'], p['file_a'], p['split_b'], p['file_b']) for p in pairs}
++    for (a, i, b, j, hm), m in zip(cand, mads):
++        if (a, files[a][i], b, files[b][j]) in have:
++            continue
++        pairs.append(dict(split_a=a, file_a=files[a][i], split_b=b, file_b=files[b][j],
++                          tier='near-duplicate (confirmed)' if m < MAD else 'dhash candidate, rejected by MAD',
++                          hamming=hm, mad_256=round(m, 3)))
++    K.write_csv(os.path.join(K.TABLES, 'AN-05_cross_split_pairs.csv'), pairs)
++    summ = {}
++    for p in pairs:
++        k = (p['split_a'], p['split_b'], p['tier'])
++        summ[k] = summ.get(k, 0) + 1
++    for (a, b, t), n in sorted(summ.items()):
++        split_rows.append(dict(split='%s x %s' % (a, b), path=t, n_files=n, content_sha256='', n_unique_sha=''))
++        print('%-6s x %-6s %-34s %d' % (a, b, t, n))
++    K.write_csv(os.path.join(K.TABLES, 'AN-05_split_audit.csv'), split_rows)
++    for r in split_rows[:len(SPLITS)]:
++        print('%-8s n=%5d unique=%5d %s' % (r['split'], r['n_files'], r['n_unique_sha'], r['content_sha256'][:16]))
++
++    ledger = [
++        dict(image_set='HKU-IS (authors\' 4447 pairs)', labels_used_for='supervised source loss, every arm', arms='all',
++             endpoint_disjoint='yes (0 exact, see near-duplicate table)', risk='none identified'),
++        dict(image_set='LAKE-RED renders of HKU-IS (4447) + render masks', labels_used_for='1000 appended pairs per arm',
++             arms='B, C10, CSHUF, CINV, CORACLE, EXP-01 arms', endpoint_disjoint='yes', risk='foreground identity fixed (AN-03)'),
++        dict(image_set='Target pool 4040 (COD10K-train 3040 + CAMO-train 1000), NO labels on disk',
++             labels_used_for='none; images enter training unlabelled (consistency loss) and via round-2 pseudo-labels',
++             arms='all', endpoint_disjoint='NO: 7 images byte-identical to COD10K-test (committed D2; re-measured here)',
++             risk='transductive exposure of 7/2026 endpoint images, identical for every arm; their test masks are never read'),
++        dict(image_set='CAMO-250 (Val/CAMO) images + GT', labels_used_for='checkpoint selection (CAMO MAE) in every arm',
++             arms='all', endpoint_disjoint='yes for COD10K/NC4K; 3 byte-identical to CHAMELEON (not an endpoint)',
++             risk='selection split, never an endpoint'),
++        dict(image_set='COD10K-test GT (2026)', labels_used_for='(a) primary endpoint for all arms; (b) the oracle '
++             'error vector that sets quotas for CORACLE and every EXP-01 oracle arm', arms='CORACLE, OR-PROP, OR-TOP10, '
++             'OR-TOP5 (direction+shape); OR-TOP10-SHUF (shape only)', endpoint_disjoint='NO for the oracle arms',
++             risk='endpoint-label-leaky: COD10K-test is not an unbiased endpoint for any oracle arm'),
++        dict(image_set='COD10K-test GT (2026), standard arms', labels_used_for='endpoint scoring only',
++             arms='B, C10, CSHUF, CINV', endpoint_disjoint='n/a', risk='none: allocation reads target ES only (gate G1)'),
++        dict(image_set='NC4K GT (4121)', labels_used_for='secondary endpoint only; read by no allocation and no selection',
++             arms='all', endpoint_disjoint='1 near-duplicate vs training in committed D2', risk='domain-coupled to COD10K, not label-coupled'),
++        dict(image_set='CHAMELEON (76)', labels_used_for='nothing (withdrawn as an endpoint)', arms='none',
++             endpoint_disjoint='NO: >=50/76 are training photographs', risk='never used as a clean endpoint'),
++    ]
++    K.write_csv(os.path.join(K.TABLES, 'AN-05_role_ledger.csv'), ledger)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/caus_common.py b/rebuild/CAUS/caus_common.py
+new file mode 100644
+index 0000000..057af22
+--- /dev/null
++++ b/rebuild/CAUS/caus_common.py
+@@ -0,0 +1,98 @@
++#!/usr/bin/env python
++"""CAUS -- constants and the write guard for the Reviewer-Caus rebuttal work (EXP-01 et al.).
++
++This worktree (rebuttal/Caus-oracle-scope) holds the code at the pre-rebuttal base 8d1d079.
++Gitignored inputs -- datasets, embedding caches, backbone weights, historical checkpoints and
++predictions -- live only in the ORIGINAL working copy and are read from it, never written.
++
++Two rules make that safe:
++  1. Inputs enter this worktree only as LEAF symlinks (caus_layout.py). No directory that any
++     code writes into is ever a symlink, so a write cannot fall through into the original copy.
++  2. Every path CAUS code writes is passed through assert_writable() first, which resolves it
++     and refuses anything outside this worktree.
++"""
++
++import hashlib
++import json
++import os
++import subprocess
++import time
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++REBUILD = os.path.dirname(HERE)
++REPO = os.path.dirname(REBUILD)                                     # this worktree
++ORIG = os.path.join(os.path.dirname(REPO), 'S2R-COD')               # original copy, READ-ONLY
++# The shared environment is the uv venv in the original copy (prompt "s2r-cod"). It is used
++# read-only through its interpreter; nothing is ever installed into it, and it is deliberately
++# NOT symlinked into this worktree, so no uv command run here can touch it.
++PY = os.path.join(ORIG, '.venv', 'bin', 'python')
++CAUS_OUT = os.path.join(REPO, 'rebuild', 'REBUTTAL', 'ICLR2027_REBUTTAL_Caus', 'STUDENT_RESULTS')
++TABLES = os.path.join(CAUS_OUT, 'RESULT_TABLES')
++LOGS = os.path.join(CAUS_OUT, 'EXPERIMENT_LOGS')
++FIGS = os.path.join(CAUS_OUT, 'FIGURES')
++RUNS_ROOT = os.path.join(REPO, 'Result', 'CAUS_RUNS')               # gitignored by /Result*
++
++BASE_COMMIT = '8d1d0795fc4e19474d51f89adf0c2d8fb977f313'
++
++
++def assert_writable(path):
++    """Resolve `path` and refuse it unless it lies inside this worktree."""
++    rp = os.path.realpath(path)
++    if not (rp == REPO or rp.startswith(REPO + os.sep)):
++        raise SystemExit('CAUS GUARD: refusing write outside the worktree: %s -> %s' % (path, rp))
++    return rp
++
++
++def orig(rel):
++    """Absolute path of a file in the original copy (for reading only)."""
++    return os.path.join(ORIG, rel)
++
++
++def sha256(path, buf=1 << 20):
++    h = hashlib.sha256()
++    with open(path, 'rb') as fh:
++        while True:
++            b = fh.read(buf)
++            if not b:
++                break
++            h.update(b)
++    return h.hexdigest()
++
++
++def list_digest(items):
++    """sha256 over a sorted list of strings, newline-joined."""
++    return hashlib.sha256('\n'.join(sorted(items)).encode()).hexdigest()
++
++
++def git_head():
++    try:
++        sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
++        dirty = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'],
++                                        cwd=REPO, text=True).strip()
++        return sha + (' (dirty)' if dirty else '')
++    except Exception as e:                                          # pragma: no cover
++        return 'unknown (%s)' % e
++
++
++def now():
++    return time.strftime('%Y-%m-%dT%H:%M:%S%z')
++
++
++def save_json(path, obj):
++    assert_writable(path)
++    os.makedirs(os.path.dirname(path), exist_ok=True)
++    with open(path, 'w') as fh:
++        json.dump(obj, fh, indent=2, sort_keys=False, default=str)
++        fh.write('\n')
++
++
++def write_csv(path, rows, fields=None):
++    import csv
++    assert_writable(path)
++    os.makedirs(os.path.dirname(path), exist_ok=True)
++    fields = fields or list(rows[0].keys())
++    with open(path, 'w', newline='') as fh:
++        w = csv.DictWriter(fh, fieldnames=fields, extrasaction='raise')
++        w.writeheader()
++        for r in rows:
++            w.writerow(r)
+diff --git a/rebuild/CAUS/caus_layout.py b/rebuild/CAUS/caus_layout.py
+new file mode 100644
+index 0000000..f55baad
+--- /dev/null
++++ b/rebuild/CAUS/caus_layout.py
+@@ -0,0 +1,75 @@
++#!/usr/bin/env python
++"""CAUS -- materialise the read-only input layout inside this worktree, as leaf symlinks.
++
++Idempotent. Creates REAL parent directories and a SYMLINK only at each leaf listed in LINKS,
++so every directory any trainer or script writes into is a real directory of this worktree.
++An existing correct link is kept; anything else at a link path is a HALT (never replaced).
++
++Usage:  <shared venv python> rebuild/CAUS/caus_layout.py [--check]
++"""
++
++import argparse
++import os
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++
++# (path relative to the repo root) -- the same relative path in the original copy is the target.
++LINKS = (
++    'Dataset/Target',                       # 4040 unlabelled target images (read by train + CLS)
++    'Dataset/Test',                         # COD10K / NC4K endpoints (+ withdrawn CHAMELEON)
++    'Dataset/Val',                          # CAMO-250, checkpoint selection only
++    'Dataset/Source/HKU-IS',                # authors' base pool, 4447 pairs
++    'Dataset/Source/HKU-IS_raw',            # raw foregrounds + raw GT (selection space source)
++    'Dataset/LAKERED/output/HKU-IS',        # the 4447 LAKE-RED renders + masks
++    'Dataset/LAKERED/input/HKU-IS',         # LAKE-RED staging inputs (declared input only)
++    'Dataset/chameleon_new',                # declared input only; never an endpoint
++    'rebuild/E0/cache',                     # frozen embeddings (dinoL518 etc.)
++    'Src/model/SINet/resnet50-11ad3fa6.pth',  # SINet ImageNet backbone
++    'Result/SINet/S2C',                     # committed S2C predictions (scorer validation)
++    'Snapshot/SINet/S2C/Stu_40.pth',        # S2C student, read by inference-only checks
++    'Snapshot/SINet/S2C/Tea_epoch_best.pth',  # S2C teacher, read by inference-only checks
++)
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--check', action='store_true', help='verify only; create nothing')
++    args = ap.parse_args()
++    bad = []
++    for rel in LINKS:
++        dst = os.path.join(K.REPO, rel)
++        src = K.orig(rel)
++        if not os.path.exists(src):
++            bad.append('missing source %s' % src)
++            continue
++        if os.path.islink(dst):
++            if os.readlink(dst) != src:
++                bad.append('wrong link %s -> %s' % (dst, os.readlink(dst)))
++            continue
++        if os.path.exists(dst):
++            bad.append('non-link already present at %s (left untouched)' % dst)
++            continue
++        if args.check:
++            bad.append('absent %s' % dst)
++            continue
++        parent = os.path.dirname(dst)
++        # every parent must be a real directory inside the worktree
++        p = parent
++        while p != K.REPO:
++            if os.path.islink(p):
++                raise SystemExit('CAUS LAYOUT HALT: parent %s is a symlink' % p)
++            p = os.path.dirname(p)
++        K.assert_writable(parent)
++        os.makedirs(parent, exist_ok=True)
++        os.symlink(src, dst)
++        print('linked %-45s -> %s' % (rel, src))
++    if bad:
++        print('\n'.join(bad))
++        raise SystemExit('CAUS LAYOUT: %d problem(s)' % len(bad))
++    print('layout OK: %d leaf links' % len(LINKS))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/caus_repro_c1.py b/rebuild/CAUS/caus_repro_c1.py
+new file mode 100644
+index 0000000..b190c5b
+--- /dev/null
++++ b/rebuild/CAUS/caus_repro_c1.py
+@@ -0,0 +1,173 @@
++#!/usr/bin/env python
++"""CAUS AN-02 / TH-01 -- re-run the ORIGINAL C1 attribution / spread / coverage code from the frozen
++embeddings and compare every output cell with the committed CSVs. Original code, unchanged; only its
++output directory is redirected (to a gitignored scratch run folder), and its log block is not written.
++
++Then derives, from both the reproduced and the committed tables:
++  probe attribution: mean over the 20 cells of d(targeted) - d(null) for each null arm
++  effective rank (the ORIGINAL definition, participation ratio (sum ev)^2 / sum ev^2): mean ratio,
++  cells below 1; plus two labelled-exploratory alternatives on the same matrices (entropy effective
++  rank, Roy & Vetterli 2007; numerical rank at 1e-6 relative tolerance)
++  label-shuffle check: arm labels permuted, held-out d must collapse toward 0
++Writes RESULT_TABLES/AN-02_probe_geometry.csv and AN-02_c1_reproduction.csv.
++"""
++
++import csv
++import os
++import shutil
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++for _p in (os.path.join(K.REBUILD, 'C1'), K.REBUILD):
++    if _p not in sys.path:
++        sys.path.insert(0, _p)
++import numpy as np                                             # noqa: E402
++
++COMMITTED = os.path.join(K.REBUILD, 'C1', 'out')
++SCRATCH = os.path.join(K.RUNS_ROOT, '_cpu_repro', 'C1_out')
++FILES = ('c1_attribution.csv', 'c1_spread.csv', 'c1_coverage.csv', 'c1_occupancy.csv')
++
++
++def compare(a, b):
++    ra, rb = list(csv.DictReader(open(a))), list(csv.DictReader(open(b)))
++    if len(ra) != len(rb) or list(ra[0]) != list(rb[0]):
++        return dict(rows=len(ra), rows_committed=len(rb), max_abs_diff='SHAPE MISMATCH', n_cells=0)
++    worst, n = 0.0, 0
++    for x, y in zip(ra, rb):
++        for k in x:
++            try:
++                d = abs(float(x[k]) - float(y[k]))
++                worst = max(worst, d)
++                n += 1
++            except ValueError:
++                if x[k] != y[k]:
++                    worst = float('inf')
++    return dict(rows=len(ra), rows_committed=len(rb), max_abs_diff=worst, n_cells=n)
++
++
++def attribution(path):
++    by = {}
++    for r in csv.DictReader(open(path)):
++        by.setdefault((r['tag'], r['repr'], r['B']), {})[r['arm']] = float(r['d_heldout'])
++    out = {}
++    for null in ('shuffled_es', 'random_centroid', 'random_direction', 'random_vs_random'):
++        diffs = [v['TARGETED_by_target_es'] - v[null] for v in by.values()]
++        out[null] = (float(np.mean(diffs)), sum(d > 0 for d in diffs), len(diffs))
++    return out
++
++
++def eff_rank_alternatives():
++    """Original participation ratio vs entropy effective rank vs numerical rank, same matrices."""
++    import c1_space
++    import c1_variance_coverage as V
++    from c1_targeted_vs_random import rank_by_centroid
++    rows = []
++    for tag in ('dinoL518', 'dinoL224'):
++        sp = c1_space.load_space(tag)
++        _, order = rank_by_centroid(sp)
++        verdicts = __import__('json').load(open(os.path.join(COMMITTED, 'c1_verdicts.json')))
++        for rep in V.REPRS:
++            alpha = verdicts['%s|%s' % (tag, rep)]['peak_alpha']
++            X = V.arm_matrix(sp, rep)
++            for B in V.B_GRID:
++                sel, _ = V.targeted_indices(sp, order, alpha, B)
++                rnd = np.random.default_rng(10_000).choice(V.POOL, B, replace=False)
++
++                def spec(Z):
++                    Zc = Z - Z.mean(0)
++                    s = np.linalg.svd(Zc, compute_uv=False)
++                    ev = s ** 2 / (len(Z) - 1)
++                    pr = (ev.sum() ** 2) / (ev ** 2).sum()
++                    p = ev / ev.sum()
++                    p = p[p > 0]
++                    erank = float(np.exp(-(p * np.log(p)).sum()))
++                    nrank = int((s > 1e-6 * s.max()).sum())
++                    return pr, erank, nrank
++                a, r = spec(X[sel]), spec(X[rnd])
++                rows.append(dict(tag=tag, repr=rep, B=B, pr_ratio_original=a[0] / r[0],
++                                 entropy_erank_ratio_exploratory=a[1] / r[1],
++                                 numerical_rank_A=a[2], numerical_rank_R=r[2]))
++    return rows
++
++
++def label_shuffle():
++    """Permute arm labels between the targeted and random sets; held-out d should be ~0."""
++    import c1_space
++    import c1_variance_coverage as V
++    from c1_targeted_vs_random import rank_by_centroid, effect_size
++    sp = c1_space.load_space('dinoL518')
++    _, order = rank_by_centroid(sp)
++    verdicts = __import__('json').load(open(os.path.join(COMMITTED, 'c1_verdicts.json')))
++    rows = []
++    for rep in V.REPRS:
++        alpha = verdicts['dinoL518|%s' % rep]['peak_alpha']
++        X = V.arm_matrix(sp, rep)
++        for B in (250, 1000):
++            sel, _ = V.targeted_indices(sp, order, alpha, B)
++            ds, dsh = [], []
++            for i in range(20):
++                rnd = np.random.default_rng(10_000 + i).choice(V.POOL, B, replace=False)
++                ds.append(effect_size(X[sel], X[rnd], i)['d_heldout'])
++                Z = np.concatenate([X[sel], X[rnd]])
++                perm = np.random.default_rng(50_000 + i).permutation(len(Z))
++                dsh.append(effect_size(Z[perm[:B]], Z[perm[B:]], i)['d_heldout'])
++            rows.append(dict(tag='dinoL518', repr=rep, B=B, d_heldout_targeted_vs_random=float(np.mean(ds)),
++                             d_heldout_label_shuffled=float(np.mean(dsh)),
++                             d_heldout_label_shuffled_sd=float(np.std(dsh))))
++    return rows
++
++
++def main():
++    import c1_variance_coverage as V
++    K.assert_writable(SCRATCH)
++    os.makedirs(SCRATCH, exist_ok=True)
++    shutil.copy2(os.path.join(COMMITTED, 'c1_verdicts.json'), SCRATCH)
++    V.OUT = SCRATCH
++    sys.argv = ['c1_variance_coverage.py', '--no-log']
++    V.main()
++    rep = []
++    for f in FILES:
++        c = compare(os.path.join(SCRATCH, f), os.path.join(COMMITTED, f))
++        c['file'] = f
++        rep.append(c)
++        print('reproduction %-20s rows %d/%d  max|diff| %s' % (f, c['rows'], c['rows_committed'], c['max_abs_diff']))
++    K.write_csv(os.path.join(K.TABLES, 'AN-02_c1_reproduction.csv'), rep,
++                ['file', 'rows', 'rows_committed', 'n_cells', 'max_abs_diff'])
++    out = []
++    for src, p in (('reproduced', SCRATCH), ('committed', COMMITTED)):
++        at = attribution(os.path.join(p, 'c1_attribution.csv'))
++        for null, (m, wins, n) in at.items():
++            out.append(dict(source=src, quantity='mean d(targeted) - d(%s)' % null, value=round(m, 5),
++                            detail='targeted larger in %d/%d cells' % (wins, n), label='original analysis'))
++        sp = list(csv.DictReader(open(os.path.join(p, 'c1_spread.csv'))))
++        r = [float(x['eff_rank_ratio']) for x in sp]
++        out.append(dict(source=src, quantity='effective-rank ratio C/random (participation ratio)',
++                        value=round(float(np.mean(r)), 5),
++                        detail='below 1 in %d/%d cells; range %.3f-%.3f' % (sum(v < 1 for v in r), len(r), min(r), max(r)),
++                        label='original analysis'))
++    alt = eff_rank_alternatives()
++    K.write_csv(os.path.join(K.TABLES, 'AN-02_effrank_definitions.csv'), alt)
++    out.append(dict(source='reproduced', quantity='effective-rank ratio, participation ratio (recomputed here)',
++                    value=round(float(np.mean([a['pr_ratio_original'] for a in alt])), 5),
++                    detail='below 1 in %d/%d' % (sum(a['pr_ratio_original'] < 1 for a in alt), len(alt)),
++                    label='original definition'))
++    out.append(dict(source='reproduced', quantity='effective-rank ratio, entropy erank',
++                    value=round(float(np.mean([a['entropy_erank_ratio_exploratory'] for a in alt])), 5),
++                    detail='below 1 in %d/%d' % (sum(a['entropy_erank_ratio_exploratory'] < 1 for a in alt), len(alt)),
++                    label='EXPLORATORY alternative definition'))
++    for r in label_shuffle():
++        out.append(dict(source='reproduced', quantity='label-shuffle check %s B=%d' % (r['repr'], r['B']),
++                        value=round(r['d_heldout_label_shuffled'], 5),
++                        detail='targeted vs random d=%.4f; shuffled-label d sd %.4f'
++                               % (r['d_heldout_targeted_vs_random'], r['d_heldout_label_shuffled_sd']),
++                        label='leakage control'))
++    K.write_csv(os.path.join(K.TABLES, 'AN-02_probe_geometry.csv'), out)
++    for r in out:
++        print('%-11s %-62s %+.5f  %s' % (r['source'], r['quantity'], r['value'], r['detail']))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/caus_score.py b/rebuild/CAUS/caus_score.py
+new file mode 100644
+index 0000000..256627b
+--- /dev/null
++++ b/rebuild/CAUS/caus_score.py
+@@ -0,0 +1,214 @@
++#!/usr/bin/env python
++"""CAUS -- scoring: the committed scorer, an independent S-measure, and the reuse gate R5.
++
++Primary scorer: rebuild/ABC/abc_evaluate.score(), imported UNCHANGED (Eval/metrics.py underneath),
++so every EXP-01 number comes from the exact code that produced the committed campaign metrics.
++
++Second computation: independent_sm(), written from the S-measure definition (Fan et al., ICCV 2017;
++alpha = 0.5; object term with sample std, region term = quadrant SSIM split at the 1-indexed rounded
++GT centroid). It shares no code with Eval/metrics.py and is used to check the primary scorer.
++
++Modes:
++  --validate-b1   score committed Result/SINet/S2C on COD10K; must equal B1's 0.717216 / 0.074463
++  --rescore-historical
++                  re-score the committed predictions of the reused SINet runs (B, C10, CORACLE,
++                  plus CSHUF as reference) on COD10K and NC4K; every metric must reproduce the
++                  committed abc_metrics.csv values at 6 dp (reuse gate R5)
++  --independent N compare independent_sm against the primary Sm on N images per historical run
++"""
++
++import argparse
++import csv
++import os
++import sys
++from multiprocessing import Pool
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++for _p in (os.path.join(K.REBUILD, 'ABC'), K.REBUILD, os.path.join(K.REPO, 'Eval')):
++    if _p not in sys.path:
++        sys.path.insert(0, _p)
++
++import numpy as np                                             # noqa: E402
++
++B1_SA, B1_MAE = 0.717216, 0.074463
++METRICS = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm', 'maxFm')
++REUSED = (('B', 'rebuild/ABC/out/abc_metrics.csv'), ('C10', 'rebuild/ABC/out/abc_metrics.csv'),
++          ('CORACLE', 'rebuild/ABC/out/or/abc_metrics.csv'), ('CSHUF', 'rebuild/ABC/out/t2/abc_metrics.csv'))
++SEEDS = (42, 43, 45)
++ENDPOINTS = ('COD10K', 'NC4K')
++
++
++def primary(gt_dir, pred_dir):
++    import abc_evaluate as E
++    return E.score(gt_dir, pred_dir)
++
++
++# ---------------------------------------------------------------------------
++# Independent S-measure (no shared code with Eval/metrics.py)
++# ---------------------------------------------------------------------------
++
++def _norm(pred_u8, gt_u8):
++    p = pred_u8.astype(np.float64) / 255.0
++    lo, hi = p.min(), p.max()
++    if hi > lo:
++        p = (p - lo) / (hi - lo)
++    return p, gt_u8 > 128
++
++
++def _obj_term(x_vals):
++    if x_vals.size == 0:
++        return 0.0
++    mu = x_vals.mean()
++    sd = x_vals.std(ddof=1) if x_vals.size > 1 else float('nan')
++    return 2.0 * mu / (mu * mu + 1.0 + sd + np.spacing(1))
++
++
++def _ssim(a, b):
++    n = a.size
++    ma, mb = a.mean(), b.mean()
++    va = ((a - ma) ** 2).sum() / (n - 1)
++    vb = ((b - mb) ** 2).sum() / (n - 1)
++    cov = ((a - ma) * (b - mb)).sum() / (n - 1)
++    num = 4.0 * ma * mb * cov
++    den = (ma * ma + mb * mb) * (va + vb)
++    if num != 0:
++        return num / (den + np.spacing(1))
++    return 1.0 if den == 0 else 0.0
++
++
++def independent_sm(pred_u8, gt_u8, alpha=0.5):
++    p, g = _norm(pred_u8, gt_u8)
++    gf = g.astype(np.float64)
++    m = gf.mean()
++    if m == 0:
++        return 1.0 - p.mean()
++    if m == 1:
++        return p.mean()
++    # object-aware
++    fg = _obj_term((p * gf)[g])
++    bg = _obj_term(((1 - p) * (1 - gf))[~g])
++    so = m * fg + (1 - m) * bg
++    # region-aware: centroid in MATLAB 1-indexed convention
++    h, w = g.shape
++    tot = gf.sum()
++    cx = int(np.round((gf.sum(axis=0) * np.arange(1, w + 1)).sum() / tot - 1)) + 1
++    cy = int(np.round((gf.sum(axis=1) * np.arange(1, h + 1)).sum() / tot - 1)) + 1
++    blocks = ((slice(0, cy), slice(0, cx)), (slice(0, cy), slice(cx, w)),
++              (slice(cy, h), slice(0, cx)), (slice(cy, h), slice(cx, w)))
++    wts = (cx * cy, (w - cx) * cy, cx * (h - cy))
++    wts = [v / (h * w) for v in wts]
++    wts.append(1 - sum(wts))
++    sr = sum(wt * _ssim(p[b], gf[b]) for wt, b in zip(wts, blocks))
++    return max(0.0, alpha * so + (1 - alpha) * sr)
++
++
++def independent_dir(gt_dir, pred_dir, names):
++    import cv2
++    out = []
++    for nm in names:
++        pr = cv2.imread(os.path.join(pred_dir, nm), cv2.IMREAD_GRAYSCALE)
++        gt = cv2.imread(os.path.join(gt_dir, nm), cv2.IMREAD_GRAYSCALE)
++        if pr.shape != gt.shape:
++            pr = cv2.resize(pr, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++        out.append(independent_sm(pr, gt))
++    return out
++
++
++def primary_per_image_sm(gt_dir, pred_dir, names):
++    import cv2
++    import metrics as Measure
++    sm = Measure.Smeasure()
++    for nm in names:
++        pr = cv2.imread(os.path.join(pred_dir, nm), cv2.IMREAD_GRAYSCALE)
++        gt = cv2.imread(os.path.join(gt_dir, nm), cv2.IMREAD_GRAYSCALE)
++        if pr.shape != gt.shape:
++            pr = cv2.resize(pr, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++        sm.step(pred=pr, gt=gt)
++    return [float(x) for x in sm.sms]
++
++
++# ---------------------------------------------------------------------------
++
++def _committed(path, rid, ep):
++    for r in csv.DictReader(open(os.path.join(K.REPO, path))):
++        if r['runid'] == rid and r['endpoint'] == ep:
++            return r
++    return None
++
++
++def _task(t):
++    arm, path, s, ep = t
++    rid = 'SINet_%s_s%d' % (arm, s)
++    pred = K.orig(os.path.join('Result/ABC', rid, ep))
++    gt = os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')
++    got = primary(gt, pred)
++    ref = _committed(path, rid, ep)
++    row = dict(runid=rid, arm=arm, seed=s, endpoint=ep, committed_source=path, n=got['n'],
++               shape_mismatch=got['shape_mismatch'])
++    ok = ref is not None and int(ref['n']) == got['n']
++    for k in METRICS:
++        v = round(got[k], 6)
++        row[k] = '%.6f' % v
++        row[k + '_committed'] = ref[k] if ref else ''
++        ok = ok and ref is not None and abs(v - float(ref[k])) < 5e-7
++    row['reproduces_6dp'] = ok
++    return row
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--validate-b1', action='store_true')
++    ap.add_argument('--rescore-historical', action='store_true')
++    ap.add_argument('--independent', type=int, default=0)
++    ap.add_argument('--procs', type=int, default=8)
++    args = ap.parse_args()
++
++    if args.validate_b1:
++        r = primary(os.path.join(K.REPO, 'Dataset/Test/COD10K/GT'),
++                    os.path.join(K.REPO, 'Result/SINet/S2C'))
++        ok = abs(round(r['Sm'], 6) - B1_SA) < 5e-7 and abs(round(r['MAE'], 6) - B1_MAE) < 5e-7
++        print('B1 validation: Sm=%.6f (B1 %.6f) MAE=%.6f (B1 %.6f) n=%d -> %s'
++              % (r['Sm'], B1_SA, r['MAE'], B1_MAE, r['n'], 'PASS' if ok else 'FAIL'))
++        if not ok:
++            raise SystemExit(1)
++
++    if args.rescore_historical:
++        tasks = [(a, p, s, ep) for a, p in REUSED for s in SEEDS for ep in ENDPOINTS]
++        with Pool(args.procs) as pool:
++            rows = pool.map(_task, tasks)
++        K.write_csv(os.path.join(K.TABLES, 'EXP-01_reuse_R5_rescore.csv'), rows)
++        nok = sum(r['reproduces_6dp'] for r in rows)
++        for r in rows:
++            print('%-20s %-6s Sm %s (committed %s) %s' % (r['runid'], r['endpoint'], r['Sm'],
++                                                          r['Sm_committed'], r['reproduces_6dp']))
++        print('R5: %d/%d run x endpoint cells reproduce all 9 metrics at 6 dp' % (nok, len(rows)))
++        if nok != len(rows):
++            raise SystemExit(1)
++
++    if args.independent:
++        rng = np.random.default_rng(0)
++        rows = []
++        for a, _ in REUSED[:3]:
++            for s in SEEDS:
++                rid = 'SINet_%s_s%d' % (a, s)
++                for ep in ENDPOINTS:
++                    gt = os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')
++                    pred = K.orig(os.path.join('Result/ABC', rid, ep))
++                    names = sorted(os.listdir(gt))
++                    pick = [names[i] for i in sorted(rng.choice(len(names), args.independent, replace=False))]
++                    x = primary_per_image_sm(gt, pred, pick)
++                    y = independent_dir(gt, pred, pick)
++                    d = np.abs(np.array(x) - np.array(y))
++                    rows.append(dict(runid=rid, endpoint=ep, n_images=len(pick),
++                                     max_abs_diff=float(d.max()), n_over_1e6=int((d > 1e-6).sum()),
++                                     mean_primary=float(np.mean(x)), mean_independent=float(np.mean(y))))
++                    print('%-20s %-6s n=%d max|diff|=%.2e n>1e-6=%d' % (rid, ep, len(pick), d.max(),
++                                                                       (d > 1e-6).sum()))
++        K.write_csv(os.path.join(K.TABLES, 'EXP-01_independent_sm_check.csv'), rows)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/caus_stats.py b/rebuild/CAUS/caus_stats.py
+new file mode 100644
+index 0000000..170e6a2
+--- /dev/null
++++ b/rebuild/CAUS/caus_stats.py
+@@ -0,0 +1,205 @@
++#!/usr/bin/env python
++"""CAUS TH-02 -- historical estimands recomputed twice, independently, from committed per-run metrics.
++
++Implementation A: numpy + scipy.stats. Implementation B: csv + statistics + math only, with its own
++Student-t CDF (regularised incomplete beta by continued fraction) and quantile (bisection). The two
++share no code beyond reading the same committed CSV. Every number is compared; any disagreement
++beyond 1e-9 is a FAIL.
++
++Estimands (S-alpha):
++  frozen rule   Delta = mean(a) - mean(b); bar = 2 * sigma_hat (pooled within-arm sd over the
++                campaign's pre-registered arm set, equal n); sign = per-seed agreement count
++  post-hoc      Welch 95% CI for Delta (arm-specific sds); Welch TOST against +/-0.005;
++                paired-by-seed mean difference and t CI where the seeds align (supplementary)
++Writes RESULT_TABLES/TH-02_historical_recompute.csv and TH-02_contrast_definitions.csv.
++With --exp01 it also computes the EXP-01 verdicts from EXP-01_metrics_by_seed.csv.
++"""
++
++import argparse
++import csv
++import math
++import os
++import statistics as S
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++
++OUT = os.path.join(K.REPO, 'rebuild/ABC/out')
++CAMPAIGNS = {   # pre-registered sigma pools and decisive gaps (a - b)
++    'ABC': dict(path='abc_metrics.csv', pool=('A0', 'A2', 'B', 'C10'), gaps=(('C10', 'B'),)),
++    'T2': dict(path='t2/abc_metrics.csv', pool=('B', 'C10', 'CSHUF', 'CINV'),
++               gaps=(('C10', 'CSHUF'), ('C10', 'CINV'), ('CSHUF', 'CINV'))),
++    'OR': dict(path='or/abc_metrics.csv', pool=('B', 'C10', 'CORACLE'),
++               gaps=(('CORACLE', 'B'), ('CORACLE', 'C10'))),
++    'FX': dict(path='fx/abc_metrics.csv', pool=('A0FX', 'BFX', 'C10FX'), gaps=(('C10FX', 'BFX'),)),
++    'SE': dict(path='se/abc_metrics.csv', pool=('B', 'C10', 'CSHUF', 'CINV'),
++               gaps=(('C10', 'B'), ('C10', 'CSHUF'), ('C10', 'CINV'), ('CSHUF', 'CINV'))),
++}
++CELLS = [(a, e) for a in ('SINet', 'SINetv2') for e in ('COD10K', 'NC4K')]
++EQ = 0.005
++
++
++def load(path):
++    d = {}
++    for r in csv.DictReader(open(path)):
++        d.setdefault((r['arch'], r['endpoint'], r['arm']), {})[int(r['seed'])] = float(r['Sm'])
++    return d
++
++
++# ---------------- implementation A ----------------
++def impl_a(d, pool, a, b, arch, ep):
++    import numpy as np
++    from scipy import stats
++    x = np.array([d[(arch, ep, a)][s] for s in sorted(d[(arch, ep, a)])])
++    y = np.array([d[(arch, ep, b)][s] for s in sorted(d[(arch, ep, b)])])
++    sig = float(np.sqrt(np.mean([np.var(list(d[(arch, ep, m)].values()), ddof=1) for m in pool])))
++    df_pool = sum(len(d[(arch, ep, m)]) - 1 for m in pool)
++    delta = float(x.mean() - y.mean())
++    seeds = sorted(set(d[(arch, ep, a)]) & set(d[(arch, ep, b)]))
++    diffs = np.array([d[(arch, ep, a)][s] - d[(arch, ep, b)][s] for s in seeds])
++    sgn = int((np.sign(diffs) == np.sign(delta)).sum())
++    va, vb = x.var(ddof=1) / len(x), y.var(ddof=1) / len(y)
++    se = math.sqrt(va + vb)
++    dfw = (va + vb) ** 2 / (va ** 2 / (len(x) - 1) + vb ** 2 / (len(y) - 1))
++    tq = float(stats.t.ppf(0.975, dfw))
++    p_lo = float(stats.t.sf((delta + EQ) / se, dfw))        # H0: delta <= -EQ
++    p_hi = float(stats.t.cdf((delta - EQ) / se, dfw))       # H0: delta >= +EQ
++    pm, ps = float(diffs.mean()), float(diffs.std(ddof=1))
++    tp = float(stats.t.ppf(0.975, len(diffs) - 1))
++    return dict(delta=delta, sigma_hat=sig, bar=2 * sig, df_pool=df_pool, sign=sgn, n_seeds=len(seeds),
++                welch_lo=delta - tq * se, welch_hi=delta + tq * se, welch_df=dfw,
++                tost_p=max(p_lo, p_hi), paired_mean=pm,
++                paired_lo=pm - tp * ps / math.sqrt(len(diffs)), paired_hi=pm + tp * ps / math.sqrt(len(diffs)),
++                var_ratio_paired_vs_unpaired=(ps ** 2 / len(diffs)) / (va + vb))
++
++
++# ---------------- implementation B (no numpy / scipy) ----------------
++def _betacf(a, b, x):
++    qab, qap, qam = a + b, a + 1.0, a - 1.0
++    c, dd = 1.0, 1.0 - qab * x / qap
++    dd = 1.0 / (dd if abs(dd) > 1e-300 else 1e-300)
++    h = dd
++    for m in range(1, 400):
++        m2 = 2 * m
++        aa = m * (b - m) * x / ((qam + m2) * (a + m2))
++        dd = 1.0 + aa * dd
++        dd = 1.0 / (dd if abs(dd) > 1e-300 else 1e-300)
++        c = 1.0 + aa / c if abs(c) > 1e-300 else 1e300
++        h *= dd * c
++        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2))
++        dd = 1.0 + aa * dd
++        dd = 1.0 / (dd if abs(dd) > 1e-300 else 1e-300)
++        c = 1.0 + aa / c if abs(c) > 1e-300 else 1e300
++        de = dd * c
++        h *= de
++        if abs(de - 1.0) < 1e-15:
++            break
++    return h
++
++
++def _ibeta(a, b, x):
++    if x <= 0:
++        return 0.0
++    if x >= 1:
++        return 1.0
++    lb = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b) + a * math.log(x) + b * math.log(1 - x)
++    if x < (a + 1) / (a + b + 2):
++        return math.exp(lb) * _betacf(a, b, x) / a
++    return 1.0 - math.exp(lb) * _betacf(b, a, 1 - x) / b
++
++
++def t_cdf(t, df):
++    x = df / (df + t * t)
++    tail = 0.5 * _ibeta(df / 2.0, 0.5, x)
++    return 1.0 - tail if t > 0 else tail
++
++
++def t_ppf(p, df):
++    lo, hi = -100.0, 100.0
++    for _ in range(200):
++        mid = (lo + hi) / 2
++        if t_cdf(mid, df) < p:
++            lo = mid
++        else:
++            hi = mid
++    return (lo + hi) / 2
++
++
++def impl_b(d, pool, a, b, arch, ep):
++    xa, xb = d[(arch, ep, a)], d[(arch, ep, b)]
++    x, y = list(xa.values()), list(xb.values())
++    sig = math.sqrt(sum(S.variance(list(d[(arch, ep, m)].values())) for m in pool) / len(pool))
++    delta = S.fmean(x) - S.fmean(y)
++    seeds = sorted(set(xa) & set(xb))
++    diffs = [xa[s] - xb[s] for s in seeds]
++    sgn = sum(1 for v in diffs if (v > 0) == (delta > 0) and v != 0)
++    va, vb = S.variance(x) / len(x), S.variance(y) / len(y)
++    se = math.sqrt(va + vb)
++    dfw = (va + vb) ** 2 / (va ** 2 / (len(x) - 1) + vb ** 2 / (len(y) - 1))
++    tq = t_ppf(0.975, dfw)
++    p_lo = 1.0 - t_cdf((delta + EQ) / se, dfw)
++    p_hi = t_cdf((delta - EQ) / se, dfw)
++    pm, ps = S.fmean(diffs), S.stdev(diffs)
++    tp = t_ppf(0.975, len(diffs) - 1)
++    return dict(delta=delta, sigma_hat=sig, bar=2 * sig, sign=sgn, welch_lo=delta - tq * se,
++                welch_hi=delta + tq * se, tost_p=max(p_lo, p_hi), paired_mean=pm,
++                paired_lo=pm - tp * ps / math.sqrt(len(diffs)), paired_hi=pm + tp * ps / math.sqrt(len(diffs)))
++
++
++def verdict(delta, bar, sign, n):
++    if abs(delta) <= bar:
++        return 'WITHIN NOISE'
++    if sign == n:
++        return 'REAL EFFECT' if delta > 0 else 'REAL REGRESSION'
++    return 'INCONCLUSIVE'
++
++
++def historical():
++    rows, worst = [], 0.0
++    for camp, spec in CAMPAIGNS.items():
++        d = load(os.path.join(OUT, spec['path']))
++        for arch, ep in CELLS:
++            for a, b in spec['gaps']:
++                A_ = impl_a(d, spec['pool'], a, b, arch, ep)
++                B_ = impl_b(d, spec['pool'], a, b, arch, ep)
++                agree = max(abs(A_[k] - B_[k]) for k in B_ if k != 'sign')
++                worst = max(worst, agree)
++                if A_['sign'] != B_['sign']:
++                    agree = float('inf')
++                rows.append(dict(
++                    campaign=camp, cell='%s|%s' % (arch, ep), gap='%s-%s' % (a, b), n_seeds=A_['n_seeds'],
++                    delta='%+.6f' % A_['delta'], sigma_hat='%.6f' % A_['sigma_hat'], bar='%.6f' % A_['bar'],
++                    x_bar='%.3f' % (abs(A_['delta']) / A_['bar']), df_pool=A_['df_pool'],
++                    sign='%d/%d' % (A_['sign'], A_['n_seeds']),
++                    verdict_frozen_rule=verdict(A_['delta'], A_['bar'], A_['sign'], A_['n_seeds']),
++                    welch95_lo='%+.6f' % A_['welch_lo'], welch95_hi='%+.6f' % A_['welch_hi'],
++                    welch_df='%.2f' % A_['welch_df'], tost_p_pm005='%.4f' % A_['tost_p'],
++                    paired_mean='%+.6f' % A_['paired_mean'], paired95_lo='%+.6f' % A_['paired_lo'],
++                    paired95_hi='%+.6f' % A_['paired_hi'],
++                    var_ratio_paired_vs_unpaired='%.3f' % A_['var_ratio_paired_vs_unpaired'],
++                    impl_ab_max_abs_diff='%.2e' % agree,
++                    label='frozen rule = pre-registered; Welch/TOST/paired = post-hoc, decide nothing'))
++    return rows, worst
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--exp01', action='store_true')
++    args = ap.parse_args()
++    rows, worst = historical()
++    K.write_csv(os.path.join(K.TABLES, 'TH-02_historical_recompute.csv'), rows)
++    for r in rows:
++        if r['cell'] == 'SINet|COD10K' or r['campaign'] in ('OR',):
++            print('%-4s %-15s %-14s d=%s bar=%s x=%s sign=%s %-13s welch[%s,%s] tost=%s AB=%s'
++                  % (r['campaign'], r['cell'], r['gap'], r['delta'], r['bar'], r['x_bar'], r['sign'],
++                     r['verdict_frozen_rule'], r['welch95_lo'], r['welch95_hi'], r['tost_p_pm005'],
++                     r['impl_ab_max_abs_diff']))
++    print('implementation A vs B: max |diff| = %.2e -> %s' % (worst, 'PASS' if worst < 1e-9 else 'FAIL'))
++    if args.exp01:
++        import exp01_stats
++        exp01_stats.main()
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/doc01_make_patch.py b/rebuild/CAUS/doc01_make_patch.py
+new file mode 100644
+index 0000000..465e390
+--- /dev/null
++++ b/rebuild/CAUS/doc01_make_patch.py
+@@ -0,0 +1,234 @@
++#!/usr/bin/env python
++"""CAUS DOC-01 -- proposed manuscript scope edits, applied to a COPY of the submitted .tex.
++
++The submitted file (S2R-COD/AD-PCHGS-250926.tex) is only read. Each edit must match exactly once, or
++the script halts. The new appendix (app:shapeoracle) is generated from the EXP-01 result tables, so no
++number in it is typed by hand; while EXP-01 is incomplete it says so and gives no outcome.
++The copy is compiled with the committed inputs (rebuild/FinalPaper/AD-PCH-230926 at HEAD) in a build
++directory given on the command line, and the page on which the AI-use statement starts is reported (the
++discussion-phase limit is 10 pages of main text).
++Writes STUDENT_RESULTS/manuscript_scope_edits.patch (unified diff, original -> revised).
++Usage: doc01_make_patch.py <build_dir>
++"""
++
++import csv
++import difflib
++import os
++import shutil
++import subprocess
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++SUBMITTED = K.orig('AD-PCHGS-250926.tex')
++BIB = K.orig('reference 1.bib')
++
++EDITS = [
++    # (id, old, new)  -- ids map to DOC-01_edits.md and the AN-01 claim ledger
++    ('E01 title (optional; C-01)',
++     r"\title{Concentration, Not Uncertainty: Why Targeted Synthetic Data Doesn't Help Camouflaged Object Detection}",
++     r"\title{Concentration, Not Uncertainty: Why Targeted Synthetic Data Did Not Help an Offline Camouflaged Object Detection Pipeline}"),
++    ('E02 abstract scope + controls (C-02, C-03, C-04)',
++     "Across 103 training runs, uncertainty-based targeting does not outperform random allocation. Five independent controls further show that this null result is not an artifact: targeted training sets are measurably different from random sets, but the difference is explained by concentrating the generation budget rather than by where uncertainty is concentrated, as every concentration rule we test reproduces the effect and, on boundary accuracy, so does aiming at the clusters the model was most certain about.",
++     "Across 103 training runs in an offline pipeline (LAKE-RED renders of a fixed foreground set, two-round S2R-COD training, SINet and SINet-v2), uncertainty-based targeting does not outperform random allocation at the measured sensitivity. Five controls each rule out a specific artifact: targeted training sets are measurably different from random sets, but the difference comes from matching and concentrating the generation budget rather than from where uncertainty points, as same-shape rules aimed elsewhere reproduce it and, on boundary accuracy, so does aiming at the clusters the model was most certain about."),
++    ('E03 abstract CHAMELEON floor (C-22; contingent on author adjudication of animal-54)',
++     "with 50 of its 76 images duplicated from training data",
++     "with at least 51 of its 76 images duplicated from training data"),
++    ('E04 abstract last sentence (C-04)',
++     "budget concentration, not uncertainty-based targeting, accounts for the observed training-set effects.",
++     "budget concentration and target matching, not uncertainty-based targeting, account for the observed training-set differences in this pipeline."),
++    ('E05 intro probe sentence (C-04)',
++     "But it is picking up concentration, not aim.",
++     "But it is picking up matching and concentration, not aim."),
++    ('E06 intro probe sentence (C-04)',
++     "Only removing the unevenness itself defeats it. What looked like the effect of targeting was the effect of concentrating, the",
++     "Only a random draw defeats it; a perfectly even quota under the same matching does not. What looked like the effect of targeting was the effect of matching and concentrating, the"),
++    ('E07 intro oracle sentence (C-05)',
++     "Substituting a perfect score using a test-set error for ours changes nothing.",
++     "Re-ranking the same allocation by each cluster's test-set error gives no resolvable gain, and Appendix~\\ref{app:shapeoracle} reports oracle allocations of other shapes."),
++    ('E08 intro CHAMELEON (C-22)',
++     "where 50 of its 76 images are direct copies",
++     "where at least 51 of its 76 images are direct copies"),
++    ('E09 contribution bullet (C-05)',
++     "control, a perfect-score oracle, an unpinned optimization schedule",
++     "control, an endpoint-error oracle at fixed allocation shape, an unpinned optimization schedule"),
++    ('E10 contribution bullet CHAMELEON (C-22)',
++     r"\item \textit{CHAMELEON is $50$ of $76$ images ($65.8\%$) training data}",
++     r"\item \textit{CHAMELEON is at least $51$ of $76$ images ($67.1\%$) training data}"),
++    ('E11 table 2 oracle label (C-05)',
++     "OR & a perfect score in place of ours & $3$",
++     "OR & a test-error ranking, same shape & $3$"),
++    ('E12 oracle paragraph scope (C-06)',
++     r"This converts \emph{our score did not help} into the stronger \emph{no score of any quality helped here}.",
++     r"This converts \emph{our score did not help} into the stronger \emph{no ranking of clusters, even one built from the endpoint's own errors, helped at this allocation shape}; Appendix~\ref{app:shapeoracle} reports oracle allocations of other shapes."),
++    ('E13 probe collapse sentence (C-04)',
++     r"Only removing the unevenness itself, by drawing two random sets of equal size, collapses it (Figure~\ref{fig:thesis}a). The probe was detecting the concentration the whole time.",
++     r"Only drawing at random collapses it (Figure~\ref{fig:thesis}a); a perfectly even quota under the same centroid matching still separates (held-out $d \approx 0.5$, Appendix~\ref{app:shapeoracle}). The probe detects the matched, concentrated selection, and the signal's direction adds nothing to it."),
++    ('E14 effective-rank definition (C-12)',
++     r"effective rank than a random draw's in all twenty cells (mean ratio $0.634$), and covers no more of",
++     r"effective rank (participation ratio) than a random draw's in all twenty cells (mean ratio $0.634$), an empirical property of these selections and not a consequence of concentration (Appendix~\ref{app:shapeoracle}), and covers no more of"),
++    ('E15 coverage k (C-20)',
++     r"($k$-NN recall, Appendix~\ref{app:coverage}), while the generator's own source photographs, real",
++     r"($k$-NN recall at $k = 5$, Appendix~\ref{app:coverage}; lower than the input at every $k$ from $3$ to $20$), while the generator's own source photographs, real"),
++    ('E16 CHAMELEON floor sentence (C-22)',
++     r"reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate.",
++     r"reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate. A post-review re-check with an independent detector found one more, \texttt{animal-54}, a rescaled copy of a COD10K-train image, so the floor is at least $51$."),
++    ('E17 discussion geometric statement (C-23)',
++     "and we state it without hedging: concentration, not the",
++     "and we state it plainly: the matched, concentrated selection, not the"),
++    ('E18 discussion scope (C-24)',
++     "only that this build could not have shown that it does.",
++     "only that this build could not have shown that it does. The null is bounded to an offline LAKE-RED pool of fixed foregrounds, a two-round S2R-COD protocol, SINet and SINet-v2, and the COD10K and NC4K endpoints; a modern transformer detector and a generator that varies the foreground remain untested."),
++    ('E19 conclusion scope (C-25)',
++     "Under a fixed synthetic-data budget, aiming generation at the clusters a model finds hardest did not beat spending it at random.",
++     "Under a fixed synthetic-data budget, in an offline pipeline that repaints the backgrounds of a fixed foreground set, aiming generation at the clusters a model finds hardest did not beat spending it at random."),
++    ('E20 conclusion attribution (C-04)',
++     "but through concentration rather than aim, which only a same-shape control exposes.",
++     "but through matching and concentration rather than aim, which only a same-shape control exposes."),
++    ('E21 conclusion CHAMELEON (C-22)',
++     "$50$ of CHAMELEON's $76$ images are altered copies",
++     "at least $51$ of CHAMELEON's $76$ images are altered copies"),
++    ('E22 AI-use grammar (C-27)',
++     "categories theoretical frameworks, mathematical claims and proofs, translation, and qualitative\ndata analysis do not apply.",
++     "categories (theoretical frameworks, mathematical claims and proofs, translation, and qualitative\ndata analysis) do not apply."),
++    ('E23 AI-use pre-registration timing (C-07)',
++     "decision rules governing every verdict: the arms, the endpoints, the seeds, the noise estimate,\nand the verdict bands, were pre-registered before the runs they govern",
++     "decision rules governing every verdict (the arms, the endpoints, the seeds, the noise estimate,\nand the verdict bands) were committed before any result they decide, and all but one before the runs they govern"),
++    ('E24 reproducibility timing (C-07)',
++     "The decision rules governing every result are committed before the runs they govern, at the commits",
++     "The decision rules governing every result are committed before any result they decide, and all but one before the runs they govern, at the commits"),
++    ('E25 app:method opening (C-07)',
++     "Every decision rule was committed before the\nruns it governs.",
++     "Every decision rule but one was committed before the\nruns it governs."),
++    ('E26 app:method commit list (C-07, C-31)',
++     "the\nseed expansion's at \\texttt{b755aa9}, dated 2026-09-18. The oracle and optimization schedule\ncampaigns carry their own pre-registrations, each committed before that campaign's first training\nrun.",
++     "the\nseed expansion's at \\texttt{a79886a} (2026-09-18, two days before its first run), together with the optimization-schedule campaign's, also before its first run. The oracle campaign's rule was written before any of its scores existed and committed in the same \\texttt{a79886a}, 62 minutes after its first run had started (first run 10:46, commit 11:48, first score 18:23); that commit is preserved under the tag \\texttt{prereg-or-fx-se-a79886a}."),
++    ('E27 app:controls timing (C-07)',
++     "and the pre-registration says so\nbefore the first run:",
++     "and the pre-registration, written before any oracle score existed, says so:"),
++]
++
++
++def shape_appendix():
++    """app:shapeoracle, generated from committed result tables only."""
++    T = K.TABLES
++    props = {r['arm']: r for r in csv.DictReader(open(os.path.join(T, 'TH-01_quota_properties.csv')))}
++    geo = {(r['repr'], r['arm']): r for r in csv.DictReader(open(os.path.join(T, 'AN-02_shape_geometry.csv')))}
++    comp_p = os.path.join(T, 'EXP-01_comparisons.csv')
++    comp = [r for r in csv.DictReader(open(comp_p))] if os.path.isfile(comp_p) else []
++    prim = [r for r in comp if r['endpoint'] == 'COD10K' and r['role'].startswith('P')]
++    nc = {r['contrast']: r for r in comp if r['endpoint'] == 'NC4K' and r['role'].startswith('P')}
++    done = prim and all(r['status'] == 'COMPLETE' for r in prim)
++    g = lambda a: geo[('R2_cut', a)]                           # noqa: E731
++    lines = [
++        r"\section{Post-review: Oracle Allocations of a Different Shape}",
++        r"\label{app:shapeoracle}",
++        "",
++        r"CORACLE re-aims C10's quota multiset by true endpoint error and so tests direction at a fixed shape. "
++        r"To test shape, we pre-registered three oracle allocations at $N = 1000$, built from the same endpoint-error "
++        r"vector and served by the same selector: \emph{OR-PROP}, quotas proportional to each cluster's error; "
++        r"\emph{OR-TOP10}, $100$ images to each of the ten highest-error clusters; and \emph{OR-TOP5}, $200$ to each of "
++        r"the five highest. \emph{OR-TOP10-SHUF} gives OR-TOP10's multiset to clusters drawn by a frozen permutation. "
++        r"All use endpoint labels to choose training data, so COD10K-test is not an unbiased endpoint for them; NC4K "
++        r"labels are read by no allocation. B, C10 and CORACLE are the committed runs, reused after a reuse gate "
++        r"(identical code path, data bytes and selections; committed metrics reproduced at six decimals; identical first "
++        r"training step).",
++        "",
++        r"Two facts were fixed before any training. Because per-cluster error spans only $0.09$--$0.47$, the "
++        r"error-proportional quota is nearly flat ($%s$--$%s$ per cluster); every permutation of it leaves at least "
++        r"$84\%%$ of the selected images unchanged, so its direction cannot be tested with this selector and its shuffle "
++        r"was not trained. And concentration does not determine effective rank: a perfectly even quota under the same "
++        r"matching is still separable from a random draw (held-out $d = %s$) with a lower participation ratio "
++        r"(ratio $%s$), while the five-cluster shuffle keeps a near-random ratio ($%s$)."
++        % ('4', props['OR-PROP']['max_quota'], g('FLAT')['probe_d_heldout_vs_random'],
++           g('FLAT')['pr_ratio_vs_random'], g('OR-TOP5-SHUF')['pr_ratio_vs_random']),
++        "",
++    ]
++    if not done:
++        lines.append(r"\emph{[Trained results pending: %d of 4 primary contrasts complete. This paragraph is replaced by "
++                     r"the verified table once every run of record exists.]}" % sum(r['status'] == 'COMPLETE' for r in prim))
++        return '\n'.join(lines) + '\n'
++    lines += [r"\begin{center}\small", r"\begin{tabular}{@{}lccccc@{}}", r"\toprule",
++              r"Contrast (SINet, $n = 3$) & $\Delta$ COD10K & $2\hat{\sigma}$ & sign & verdict & $\Delta$ NC4K \\",
++              r"\midrule"]
++    for r in prim:
++        n = nc.get(r['contrast'], {})
++        lines.append(r"%s & $%s$ & $%s$ & %s & \textsc{%s} & $%s$ \\" % (
++            r['contrast'].replace('-SHUF', '-SHUF').replace(' - ', r' $-$ '), r['delta'][:7], r['bar'][:6], r['sign'],
++            r['verdict'].lower(), n.get('delta', 'n/a')[:7]))
++    lines += [r"\bottomrule", r"\end{tabular}", r"\end{center}", ""]
++    within = all(r['verdict'] == 'WITHIN NOISE' for r in prim)
++    if within:
++        lines.append(r"No oracle shape, flat, top-ten or top-five, resolves a gain over the C10-shaped oracle at this "
++                     r"sensitivity, and aim at the top-ten shape does not resolve against its own shuffle, although the "
++                     r"endpoint-label leak can only favour these arms. The bars are as wide as the effects they would miss "
++                     r"($2\hat{\sigma} = %s$ on $\mathrm{df} = %s$); this is a null at this sensitivity, not evidence of no effect."
++                     % (prim[0]['bar'][:6], prim[0]['df_pool']))
++    else:
++        lines.append(r"At least one oracle shape departs from the C10-shaped oracle by more than its bar; the verdicts above "
++                     r"are reported as pre-registered, and because these arms read endpoint labels, a COD10K gain is "
++                     r"interpreted only together with its NC4K counterpart.")
++    return '\n'.join(lines) + '\n'
++
++
++def main():
++    build = sys.argv[1]
++    src = open(SUBMITTED).read()
++    out = src
++    applied = []
++    for eid, old, new in EDITS:
++        n = out.count(old)
++        if n != 1:
++            raise SystemExit('DOC-01 HALT: edit %s matches %d times' % (eid, n))
++        out = out.replace(old, new)
++        applied.append(eid)
++    app = shape_appendix()
++    anchor = r"\end{document}"
++    if out.count(anchor) != 1:
++        raise SystemExit('DOC-01 HALT: \\end{document} anchor')
++    out = out.replace(anchor, app + '\n' + anchor)
++    # build
++    if os.path.exists(build):
++        raise SystemExit('DOC-01: build dir exists, use a new one: %s' % build)
++    os.makedirs(build)
++    tar = subprocess.run(['git', 'archive', 'HEAD', 'rebuild/FinalPaper/AD-PCH-230926'], cwd=K.REPO, capture_output=True, check=True).stdout
++    subprocess.run(['tar', '-x', '-C', build, '--strip-components=3'], input=tar, check=True)
++    shutil.copy(BIB, os.path.join(build, 'reference.bib'))
++    with open(os.path.join(build, 'AD-PCHGS-250926.tex'), 'w') as fh:
++        fh.write(out)
++    rc = subprocess.run(['latexmk', '-pdf', '-interaction=nonstopmode', '-halt-on-error', 'AD-PCHGS-250926.tex'],
++                        cwd=build, capture_output=True, timeout=400).returncode
++    pdf = os.path.join(build, 'AD-PCHGS-250926.pdf')
++    pages, ai_page = None, None
++    if rc == 0 and os.path.isfile(pdf):
++        info = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True).stdout
++        pages = int([l for l in info.splitlines() if l.startswith('Pages:')][0].split()[1])
++        for p in range(1, pages + 1):
++            t = subprocess.run(['pdftotext', '-f', str(p), '-l', str(p), pdf, '-'], capture_output=True, text=True).stdout
++            if 'AI U SE S TATEMENT' in t or 'AI Use Statement' in t or 'AI USE STATEMENT' in t:
++                ai_page = p
++                break
++        log = open(os.path.join(build, 'AD-PCHGS-250926.log'), errors='ignore').read()
++        undefined = log.count('undefined')
++    else:
++        undefined = None
++    diff = difflib.unified_diff(src.splitlines(keepends=True), out.splitlines(keepends=True),
++                                fromfile='a/AD-PCHGS-250926.tex (as submitted)',
++                                tofile='b/AD-PCHGS-250926.tex (proposed scope edits)')
++    patch = os.path.join(K.CAUS_OUT, 'manuscript_scope_edits.patch')
++    K.assert_writable(patch)
++    with open(patch, 'w') as fh:
++        fh.write('# Proposed scope edits for Reviewer Caus (DOC-01). Generated by rebuild/CAUS/doc01_make_patch.py.\n')
++        fh.write('# Applies to S2R-COD/AD-PCHGS-250926.tex (sha256 84d3bf97...). The submitted file is NOT modified.\n')
++        fh.write('# Compiled copy: latexmk rc=%s, %s pages, AI-use statement starts on page %s (limit: main text <= 10 pages), '
++                 'undefined refs in log: %s\n' % (rc, pages, ai_page, undefined))
++        fh.write('# Edits: %s + new appendix app:shapeoracle\n' % '; '.join(applied))
++        fh.writelines(diff)
++    print('applied %d edits; latexmk rc=%s; pages=%s; AI-use statement on page %s; undefined=%s' % (len(applied), rc, pages, ai_page, undefined))
++    print('patch:', os.path.relpath(patch, K.REPO))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_alloc.py b/rebuild/CAUS/exp01_alloc.py
+new file mode 100644
+index 0000000..1a5a6d1
+--- /dev/null
++++ b/rebuild/CAUS/exp01_alloc.py
+@@ -0,0 +1,217 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- quota vectors and stem selections for the different-SHAPE oracle arms.
++
++Specification: rebuild/CAUS/PREREGISTRATION_EXP01.md (TH-01 / EXP-01 of the Caus guide).
++
++Nothing is re-implemented that already exists. Every arm reuses the COMMITTED selector
++unchanged -- C1's largest_remainder, rank_by_centroid (R2 grey-128 cutout, dinoL518),
++serving_orders['desc_nc'] and greedy_select -- so the ONLY thing an EXP-01 arm changes
++relative to C10 / CORACLE is the integer quota vector handed to that selector.
++
++Arms (display name -> file-safe name):
++  OR-PROP        ORPROP       q_j ~ N * w_j / sum(w),  w_j = max(err_j, 0) + eps,
++                              eps = 1e-6 * max(err); largest remainder, ties by ascending index
++  OR-TOP10       ORTOP10      100 to each of the 10 highest-err clusters (stable argsort of -err)
++  OR-TOP5        ORTOP5       200 to each of the 5 highest-err clusters
++  OR-TOP10-SHUF  ORTOP10SHUF  OR-TOP10's quota vector permuted by the frozen shuffle rule
++  OR-TOP5-SHUF   ORTOP5SHUF   (quota-only) OR-TOP5 permuted by the frozen shuffle rule
++  OR-PROP-SHUF   ORPROPSHUF   (quota-only) OR-PROP permuted by the frozen shuffle rule
++  OR-PROP-INV    ORPROPINV    (quota-only) OR-PROP rank-reversed against err (deterministic)
++
++err is the CORACLE oracle vector: abc_common.oracle_error(), i.e. the committed per-cluster
++mean (1 - S_alpha) of SINet/S2C on COD10K-test. READING IT IS AN ENDPOINT-LABEL READ; every
++arm here is a declared, intentionally leaky diagnostic (oracle_score_source =
++endpoint-label-leaky), exactly as CORACLE is (PREREGISTRATION_OR.md OR.0).
++
++Frozen shuffle rule: the first offset `off` in 0..63 such that
++sigma = numpy.random.default_rng(NS + off).permutation(75) has no fixed point and
++|scipy.stats.spearmanr(q[sigma], err).statistic| <= 0.10; q_shuf = q[sigma]. NS is 920000
++(OR-PROP), 930000 (OR-TOP10), 940000 (OR-TOP5). Chosen by rule, never by inspection.
++
++TRAINS NOTHING. Deterministic: no argument depends on the training seed.
++"""
++
++import csv
++import hashlib
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++_REBUILD = os.path.dirname(_HERE)
++for _p in (_HERE, _REBUILD, os.path.join(_REBUILD, 'C1'), os.path.join(_REBUILD, 'ABC')):
++    if _p not in sys.path:
++        sys.path.insert(0, _p)
++
++import numpy as np                                             # noqa: E402
++
++import abc_common as A                                         # noqa: E402
++
++BUDGET = A.BUDGET                     # 1000
++K = 75
++EPS_SCALE = 1e-6
++SHUF_NS = {'ORPROP': 920_000, 'ORTOP10': 930_000, 'ORTOP5': 940_000}
++SHUF_TRIES = 64
++SHUF_MAX_RHO = 0.10
++JACCARD_GATE = A.T2_MAX_JACCARD       # 0.50, inherited from T2.7 / OR.2.4
++
++TRAINED_ARMS = ('ORTOP10', 'ORTOP10SHUF', 'ORPROP', 'ORTOP5')      # 12 runs = 4 x {42,43,45}
++QUOTA_ONLY_ARMS = ('ORPROPSHUF', 'ORPROPINV', 'ORTOP5SHUF')
++NEW_ARMS = TRAINED_ARMS + QUOTA_ONLY_ARMS
++DISPLAY = {'ORPROP': 'OR-PROP', 'ORTOP10': 'OR-TOP10', 'ORTOP5': 'OR-TOP5',
++           'ORTOP10SHUF': 'OR-TOP10-SHUF', 'ORTOP5SHUF': 'OR-TOP5-SHUF',
++           'ORPROPSHUF': 'OR-PROP-SHUF', 'ORPROPINV': 'OR-PROP-INV',
++           'C10': 'C10', 'CORACLE': 'CORACLE', 'CSHUF': 'CSHUF', 'CINV': 'CINV', 'B': 'B'}
++SEEDS = (42, 43, 45)
++
++
++def _space():
++    import c1_space
++    return c1_space.load_space(A.EMBEDDER)
++
++
++def oracle_err():
++    vec, prov = A.oracle_error()
++    return vec, prov
++
++
++def spearman(a, b):
++    from scipy.stats import spearmanr
++    return float(spearmanr(a, b).statistic)
++
++
++def _lr(p):
++    from c1_targeted_vs_random import largest_remainder
++    return largest_remainder(p, BUDGET)
++
++
++def q_prop(err):
++    w = np.maximum(err, 0.0) + EPS_SCALE * float(err.max())
++    return _lr(w / w.sum())
++
++
++def q_topk(err, n):
++    if BUDGET % n:
++        raise RuntimeError('EXP01 HALT: budget %d not divisible by top-k %d' % (BUDGET, n))
++    order = np.argsort(-err, kind='stable')
++    q = np.zeros(K, dtype=np.int64)
++    q[order[:n]] = BUDGET // n
++    return q
++
++
++def frozen_shuffle(q, err, ns):
++    for off in range(SHUF_TRIES):
++        sigma = np.random.default_rng(ns + off).permutation(K)
++        if int((sigma == np.arange(K)).sum()) != 0:
++            continue
++        rho = spearman(q[sigma], err)
++        if abs(rho) <= SHUF_MAX_RHO:
++            return q[sigma], dict(perm_seed=int(ns + off), perm_rule='first no-fixed-point, '
++                                  '|spearman|<=%.2f in %d draws' % (SHUF_MAX_RHO, SHUF_TRIES))
++    raise RuntimeError('EXP01 HALT: no permutation in %d draws from %d met the rule' % (SHUF_TRIES, ns))
++
++
++def rank_reverse(q, err):
++    asc = np.argsort(err, kind='stable')
++    sigma = np.empty(K, dtype=np.int64)
++    sigma[asc] = asc[::-1]
++    return q[sigma], dict(perm_seed=None, perm_rule='rank-reversed against err (deterministic)')
++
++
++def quota(arm):
++    """Integer quota vector (cluster order 0..74) and provenance for any EXP-01 arm."""
++    err, _ = oracle_err()
++    if arm == 'ORPROP':
++        return q_prop(err), dict(perm_seed=None, perm_rule='none')
++    if arm == 'ORTOP10':
++        return q_topk(err, 10), dict(perm_seed=None, perm_rule='none')
++    if arm == 'ORTOP5':
++        return q_topk(err, 5), dict(perm_seed=None, perm_rule='none')
++    if arm == 'ORTOP10SHUF':
++        return frozen_shuffle(q_topk(err, 10), err, SHUF_NS['ORTOP10'])
++    if arm == 'ORTOP5SHUF':
++        return frozen_shuffle(q_topk(err, 5), err, SHUF_NS['ORTOP5'])
++    if arm == 'ORPROPSHUF':
++        return frozen_shuffle(q_prop(err), err, SHUF_NS['ORPROP'])
++    if arm == 'ORPROPINV':
++        return rank_reverse(q_prop(err), err)
++    raise ValueError('unknown EXP-01 arm %r' % arm)
++
++
++def reference_quota(arm):
++    """C10 / CORACLE / CSHUF / CINV quota vectors, through the committed code path."""
++    from c1_targeted_vs_random import softmax_alloc
++    sp = _space()
++    sigma, info = A.es_permutation(sp.es, A.ARM_ES_PERM[arm])
++    es = sp.es if A.ARM_ES_PERM[arm] is None else sp.es[sigma]
++    return _lr(softmax_alloc(es, A.ARM_ALPHA[arm])), info
++
++
++def select(q):
++    """The committed selector, unchanged. Returns (stems sorted by pool index, n_displaced, idx)."""
++    from c1_targeted_vs_random import rank_by_centroid, serving_orders, greedy_select
++    sp = _space()
++    _, order = rank_by_centroid(sp)
++    serving = serving_orders(q, sp.es)[A.SERVING]          # desc_nc reads the quota only
++    idx, disp = greedy_select(q, order, serving)
++    return [sp.names[i] for i in idx], int(disp), idx
++
++
++def stems(arm, seed=None):
++    """Stem list for any arm. B needs a seed; every other arm is seed-independent."""
++    if arm == 'B':
++        return A.arm_b_stems(seed)
++    if arm in A.ARM_ALPHA:
++        return A.arm_c_stems(A.ARM_ALPHA[arm], A.ARM_ES_PERM[arm])[0]
++    return select(quota(arm)[0])[0]
++
++
++def vec_hash(q):
++    return hashlib.sha256(','.join(str(int(x)) for x in q).encode()).hexdigest()
++
++
++def shape_hash(q):
++    return vec_hash(sorted((int(x) for x in q), reverse=True))
++
++
++def gini(x):
++    """Gini of the quota vector over all 75 clusters (mean-absolute-difference form)."""
++    x = np.asarray(x, dtype=np.float64)
++    if x.sum() == 0:
++        return 0.0
++    return float(np.abs(x[:, None] - x[None, :]).sum() / (2 * len(x) ** 2 * x.mean()))
++
++
++def properties(q):
++    err, _ = oracle_err()
++    sp = _space()
++    p = np.asarray(q, dtype=np.float64) / BUDGET
++    nz = p[p > 0]
++    srt = np.sort(p)[::-1]
++    return dict(
++        quota_sum=int(np.sum(q)), clusters_funded=int((q > 0).sum()), max_quota=int(q.max()),
++        top1_share=round(float(srt[0]), 5), top5_share=round(float(srt[:5].sum()), 5),
++        entropy_norm=round(float(-(nz * np.log(nz)).sum() / np.log(K)), 5),
++        hhi=round(float((p ** 2).sum()), 5), gini=round(gini(q), 5),
++        tv_from_uniform=round(float(0.5 * np.abs(p - 1.0 / K).sum()), 5),
++        spearman_q_err=round(spearman(q, err), 5), spearman_q_es=round(spearman(q, sp.es), 5),
++        quota_sha256=vec_hash(q), shape_sha256=shape_hash(q))
++
++
++def read_stem_file(path):
++    with open(path) as fh:
++        return [x for x in fh.read().split('\n') if x]
++
++
++COMMITTED_STEMS = {
++    'C10': 'rebuild/ABC/out/abc_stems_C_a1.0.txt',
++    'CORACLE': 'rebuild/ABC/out/or/abc_stems_CORACLE.txt',
++    'CSHUF': 'rebuild/ABC/out/se/abc_stems_CSHUF.txt',
++    'CINV': 'rebuild/ABC/out/se/abc_stems_CINV.txt',
++    'B_s42': 'rebuild/ABC/out/abc_stems_B_s42.txt',
++    'B_s43': 'rebuild/ABC/out/abc_stems_B_s43.txt',
++    'B_s45': 'rebuild/ABC/out/abc_stems_B_s45.txt',
++}
++
++
++def committed_stems(key):
++    return read_stem_file(os.path.join(A.C.REPO, COMMITTED_STEMS[key]))
+diff --git a/rebuild/CAUS/exp01_alloc_test.py b/rebuild/CAUS/exp01_alloc_test.py
+new file mode 100644
+index 0000000..8229991
+--- /dev/null
++++ b/rebuild/CAUS/exp01_alloc_test.py
+@@ -0,0 +1,82 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- tests for exp01_alloc.py. Exit code 0 iff every assertion holds.
++
++1. The committed code path reproduces C10, CORACLE, CSHUF, CINV and B_s{42,43,45} stem lists
++   byte-for-byte against the committed stem files (the regression guard: nothing drifted).
++2. Every EXP-01 arm: integer quotas, sum == 1000, 75 entries, non-negative, exactly 1000
++   distinct selected stems, every stem in the 4447-render pool, deterministic on re-call.
++3. Every shuffle / inversion has an IDENTICAL sorted quota multiset to its parent shape.
++4. OR-TOP-k funds exactly the k highest-err clusters, equal split.
++5. An independent re-implementation of the quota rules (no shared helper) agrees.
++"""
++
++import os
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import numpy as np                                             # noqa: E402
++
++import exp01_alloc as X                                        # noqa: E402
++
++FAILS = []
++
++
++def check(cond, msg):
++    print(('PASS  ' if cond else 'FAIL  ') + msg)
++    if not cond:
++        FAILS.append(msg)
++
++
++def main():
++    # 1 -- regression against committed selections
++    for key in ('C10', 'CORACLE', 'CSHUF', 'CINV'):
++        check(X.stems(key) == X.committed_stems(key), '%s reproduces committed stem file' % key)
++    for s in X.SEEDS:
++        check(X.stems('B', s) == X.committed_stems('B_s%d' % s), 'B_s%d reproduces committed stem file' % s)
++
++    pool = set(os.path.splitext(f)[0] for f in os.listdir(
++        os.path.join(X.A.C.REPO, 'Dataset/Source/HKU-IS_raw/imgs')))
++    err, prov = X.oracle_err()
++    check(prov['oracle_uses_endpoint_labels'] is True, 'oracle provenance is declared endpoint-leaky')
++
++    # 2 -- integrity of every new arm
++    for arm in X.NEW_ARMS:
++        q, _ = X.quota(arm)
++        q2, _ = X.quota(arm)
++        st = X.stems(arm)
++        check(q.dtype.kind == 'i' and len(q) == 75 and q.min() >= 0 and int(q.sum()) == 1000,
++              '%s: 75 non-negative integer quotas summing to 1000' % arm)
++        check(np.array_equal(q, q2) and st == X.stems(arm), '%s: deterministic' % arm)
++        check(len(st) == 1000 and len(set(st)) == 1000 and set(st) <= pool,
++              '%s: 1000 distinct stems, all in the 4447 pool' % arm)
++
++    # 3 -- same-shape controls
++    for child, parent in (('ORTOP10SHUF', 'ORTOP10'), ('ORTOP5SHUF', 'ORTOP5'),
++                          ('ORPROPSHUF', 'ORPROP'), ('ORPROPINV', 'ORPROP')):
++        a, b = X.quota(child)[0], X.quota(parent)[0]
++        check(sorted(a.tolist()) == sorted(b.tolist()) and not np.array_equal(a, b),
++              '%s has the identical sorted multiset as %s and a different assignment' % (child, parent))
++
++    # 4 -- top-k definition
++    top = np.argsort(-err, kind='stable')
++    for arm, k in (('ORTOP10', 10), ('ORTOP5', 5)):
++        q = X.quota(arm)[0]
++        check(set(np.flatnonzero(q).tolist()) == set(top[:k].tolist()) and
++              set(q[q > 0].tolist()) == {1000 // k}, '%s funds exactly the top-%d err clusters equally' % (arm, k))
++
++    # 5 -- independent re-implementation of OR-PROP (plain Python, no shared helper)
++    w = [max(e, 0.0) + 1e-6 * max(err) for e in err.tolist()]
++    ex = [1000 * x / sum(w) for x in w]
++    base = [int(np.floor(v)) for v in ex]
++    rem = 1000 - sum(base)
++    frac = sorted(range(75), key=lambda i: (-(ex[i] - base[i]), i))
++    for i in frac[:rem]:
++        base[i] += 1
++    check(base == X.quota('ORPROP')[0].tolist(), 'OR-PROP agrees with an independent largest-remainder')
++
++    print('\n%d failure(s)' % len(FAILS))
++    sys.exit(1 if FAILS else 0)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_cls_smoke.py b/rebuild/CAUS/exp01_cls_smoke.py
+new file mode 100644
+index 0000000..0be2411
+--- /dev/null
++++ b/rebuild/CAUS/exp01_cls_smoke.py
+@@ -0,0 +1,53 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 pilot step 7 (optional) -- CLS round-2 smoke on this campaign's pool layout.
++
++Calls the committed CLS.cls() exactly as MyTrain.py does for --task S2C (PGT_Loss = ESLoss(a=0.9,
++b=0.3, c=0.5, use_weighted_bce=False), u=0.8, tau=0.4, iteration=1, network='SINet'). The model
++comes from a HISTORICAL snapshot, which is only read. The source pool is a symlinked EXP-01 pool;
++CLS copies it, dereferencing links, to <pool>_iteration2/. Checks: round-2 Image/GT counts equal,
++stem parity on the real SrcDataset for every index, n_appended in (0, 4040].
++Usage: exp01_cls_smoke.py <pool_dir> <model_dir> <out_json> [--gpu 0]
++"""
++
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++sys.path.insert(0, K.REPO)
++os.chdir(K.REPO)
++
++
++def main():
++    pool, model_dir, out = sys.argv[1].rstrip('/') + '/', sys.argv[2].rstrip('/') + '/', sys.argv[3]
++    gpu = int(sys.argv[sys.argv.index('--gpu') + 1]) if '--gpu' in sys.argv else 0
++    K.assert_writable(pool.rstrip('/') + '_iteration2')
++    import torch
++    from CLS import cls
++    from Src.utils.tool import ESLoss
++    from Src.utils.Dataloader import SrcDataset
++    torch.cuda.set_device(gpu)
++    pgt = ESLoss(a=0.9, b=0.3, c=0.5, use_weighted_bce=False).cuda()
++    new_root = cls(model_dir, pool, pool, './Dataset/Target/', pgt, 0.8, 0.4, iteration=1, network='SINet')
++    K.assert_writable(new_root)
++    img = sorted(os.listdir(os.path.join(new_root, 'Image')))
++    gt = sorted(os.listdir(os.path.join(new_root, 'GT')))
++    n_base = len(os.listdir(os.path.join(pool, 'Image')))
++    ds = SrcDataset(os.path.join(new_root, 'Image') + '/', os.path.join(new_root, 'GT') + '/', 352)
++    stem = lambda f: os.path.splitext(os.path.basename(f))[0]  # noqa: E731
++    mism = sum(1 for i in range(len(ds)) if stem(ds.images[i]) != stem(ds.gts[i]))
++    n_app = len(img) - n_base
++    links = sum(os.path.islink(os.path.join(new_root, 'Image', f)) for f in img[:200])
++    res = dict(new_root=os.path.relpath(new_root, K.REPO), n_image=len(img), n_gt=len(gt),
++               n_base=n_base, n_appended=n_app, parity_mismatches=mism, len_dataset=len(ds),
++               symlinks_in_copy_first200=links, model_dir=model_dir)
++    res['passed'] = bool(len(img) == len(gt) == len(ds) and mism == 0 and 0 < n_app <= 4040 and links == 0)
++    K.save_json(out, res)
++    print(res)
++    sys.exit(0 if res['passed'] else 1)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_pilot.py b/rebuild/CAUS/exp01_pilot.py
+new file mode 100644
+index 0000000..2539394
+--- /dev/null
++++ b/rebuild/CAUS/exp01_pilot.py
+@@ -0,0 +1,209 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 pilot (PREREGISTRATION_EXP01.md §4). Run by 00_pilot.sh under `timeout 30m`.
++
++Gate-critical steps first; optional steps start only while the elapsed time leaves room, and a skip
++is recorded. Every child process has its own timeout. SIGTERM (the outer timeout) stops the current
++child and writes the report before exiting. Writes Result/CAUS_RUNS/00_pilot/<stamp>_<pid>/:
++pilot_report.json plus every step's log and output. TRAINS NO ARM -- no pilot number is evidence.
++"""
++
++import argparse
++import math
++import os
++import re
++import signal
++import subprocess
++import sys
++import time
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++import exp01_pool as P                                         # noqa: E402
++import exp01_run as R                                          # noqa: E402
++
++LINE = re.compile(r'Epoch Num: (\d+)/\d+\] => \[Global Step: (\d+)/(\d+)\] => '
++                  r'\[Loss_all: ([\d.]+) Loss_sup: ([\d.]+) Loss_con: ([\d.]+)\]')
++HIST_LOG = 'Snapshot/ABC/SINet_CORACLE_s42/training_log.log'            # committed, tracked
++HIST_SNAP = K.orig('Snapshot/ABC/SINet_CORACLE_s42')                     # read only
++HIST_PRED = K.orig('Result/ABC/SINet_CORACLE_s42/COD10K')                # read only
++T0 = time.time()
++STATE = dict(proc=None, report=None, path=None)
++
++
++def elapsed_min():
++    return (time.time() - T0) / 60.0
++
++
++def run_step(cmd, logpath, timeout_s):
++    with open(logpath, 'w') as lg:
++        lg.write('# CMD %s\n' % ' '.join(cmd))
++        lg.flush()
++        p = subprocess.Popen(cmd, cwd=K.REPO, stdout=lg, stderr=subprocess.STDOUT)
++        STATE['proc'] = p
++        try:
++            rc = p.wait(timeout=timeout_s)
++        except subprocess.TimeoutExpired:
++            p.terminate()
++            try:
++                p.wait(timeout=30)
++            except subprocess.TimeoutExpired:
++                p.kill()
++            rc = 'timeout'
++        STATE['proc'] = None
++    return rc
++
++
++def on_term(signum, frame):
++    p = STATE['proc']
++    if p is not None and p.poll() is None:
++        p.terminate()
++        try:
++            p.wait(timeout=20)
++        except subprocess.TimeoutExpired:
++            p.kill()
++    if STATE['report'] is not None:
++        STATE['report']['terminated_by_signal'] = signum
++        K.save_json(STATE['path'], STATE['report'])
++    sys.exit(124)
++
++
++def parse_log(path, epoch=1):
++    out = {}
++    for line in open(path):
++        if line.startswith('Training Log') and out:
++            break                                   # stop at the second round's header
++        m = LINE.search(line)
++        if m and int(m.group(1)) == epoch:
++            out[int(m.group(2))] = (m.group(4), m.group(5), m.group(6), m.group(3))
++    return out
++
++
++def one_epoch(seed, pool, snap, gpu, logpath, timeout_s):
++    cmd = [K.PY, 'MyTrain.py', '--network', 'SINet', '--task', 'S2C', '--method', 'ours',
++           '--iteration', '1', '--epoch', '2', '--seed', str(seed),
++           '--save_model', './' + os.path.relpath(snap, K.REPO) + '/',
++           '--source_root', './' + os.path.relpath(pool, K.REPO) + '/',
++           '--target_root', './Dataset/Target/', '--val_root', './Dataset/Val/CAMO/', '--gpu', str(gpu)]
++    rc = run_step(cmd, logpath, timeout_s)
++    tl = os.path.join(snap, 'training_log.log')
++    lines = parse_log(tl) if os.path.isfile(tl) else {}
++    steps = sorted(lines)
++    finite = all(math.isfinite(float(v)) for t in lines.values() for v in t[:3])
++    return dict(rc=rc, n_logged_steps=len(steps), last_step=steps[-1] if steps else None,
++                total_step={t[3] for t in lines.values()} and sorted({t[3] for t in lines.values()}),
++                finite=finite, step0=lines.get(0), cmd=' '.join(cmd)), lines
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--gpu', type=int, default=0)
++    ap.add_argument('--budget-min', type=float, default=27.0)
++    args = ap.parse_args()
++    run = R.new_run_dir('00_pilot')
++    L = os.path.join(run, 'logs')
++    rep = dict(started=K.now(), git=K.git_head(), run_dir=os.path.relpath(run, K.REPO),
++               budget_min=args.budget_min, steps={})
++    STATE.update(report=rep, path=os.path.join(run, 'pilot_report.json'))
++    signal.signal(signal.SIGTERM, on_term)
++    save = lambda: K.save_json(STATE['path'], rep)              # noqa: E731
++
++    def done(name, d):
++        d['elapsed_min_at_end'] = round(elapsed_min(), 2)
++        rep['steps'][name] = d
++        save()
++        print('[pilot %5.1f min] %s: %s' % (elapsed_min(), name, d.get('passed')), flush=True)
++
++    # 1 environment
++    env = R.env_record(args.gpu)
++    done('1_env', dict(passed=env.get('gpu_free_gb', 0) >= R.MIN_FREE_GPU_GB and env['disk_free_gb'] >= 15,
++                       **env))
++    # 2 pools + gates
++    pools = {}
++    for arm, seed in (('ORTOP10', 42), ('CORACLE', 42)):
++        sub = os.path.join(run, '%s_s%d' % (arm, seed))
++        os.makedirs(sub)
++        pool, stems = P.build(sub, arm, seed)
++        pools[arm] = pool
++        g = P.gate(pool, arm, seed, stems)
++        done('2_pool_%s' % arm, g)
++    tg = P.trainer_gates()
++    done('2_trainer_gates', tg)
++    # 3 smoke
++    out = os.path.join(L, 'smoke.json')
++    rc = run_step([K.PY, '-B', os.path.join(K.HERE, 'exp01_smoke.py'), pools['ORTOP10'], out, '--gpu', str(args.gpu)],
++                  os.path.join(L, 'smoke.log'), 180)
++    sm = dict(rc=rc)
++    if os.path.isfile(out):
++        import json
++        sm.update(json.load(open(out)))
++    sm['passed'] = rc == 0 and bool(sm.get('passed'))
++    done('3_smoke', sm)
++    # 4 one epoch, new code path
++    d4, lines4 = one_epoch(42, pools['ORTOP10'], os.path.join(run, 'ORTOP10_s42', 'snap_a'), args.gpu,
++                           os.path.join(L, 'epoch1_ORTOP10_s42_a.log'), 330)
++    d4['passed'] = d4['rc'] == 0 and d4['finite'] and d4['total_step'] == ['0253'] and d4['last_step'] == 250
++    done('4_epoch1_ORTOP10', d4)
++    # 5 R6 replay of the committed CORACLE_s42 configuration
++    d5, lines5 = one_epoch(42, pools['CORACLE'], os.path.join(run, 'CORACLE_s42', 'snap'), args.gpu,
++                           os.path.join(L, 'epoch1_CORACLE_s42_replay.log'), 330)
++    hist = parse_log(os.path.join(K.REPO, HIST_LOG))
++    common = sorted(set(hist) & set(lines5))
++    diffs = [max(abs(float(a) - float(b)) for a, b in zip(hist[s][:3], lines5[s][:3])) for s in common]
++    d5.update(hist_step0=hist.get(0), step0_equal_4dp=bool(hist.get(0) and lines5.get(0)
++                                                           and hist[0][:3] == lines5[0][:3]),
++              n_steps_compared=len(common), n_steps_identical=sum(hist[s][:3] == lines5[s][:3] for s in common),
++              max_abs_loss_diff=max(diffs) if diffs else None,
++              first_divergent_step=next((s for s in common if hist[s][:3] != lines5[s][:3]), None))
++    d5['passed'] = d5['rc'] == 0 and d5['step0_equal_4dp']
++    done('5_R6_replay_CORACLE_s42', d5)
++    # 6 inference parity on the historical checkpoint
++    po = os.path.join(run, 'pred_hist_CORACLE_s42', 'COD10K')
++    irc, n, n_gt = R.infer(os.path.join(HIST_SNAP, 'Tea_epoch_best.pth'), po, 'COD10K', args.gpu,
++                           os.path.join(L, 'infer_hist_CORACLE_s42_COD10K.log'), timeout=300)
++    same = 0
++    if os.path.isdir(po):
++        for nm in os.listdir(po):
++            hp = os.path.join(HIST_PRED, nm)
++            if os.path.isfile(hp) and K.sha256(hp) == K.sha256(os.path.join(po, nm)):
++                same += 1
++    done('6_infer_parity', dict(rc=irc, n=n, n_gt=n_gt, png_byte_identical=same,
++                                passed=irc == 0 and n == n_gt,
++                                note='Sa re-scored on CPU after the pilot against committed 0.712710'))
++    # 7 optional CLS smoke
++    if elapsed_min() <= args.budget_min - 10:
++        out = os.path.join(L, 'cls_smoke.json')
++        rc = run_step([K.PY, '-B', os.path.join(K.HERE, 'exp01_cls_smoke.py'), pools['CORACLE'], HIST_SNAP, out,
++                       '--gpu', str(args.gpu)], os.path.join(L, 'cls_smoke.log'), 480)
++        d7 = dict(rc=rc)
++        if os.path.isfile(out):
++            import json
++            d7.update(json.load(open(out)))
++        d7['passed'] = rc == 0 and bool(d7.get('passed'))
++        done('7_cls_smoke', d7)
++    else:
++        done('7_cls_smoke', dict(passed=None, skipped='elapsed %.1f min left no room' % elapsed_min()))
++    # 8 optional rerun-from-scratch determinism repeat of step 4
++    if elapsed_min() <= args.budget_min - 5.5:
++        d8, lines8 = one_epoch(42, pools['ORTOP10'], os.path.join(run, 'ORTOP10_s42', 'snap_b'), args.gpu,
++                               os.path.join(L, 'epoch1_ORTOP10_s42_b.log'), 330)
++        common = sorted(set(lines4) & set(lines8))
++        d8.update(n_steps_compared=len(common),
++                  n_steps_identical=sum(lines4[s][:3] == lines8[s][:3] for s in common),
++                  first_divergent_step=next((s for s in common if lines4[s][:3] != lines8[s][:3]), None))
++        d8['passed'] = d8['rc'] == 0 and d8['finite']
++        done('8_determinism_repeat', d8)
++    else:
++        done('8_determinism_repeat', dict(passed=None, skipped='elapsed %.1f min left no room' % elapsed_min()))
++
++    crit = ['1_env', '2_pool_ORTOP10', '2_pool_CORACLE', '2_trainer_gates', '3_smoke', '4_epoch1_ORTOP10',
++            '5_R6_replay_CORACLE_s42', '6_infer_parity']
++    rep['gate_critical_passed'] = all(rep['steps'][k].get('passed') for k in crit)
++    rep['ended'] = K.now()
++    rep['elapsed_min'] = round(elapsed_min(), 2)
++    save()
++    print('PILOT gate-critical passed: %s (%.1f min)' % (rep['gate_critical_passed'], elapsed_min()))
++    sys.exit(0 if rep['gate_critical_passed'] else 1)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_pool.py b/rebuild/CAUS/exp01_pool.py
+new file mode 100644
+index 0000000..0e99647
+--- /dev/null
++++ b/rebuild/CAUS/exp01_pool.py
+@@ -0,0 +1,131 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- build one arm pool from leaf symlinks and gate it (ABC_PLAN A.8.1 #1-#6, plus bytes).
++
++A pool is <run_dir>/pool/{Image,GT}: the authors' 4447 base pairs plus the arm's 1000 LAKE-RED
++renders (SOD_<stem>.jpg) and render masks (SOD_<stem>.png), each a SYMLINK to the original
++file. File NAMES are exactly those of the committed ABC pools (which were hard links), so the
++trainer's sorted listing -- and therefore data order -- is identical. The trainer's CLS step
++copies the pool with shutil.copytree (symlinks dereferenced) into <run_dir>/pool_iteration2/,
++so nothing is ever written through a link.
++
++Gate (all must hold; any failure HALTS the run before training):
++  a1 counts         Image and GT both hold exactly 5447 entries
++  a2 stem sets      identical stem sets in Image and GT; no duplicate stems; no .tif
++  a4 parity         REAL SrcDataset: stem(images[i]) == stem(gts[i]) for EVERY i
++  a5 spot check     4 pairs: same size, mask neither empty nor full
++  a6 round-2        parity on the worst-case union of the pool with all 4040 target names (.png)
++  bytes             every base file and every selected render/mask re-hashed against E0's manifest
++  mask == raw GT    every selected render mask pixel-identical to the raw GT of its foreground
++  stems frozen      the arm's stems equal the committed STUDENT_RESULTS/.../EXP-01_stems/<ARM>.txt
++"""
++
++import os
++import random
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++import exp01_alloc as X                                        # noqa: E402
++
++BASE_IMG = 'Dataset/Source/HKU-IS/Image'
++BASE_GT = 'Dataset/Source/HKU-IS/GT'
++N_BASE = 4447
++
++
++def frozen_stems(arm, seed):
++    if arm == 'B':
++        return X.committed_stems('B_s%d' % seed)
++    p = os.path.join(K.TABLES, 'EXP-01_stems', '%s.txt' % arm)
++    return X.read_stem_file(p)
++
++
++def build(run_dir, arm, seed):
++    pool = K.assert_writable(os.path.join(run_dir, 'pool'))
++    if os.path.exists(pool):
++        raise SystemExit('EXP01 POOL HALT: %s already exists (a run folder is never reused)' % pool)
++    stems = X.stems(arm, seed if arm == 'B' else None)
++    for sub in ('Image', 'GT'):
++        os.makedirs(os.path.join(pool, sub))
++    for sub, d in (('Image', BASE_IMG), ('GT', BASE_GT)):
++        src = os.path.realpath(os.path.join(K.REPO, d))
++        for nm in sorted(os.listdir(src)):
++            os.symlink(os.path.join(src, nm), os.path.join(pool, sub, nm))
++    ri = os.path.realpath(os.path.join(K.REPO, X.A.REN_IMG))
++    rm = os.path.realpath(os.path.join(K.REPO, X.A.REN_MSK))
++    for st in stems:
++        os.symlink(os.path.join(ri, 'SOD_%s.jpg' % st), os.path.join(pool, 'Image', 'SOD_%s.jpg' % st))
++        os.symlink(os.path.join(rm, 'SOD_%s.png' % st), os.path.join(pool, 'GT', 'SOD_%s.png' % st))
++    return pool, stems
++
++
++def gate(pool, arm, seed, stems):
++    sys.path.insert(0, K.REPO)
++    import numpy as np
++    from PIL import Image
++    from Src.utils.Dataloader import SrcDataset
++    stem = lambda f: os.path.splitext(f)[0]                      # noqa: E731
++    img = sorted(os.listdir(os.path.join(pool, 'Image')))
++    gt = sorted(os.listdir(os.path.join(pool, 'GT')))
++    expect = N_BASE + X.BUDGET
++    r = dict(pool=os.path.relpath(pool, K.REPO), arm=arm, seed=seed, n_image=len(img), n_gt=len(gt))
++    r['a1_counts'] = len(img) == len(gt) == expect
++    r['a2_stem_sets'] = ({stem(f) for f in img} == {stem(f) for f in gt}
++                         and len({stem(f) for f in img}) == len(img) and not any(f.endswith('.tif') for f in gt))
++    ds = SrcDataset(os.path.join(pool, 'Image') + '/', os.path.join(pool, 'GT') + '/', 352)
++    mism = sum(1 for i in range(len(ds))
++               if stem(os.path.basename(ds.images[i])) != stem(os.path.basename(ds.gts[i])))
++    r['a4_parity_all_i'] = (mism == 0 and len(ds) == expect)
++    r['a4_mismatches'] = mism
++    spot = True
++    for i in [len(ds) // 2] + random.Random(seed).sample(range(len(ds)), 3):
++        a = Image.open(ds.images[i])
++        b = np.array(Image.open(ds.gts[i]).convert('L'))
++        wf = float((b > 127).mean())
++        spot &= bool(a.size == (b.shape[1], b.shape[0]) and 0.0 < wf < 1.0)
++    r['a5_spotcheck'] = spot
++    tgt = sorted(os.listdir(os.path.join(K.REPO, 'Dataset/Target/Image')))
++    app = [stem(f) + '.png' for f in tgt]
++    si, sg = sorted(img + app), sorted(gt + app)
++    r['a6_round2_parity'] = len(si) == len(sg) and all(stem(si[i]) == stem(sg[i]) for i in range(len(si)))
++    # bytes against E0's manifest
++    man = {}
++    for line in open(os.path.join(K.REPO, 'rebuild/E0/out/e0_manifest.sha256')):
++        if not line.startswith('#'):
++            d, k = line.split()
++            man[k] = d
++    bad = 0
++    for sub, key, rkey in (('Image', 'auth', 'local'), ('GT', 'auth_gt', 'local_msk')):
++        for nm in sorted(os.listdir(os.path.join(pool, sub))):
++            k = ('%s/%s' % (rkey, nm)) if nm.startswith('SOD_') else ('%s/%s' % (key, nm))
++            if man.get(k) != K.sha256(os.path.join(pool, sub, nm)):
++                bad += 1
++    r['bytes_mismatched_vs_E0'] = bad
++    # render mask == raw GT, every selected stem
++    nb = 0
++    for st in stems:
++        a = np.array(Image.open(os.path.join(K.REPO, X.A.RAW_GT, st + '.png')).convert('L'))
++        b = np.array(Image.open(os.path.join(pool, 'GT', 'SOD_%s.png' % st)).convert('L'))
++        if a.shape != b.shape or int(np.abs(a.astype(int) - b.astype(int)).max()) != 0:
++            nb += 1
++    r['render_mask_ne_raw_gt'] = nb
++    r['stems_equal_frozen'] = sorted(stems) == sorted(frozen_stems(arm, seed))
++    r['stems_sha256'] = K.list_digest(stems)
++    r['image_list_sha256'] = K.list_digest(img)
++    r['passed'] = bool(r['a1_counts'] and r['a2_stem_sets'] and r['a4_parity_all_i'] and r['a5_spotcheck']
++                       and r['a6_round2_parity'] and bad == 0 and nb == 0 and r['stems_equal_frozen'])
++    return r
++
++
++def trainer_gates():
++    """The committed read-only gates G3 (one trainer + patches), G4 (endpoints), G6 (determinism).
++    G2 (provenance) is NOT called here: E0.step_independence() rewrites a committed JSON. Its data
++    half is covered by the byte checks above and by exp01_reuse_gate.py (every input file)."""
++    sys.path.insert(0, os.path.join(K.REBUILD, 'ABC'))
++    import abc_preflight as PFA
++    out = {}
++    for g in (PFA.gate_one_trainer, PFA.gate_endpoints, PFA.gate_determinism):
++        d = g()
++        out[d['gate']] = dict(passed=bool(d['passed']), **{k: v for k, v in d.items()
++                                                           if k not in ('gate', 'passed', 'note')})
++    out['passed'] = all(v['passed'] for v in out.values() if isinstance(v, dict))
++    return out
+diff --git a/rebuild/CAUS/exp01_reuse_gate.py b/rebuild/CAUS/exp01_reuse_gate.py
+new file mode 100644
+index 0000000..ff7514d
+--- /dev/null
++++ b/rebuild/CAUS/exp01_reuse_gate.py
+@@ -0,0 +1,147 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- reuse gate R1-R4 for the historical B / C10 / CORACLE SINet runs.
++
++R1 code    : trainer-path source at each historical run's recorded commit vs this worktree's HEAD.
++             Allowed difference: the opt-in --exposure patch (P6) whose default branch is unchanged,
++             and comment-only lines. Anything else FAILS the gate.
++R2 env     : the shared venv's training packages predate the first historical run.
++R3 data    : EVERY file of every declared primary input re-hashed against E0's committed manifest.
++R4 stems   : the committed stem files are reproduced byte-for-byte (exp01_alloc_test.py).
++Integrity  : historical Tea_epoch_best.pth / Stu_40.pth sha256 + mtimes, prediction counts.
++
++R5 (re-scoring) is caus_score.py --rescore-historical. R6 (step-0 loss replay) runs in the pilot.
++Writes RESULT_TABLES/EXP-01_reuse_gate.csv and EXP-01_historical_runs.csv.
++"""
++
++import csv
++import datetime
++import os
++import re
++import subprocess
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++
++RUNS = [('SINet_%s_s%d' % (a, s), a, s) for a in ('B', 'C10', 'CORACLE', 'CSHUF') for s in (42, 43, 45)]
++TRAINER_FILES = ['MyTrain.py', 'MyTest.py', 'CLS.py', 'Src', 'Eval/metrics.py']
++MANIFEST_KEYS = ('raw', 'raw_gt', 'auth', 'auth_gt', 'local', 'local_msk', 'tgt',
++                 'test', 'test_gt', 'val', 'val_gt', 'nc4k')
++PATHS = dict(raw='Dataset/Source/HKU-IS_raw/imgs', raw_gt='Dataset/Source/HKU-IS_raw/gt',
++             auth='Dataset/Source/HKU-IS/Image', auth_gt='Dataset/Source/HKU-IS/GT',
++             local='Dataset/LAKERED/output/HKU-IS/images', local_msk='Dataset/LAKERED/output/HKU-IS/masks',
++             tgt='Dataset/Target/Image', test='Dataset/Test/COD10K/Imgs', test_gt='Dataset/Test/COD10K/GT',
++             val='Dataset/Val/CAMO/Imgs', val_gt='Dataset/Val/CAMO/GT', nc4k='Dataset/Test/NC4K/Imgs')
++
++
++def git(*a):
++    return subprocess.check_output(['git'] + list(a), cwd=K.REPO, text=True)
++
++
++def run_commit(rid):
++    """The commit a historical run recorded in its driver log header (original copy, read-only)."""
++    p = K.orig(os.path.join('rebuild/ABC', rid + '.log'))
++    head = open(p).read(2000)
++    m = re.search(r'# commit\s+([0-9a-f]{7,40})( \(dirty\))?', head)
++    t = re.search(r'# started\s+(\S+)', head)
++    return (m.group(1), bool(m.group(2))) if m else (None, None), (t.group(1) if t else None), p
++
++
++def r1_code(commit):
++    diff = git('diff', '-U0', commit, 'HEAD', '--', *TRAINER_FILES)
++    bad = []
++    files = re.findall(r'^diff --git a/(\S+)', diff, flags=re.M)
++    for f in files:
++        part = diff.split('diff --git a/%s' % f, 1)[1].split('\ndiff --git ', 1)[0]
++        changed = [l for l in part.splitlines() if (l.startswith('+') or l.startswith('-'))
++                   and not l.startswith('+++') and not l.startswith('---')]
++        for l in changed:
++            body = l[1:].strip()
++            if body == '' or body.startswith('#'):
++                continue                                         # comment-only / blank
++            if f == 'MyTrain.py' and ('exposure' in body or '_cycle' in body or 'fixed_exposures' in body
++                                      or body in ('while True:', 'for b in loader:', 'yield b',
++                                                  "'target loader is cycled, so every source image is '",
++                                                  "'seen once per epoch and the optimisation budget '",
++                                                  "'scales with the pool.')")
++                                      or body.startswith(("'", 'help=', 'choices=', 'def _cycle',
++                                                          'total_step = (len(source_loader)',
++                                                          'if (opt.method', 'or getattr(opt',
++                                                          'total_step = (len(source_loader) if opt.method',
++                                                          'else min(len(source_loader)'))):
++                continue                                         # P6 opt-in patch lines
++            bad.append('%s: %s' % (f, body[:100]))
++    return files, bad
++
++
++def main():
++    rows, hist = [], []
++    # R1 per distinct commit
++    commits = {}
++    for rid, arm, s in RUNS:
++        (c, dirty), started, logp = run_commit(rid)
++        commits.setdefault(c, []).append(rid)
++        snap = K.orig(os.path.join('Snapshot/ABC', rid))
++        tea = os.path.join(snap, 'Tea_epoch_best.pth')
++        stu = os.path.join(snap, 'Stu_40.pth')
++        r = dict(runid=rid, arm=arm, seed=s, run_commit=c, run_commit_dirty=dirty, started=started,
++                 tea_best_sha256=K.sha256(tea), tea_best_mtime=datetime.datetime.fromtimestamp(
++                     os.path.getmtime(tea)).isoformat(timespec='seconds'),
++                 stu40_sha256=K.sha256(stu))
++        for ep in ('COD10K', 'NC4K'):
++            pd = K.orig(os.path.join('Result/ABC', rid, ep))
++            names = sorted(os.listdir(pd))
++            r['n_pred_' + ep] = len(names)
++            r['pred_latest_mtime_' + ep] = datetime.datetime.fromtimestamp(
++                max(os.path.getmtime(os.path.join(pd, n)) for n in names)).isoformat(timespec='seconds')
++        hist.append(r)
++    for c, rids in sorted(commits.items()):
++        files, bad = r1_code(c)
++        rows.append(dict(gate='R1_code', subject=c, runs=';'.join(rids),
++                         passed=not bad, detail=('differing files: %s; non-P6 non-comment lines: %d %s'
++                                                 % (','.join(files) or 'none', len(bad), ' | '.join(bad[:5])))))
++    # R2 env
++    sp = K.orig('.venv/lib/python3.12/site-packages')
++    first = min(datetime.datetime.fromisoformat(r['started']) for r in hist)
++    pk = {}
++    for d in os.listdir(sp):
++        if d.endswith('.dist-info') and d.split('-')[0].lower() in (
++                'torch', 'torchvision', 'numpy', 'pillow', 'opencv_python', 'scipy', 'scikit_learn'):
++            pk[d] = datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(sp, d)))
++    late = [d for d, t in pk.items() if t.replace(tzinfo=first.tzinfo) >= first]
++    rows.append(dict(gate='R2_env', subject='S2R-COD/.venv', runs='all', passed=not late,
++                     detail='%s; first historical run %s; packages installed after it: %s'
++                            % (', '.join(sorted('%s@%s' % (d[:-10], t.date()) for d, t in pk.items())),
++                               first.isoformat(), late or 'none')))
++    # R3 data, every file
++    man = {}
++    for line in open(os.path.join(K.REPO, 'rebuild/E0/out/e0_manifest.sha256')):
++        if not line.startswith('#'):
++            d, k = line.split()
++            man[k] = d
++    for key in MANIFEST_KEYS:
++        d = os.path.join(K.REPO, PATHS[key])
++        names = sorted(os.listdir(d))
++        bad = [n for n in names if man.get('%s/%s' % (key, n)) != K.sha256(os.path.join(d, n))]
++        expected = sum(1 for k in man if k.startswith(key + '/'))
++        rows.append(dict(gate='R3_data', subject=key, runs='all',
++                         passed=(not bad and len(names) == expected),
++                         detail='%d files on disk, %d in E0 manifest, %d mismatched' % (len(names), expected, len(bad))))
++    gtn = os.path.join(K.REPO, 'Dataset/Test/NC4K/GT')
++    rows.append(dict(gate='R3_data', subject='nc4k_gt (not in E0 manifest)', runs='all', passed=True,
++                     detail='%d files; list digest %s (recorded, no committed reference exists)'
++                            % (len(os.listdir(gtn)), K.list_digest(
++                                ['%s %s' % (K.sha256(os.path.join(gtn, n)), n) for n in os.listdir(gtn)]))))
++    # R4
++    t = subprocess.run([K.PY, '-B', os.path.join(K.HERE, 'exp01_alloc_test.py')], cwd=K.REPO,
++                       capture_output=True, text=True, env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1'))
++    rows.append(dict(gate='R4_stems', subject='exp01_alloc_test.py', runs='all', passed=t.returncode == 0,
++                     detail=t.stdout.strip().splitlines()[-1]))
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_reuse_gate.csv'), rows)
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_historical_runs.csv'), hist)
++    for r in rows:
++        print('%-9s %-28s %-5s %s' % (r['gate'], r['subject'][:28], r['passed'], r['detail'][:150]))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_run.py b/rebuild/CAUS/exp01_run.py
+new file mode 100644
+index 0000000..18894f9
+--- /dev/null
++++ b/rebuild/CAUS/exp01_run.py
+@@ -0,0 +1,294 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- one full two-round SINet run for one (arm, seed). Called by one queue script.
++
++Order (rebuild/CAUS/PREREGISTRATION_EXP01.md §5). Any failure exits non-zero, keeps everything:
++  1. fresh run folder Result/CAUS_RUNS/<script>/<UTC stamp>_<pid>/   (never reused)
++  2. environment record + disk and GPU-memory guards (so a shared-GPU job is never OOM'd)
++  3. pool built from leaf symlinks and gated; committed gates G3/G4/G6
++  4. MyTrain.py with the committed SINet command line (paths only differ)
++  5. completion assertions of abc_train.verify_run
++  6. MyTest.py on COD10K and NC4K
++  7. run_record.json with every hash
++Exit codes: 0 ok | 2 pre-training gate failed | 3 training failed / incomplete |
++            4 inference failed | 5 guard (disk / GPU memory) -- RECOVERABLE, ask for a retry.
++"""
++
++import argparse
++import datetime
++import json
++import os
++import re
++import shutil
++import subprocess
++import sys
++import time
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import caus_common as K                                        # noqa: E402
++import exp01_alloc as X                                        # noqa: E402
++import exp01_pool as P                                         # noqa: E402
++
++SPEC = dict(network='SINet', batch=16, total_step=253, last_epoch='039/040', ref_min=104.5)
++TS = re.compile(r'^\[(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+)\]')
++EPOCH = re.compile(r'Epoch Num: (\d+/\d+)')
++STEP = re.compile(r'Global Step: \d+/(\d+)')
++MIN_FREE_DISK_GB = 25          # one SINet run ~5.5 GB; generous headroom
++MIN_FREE_GPU_GB = 24           # SINet bs16 at 352 needs well under this
++GPU_WAIT_MIN = 45
++
++
++def log(fh, m):
++    line = '[%s] %s' % (datetime.datetime.now().isoformat(timespec='seconds'), m)
++    print(line, flush=True)
++    fh.write(line + '\n')
++    fh.flush()
++
++
++def _proc_start(pid):
++    """Process start time in clock ticks since boot (field 22 of /proc/<pid>/stat), or None."""
++    try:
++        s = open('/proc/%d/stat' % pid).read()
++        return int(s[s.rindex(')') + 2:].split()[19])
++    except (OSError, ValueError, IndexError):
++        return None
++
++
++def _boot_id():
++    try:
++        return open('/proc/sys/kernel/random/boot_id').read().strip()
++    except OSError:
++        return 'unknown'
++
++
++def acquire_lock(script):
++    """One live instance per queue script (PREREGISTRATION_EXP01.md Addendum A1).
++
++    The queue runner was observed (pilot, 2026-11-12) to re-run a script it had recorded as
++    INTERRUPTED while the original process was still alive, so two copies ran concurrently. A start
++    that finds a LIVE holder (same boot, same pid, same process start time, cmdline naming this
++    script) yields with exit 6 and trains nothing. A stale lock (dead holder, or a different boot) is
++    renamed aside, never deleted, and the new start proceeds."""
++    d = os.path.join(K.RUNS_ROOT, script)
++    K.assert_writable(d)
++    os.makedirs(d, exist_ok=True)
++    path = os.path.join(d, 'RUN_LOCK.json')
++    me = dict(pid=os.getpid(), proc_start=_proc_start(os.getpid()), boot_id=_boot_id(),
++              script=script, acquired=K.now())
++    for _ in range(2):
++        try:
++            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
++            with os.fdopen(fd, 'w') as fh:
++                json.dump(me, fh)
++            return True, me, None
++        except FileExistsError:
++            try:
++                held = json.load(open(path))
++            except (OSError, ValueError):
++                held = {}
++            pid = int(held.get('pid', -1))
++            alive = (held.get('boot_id') == me['boot_id'] and pid > 0
++                     and _proc_start(pid) == held.get('proc_start')
++                     and script in open('/proc/%d/cmdline' % pid).read().replace('\0', ' ')
++                     if os.path.exists('/proc/%d' % pid) else False)
++            if alive:
++                return False, me, held
++            os.rename(path, os.path.join(d, 'RUN_LOCK.stale.%s.json'
++                                         % datetime.datetime.now().strftime('%Y%m%dT%H%M%S')))
++    raise SystemExit('EXP01 HALT: could not acquire %s' % path)
++
++
++def new_run_dir(script):
++    stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
++    d = os.path.join(K.RUNS_ROOT, script, '%s_%d' % (stamp, os.getpid()))
++    K.assert_writable(d)
++    os.makedirs(os.path.join(d, 'logs'))
++    return d
++
++
++def env_record(gpu):
++    import torch
++    d = dict(host_time=K.now(), git=K.git_head(), python=sys.executable,
++             torch=torch.__version__, cuda=torch.version.cuda,
++             cudnn=torch.backends.cudnn.version(),
++             cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES'),
++             runner_assigned_gpu=os.environ.get('RL5B_ASSIGNED_GPU'),
++             disk_free_gb=round(shutil.disk_usage(K.REPO).free / 2 ** 30, 1))
++    if torch.cuda.is_available():
++        free, tot = torch.cuda.mem_get_info(gpu)
++        d.update(gpu_name=torch.cuda.get_device_name(gpu), gpu_free_gb=round(free / 2 ** 30, 1),
++                 gpu_total_gb=round(tot / 2 ** 30, 1))
++    try:
++        d['nvidia_smi'] = subprocess.check_output(
++            ['nvidia-smi', '--query-gpu=index,name,memory.used,memory.total,utilization.gpu',
++             '--format=csv,noheader'], text=True).strip().splitlines()
++    except Exception as e:                                     # pragma: no cover
++        d['nvidia_smi'] = str(e)
++    return d
++
++
++def guards(gpu, fh):
++    import torch
++    free = shutil.disk_usage(K.REPO).free / 2 ** 30
++    if free < MIN_FREE_DISK_GB:
++        log(fh, 'GUARD: free disk %.1f GB < %d GB' % (free, MIN_FREE_DISK_GB))
++        return False
++    t0 = time.time()
++    while True:
++        f, _ = torch.cuda.mem_get_info(gpu)
++        if f / 2 ** 30 >= MIN_FREE_GPU_GB:
++            log(fh, 'guards ok: disk %.1f GB free, GPU %.1f GB free' % (free, f / 2 ** 30))
++            return True
++        if time.time() - t0 > GPU_WAIT_MIN * 60:
++            log(fh, 'GUARD: GPU free %.1f GB < %d GB after %d min' % (f / 2 ** 30, MIN_FREE_GPU_GB, GPU_WAIT_MIN))
++            return False
++        time.sleep(60)
++
++
++def verify(train_log, snap):
++    """abc_train.verify_run, against this run's own paths."""
++    tl = os.path.join(snap, 'training_log.log')
++    d = {}
++    if not os.path.isfile(tl):
++        return False, dict(fail='no training_log.log')
++    lines = open(tl).read().splitlines()
++    d['rounds'] = sum(1 for l in lines if l.startswith('Training Log'))
++    d['total_step_set'] = ','.join(sorted({m.group(1) for l in lines for m in [STEP.search(l)] if m}))
++    ep = [m.group(1) for l in lines for m in [EPOCH.search(l)] if m]
++    d['last_epoch'] = ep[-1] if ep else ''
++    st = [datetime.datetime.fromisoformat(m.group(1)) for l in lines for m in [TS.match(l)] if m]
++    d['wall_min'] = round((st[-1] - st[0]).total_seconds() / 60, 1) if st else None
++    d['tea_best'] = os.path.isfile(os.path.join(snap, 'Tea_epoch_best.pth'))
++    run = open(train_log).read()
++    loaded = [int(x) for x in re.findall(r'Loaded (\d+) image-mask pairs', run)]
++    d['pool_r1'] = loaded[0] if loaded else None
++    d['pool_r2'] = loaded[1] if len(loaded) > 1 else None
++    d['n_appended'] = (d['pool_r2'] - d['pool_r1']) if len(loaded) > 1 else None
++    d['target_loaded_4040'] = run.count('Loaded 4040 images')
++    be = re.findall(r'Best epoch:(\d+)', run)
++    d['best_epoch'] = int(be[-1]) if be else None
++    # The completion assertions of PREREGISTRATION_EXP01.md §5. Wall time is REPORTED, not asserted:
++    # §5 does not list it, and a complete run slowed by a shared GPU is still a complete run.
++    d['wall_within_2x_reference'] = bool(d['wall_min'] is not None and d['wall_min'] < 2 * SPEC['ref_min'])
++    checks = dict(rounds=d['rounds'] == 2, total_step=d['total_step_set'] == '%04d' % SPEC['total_step'],
++                  last_epoch=d['last_epoch'] == SPEC['last_epoch'], tea_best=bool(d['tea_best']),
++                  pool_r1=d['pool_r1'] == P.N_BASE + X.BUDGET, target=d['target_loaded_4040'] == 2)
++    d['checks'] = checks
++    d['failed_checks'] = [k for k, v in checks.items() if not v]
++    return not d['failed_checks'], d
++
++
++def train_cmd(seed, snap, pool, gpu, extra=()):
++    rel = lambda p: './' + os.path.relpath(p, K.REPO) + '/'      # noqa: E731
++    return [K.PY, 'MyTrain.py', '--network', 'SINet', '--task', 'S2C', '--method', 'ours',
++            '--iteration', '2', '--seed', str(seed), '--save_model', rel(snap),
++            '--source_root', rel(pool), '--target_root', './Dataset/Target/',
++            '--val_root', './Dataset/Val/CAMO/', '--gpu', str(gpu)] + list(extra)
++
++
++def infer(ckpt, out_dir, endpoint, gpu, logpath, timeout=None):
++    cmd = [K.PY, 'MyTest.py', '--network', 'SINet', '--gpu', str(gpu), '--dataset', endpoint,
++           '--model_path', ckpt, '--test_save', out_dir]
++    K.assert_writable(out_dir)
++    with open(logpath, 'w') as lg:
++        lg.write('# CMD %s\n' % ' '.join(cmd))
++        lg.flush()
++        rc = subprocess.run(cmd, cwd=K.REPO, stdout=lg, stderr=subprocess.STDOUT, timeout=timeout).returncode
++    n_gt = len(os.listdir(os.path.join(K.REPO, 'Dataset/Test', endpoint, 'GT')))
++    n = len(os.listdir(out_dir)) if os.path.isdir(out_dir) else 0
++    return rc, n, n_gt
++
++
++def dir_digest(d):
++    return K.list_digest(['%s %s' % (K.sha256(os.path.join(d, n)), n) for n in sorted(os.listdir(d))])
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--arm', required=True, choices=X.TRAINED_ARMS)
++    ap.add_argument('--seed', type=int, required=True, choices=X.SEEDS)
++    ap.add_argument('--script', required=True, help='queue script name; names the run folder')
++    ap.add_argument('--gpu', type=int, default=0)
++    args = ap.parse_args()
++    rid = 'SINet_%s_s%d' % (args.arm, args.seed)
++    ok_lock, me, held = acquire_lock(args.script)
++    if not ok_lock:
++        rec = dict(runid=rid, script=args.script, status='DUPLICATE START YIELDED', at=K.now(),
++                   this_start=me, live_holder=held)
++        K.save_json(os.path.join(K.RUNS_ROOT, args.script, 'duplicate_start_%d.json' % os.getpid()), rec)
++        print('EXP-01 %s: a live instance (pid %s) already holds this script; yielding, nothing trained'
++              % (rid, held.get('pid')), flush=True)
++        sys.exit(6)
++    run = new_run_dir(args.script)
++    L = os.path.join(run, 'logs')
++    fh = open(os.path.join(L, 'driver.log'), 'w')
++    rec = dict(runid=rid, campaign='EXP-01', arm=args.arm, arm_display=X.DISPLAY[args.arm],
++               seed=args.seed, script=args.script, run_dir=os.path.relpath(run, K.REPO),
++               started=K.now(), git=K.git_head(),
++               oracle_score_source=('endpoint-label-leaky (shape only)' if args.arm.endswith('SHUF')
++                                    else 'endpoint-label-leaky'))
++    log(fh, 'EXP-01 %s in %s' % (rid, run))
++    env = env_record(args.gpu)
++    K.save_json(os.path.join(L, 'env.json'), env)
++    if not guards(args.gpu, fh):
++        rec.update(status='GUARD', ended=K.now())
++        K.save_json(os.path.join(run, 'run_record.json'), rec)
++        sys.exit(5)
++
++    pool, stems = P.build(run, args.arm, args.seed)
++    pg = P.gate(pool, args.arm, args.seed, stems)
++    tg = P.trainer_gates()
++    K.save_json(os.path.join(L, 'pool_gate.json'), dict(pool=pg, trainer=tg))
++    log(fh, 'pool gate %s | trainer gates %s' % (pg['passed'], tg['passed']))
++    if not (pg['passed'] and tg['passed']):
++        rec.update(status='PRE-TRAINING GATE FAILED', ended=K.now())
++        K.save_json(os.path.join(run, 'run_record.json'), rec)
++        sys.exit(2)
++
++    snap = os.path.join(run, 'snap')
++    cmd = train_cmd(args.seed, snap, pool, args.gpu)
++    tlog = os.path.join(L, 'train.log')
++    with open(tlog, 'w') as lg:
++        lg.write('# RUNID   %s\n# started %s\n# commit  %s\n# CMD     %s\n\n'
++                 % (rid, K.now(), K.git_head(), ' '.join(cmd)))
++        lg.flush()
++        log(fh, 'train: %s' % ' '.join(cmd))
++        rc = subprocess.run(cmd, cwd=K.REPO, stdout=lg, stderr=subprocess.STDOUT).returncode
++    ok, vd = verify(tlog, snap)
++    vd['returncode'] = rc
++    K.save_json(os.path.join(L, 'verify.json'), vd)
++    log(fh, 'train rc=%d verify ok=%s failed=%s' % (rc, ok, vd.get('failed_checks') or vd.get('fail')))
++    if rc != 0 or not ok:
++        rec.update(status='TRAINING FAILED OR INCOMPLETE', ended=K.now(), verify=vd)
++        K.save_json(os.path.join(run, 'run_record.json'), rec)
++        sys.exit(3)
++
++    ck = os.path.join(snap, 'Tea_epoch_best.pth')
++    preds = {}
++    for ep in ('COD10K', 'NC4K'):
++        out = os.path.join(run, 'pred', ep)
++        irc, n, n_gt = infer('./' + os.path.relpath(ck, K.REPO), out, ep, args.gpu,
++                             os.path.join(L, 'infer_%s.log' % ep))
++        preds[ep] = dict(rc=irc, n=n, n_gt=n_gt, dir=os.path.relpath(out, K.REPO))
++        log(fh, 'infer %s rc=%d n=%d/%d' % (ep, irc, n, n_gt))
++        if irc != 0 or n != n_gt:
++            rec.update(status='INFERENCE FAILED', ended=K.now(), verify=vd, predictions=preds)
++            K.save_json(os.path.join(run, 'run_record.json'), rec)
++            sys.exit(4)
++        preds[ep]['digest'] = dir_digest(out)
++
++    it2 = pool.rstrip('/') + '_iteration2'
++    rec.update(status='COMPLETE', ended=K.now(), verify=vd, predictions=preds,
++               pool_gate=dict(stems_sha256=pg['stems_sha256'], image_list_sha256=pg['image_list_sha256']),
++               round2_pool=dict(dir=os.path.relpath(it2, K.REPO),
++                                n_image=len(os.listdir(os.path.join(it2, 'Image'))) if os.path.isdir(it2) else None,
++                                image_list_sha256=K.list_digest(os.listdir(os.path.join(it2, 'Image')))
++                                if os.path.isdir(it2) else None),
++               tea_best_sha256=K.sha256(ck), stu40_sha256=K.sha256(os.path.join(snap, 'Stu_40.pth')),
++               train_log_sha256=K.sha256(os.path.join(snap, 'training_log.log')),
++               env=dict((k, env.get(k)) for k in ('gpu_name', 'torch', 'cuda', 'cudnn', 'runner_assigned_gpu')))
++    K.save_json(os.path.join(run, 'run_record.json'), rec)
++    log(fh, 'COMPLETE %s' % rid)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_smoke.py b/rebuild/CAUS/exp01_smoke.py
+new file mode 100644
+index 0000000..d7dc8ed
+--- /dev/null
++++ b/rebuild/CAUS/exp01_smoke.py
+@@ -0,0 +1,71 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 pilot step 3 -- two-batch SINet smoke test on an EXP-01 pool.
++
++Mirrors MyTrain.trainer's SINet branch for --task S2C --method ours: supervised BCE-with-logits on
++both SINet heads for the source batch, ES consistency loss between the EMA teacher (weak view) and
++the student (strong view) on a target batch, backward, Adam step, EMA update. Losses and gradient
++norms must be finite. Usage: exp01_smoke.py <pool_dir> <out_json> [--gpu 0]
++"""
++
++import json
++import math
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++
++sys.path.insert(0, K.REPO)
++os.chdir(K.REPO)
++
++
++def main():
++    pool, out = sys.argv[1], sys.argv[2]
++    gpu = int(sys.argv[sys.argv.index('--gpu') + 1]) if '--gpu' in sys.argv else 0
++    import torch
++    from Src.model.SINet.SINet import SINet_ResNet50
++    from Src.utils.Dataloader import get_srcloader, get_tarloader
++    from Src.utils.tool import ESLoss, set_random_seed, update_ema
++    torch.cuda.set_device(gpu)
++    set_random_seed(42)
++    model = SINet_ResNet50(channel=32).cuda()
++    ema = SINet_ResNet50(channel=32).cuda()
++    for q, k in zip(model.parameters(), ema.parameters()):
++        k.data.copy_(q.data)
++    opt = torch.optim.Adam(model.parameters(), 1e-4)
++    bce = torch.nn.BCEWithLogitsLoss()
++    es = ESLoss(a=0.9, b=0.3, c=0.5).cuda()
++    src = get_srcloader(os.path.join(pool, 'Image') + '/', os.path.join(pool, 'GT') + '/', 16, 352)
++    tar = get_tarloader('./Dataset/Target/Image/', 16, 352)
++    rec = []
++    torch.cuda.reset_peak_memory_stats()
++    for step, ((x, y), (tw, ts)) in enumerate(zip(src, tar)):
++        opt.zero_grad()
++        x, y, tw, ts = x.cuda(), y.cuda(), tw.cuda(), ts.cuda()
++        sm, im = model(x)
++        with torch.no_grad():
++            _, t = ema(tw)
++        _, s = model(ts)
++        ls = bce(sm, y) + bce(im, y)
++        lc = es(s.sigmoid(), t.sigmoid())
++        (ls + lc).backward()
++        gn = math.sqrt(sum(float(p.grad.detach().pow(2).sum()) for p in model.parameters() if p.grad is not None))
++        opt.step()
++        update_ema(model, ema, 0.996)
++        rec.append(dict(step=step, loss_sup=float(ls), loss_con=float(lc), grad_norm=gn,
++                        batch=list(x.shape), gt_range=[float(y.min()), float(y.max())]))
++        if step == 1:
++            break
++    peak = torch.cuda.max_memory_allocated() / 2 ** 30
++    ok = len(rec) == 2 and all(math.isfinite(r['loss_sup']) and math.isfinite(r['loss_con'])
++                               and math.isfinite(r['grad_norm']) and r['grad_norm'] > 0 for r in rec)
++    res = dict(passed=ok, steps=rec, peak_gpu_gb=round(peak, 2), n_source=len(src.dataset),
++               n_target=len(tar.dataset))
++    K.save_json(out, res)
++    print(json.dumps(res, indent=1))
++    sys.exit(0 if ok else 1)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_stats.py b/rebuild/CAUS/exp01_stats.py
+new file mode 100644
+index 0000000..ca3a0fd
+--- /dev/null
++++ b/rebuild/CAUS/exp01_stats.py
+@@ -0,0 +1,219 @@
++#!/usr/bin/env python
++"""CAUS EXP-01 -- score the runs of record and apply PREREGISTRATION_EXP01.md §1 exactly.
++
++Run of record (Addendum A1): for each queue script, the EARLIEST start whose run_record.json says
++COMPLETE. Other starts are listed, never used. Historical B / C10 / CORACLE rows come from the committed
++metrics (reproduced at 6 dp by reuse gate R5). New runs are scored with the committed scorer
++(caus_score.primary -> abc_evaluate.score -> Eval/metrics.py), and each new run is spot-checked by the
++independent S-measure on 200 images per endpoint.
++
++Verdicts use BOTH statistics implementations of caus_stats.py (impl_a numpy/scipy, impl_b pure Python);
++any disagreement beyond 1e-9 is a HALT. sigma_hat is pooled over the arms of the 7-arm analysis set that
++have >= 2 seeds; contrasts use only seeds present in both arms; anything short of 3/3 is PARTIAL.
++Writes RESULT_TABLES/EXP-01_metrics_by_seed.csv, EXP-01_comparisons.csv, EXP-01_runs_of_record.csv and
++STUDENT_RESULTS/RESULT_TABLES/run_manifest.csv.
++"""
++
++import csv
++import glob
++import json
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++import caus_score as SC                                        # noqa: E402
++import caus_stats as ST                                        # noqa: E402
++
++import numpy as np                                             # noqa: E402
++
++SEEDS = (42, 43, 45)
++NEW = ('ORTOP10', 'ORTOP10SHUF', 'ORPROP', 'ORTOP5')
++HIST = {'B': 'rebuild/ABC/out/abc_metrics.csv', 'C10': 'rebuild/ABC/out/abc_metrics.csv',
++        'CORACLE': 'rebuild/ABC/out/or/abc_metrics.csv', 'CSHUF': 'rebuild/ABC/out/t2/abc_metrics.csv'}
++POOL7 = ('B', 'C10', 'CORACLE', 'ORPROP', 'ORTOP10', 'ORTOP10SHUF', 'ORTOP5')
++PRIMARY = (('ORTOP10', 'CORACLE', 'P1 shape at true-error aim'),
++           ('ORTOP10', 'ORTOP10SHUF', 'P2 aim at the top-10 shape'),
++           ('ORPROP', 'CORACLE', 'P3 flat shape at true-error aim (overlapping, J=0.5232)'),
++           ('ORTOP5', 'CORACLE', 'P4 shape-plus-aim (never aim-isolated)'))
++SECONDARY = tuple((a, b, 'secondary') for a in ('ORTOP10', 'ORPROP', 'ORTOP5', 'ORTOP10SHUF') for b in ('B', 'C10')
++                  if not (a == 'ORTOP10SHUF' and b == 'C10'))
++DISPLAY = {'ORTOP10': 'OR-TOP10', 'ORTOP10SHUF': 'OR-TOP10-SHUF', 'ORPROP': 'OR-PROP', 'ORTOP5': 'OR-TOP5',
++           'B': 'B', 'C10': 'C10', 'CORACLE': 'CORACLE', 'CSHUF': 'CSHUF'}
++METRICS = SC.METRICS
++
++
++def runs_of_record():
++    out, others = {}, []
++    for arm in NEW:
++        for s in SEEDS:
++            scripts = glob.glob(os.path.join(K.RUNS_ROOT, '*_EXP01_SINet_%s_s%d' % (arm, s)))
++            starts = sorted(glob.glob(os.path.join(scripts[0], '2*'))) if scripts else []
++            chosen = None
++            for d in starts:
++                rp = os.path.join(d, 'run_record.json')
++                rec = json.load(open(rp)) if os.path.isfile(rp) else dict(status='NO RECORD (running or killed)')
++                row = dict(arm=arm, seed=s, run_dir=os.path.relpath(d, K.REPO), status=rec.get('status'))
++                if chosen is None and rec.get('status') == 'COMPLETE':
++                    chosen = (d, rec)
++                    row['role'] = 'RUN OF RECORD'
++                else:
++                    row['role'] = 'not used' if chosen else 'earlier/incomplete start'
++                others.append(row)
++            if chosen:
++                out[(arm, s)] = chosen
++    return out, others
++
++
++def score_new(rr):
++    rows, checks = [], []
++    rng = np.random.default_rng(0)
++    for (arm, s), (d, rec) in sorted(rr.items()):
++        for ep in ('COD10K', 'NC4K'):
++            gt = os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')
++            pred = os.path.join(d, 'pred', ep)
++            m = SC.primary(gt, pred)
++            names = sorted(os.listdir(gt))
++            pick = [names[i] for i in sorted(rng.choice(len(names), 200, replace=False))]
++            x = np.array(SC.primary_per_image_sm(gt, pred, pick))
++            y = np.array(SC.independent_dir(gt, pred, pick))
++            checks.append(dict(arm=DISPLAY[arm], seed=s, endpoint=ep, n=200, max_abs_diff=float(np.abs(x - y).max())))
++            v = rec.get('verify', {})
++            rows.append(dict(source='new (EXP-01)', arm=DISPLAY[arm], seed=s, endpoint=ep, n=m['n'],
++                             **{k: '%.6f' % m[k] for k in METRICS}, n_appended=v.get('n_appended'),
++                             best_epoch=v.get('best_epoch'), wall_min=v.get('wall_min'),
++                             run_dir=os.path.relpath(d, K.REPO)))
++    return rows, checks
++
++
++def hist_rows():
++    rows = []
++    for arm, path in HIST.items():
++        for r in csv.DictReader(open(os.path.join(K.REPO, path))):
++            if r['arch'] == 'SINet' and r['arm'] == arm and int(r['seed']) in SEEDS:
++                rows.append(dict(source='historical (reused, R1-R6 passed)' if arm != 'CSHUF' else 'historical (reference only)',
++                                 arm=arm, seed=int(r['seed']), endpoint=r['endpoint'], n=r['n'],
++                                 **{k: r[k] for k in METRICS}, n_appended='', best_epoch='', wall_min='',
++                                 run_dir=os.path.join('Result/ABC', 'SINet_%s_s%s' % (arm, r['seed']))))
++    return rows
++
++
++def verdicts(rows):
++    out, worst = [], 0.0
++    for ep in ('COD10K', 'NC4K'):
++        d = {}
++        for r in rows:
++            if r['endpoint'] == ep:
++                key = next(k for k, v in DISPLAY.items() if v == r['arm'])
++                d.setdefault(('SINet', ep, key), {})[int(r['seed'])] = float(r['Sm'])
++        pool = tuple(a for a in POOL7 if len(d.get(('SINet', ep, a), {})) >= 2)
++        new_pool = tuple(a for a in NEW if len(d.get(('SINet', ep, a), {})) >= 2)
++        for a, b, label in PRIMARY + SECONDARY:
++            if ('SINet', ep, a) not in d or ('SINet', ep, b) not in d:
++                out.append(dict(endpoint=ep, contrast='%s - %s' % (DISPLAY[a], DISPLAY[b]), role=label,
++                                status='INFEASIBLE (arm missing)'))
++                continue
++            common = sorted(set(d[('SINet', ep, a)]) & set(d[('SINet', ep, b)]))
++            if len(common) < 2 or len(d[('SINet', ep, a)]) < 2 or len(d[('SINet', ep, b)]) < 2:
++                out.append(dict(endpoint=ep, contrast='%s - %s' % (DISPLAY[a], DISPLAY[b]), role=label,
++                                status='INFEASIBLE (< 2 seeds)'))
++                continue
++            dd = {k: {s: v for s, v in vals.items() if s in common} if k[2] in (a, b) else vals for k, vals in d.items()}
++            A_ = ST.impl_a(dd, pool, a, b, 'SINet', ep)
++            B_ = ST.impl_b(dd, pool, a, b, 'SINet', ep)
++            agree = max(abs(A_[k] - B_[k]) for k in B_ if k != 'sign')
++            if A_['sign'] != B_['sign'] or agree > 1e-9:
++                raise SystemExit('EXP01 STATS HALT: implementations disagree on %s-%s %s' % (a, b, ep))
++            worst = max(worst, agree)
++            sig_new = float(np.sqrt(np.mean([np.var(list(d[('SINet', ep, m)].values()), ddof=1) for m in new_pool]))) \
++                if new_pool else float('nan')
++            n = len(common)
++            out.append(dict(
++                endpoint=ep, contrast='%s - %s' % (DISPLAY[a], DISPLAY[b]), role=label,
++                status='COMPLETE' if n == 3 else 'PARTIAL (%d/3 seeds)' % n,
++                n_seeds=n, delta='%+.6f' % A_['delta'], sigma_hat_pool7='%.6f' % A_['sigma_hat'],
++                bar='%.6f' % A_['bar'], df_pool=A_['df_pool'], x_bar='%.3f' % (abs(A_['delta']) / A_['bar']),
++                sign='%d/%d' % (A_['sign'], n), verdict=ST.verdict(A_['delta'], A_['bar'], A_['sign'], n),
++                largest_effect_bar_could_miss='%.6f' % A_['bar'],
++                sigma_hat_new_arms_only='%.6f' % sig_new, sigma_hat_OR_committed='see TH-02 (OR SINet bar 0.006130)',
++                welch95='[%+.4f, %+.4f]' % (A_['welch_lo'], A_['welch_hi']),
++                paired95_df2_unstable='[%+.4f, %+.4f]' % (A_['paired_lo'], A_['paired_hi']),
++                impl_ab_max_abs_diff='%.1e' % agree,
++                note=('decides' if ep == 'COD10K' and label.startswith('P') else 'reported, never decides')
++                + ('; endpoint-label-leaky arm(s): COD10K-test not an unbiased endpoint' if ep == 'COD10K' else '')))
++    return out, worst
++
++
++def manifest(rows, rr):
++    sha = lambda p: K.sha256(os.path.join(K.REPO, p)) if os.path.isfile(os.path.join(K.REPO, p)) else ''  # noqa: E731
++    splits = {r['split']: r['content_sha256'] for r in csv.DictReader(open(os.path.join(K.TABLES, 'AN-05_split_audit.csv')))
++              if r['content_sha256']}
++    qm = {r['arm']: r for r in csv.DictReader(open(os.path.join(K.TABLES, 'EXP-01_quota_manifests.csv')))}
++    hist = {r['runid']: r for r in csv.DictReader(open(os.path.join(K.TABLES, 'EXP-01_historical_runs.csv')))}
++    code = sha('rebuild/CAUS/exp01_run.py')
++    out = []
++    for r in rows:
++        if r['endpoint'] != 'COD10K':
++            continue
++        arm, s = r['arm'], int(r['seed'])
++        key = next(k for k, v in DISPLAY.items() if v == arm)
++        q = qm.get(arm, {})
++        new = r['source'].startswith('new')
++        rec = rr.get((key, s), (None, {}))[1] if new else {}
++        h = hist.get('SINet_%s_s%d' % (key, s), {})
++        out.append(dict(
++            campaign='EXP-01' if new else {'B': 'ABC', 'C10': 'ABC', 'CORACLE': 'OR', 'CSHUF': 'T2'}[key],
++            arm=arm, allocation_shape=q.get('allocation_shape', 'uniform random draw' if key == 'B' else ''),
++            alignment=q.get('alignment', 'none' if key == 'B' else ''), model='SINet', generator='LAKE-RED (offline, fixed foregrounds)',
++            seed=s, endpoint='COD10K (primary); NC4K (secondary)',
++            train_split_sha=splits.get('auth', ''), target_split_sha=splits.get('tgt', ''),
++            eval_split_sha='COD10K %s; NC4K %s' % (splits.get('test', '')[:16], splits.get('nc4k', '')[:16]),
++            calibration_split_sha='none (no disjoint calibration set; see AN-05)',
++            generator_version_sha='renders verified against E0 manifest (R3)', foreground_manifest_sha=splits.get('raw', ''),
++            render_pool_sha=splits.get('local', ''), quota_file_sha=q.get('quota_sha256', ''),
++            selected_inject_sha=q.get('stems_sha256', 'per-seed B draw (committed abc_stems_B_s%d.txt)' % s),
++            config_sha=code if new else 'historical driver command line (abc_commands.txt)',
++            git_sha=(rec.get('git', '') if new else h.get('run_commit', '')),
++            round1_checkpoint_sha='round-1 checkpoints are overwritten by round 2 in this trainer (not retained)',
++            round2_checkpoint_sha=(rec.get('tea_best_sha256', '') if new else h.get('tea_best_sha256', '')),
++            metric_code_sha=sha('Eval/metrics.py'), mask_qc_report='RESULT_TABLES/AN-03_coverage_and_qc.csv',
++            checkpoint_rule='Tea_epoch_best.pth of the final round, CAMO-250 MAE', steps_per_epoch=253, epochs='40 x 2 rounds',
++            source_count=4447, target_count=4040, injection_count=1000,
++            pseudolabel_count=(rec.get('verify', {}).get('n_appended', '') if new else ''),
++            primary_metric='S-alpha (alpha=0.5) = %s' % r['Sm'], raw_prediction_path=os.path.join(r['run_dir'], 'COD10K'),
++            raw_log_path=(os.path.join(os.path.relpath(rr[(key, s)][0], K.REPO), 'logs/train.log') if new
++                          else 'Snapshot/ABC/SINet_%s_s%d/training_log.log' % (key, s)),
++            metric_result_path='RESULT_TABLES/EXP-01_metrics_by_seed.csv',
++            status='VERIFIED' if new else 'ORIGINAL VERIFIED (R5)',
++            oracle_score_source=q.get('oracle_score_source', 'not-applicable'),
++            eligible_capacity_policy=q.get('eligible_capacity_policy', 'uniform without replacement from all 4447')))
++    return out
++
++
++def main():
++    rr, starts = runs_of_record()
++    new_rows, checks = score_new(rr)
++    rows = hist_rows() + new_rows
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_metrics_by_seed.csv'), rows)
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_runs_of_record.csv'), starts or [dict(arm='', seed='', run_dir='', status='no starts yet', role='')])
++    if checks:
++        K.write_csv(os.path.join(K.TABLES, 'EXP-01_independent_sm_check_new.csv'), checks)
++    comp, worst = verdicts(rows)
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_comparisons.csv'), comp,
++                ['endpoint', 'contrast', 'role', 'status', 'n_seeds', 'delta', 'sigma_hat_pool7', 'bar', 'df_pool', 'x_bar',
++                 'sign', 'verdict', 'largest_effect_bar_could_miss', 'sigma_hat_new_arms_only', 'sigma_hat_OR_committed',
++                 'welch95', 'paired95_df2_unstable', 'impl_ab_max_abs_diff', 'note'])
++    K.write_csv(os.path.join(K.TABLES, 'run_manifest.csv'), manifest(rows, rr))
++    print('runs of record: %d/12; independent S-measure max |diff| %s; impl A/B max |diff| %.1e'
++          % (len(rr), '%.1e' % max(c['max_abs_diff'] for c in checks) if checks else 'n/a', worst))
++    for c in comp:
++        if c.get('verdict'):
++            print('%-6s %-26s %-12s d=%s bar=%s sign=%s %s %s' % (c['endpoint'], c['contrast'], c['status'][:12], c['delta'],
++                                                                  c['bar'], c['sign'], c['verdict'], c['role'][:30]))
++        else:
++            print('%-6s %-26s %s' % (c['endpoint'], c['contrast'], c['status']))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/exp01_tables.py b/rebuild/CAUS/exp01_tables.py
+new file mode 100644
+index 0000000..ae901c3
+--- /dev/null
++++ b/rebuild/CAUS/exp01_tables.py
+@@ -0,0 +1,202 @@
++#!/usr/bin/env python
++"""CAUS TH-01 / AN-02 / EXP-01 -- quota, shape, capacity, overlap and selection-manifest tables.
++
++Inputs only (allocation signal, oracle vector, frozen embeddings, committed stem files).
++No training output and no endpoint SCORE of any EXP-01 run is read -- none exists when this runs.
++
++Writes, under STUDENT_RESULTS/RESULT_TABLES/:
++  TH-01_oracle_shapes.csv       per arm x cluster: err, n_test, n_target, target_es, quota
++  TH-01_quota_properties.csv    per arm: sum, funded, top-1/top-5 share, entropy, HHI, Gini, TV,
++                                direction (Spearman vs err and vs ES), hashes, n_displaced
++  TH-01_eligibility_caps.csv    per arm x funded cluster: quota, obtained, displaced, centroid-rank
++                                depth reached, cosine of last pick (capacity policy: all 4447)
++  AN-02_selection_overlap.csv   every arm pair: overlap, chance, ratio, Jaccard, n_differing,
++                                pair kind, and the distinctness gate where it applies
++  EXP-01_quota_manifests.csv    per arm: provenance + hashes (oracle_score_source etc.)
++  EXP-01_selection_manifest.csv per arm x selected image: stem, serving cluster, rank, cosine,
++                                render/mask sha256
++"""
++
++import os
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import numpy as np                                             # noqa: E402
++
++import caus_common as K                                        # noqa: E402
++import exp01_alloc as X                                        # noqa: E402
++
++REF_ARMS = ('C10', 'CORACLE', 'CSHUF', 'CINV')
++CHANCE = 1000 * 1000 / 4447.0
++
++
++def traced_select(q):
++    """Mirror of C1 greedy_select that also records WHICH cluster took each image.
++    Asserted identical (indices and n_displaced) to the committed function on every call."""
++    from c1_targeted_vs_random import rank_by_centroid, serving_orders, greedy_select
++    sp = X._space()
++    scores, order = rank_by_centroid(sp)
++    serving = serving_orders(q, sp.es)[X.A.SERVING]
++    taken = np.zeros(order.shape[0], dtype=bool)
++    rec, per = [], {}
++    disp_total = 0
++    for c in serving:
++        need = int(q[c])
++        if need <= 0:
++            continue
++        got, disp, depth = 0, 0, 0
++        for r, row in enumerate(order[:, c]):
++            if taken[row]:
++                disp += 1
++                continue
++            taken[row] = True
++            rec.append((int(row), int(c), r, float(scores[row, c])))
++            got += 1
++            depth = r
++            if got == need:
++                break
++        disp_total += disp
++        per[int(c)] = dict(quota=need, obtained=got, displaced=disp, rank_depth=depth + 1,
++                           last_cos=round(float(scores[order[depth, c], c]), 5),
++                           first_cos=round(float(scores[order[0, c], c]), 5))
++    idx_ref, disp_ref = greedy_select(q, order, serving)
++    idx = np.array(sorted(r[0] for r in rec), dtype=np.int64)
++    if not (np.array_equal(idx, idx_ref) and disp_total == disp_ref):
++        raise SystemExit('EXP01 HALT: traced selector diverges from committed greedy_select')
++    return rec, per, int(disp_ref)
++
++
++def main():
++    sp = X._space()
++    err, prov = X.oracle_err()
++    import csv
++    b1 = sorted(csv.DictReader(open(os.path.join(K.REPO, X.A.ORACLE_CSV))),
++                key=lambda r: int(r['cluster']))
++    n_test = [int(r['n_test']) for r in b1]
++    n_target = [int(r['n_target']) for r in b1]
++
++    arms = list(REF_ARMS) + list(X.NEW_ARMS)
++    quotas, info = {}, {}
++    for a in REF_ARMS:
++        quotas[a], info[a] = X.reference_quota(a)
++    for a in X.NEW_ARMS:
++        quotas[a], info[a] = X.quota(a)
++
++    # ---- shapes, per cluster
++    rows = []
++    for c in range(X.K):
++        r = dict(cluster=c, err_test_one_minus_sa=round(float(err[c]), 6), n_test=n_test[c],
++                 n_target=n_target[c], target_es=round(float(sp.es[c]), 6))
++        for a in arms:
++            r['q_' + X.DISPLAY[a]] = int(quotas[a][c])
++        rows.append(r)
++    K.write_csv(os.path.join(K.TABLES, 'TH-01_oracle_shapes.csv'), rows)
++
++    # ---- selections (traced), properties, capacities, per-image manifest
++    sel, props, caps, man = {}, [], [], []
++    ren_img = os.path.join(K.REPO, X.A.REN_IMG)
++    ren_msk = os.path.join(K.REPO, X.A.REN_MSK)
++    for a in arms:
++        rec, per, disp = traced_select(quotas[a])
++        st = sorted(sp.names[r[0]] for r in rec)
++        if a in REF_ARMS and st != X.committed_stems(a):
++            raise SystemExit('EXP01 HALT: %s selection != committed stem file' % a)
++        sel[a] = set(st)
++        sf = os.path.join(K.TABLES, 'EXP-01_stems', '%s.txt' % a)
++        K.assert_writable(sf)
++        os.makedirs(os.path.dirname(sf), exist_ok=True)
++        body = '\n'.join(st) + '\n'
++        if os.path.exists(sf) and open(sf).read() != body:
++            raise SystemExit('EXP01 HALT: existing %s differs from this code path' % sf)
++        with open(sf, 'w') as fh:
++            fh.write(body)
++        p = X.properties(quotas[a])
++        p.update(arm=X.DISPLAY[a], n_displaced=disp, n_selected=len(st),
++                 stems_sha256=K.list_digest(st), perm_seed=info[a].get('perm_seed'),
++                 trained_in_exp01=a in X.TRAINED_ARMS,
++                 role=('historical reference (reused)' if a in ('C10', 'CORACLE')
++                       else 'historical reference (report only)' if a in REF_ARMS
++                       else 'EXP-01 trained' if a in X.TRAINED_ARMS else 'EXP-01 quota-only'))
++        props.append(p)
++        for c, d in sorted(per.items()):
++            caps.append(dict(arm=X.DISPLAY[a], cluster=c, eligible_capacity=4447, **d))
++        if a in X.NEW_ARMS or a in ('C10', 'CORACLE'):
++            for row, c, r, cos in sorted(rec, key=lambda t: sp.names[t[0]]):
++                stem = sp.names[row]
++                man.append(dict(arm=X.DISPLAY[a], stem=stem, serving_cluster=c,
++                                rank_in_cluster=r + 1, cos_to_centroid=round(cos, 5),
++                                quota_of_cluster=int(quotas[a][c]),
++                                render_sha256=K.sha256(os.path.join(ren_img, 'SOD_' + stem + '.jpg')),
++                                mask_sha256=K.sha256(os.path.join(ren_msk, 'SOD_' + stem + '.png'))))
++    lead = ['arm', 'role', 'trained_in_exp01']
++    K.write_csv(os.path.join(K.TABLES, 'TH-01_quota_properties.csv'), props,
++                lead + [k for k in props[0] if k not in lead])
++    K.write_csv(os.path.join(K.TABLES, 'TH-01_eligibility_caps.csv'), caps)
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_selection_manifest.csv'), man)
++
++    # ---- B draws (seed-dependent) join the overlap table
++    for s in X.SEEDS:
++        sel['B_s%d' % s] = set(X.stems('B', s))
++        if sorted(sel['B_s%d' % s]) != X.committed_stems('B_s%d' % s):
++            raise SystemExit('EXP01 HALT: B_s%d != committed stem file' % s)
++    names = [X.DISPLAY.get(a, a) for a in arms] + ['B_s%d' % s for s in X.SEEDS]
++    key = dict(zip(names, arms + ['B_s%d' % s for s in X.SEEDS]))
++    shape = {a: X.shape_hash(quotas[a]) for a in arms}
++    same_shape_pairs = {('OR-TOP10', 'OR-TOP10-SHUF'), ('OR-TOP5', 'OR-TOP5-SHUF'),
++                        ('OR-PROP', 'OR-PROP-SHUF'), ('OR-PROP', 'OR-PROP-INV')}
++    ov = []
++    for i, x in enumerate(names):
++        for y in names[i + 1:]:
++            A_, B_ = sel[key[x]], sel[key[y]]
++            inter = len(A_ & B_)
++            jac = inter / len(A_ | B_)
++            kx, ky = key[x], key[y]
++            if kx.startswith('B_') or ky.startswith('B_'):
++                kind = 'random-draw pair'
++            elif shape.get(kx) == shape.get(ky):
++                kind = 'same-shape pair'
++            else:
++                kind = 'different-shape pair'
++            gated = (x, y) in same_shape_pairs or (y, x) in same_shape_pairs
++            ov.append(dict(arm_a=x, arm_b=y, overlap=inter, chance=round(CHANCE, 1),
++                           ratio_to_chance=round(inter / CHANCE, 3), jaccard=round(jac, 4),
++                           n_differing=1000 - inter, kind=kind,
++                           distinctness_gate=('PASS' if jac <= X.JACCARD_GATE else 'FAIL')
++                           if gated else 'not gated (disclosed)'))
++    K.write_csv(os.path.join(K.TABLES, 'AN-02_selection_overlap.csv'), ov)
++
++    # ---- per-arm manifest
++    qm = []
++    for a in arms:
++        p = next(r for r in props if r['arm'] == X.DISPLAY[a])
++        qm.append(dict(
++            arm=X.DISPLAY[a], role=p['role'],
++            allocation_shape=('C10 softmax multiset (tau=1.0)' if a in REF_ARMS else
++                              {'ORPROP': 'proportional to err', 'ORTOP10': 'top-10 equal (100 each)',
++                               'ORTOP5': 'top-5 equal (200 each)'}.get(a.replace('SHUF', '').replace('INV', ''))),
++            alignment={'C10': 'target ES', 'CORACLE': 'true-err rank (C10 shape)',
++                       'CSHUF': 'frozen shuffle of ES', 'CINV': 'ES rank-reversed'}.get(
++                a, 'true err' if a in ('ORPROP', 'ORTOP10', 'ORTOP5')
++                else 'rank-reversed vs err' if a.endswith('INV') else 'frozen shuffle'),
++            oracle_score_source=('not-applicable' if a in ('C10', 'CSHUF', 'CINV')
++                                 else 'endpoint-label-leaky' if a in ('CORACLE', 'ORPROP', 'ORTOP10', 'ORTOP5')
++                                 else 'endpoint-label-leaky (shape only)'),
++            eligible_capacity_policy='all 4447 renders eligible to every cluster; greedy distinct, '
++                                     'desc_nc serving; no per-cluster cap',
++            quota_sum=p['quota_sum'], clusters_funded=p['clusters_funded'],
++            quota_sha256=p['quota_sha256'], shape_sha256=p['shape_sha256'],
++            stems_sha256=p['stems_sha256'], perm_seed=p['perm_seed'],
++            oracle_vector_sha256=prov['sha256'], oracle_source='%s:%s' % (prov['source'], prov['column'])))
++    K.write_csv(os.path.join(K.TABLES, 'EXP-01_quota_manifests.csv'), qm)
++    for r in props:
++        print('%-14s funded=%2d max=%3d H=%.4f HHI=%.4f gini=%.3f rho_err=%+.3f disp=%d'
++              % (r['arm'], r['clusters_funded'], r['max_quota'], r['entropy_norm'], r['hhi'],
++                 r['gini'], r['spearman_q_err'], r['n_displaced']))
++    for r in ov:
++        if r['distinctness_gate'] in ('PASS', 'FAIL'):
++            print('gate %-14s vs %-14s J=%.4f n_diff=%d %s' % (r['arm_a'], r['arm_b'], r['jaccard'],
++                                                              r['n_differing'], r['distinctness_gate']))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/CAUS/th01_rank.py b/rebuild/CAUS/th01_rank.py
+new file mode 100644
+index 0000000..dba2079
+--- /dev/null
++++ b/rebuild/CAUS/th01_rank.py
+@@ -0,0 +1,145 @@
++#!/usr/bin/env python
++"""CAUS TH-01 / AN-02 -- does concentrating a budget imply lower effective rank? Analytic + empirical.
++
++Part A (analytic, exact): mixture covariance
++    Sigma(w) = sum_j w_j Sigma_j + sum_j w_j (mu_j - mu_bar)(mu_j - mu_bar)^T,  mu_bar = sum_j w_j mu_j
++evaluated in closed form for small constructions, under the ORIGINAL effective-rank definition of
++rebuild/C1/c1_variance_coverage.py (participation ratio PR = (sum lam)^2 / sum lam^2) and, labelled
++exploratory, the entropy effective rank exp(H(lam / sum lam)). Each construction is checked by
++Monte-Carlo sampling.
++
++Part B (empirical, the studied pool): every allocation shape run through the committed selector
++(R2 grey-128 cutout ranking, desc_nc, greedy distinct), plus a perfectly FLAT quota (13-14 per
++cluster) that no concentration argument can explain. For each: PR ratio and entropy-erank ratio
++against 20 uniform random draws of 1000 (the C1 draws, default_rng(10000+i)), the held-out probe
++d against the same draws (C1's effect_size), and the share of the selected set's total variance
++that is BETWEEN serving clusters.
++Writes RESULT_TABLES/TH-01_rank_constructions.csv and AN-02_shape_geometry.csv.
++"""
++
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import caus_common as K                                        # noqa: E402
++import exp01_alloc as X                                        # noqa: E402
++
++import numpy as np                                             # noqa: E402
++
++
++def pr(ev):
++    ev = np.clip(ev, 0, None)
++    return float(ev.sum() ** 2 / (ev ** 2).sum())
++
++
++def erank(ev):
++    ev = np.clip(ev, 0, None)
++    p = ev / ev.sum()
++    p = p[p > 0]
++    return float(np.exp(-(p * np.log(p)).sum()))
++
++
++def mixture_cov(w, mus, covs):
++    w = np.asarray(w, float)
++    mbar = sum(wi * m for wi, m in zip(w, mus))
++    S = sum(wi * C for wi, C in zip(w, covs))
++    S = S + sum(wi * np.outer(m - mbar, m - mbar) for wi, m in zip(w, mus))
++    return S
++
++
++def mc_check(w, mus, covs, n=200_000, seed=0):
++    rng = np.random.default_rng(seed)
++    counts = rng.multinomial(n, w)
++    Z = np.concatenate([rng.multivariate_normal(m, C, size=c) for m, C, c in zip(mus, covs, counts) if c])
++    ev = np.linalg.eigvalsh(np.cov(Z.T))
++    return pr(ev), erank(ev)
++
++
++def part_a():
++    d = 10
++    e1 = np.zeros(d)
++    e1[0] = 1
++    rows = []
++    # Construction 1: an isotropic cluster and a rank-1 cluster, same mean.
++    covs = [np.eye(d), 10.0 * np.outer(e1, e1)]
++    mus = [np.zeros(d), np.zeros(d)]
++    for label, w in (('uniform (1/2,1/2)', (0.5, 0.5)), ('concentrated on isotropic (0.9,0.1)', (0.9, 0.1)),
++                     ('concentrated on rank-1 (0.1,0.9)', (0.1, 0.9))):
++        ev = np.linalg.eigvalsh(mixture_cov(w, mus, covs))
++        m_pr, m_er = mc_check(w, mus, covs)
++        rows.append(dict(construction='C1: isotropic + rank-1 cluster, equal means, d=10, s=10', weights=label,
++                         pr_exact=round(pr(ev), 4), erank_exact=round(erank(ev), 4),
++                         pr_montecarlo=round(m_pr, 4), erank_montecarlo=round(m_er, 4)))
++    # Construction 2: identical isotropic clusters, means spread along one axis.
++    covs = [np.eye(d)] * 3
++    mus = [np.zeros(d), 4 * e1, -4 * e1]
++    for label, w in (('uniform (1/3,1/3,1/3)', (1 / 3, 1 / 3, 1 / 3)), ('concentrated (0.9,0.05,0.05)', (0.9, 0.05, 0.05)),
++                     ('all on one cluster (1,0,0)', (1.0, 0.0, 0.0))):
++        ev = np.linalg.eigvalsh(mixture_cov(w, mus, covs))
++        m_pr, m_er = mc_check([x if x > 0 else 0 for x in w], mus, covs)
++        rows.append(dict(construction='C2: equal isotropic clusters, means on one axis (+-4), d=10', weights=label,
++                         pr_exact=round(pr(ev), 4), erank_exact=round(erank(ev), 4),
++                         pr_montecarlo=round(m_pr, 4), erank_montecarlo=round(m_er, 4)))
++    return rows
++
++
++def part_b():
++    import c1_space
++    from c1_targeted_vs_random import effect_size, largest_remainder
++    sp = c1_space.load_space('dinoL518')
++    arms = {}
++    for a in ('C10', 'CORACLE', 'CSHUF', 'CINV'):
++        arms[a] = X.reference_quota(a)[0]
++    for a in X.NEW_ARMS:
++        arms[a] = X.quota(a)[0]
++    arms['FLAT'] = largest_remainder(np.full(sp.k, 1.0 / sp.k), X.BUDGET)
++    draws = [np.random.default_rng(10_000 + i).choice(4447, X.BUDGET, replace=False) for i in range(20)]
++    rows = []
++    for rep, M in (('R2_cut', sp.cut), ('R3_render', sp.render)):
++        def spec(Z):
++            Zc = Z - Z.mean(0)
++            s = np.linalg.svd(Zc, compute_uv=False)
++            return s ** 2 / (len(Z) - 1)
++        rnd = [spec(M[r]) for r in draws]
++        pr_r, er_r = np.mean([pr(e) for e in rnd]), np.mean([erank(e) for e in rnd])
++        for a, q in arms.items():
++            stems, _, idx = X.select(q)
++            ev = spec(M[idx])
++            # between-serving-cluster share of total variance
++            from exp01_tables import traced_select
++            rec, _, _ = traced_select(q)
++            lab = {row: c for row, c, _, _ in rec}
++            Z = M[idx]
++            g = np.array([lab[i] for i in idx])
++            tot = ((Z - Z.mean(0)) ** 2).sum()
++            btw = sum((g == c).sum() * ((Z[g == c].mean(0) - Z.mean(0)) ** 2).sum() for c in np.unique(g))
++            dd = [effect_size(M[idx], M[r], i)['d_heldout'] for i, r in enumerate(draws)]
++            p = q / q.sum()
++            nz = p[p > 0]
++            rows.append(dict(repr=rep, arm=X.DISPLAY.get(a, a), clusters_funded=int((q > 0).sum()),
++                             quota_entropy_norm=round(float(-(nz * np.log(nz)).sum() / np.log(sp.k)), 4),
++                             pr_ratio_vs_random=round(pr(ev) / pr_r, 4),
++                             erank_ratio_vs_random_exploratory=round(erank(ev) / er_r, 4),
++                             between_cluster_variance_share=round(float(btw / tot), 4),
++                             probe_d_heldout_vs_random=round(float(np.mean(dd)), 4),
++                             probe_d_heldout_sd=round(float(np.std(dd)), 4)))
++    return rows
++
++
++def main():
++    a = part_a()
++    K.write_csv(os.path.join(K.TABLES, 'TH-01_rank_constructions.csv'), a)
++    for r in a:
++        print('%-58s %-38s PR %.3f (MC %.3f)  erank %.3f (MC %.3f)' % (
++            r['construction'][:58], r['weights'], r['pr_exact'], r['pr_montecarlo'], r['erank_exact'], r['erank_montecarlo']))
++    b = part_b()
++    K.write_csv(os.path.join(K.TABLES, 'AN-02_shape_geometry.csv'), b)
++    for r in b:
++        print('%-9s %-14s funded=%2d H=%.3f PRratio=%.3f eRratio=%.3f between=%.3f d=%.3f' % (
++            r['repr'], r['arm'], r['clusters_funded'], r['quota_entropy_norm'], r['pr_ratio_vs_random'],
++            r['erank_ratio_vs_random_exploratory'], r['between_cluster_variance_share'], r['probe_d_heldout_vs_random']))
++
++
++if __name__ == '__main__':
++    main()
