@@ -212,7 +212,11 @@ def scan_processes():
         if not args:
             continue
         joined = ' '.join(args)
-        if ('MyTrain.py' in joined or 'MyTest.py' in joined) and b'MyTrain.py' not in pcmd and b'MyTest.py' not in pcmd:
+        # the program itself must be `python MyTrain.py|MyTest.py ... --gpu N` (a shell whose command line merely
+        # mentions MyTrain.py -- e.g. a pgrep -- crashed the first v2 adoption on 11-12)
+        is_prog = (len(args) >= 2 and 'python' in os.path.basename(args[0]) and os.path.basename(args[1]) in ('MyTrain.py', 'MyTest.py')
+                   and '--gpu' in args)
+        if is_prog and b'MyTrain.py' not in pcmd and b'MyTest.py' not in pcmd:
             out.append((int(p), args))
         elif len(args) >= 2 and args[0].endswith('bash') and args[1].startswith(EXT_DIR) and args[1].endswith('.sh'):
             out.append((int(p), args))
@@ -411,6 +415,13 @@ def main():
                 running[slot] = dict(job=j, phase='external', proc=p, lg=lg, ep_left=[], t0=time.time())
                 say('EXT   %-26s gpu %d pid %d' % (j['id'], gpu, p.pid))
                 continue
+            # 2026-11-12 fix: a run killed before its first checkpoint leaves only training_log.log, which
+            # assert_ready does not see; relaunching into it appends to the log and the finished run then fails
+            # verification ('rounds'). A fresh launch therefore always starts from an empty snapshot dir.
+            snapd = os.path.join(REPO, Q.A.snap_dir(Q.A.runid(j['arch'], j['arm'], j['seed'])) if j['kind'] == 'abc'
+                                 else j['snap'])
+            if os.path.isdir(snapd) and os.listdir(snapd):
+                Q.discard(j, 'pre-launch: leftover partial run in %s' % os.path.relpath(snapd, REPO))
             ok, why = Q.ready(j)
             if not ok:
                 Q.discard(j, 'pre-launch: ' + why)

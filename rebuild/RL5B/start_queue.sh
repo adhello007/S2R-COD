@@ -12,6 +12,6 @@ if [ -f "$PIDF" ] && is_runner "$(cat "$PIDF")"; then exit 0; fi
 for p in $(ls /proc | grep -E '^[0-9]+$'); do
   if is_runner "$p"; then echo "$p" > "$PIDF"; exit 0; fi
 done
-nohup .venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json >> rebuild/RL5B/queue.log 2>&1 < /dev/null &
+nohup .venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json >> rebuild/RL5B/queue.log 2>&1 < /dev/null 9>&- &   # 9>&-: never inherit the watchdog lock (11-12 fix)
 echo $! > "$PIDF"
 echo "[$(date '+%m-%d %H:%M:%S')] start_queue (${1:-manual}): started runner pid $(cat "$PIDF")" >> "$WLOG"

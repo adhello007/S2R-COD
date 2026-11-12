@@ -5,6 +5,28 @@ header block when the work is complete.*
 
 **Status at 2026-11-11 18:30 IST: campaigns running; nothing campaign-related has been scored.**
 
+## Incidents on 2026-11-12 (≈11.9 GPU-h lost; no committed data lost)
+
+| When | What happened | GPU-h lost |
+|---|---|---|
+| 11-11 23:21 to 11-12 01:49 | CDR L1P3/L1P4 s42 took about 147 min instead of 106, because CPU scoring (AN-01, the bridge check) competed with the data loaders | 1.37 |
+| 01:50 to 02:00 | **Watchdog false restart.** The Caus pilot runs `exp01_pilot.py`, not MyTrain/MyTest, so GPU 0 looked idle for two checks. The watchdog killed the runner and its children: the pilot (re-run, then exit 0) and a healthy CDR L1P5 s42. The relaunch reused the killed run's log folder, failed verification (`rounds`) after a full run, and was retried successfully | 2.03 |
+| 07:55:44 | **Power loss** (abrupt; no shutdown sequence). CDR LHP5 s42 and LU s43 were lost in training; the machine was down until 10:16 | 0.74 + 4.77 idle |
+| 11:39:13 | **Power loss again.** The relaunched LHP5 s42 and LU s43 were lost after 80 min; the machine was down until 11:47 | 2.68 + 0.34 idle |
+
+After each crash, `@reboot` restarted the runner (10:18 and 11:49). Each interrupted run was discarded and re-run
+from scratch with the same seed (`discard` events). `git fsck` is clean; all completed runs are intact.
+
+**Fixes (12:55–12:57, 11-12).**
+- Watchdog: a GPU counts as busy if the runner's fresh state file lists a job on it, whatever program the job
+  runs.
+- Runner: a fresh launch always clears a leftover snapshot folder first.
+- Runner: adoption matches only `python MyTrain.py|MyTest.py … --gpu N` processes. The first live adoption
+  crashed on a shell whose command line mentioned MyTrain.py.
+- `start_queue.sh` closes the watchdog's lock descriptor, so a runner started by the watchdog can no longer
+  disable later watchdog checks.
+- The two running CDR runs were adopted three times without interruption.
+
 ## Outage, 2026-11-09 08:48 to 2026-11-11 17:59, and the author's re-budget
 
 **What happened.**

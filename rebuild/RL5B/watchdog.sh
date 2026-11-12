@@ -37,10 +37,20 @@ ours() {  # our MyTrain/MyTest parent processes on GPU $1 (workers share the cmd
 }
 idle=0; gpu_lines=""; explained=""
 for g in 0 1; do
+  # 2026-11-12 fix: a job the runner itself reports on this GPU (fresh state, < 180 s old) counts as busy,
+  # whatever program it runs -- the Caus pilot runs rebuild/CAUS/exp01_pilot.py, not MyTrain/MyTest, and was
+  # mistaken for an idle GPU at 02:00 on 11-12 (false restart).
+  state_job=$( { .venv/bin/python -c "
+import json,time,os
+p='$OUT/runner_state.json'; s=json.load(open(p))
+fresh=time.time()-os.path.getmtime(p)<180
+r=s.get('running',{}).get('gpu$g')
+print(r['job'] if (fresh and r) else '')"; } 2>/dev/null )
   jobs_on=$(ours $g | sed 's#.*/\([^/]*\)/[^/]*$#\1#; s#.*/\([^/]*\)/$#\1#' | sort -u | tr '\n' ' ')
   util=$($NVS --query-gpu=utilization.gpu,memory.used,memory.free --format=csv,noheader,nounits -i $g 2>/dev/null | tr -d ' ')
   free_mb=$(echo "$util" | cut -d, -f3)
   gpu_lines="$gpu_lines\n  GPU$g util%,used MiB,free MiB = $util | our job(s): ${jobs_on:-NONE}"
+  [ -z "$jobs_on" ] && [ -n "$state_job" ] && jobs_on="$state_job(runner-state)"
   if [ -z "$jobs_on" ]; then
     idle=$((idle+1))
     if [ -n "$free_mb" ] && [ "$free_mb" -lt 24576 ]; then explained="$explained GPU$g-held-by-another-user"; fi
