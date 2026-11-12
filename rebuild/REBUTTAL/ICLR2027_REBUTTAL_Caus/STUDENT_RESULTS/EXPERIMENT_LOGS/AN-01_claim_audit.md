@@ -1,6 +1,6 @@
 # AN-01: manuscript claim and reproducibility audit
 
-**Status: VERIFIED.** 30 claims are audited. The ledger is `RESULT_TABLES/AN-01_claim_ledger.csv`;
+**Status: VERIFIED.** 31 claims are audited. The ledger is `RESULT_TABLES/AN-01_claim_ledger.csv`;
 the proposed edits are in `DOC-01_edits.md` and `../manuscript_scope_edits.patch`.
 
 ## Which manuscript was audited
@@ -50,6 +50,10 @@ the proposed edits are in `DOC-01_edits.md` and `../manuscript_scope_edits.patch
   - *FX and SE* were committed before their runs, as stated.
   - **This is the one statement of fact in the paper that is wrong as written.** It should be
     corrected in the revision rather than defended.
+- **C-31, SE commit reference.** The appendix records the seed-expansion rule "at `b755aa9`". That commit
+  (2026-09-13) does not contain the SE pre-registration. The file was first committed in `a79886a` on
+  2026-09-18, two days before SE's first run. The ordering claim holds; only the commit reference is
+  wrong.
 - **C-22, CHAMELEON count.** The paper's 50/76 is presented as a floor, and it is a low one. An
   independent detector recovers all 41 Tier-A images. It also finds that `animal-54` (committed
   verdict: clean) is a rescaled copy of COD10K-train `Spider-2513` (visually confirmed:
