@@ -1,0 +1,4 @@
+pool,n_files,traced_ok,interior_scored,regenerated_interior_gt40,max_interior_mean,mean_interior,mean_background,interior_3x_closer,vs_D1_interior_mean_absdiff_median,vs_D1_interior_mean_absdiff_max
+"local renders (LAKE-RED, this campaign)",4447,4447,4443,0,17.546,5.602,70.802,4442,0.0,0.3032
+authors' pool,4447,4447,4442,0,31.36,9.634,70.555,4361,0.0,0.9543
+foreground identities (raw HKU-IS photographs),4447,4443,,,,,,,unique sha256 count in traced_ok,

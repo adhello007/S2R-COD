@@ -1,0 +1,44 @@
+block,item,value,committed_a3,abs_diff
+"mask QC (4447 render masks, shared by every arm)",empty masks (fg fraction = 0),0,,
+"mask QC (4447 render masks, shared by every arm)",full masks (fg fraction = 1),0,,
+"mask QC (4447 render masks, shared by every arm)",fg fraction median,0.1778,,
+"mask QC (4447 render masks, shared by every arm)",fg fraction 5th-95th pct,0.0400-0.3938,,
+"mask QC (4447 render masks, shared by every arm)",masks with >1 connected component,2105,,
+"mask QC (4447 render masks, shared by every arm)",masks with >=1 hole,1114,,
+"mask QC (4447 render masks, shared by every arm)",mean share of non-binary pixels (10<v<245),0.0,,
+coverage: kNN recall of the 4040 target images,dinoL224 | local renders | k=3,0.3908,0.3908,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | local renders | k=5,0.4668,0.4668,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | local renders | k=10,0.5696,0.5696,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | local renders | k=20,0.727,0.727,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | authors' pool | k=3,0.4124,0.4124,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | authors' pool | k=5,0.4829,0.4829,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | authors' pool | k=10,0.5703,0.5703,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | authors' pool | k=20,0.6785,0.6785,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | raw HKU-IS (pre-LAKE-RED) | k=3,0.6391,0.6391,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | raw HKU-IS (pre-LAKE-RED) | k=5,0.7473,0.7473,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | raw HKU-IS (pre-LAKE-RED) | k=10,0.8666,0.8666,0.0
+coverage: kNN recall of the 4040 target images,dinoL224 | raw HKU-IS (pre-LAKE-RED) | k=20,0.9715,0.9715,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | local renders | k=3,0.477,0.477,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | local renders | k=5,0.5421,0.5421,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | local renders | k=10,0.6349,0.6349,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | local renders | k=20,0.7478,0.7478,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | authors' pool | k=3,0.4277,0.4277,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | authors' pool | k=5,0.4834,0.4834,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | authors' pool | k=10,0.5683,0.5683,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | authors' pool | k=20,0.6822,0.6822,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | raw HKU-IS (pre-LAKE-RED) | k=3,0.5988,0.5988,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | raw HKU-IS (pre-LAKE-RED) | k=5,0.7097,0.7097,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | raw HKU-IS (pre-LAKE-RED) | k=10,0.8418,0.8418,0.0
+coverage: kNN recall of the 4040 target images,dinoL518 | raw HKU-IS (pre-LAKE-RED) | k=20,0.955,0.955,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | local renders | k=3,0.0693,0.0693,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | local renders | k=5,0.1349,0.1349,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | local renders | k=10,0.2498,0.2498,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | local renders | k=20,0.3785,0.3785,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | authors' pool | k=3,0.0639,0.0639,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | authors' pool | k=5,0.1277,0.1277,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | authors' pool | k=10,0.2005,0.2005,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | authors' pool | k=20,0.3007,0.3007,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | raw HKU-IS (pre-LAKE-RED) | k=3,0.5953,0.5953,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | raw HKU-IS (pre-LAKE-RED) | k=5,0.747,0.747,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | raw HKU-IS (pre-LAKE-RED) | k=10,0.8804,0.8804,0.0
+coverage: kNN recall of the 4040 target images,clipL224 | raw HKU-IS (pre-LAKE-RED) | k=20,0.9611,0.9611,0.0
