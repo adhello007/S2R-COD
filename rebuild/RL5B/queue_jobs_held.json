@@ -372,5 +372,181 @@
    "arm": "CSHUF",
    "seed": 129
   }
+ ],
+ "cancelled_e3e": [
+  {
+   "id": "E3_SINet_RISEPL_s42",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 42,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_RISEPL_s42",
+   "log": "rebuild/RL5B/E3_SINet_RISEPL_s42.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_RISEPL_s42",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINet_RISEPL_s43",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 43,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_RISEPL_s43",
+   "log": "rebuild/RL5B/E3_SINet_RISEPL_s43.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_RISEPL_s43",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINet_RISEPL_s45",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINet",
+   "network": "SINet",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 45,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINet_RISEPL_s45",
+   "log": "rebuild/RL5B/E3_SINet_RISEPL_s45.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINet_RISEPL_s45",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0253",
+    "last_epoch": "039/040",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_RISEPL_s42",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 42,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_RISEPL_s42",
+   "log": "rebuild/RL5B/E3_SINetv2_RISEPL_s42.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_RISEPL_s42",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_RISEPL_s43",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 43,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_RISEPL_s43",
+   "log": "rebuild/RL5B/E3_SINetv2_RISEPL_s43.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_RISEPL_s43",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  },
+  {
+   "id": "E3_SINetv2_RISEPL_s45",
+   "kind": "custom",
+   "campaign": "e3e",
+   "commit": "223fa14",
+   "priority": 7,
+   "arch": "SINetv2",
+   "network": "SINet-v2",
+   "method": "source_only",
+   "iteration": 1,
+   "seed": 45,
+   "pool": "Dataset/Source/RL5B/RISEPL",
+   "snap": "Snapshot/RL5B/E3/E3_SINetv2_RISEPL_s45",
+   "log": "rebuild/RL5B/E3_SINetv2_RISEPL_s45.log",
+   "extra": [
+    "--val_net",
+    "student",
+    "--save_ckpts",
+    "minimal"
+   ],
+   "ckpt": "Stu_epoch_best.pth",
+   "pred_root": "Result/RL5B/E3/E3_SINetv2_RISEPL_s45",
+   "expect": {
+    "rounds": 1,
+    "total_step": "0127",
+    "last_epoch": "099/100",
+    "pool_r1": 4040
+   }
+  }
  ]
 }

@@ -176,6 +176,16 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     - the hard cutoff (2026-11-17 06:00 IST);
     - the disk rule (remaining queue + 50 GB);
     - E3-e only if it can finish before the cutoff.
+18. **E3-e (our trainer on RISE's released pseudo masks) is optional and was not run** (author decision
+    2026-11-12; reason: compute and the 17 Nov deadline). No E3-e run had started; its 6 jobs are recorded as
+    cancelled in `rebuild/RL5B/queue_jobs_held.json`. The RISE pseudo-mask pool stays built and verified
+    (`rebuild/RL5B/out/pool_risepl.json`). The gap decomposition shows E3-e's cells as "—".
+19. **CPU policy while training runs** (author, 2026-11-12): all scoring and analysis runs under
+    `nice -n 19`, pinned to at most 8 cores (`taskset -c 40-47`).
+20. **Schedule decisions** (author, 2026-11-12): the order CDR → anchors → Caus → EQ is kept, with no Caus
+    script moved or dropped. EQ stays at n = 27; if an outage leaves EQ unfinished, Amendment 1's
+    INCOMPLETE rule applies. Every deliverable except the EQ results is due 16 Nov 22:00 IST; EQ results go
+    in on 17 Nov after the last run, for delivery by 12:00.
 17. **Removed from scope** (author, 2026-11-11):
     - the new-foreground campaign; it is not an RL5B task, and posted Part 4 rules out a weaker substitute
       for a new generator;
