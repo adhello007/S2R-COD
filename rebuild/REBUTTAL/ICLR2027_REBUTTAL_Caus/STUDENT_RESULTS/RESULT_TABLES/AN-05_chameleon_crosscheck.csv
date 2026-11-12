@@ -14,13 +14,13 @@ animal-12.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4805.
 animal-13.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1879.jpg,True,
 animal-14.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4509.jpg,True,
 animal-15.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-48-Wolf-2913.jpg,True,
-animal-16.jpg,CONTAMINATED,B_geometric,camourflage_00673.jpg,False,
+animal-16.jpg,CONTAMINATED,B_geometric,camourflage_00673.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-17.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-68-Toad-4806.jpg,True,
 animal-18.jpg,UNCHECKED,unchecked,,False,
 animal-19.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-53-Bird-3014.jpg,True,
 animal-20.jpg,UNCHECKED,unchecked,,False,
 animal-21.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-26-Chameleon-1664.jpg,True,
-animal-22.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg,False,
+animal-22.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1881.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-23.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-26-Chameleon-1665.jpg,True,
 animal-24.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2493.jpg,True,
 animal-25.jpg,CLEAN_VS_TRAINING,clean,,False,
@@ -41,7 +41,7 @@ animal-39.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-1-Aquatic-3-Crab-19.jpg,T
 animal-40.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1886.jpg,True,
 animal-41.jpg,CLEAN_VS_TRAINING,clean,,False,
 animal-42.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-31-Gecko-1887.jpg,True,
-animal-43.jpg,CONTAMINATED,B_geometric,camourflage_00876.jpg,False,
+animal-43.jpg,CONTAMINATED,B_geometric,camourflage_00876.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-44.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-64-Moth-4428.jpg,True,
 animal-45.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3614.jpg,True,
 animal-46.jpg,CLEAN_VS_TRAINING,clean,,False,
@@ -57,21 +57,21 @@ animal-55.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-67-Frog-4680.
 animal-56.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-58-Frogmouth-3594.jpg,True,
 animal-57.jpg,CONTAMINATED,A_same_dimension,camourflage_00836.jpg,True,
 animal-58.jpg,CLEAN_VS_TRAINING,clean,,False,
-animal-59.jpg,CONTAMINATED,B_geometric,camourflage_00230.jpg,False,
+animal-59.jpg,CONTAMINATED,B_geometric,camourflage_00230.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-60.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4513.jpg,True,
-animal-61.jpg,CONTAMINATED,B_geometric,camourflage_00037.jpg,False,
+animal-61.jpg,CONTAMINATED,B_geometric,camourflage_00037.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-62.jpg,UNCHECKED,unchecked,,False,
 animal-63.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2496.jpg,True,
 animal-64.jpg,UNCHECKED,unchecked,,False,
 animal-65.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-47-Tiger-2875.jpg,True,
-animal-66.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,False,
+animal-66.jpg,CONTAMINATED,B_geometric,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-67.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-67-Frog-4681.jpg,True,
 animal-68.jpg,UNCHECKED,unchecked,,False,
 animal-69.jpg,UNCHECKED,unchecked,,False,
 animal-70.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-2-Terrestrial-45-Spider-2497.jpg,True,
 animal-71.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-55-Butterfly-3291.jpg,True,
-animal-72.jpg,CONTAMINATED,B_geometric,camourflage_00549.jpg,False,
-animal-73.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3292.jpg,False,
-animal-74.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3293.jpg,False,
+animal-72.jpg,CONTAMINATED,B_geometric,camourflage_00549.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
+animal-73.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3292.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
+animal-74.jpg,CONTAMINATED,B_geometric,COD10K-CAM-3-Flying-55-Butterfly-3293.jpg,False,rescale/crop adjudicated by the committed Tier-B geometric test; the independent dHash detector cannot see crops or large rescales by design
 animal-75.jpg,UNCHECKED,unchecked,,False,
 animal-76.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-65-Owl-4516.jpg,True,

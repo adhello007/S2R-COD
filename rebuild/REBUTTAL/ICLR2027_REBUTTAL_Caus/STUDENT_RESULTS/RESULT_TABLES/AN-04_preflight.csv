@@ -1,0 +1,12 @@
+item,CamoFormer (HVision-NKU/CamoFormer),CTF-Net (zcc0616/CTF-Net),source_of_fact,date_checked
+training entrypoint in repository,not found: visible files are dataset.py test.py test.sh eval.sh model/ evaltools/; README sections are Install / Download / Test / Eval only,yes: etrain.py with a full argparse training loop saving Net_epoch_best.pth,public GitHub pages (rendered README and file listing); CamoFormer listing truncated,2026-11-12
+licence,README line 'Code in this repo is for non-commercial use only'; no LICENSE file visible,none: no LICENSE file and no licence statement,public GitHub pages,2026-11-12
+pretrained detector weights,Baidu Netdisk and OneDrive,Baidu Pan,README links,2026-11-12
+backbone,PVTv2 ('-P' variant; README figure caption),PVTv2-b2 and Res2Net50 weights both linked; which one etrain.py uses is in net/ctfnet.py (not read),README,2026-11-12
+training defaults,not stated,"100 epochs, lr 1e-4, batch 12, 384x384, Adam, clip 0.5",etrain.py argparse defaults,2026-11-12
+released-checkpoint training data,not stated,etrain default path 'COD 10K/TrainDataset' (unconfirmed),README / etrain.py,2026-11-12
+protocol conflict,released COD checkpoints are trained with COD10K-train/CAMO-train masks = this study's UNLABELLED target pool -> cannot be used as initialisation without leaking target labels,same,design analysis,2026-11-12
+two-round student/EMA-teacher + ES consistency integration,would need a new adapter (forward returns a list of side outputs),would need a new adapter,not attempted (no GPU allocation),2026-11-12
+GPU cost estimate (3 arms x 3 seeds),not estimated: not trainable from the repository,"~100 epochs x 2 rounds at 384 px: several times a SINet run per seed; >= 9 runs beyond the 12-run allocation",scaling from etrain defaults vs SINet 40 epochs,2026-11-12
+decision,"FAILS the candidate rule's first condition (no verified training entrypoint) -> fall back to CTF-Net, as the guide directs",HAS training code but NO LICENCE (a licensing blocker reserved to the author) and no compute allocation,03 guide AN-04 candidate rule,2026-11-12
+status,BLOCKED,BLOCKED,,2026-11-12
