@@ -166,9 +166,11 @@ def verify(train_log, snap):
     d['target_loaded_4040'] = run.count('Loaded 4040 images')
     be = re.findall(r'Best epoch:(\d+)', run)
     d['best_epoch'] = int(be[-1]) if be else None
+    # The completion assertions of PREREGISTRATION_EXP01.md §5. Wall time is REPORTED, not asserted:
+    # §5 does not list it, and a complete run slowed by a shared GPU is still a complete run.
+    d['wall_within_2x_reference'] = bool(d['wall_min'] is not None and d['wall_min'] < 2 * SPEC['ref_min'])
     checks = dict(rounds=d['rounds'] == 2, total_step=d['total_step_set'] == '%04d' % SPEC['total_step'],
                   last_epoch=d['last_epoch'] == SPEC['last_epoch'], tea_best=bool(d['tea_best']),
-                  wall=bool(d['wall_min'] is not None and d['wall_min'] < 2 * SPEC['ref_min']),
                   pool_r1=d['pool_r1'] == P.N_BASE + X.BUDGET, target=d['target_loaded_4040'] == 2)
     d['checks'] = checks
     d['failed_checks'] = [k for k, v in checks.items() if not v]
