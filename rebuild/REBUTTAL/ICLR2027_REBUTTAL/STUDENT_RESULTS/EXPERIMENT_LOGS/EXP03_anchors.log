@@ -1,0 +1,6 @@
+E3-f SINet ours (two-round, reproduced 0.7172)     COD10K Sa 0.717216 meanEm 0.743927 wFm 0.474558
+E3-f SINet mean teacher (reproduced 0.7030)        COD10K Sa 0.702997 meanEm 0.726520 wFm 0.432321
+E3-f SINet source-only (student)                   COD10K Sa 0.623254 meanEm 0.636448 wFm 0.361792
+E3-f SINet-v2 ours (two-round)                     COD10K Sa 0.699871 meanEm 0.759913 wFm 0.488212
+E3-f SINet-v2 mean teacher                         COD10K Sa 0.621601 meanEm 0.654596 wFm 0.301234
+E3-f SINet-v2 source-only (student)                COD10K Sa 0.604006 meanEm 0.628528 wFm 0.348652
