@@ -28,7 +28,7 @@ and exploratory, and none re-decides a pre-registered verdict.
 | TH-02 | CW-02 | **VERIFIED** | `TH-02_quota_invariants.csv` | All invariants hold; selections byte-equal to committed stems |
 | AN-03 | CW-02 | **VERIFIED** (findings exploratory) | `AN-03_arch_boundary_grid.csv`, `AN-03_interaction.csv` | Inputs passed Gate 3; scipy cross-check passes |
 | EXP-02 | CW-02 | **PARTIALLY VERIFIED** | `EXP-02_rescored_predictions.csv`, `EXP-02_gate3_reproduction.csv` | Gate 3: 300/300 committed values (max Δ 1.1e-16). CPU re-inference: 3 of 4 images within tolerance, 1 outside (see below) |
-| AN-04 | CW-02, QA-02 | see §AN-04 | `AN-04_*` | Gate 4 (coverage reproduction) |
+| AN-04 | CW-02, QA-02 | **PARTIALLY VERIFIED** | `AN-04_foreground_coverage.csv`, `AN-04_cluster_domain_mix.csv`, `AN-04_cluster_structure.csv`, `AN-04_signal_correlations.csv` | Gate 4: 12/12 committed coverage values at 4 dp; correlation gate exact; bootstrap invalid for k-NN recall |
 | AN-05 | QA-03 | **VERIFIED** | `AN-05_chameleon_pairs.csv`, `AN-05_protocol_paths.csv`, `AN-05_mask_release.csv`, `AN-05_cross_benchmark.csv` | Every submitted count reproduced; detector self-test passes; agrees with committed verdicts 76/76 |
 | EXP-01 | CW-01, QA-02 | **BLOCKED** (preflight run: FAILED its rule) | `EXP-01_preflight.csv`, `EXPERIMENT_LOGS/EXP-01_BLOCKER.md` | N = 1000 reproduces 9/9 committed stem files byte for byte |
 | EXP-03 | CW-02, QA-02 | **BLOCKED** (gate) | `EXPERIMENT_LOGS/EXP-03_BLOCKER.md` | No generator of new foregrounds available |
@@ -181,4 +181,60 @@ and exploratory, and none re-decides a pre-registered verdict.
 adaptive or novel-foreground generation.
 
 ## AN-04: foreground diversity, clusters and coverage
-{{AN04_LEDGER}}
+- **Commands:** `scripts/an04_coverage.py --n-boot 2000` (44.9 min CPU; `run_logs/an04.log`; the first launch
+  crashed before writing anything, see `EXECUTION_STATUS.md` §Deviations) and
+  `scripts/an04b_signal_correlations.py` (`run_logs/an04b.log`). The coverage estimator is
+  `rebuild/A3/a3_appearance_signature.precision_recall` (Kynkäänniemi et al. 2019), unchanged, run on
+  CPU. Inputs: the committed E0 embedding cache (dinoL518, dinoL224, clipL224), the committed k = 75
+  dinoL518 partition (`b1_cluster_assignment_dinoL518.json`, 4033 labelled target images), and the
+  committed B1 per-image score files.
+- **Gate 4 (coverage reproduction): PASSED.** All 12 committed values (3 embedders × authors' pool, local
+  renders, raw HKU-IS, and COD10K-vs-CAMO) reproduce at 4 dp. Synthetic recall is 0.1277–0.5421 and
+  raw source 0.7097–0.7473, i.e. the published 0.13–0.54 and 0.71–0.75.
+- **Gate (signal correlations): PASSED.** For SINet/S2C at k = 75, the per-cluster ρ is +0.8553181524182
+  against MAE and +0.4275556500297265 against 1 − S_α, both equal to the committed values to 1e-9.
+  Architecture breakdown (per-cluster ρ, MAE vs 1 − S_α; ratio): SINet-v2 0.887 / 0.565 (0.64);
+  SegMaR 0.828 / 0.540 (0.65); SINet-MT 0.869 / 0.452 (0.52); **SINet source-only 0.355 / 0.458
+  (1.29, ordering reversed)**. Per-image ρ by COD10K super-class is in `AN-04_signal_correlations.csv`.
+- **Foreground identity:** every render maps to its own base foreground (stem bijection). The render
+  mask vs the base GT has median IoU 0.968, 5th percentile 0.914, minimum 0.670, with 0 of 4447
+  identical. The median cosine of a render to its own raw source image is 0.61 / 0.70 / 0.66
+  (dinoL224 / dinoL518 / clipL224), and the render's nearest raw image is its own source in
+  67% / 73% / 43% of cases.
+- **Coverage of the real target by each injected 1000-image set** (k-NN recall at k = 5; dinoL518):
+  - B: 0.349–0.428 over 8 seeds.
+  - C10 0.620, CSHUF 0.644, CINV 0.631.
+  - Base pool (4447) 0.483; all renders (4447) 0.542; raw HKU-IS 0.710.
+  - The same ordering holds in dinoL224 (B 0.27–0.45; C-family 0.50–0.53) and clipL224
+    (B 0.05–0.23; C-family 0.20–0.25).
+  - By target domain (dinoL518), C10 covers 0.610 of COD10K and 0.651 of CAMO; B averages
+    0.352 / 0.465.
+- **The bootstrap is not valid for this estimator (finding, not a deviation):** the pre-specified group
+  bootstrap resamples foregrounds with replacement. Duplicated points shrink the k-NN radii, which
+  biases recall downward: C10's 0.620 lies above its own bootstrap interval [0.391, 0.556]. The
+  intervals are left in the CSV for transparency but **must not be cited**. The variation across the
+  8 independent B draws (0.349–0.428) is the usable indication of draw-to-draw spread.
+- **Cluster structure:**
+  - Silhouette of the committed partition on all 4033 labelled target images: **0.156**
+    (Euclidean on L2-normalised features, the committed convention; the committed mean over 10 seeds
+    on a 2000-image subsample is 0.1600), and **0.253** with cosine distance. The latter sits at the
+    lower edge of the conventional "weak structure" band; both are well below "reasonable structure".
+  - Committed-label vs nearest-centroid agreement on the target: 0.945.
+- **Between-cluster share of structural error (η², COD10K-test, descriptive only):** 0.2046 with the
+  committed SINet/S2C predictions, reproducing "about a fifth" (committed 0.205). With each arm's own
+  8-seed mean errors it is 0.189–0.209. Endpoint labels are used here and nowhere else.
+- **CAMO share of the budget** (budget-weighted CAMO fraction of funded clusters; committed labels):
+  C10 0.530 (2.14× the pool's 0.248; the manuscript's 0.515 uses nearest-centroid assignment, also in
+  the committed `diag_clusters.json`), CSHUF 0.285, CINV 0.199, B expected 0.356. The three
+  concentrated arms share one quota multiset but **differ strongly in domain mix**.
+- **Interpretation:** the coverage and signal-correlation claims reproduce. Two qualifications follow:
+  1. The main text's "covers no more of the target manifold" rests on C1's target recall, which is
+     saturated near 1.0 for both arms. Under the appendix's k-NN recall on the injected renders,
+     concentrated selections cover more than equal-size random draws. The claim is
+     estimator-dependent (DOC-01 Edit 10).
+  2. The structural-vs-pixel ordering does not hold for the source-only SINet baseline.
+  - The differing CAMO share across same-shape arms is a **hypothesis-level** candidate explanation
+    for the CINV signal on SINet (it steers the budget away from CAMO-heavy clusters, while the
+    endpoints are COD10K-test and NC4K). It is not tested here.
+- **Status: PARTIALLY VERIFIED.** Every estimator reproduces, but valid uncertainty statements for
+  coverage that account for dependent foregrounds were not obtained.

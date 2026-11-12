@@ -6,7 +6,7 @@
 verification pass is `scripts/audit_independent.py`. It shares no code with the analysis scripts
 (plain Python + scipy; no `statlib`). It recomputes the headline numbers from the raw per-run tables
 and committed stem files, and then checks that each number appears as stated in the documents. Its
-results are in `EXPERIMENT_LOGS/AUDIT_independent.json`: {{AUDIT_RESULT}}.
+results are in `EXPERIMENT_LOGS/AUDIT_independent.json`: **53 checks, 0 failed** at the final commit.
 
 ## Integrity checks (all concerns)
 
@@ -17,7 +17,7 @@ results are in `EXPERIMENT_LOGS/AUDIT_independent.json`: {{AUDIT_RESULT}}.
 | Labels and citation keys | 35 labels, none duplicated; all 27 referenced labels defined. 39 main-file cite keys (41 with inputs), all among 43 bib entries | `00_manuscript_check/manuscript_integrity_final.json` |
 | Markdown links | All relative links in the rebuttal folder resolve | `AUDIT_independent.json` |
 | Reviewer-facing text free of paths, task codes and placeholders | Checked mechanically | `AUDIT_independent.json` |
-| OpenReview length | {{COUNT}} code points ≤ 5,000 (Python and `wc -m` agree) | `FINAL_UPDATED_REBUTTAL.md` Part C |
+| OpenReview length | 4,658 code points ≤ 5,000 (Python and `wc -m` agree) | `FINAL_UPDATED_REBUTTAL.md` Part C |
 | Runs used are pre-rebuttal and from committed manifests | 64/64 from `se/abc_runs.csv`; newest prediction file 2026-09-22 | `RESULT_TABLES/run_manifest.csv` |
 | No outcome-based exclusion | No run, seed, threshold or cell dropped; all 4 cells, both architectures and endpoints reported | all `RESULT_TABLES` |
 
@@ -141,8 +141,9 @@ results are in `EXPERIMENT_LOGS/AUDIT_independent.json`: {{AUDIT_RESULT}}.
 1. **Edit 4 withdraws a claim the submitted abstract leans on** ("on boundary accuracy, so does aiming
    at the clusters the model was most certain about"). The geometric thesis does not depend on it, but
    the abstract and `sec:concentration` must change together.
-2. The reversed-signal arm's small advantage on SINet (S-measure and boundary) is uncorrected and
-   unexplained. It must not be presented as a finding that reversal helps.
+2. The reversed-signal arm's small advantage on SINet (S-measure and boundary) is uncorrected. Its only
+   candidate explanation is untested: the same-shape arms put 53%, 29% and 20% of the budget on CAMO.
+   It must not be presented as a finding that reversal helps.
 3. Exposure is theoretical. A reviewer who asks for realised visit counts can only be offered a
    re-run with sampler logging.
 4. The CHAMELEON / COD10K-test overlap is a statement about benchmarks, not about this paper's numbers.

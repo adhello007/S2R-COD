@@ -7,8 +7,8 @@ the review from the committed runs, with no new training. Everything else is sub
 evidence.
 
 **Page budget.** The submitted main text ends exactly on page 9, and the discussion-phase limit is 10.
-The main-text edits below add about 14 lines and remove about 9, a net of +5 lines, which stays
-within page 10. Edit 6 lists the cut that makes room if needed.
+The main-text edits below add about 22 lines and remove about 9, a net of about +13 lines (roughly a
+quarter page), which stays within page 10. Edit 6 lists the cut that makes room if needed.
 
 The CHAMELEON edits for QA-03 are in `DOC-02_CHAMELEON_PROTOCOL_CLARIFICATION.md` §5. The
 claim-by-claim map is `RESULT_TABLES/DOC-01_claim_evidence_map.csv`.
@@ -166,12 +166,36 @@ covering one."
 **Proposed:** "…the gap stays within noise; gains above about $0.007$ S-measure are excluded, and
 smaller ones are not."
 
-## Edit 10: `sec:why`, coverage and cluster numbers
+## Edit 10: `sec:why` and `sec:concentration`, coverage, clusters and signal (AN-04)
 
-The coverage range (synthetic 0.13–0.54; real source 0.71–0.75), the silhouette of 0.1600, "about a
-fifth" of structural-error variance between clusters, and the 51.5% CAMO share were re-derived after
-the review. See `RESULT_TABLES/AN-04_*` and `RESULTS_SUMMARY.md` §AN-04 for whether each reproduces.
-Edit only where `RESULTS_SUMMARY.md` §AN-04 flags a discrepancy.
+Reproduced exactly, so no change is needed:
+- coverage 0.13–0.54 (synthetic) vs 0.71–0.75 (real source);
+- +0.8553 / +0.4276;
+- "about a fifth" of structural-error variance between clusters (20.5%);
+- silhouette 0.1600 (the committed seed-mean on a subsample; 0.156 for the committed partition on all
+  4033 images).
+
+Proposed qualifications:
+1. **`sec:why`, silhouette sentence.** Add "(Euclidean on normalised features; 0.25 under cosine
+   distance)", because the number depends on the distance used and both values stay below the usual
+   threshold for real structure.
+2. **`sec:why`, the 51.5% sentence.** Keep it. Optionally add "(53.0% using the committed cluster labels
+   instead of nearest centroids)". New and relevant to CW-02: the shuffled and reversed arms put only
+   28.5% and 19.9% of the budget on CAMO. Same concentration does not mean same domain mix. One
+   sentence in `sec:concentration` can note this as a possible, untested reason the reversed arm does
+   slightly better on endpoints (COD10K-test, NC4K) that contain no CAMO images.
+3. **`sec:why`, "that ordering holds for three families of uncertainty estimators on both
+   architectures".** Add: "It reverses for a source-only SINet baseline (0.355 vs 0.458)."
+4. **`sec:concentration`, "…and covers no more of the target manifold".** This rests on C1's target
+   recall, which is close to 1.0 for every arm and therefore cannot separate them. Under the
+   appendix's own k-NN recall, the concentrated 1,000-image selections cover more of the real target
+   than random draws of equal size (0.62–0.64 vs 0.35–0.43 in dinoL518; the same ordering in the
+   other two spaces). **Proposed:** "…and its coverage of the target manifold depends on the estimator:
+   saturated in one, higher than random in another, while trained accuracy does not follow either."
+
+**Evidence:** `AN-04_gate4_coverage_reproduction.csv`, `AN-04_foreground_coverage.csv`,
+`AN-04_cluster_structure.csv`, `AN-04_cluster_domain_mix.csv`, `AN-04_signal_correlations.csv`,
+`EXPERIMENT_LOGS/AN-04_summary.json`, `EXPERIMENT_LOGS/AN-04b_summary.json`.
 
 ---
 

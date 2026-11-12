@@ -170,6 +170,42 @@ check('mask MAE 0.2196 / 0.0816', '%.4f' % ma == '0.2196' and '%.4f' % mr == '0.
 pl = [int(r['n_cham_partners_appended']) for r in csv.DictReader(open(os.path.join(RT, 'AN-05_pseudolabel_exposure.csv')))]
 check('pseudo-label re-use 14–32 per run', min(pl) == 14 and max(pl) == 32 and '14–32' in short)
 
+# ------------------------------------------------------------------ 6b. AN-04: independent k-NN recall (numpy, not A3 code)
+import numpy as np   # noqa: E402
+E0 = os.path.join(DR, 'rebuild/E0/cache')
+nm = json.load(open(os.path.join(E0, 'dinoL518_names.json')))
+tgt = np.load(os.path.join(E0, 'dinoL518_tgt_cls.npy')).astype(np.float64)
+loc = np.load(os.path.join(E0, 'dinoL518_local_cls.npy')).astype(np.float64)
+tgt /= np.linalg.norm(tgt, axis=1, keepdims=True)
+loc /= np.linalg.norm(loc, axis=1, keepdims=True)
+lidx = {os.path.splitext(n)[0].replace('SOD_', ''): i for i, n in enumerate(nm['local'])}
+
+
+def knn_recall(real, fake, k=5):
+    dff = np.sqrt(np.maximum(2 - 2 * fake @ fake.T, 0))
+    np.fill_diagonal(dff, np.inf)
+    rad = np.sort(dff, axis=1)[:, k - 1]
+    drf = np.sqrt(np.maximum(2 - 2 * real @ fake.T, 0))
+    return float((drf <= rad[None, :] + 1e-6).any(axis=1).mean())
+
+
+cov = {r['compared_set']: float(r['recall']) for r in csv.DictReader(open(os.path.join(RT, 'AN-04_foreground_coverage.csv')))
+       if r['embedder'] == 'dinoL518' and r['k'] == '5'}
+for setname, st_ in (('C10', c10), ('B_s42', stems('abc_stems_B_s42.txt'))):
+    mine_r = knn_recall(tgt, loc[[lidx[s] for s in sorted(st_)]])
+    check('independent k-NN recall %s = %.3f (table %.3f)' % (setname, mine_r, cov[setname]), abs(mine_r - cov[setname]) < 0.002)
+b_rng = [cov['B_s%d' % s] for s in SEEDS]
+cf_rng = [cov[x] for x in ('C10', 'CSHUF', 'CINV')]
+check('coverage ranges cited 0.35–0.43 / 0.62–0.64', '%.2f–%.2f' % (min(b_rng), max(b_rng)) == '0.35–0.43'
+      and '%.2f–%.2f' % (min(cf_rng), max(cf_rng)) == '0.62–0.64' and '0.62–0.64' in reb and '0.35–0.43' in reb)
+g4 = list(csv.DictReader(open(os.path.join(RT, 'AN-04_gate4_coverage_reproduction.csv'))))
+check('Gate 4: 12/12 committed coverage values at 4 dp', len(g4) == 12 and all(r['recall_match_4dp'] == 'True' for r in g4))
+eta = {r['quantity']: float(r['value']) for r in csv.DictReader(open(os.path.join(RT, 'AN-04_cluster_structure.csv')))}
+e_c = [v for k_, v in eta.items() if 'committed_predictions' in k_][0]
+check('eta^2 committed = %.3f cited as 20.5%%' % e_c, '%.1f%%' % (100 * e_c) == '20.5%' and '20.5%' in reb)
+sc = json.load(open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-04b_summary.json')))
+check('signal correlations reproduce exactly', sc['gate_passed'])
+
 # ------------------------------------------------------------------ 7. character count (independent of the writer)
 txt = open(os.path.join(SR, 'FINAL_UPDATED_REBUTTAL_OPENREVIEW.md'), encoding='utf-8').read()
 wc = subprocess.run(['wc', '-m', os.path.join(SR, 'FINAL_UPDATED_REBUTTAL_OPENREVIEW.md')], capture_output=True,
@@ -181,7 +217,9 @@ part_a = reb.split('## Part B')[0]
 bad = [p for p in ('/home/', 'rebuild/', 'Snapshot', 'RESULT_TABLES', '.py', '.csv', 'TH-0', 'AN-0', 'EXP-0', 'DOC-0')
        if p in part_a.split('---', 1)[1] or p in txt]
 check('no private paths / task codes in reviewer-facing text', not bad, bad)
-check('no unfilled placeholders', '{{' not in reb + txt, re.findall(r'\{\{[^}]*\}\}', reb + txt))
+allmd = {os.path.basename(m): open(m, encoding='utf-8').read() for m in glob.glob(os.path.join(SR, '*.md'))}
+ph = {k: re.findall(r'\{\{[^}]*\}\}', v) for k, v in allmd.items() if '{{' in v}
+check('no unfilled placeholders in any STUDENT_RESULTS document', not ph, ph)
 
 # ------------------------------------------------------------------ 9. Markdown relative links
 broken = []

@@ -1,0 +1,3213 @@
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an01_rescore.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an01_rescore.py
+new file mode 100644
+index 0000000..09a60fd
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an01_rescore.py
+@@ -0,0 +1,167 @@
++#!/usr/bin/env python
++"""AN-01 -- re-score the 64 eight-seed runs x {COD10K, NC4K} from stored predictions.
++
++Uses the committed scorer UNCHANGED: score() from base rebuild/ABC/abc_evaluate.py (this
++worktree, commit 8d1d079), which uses base Eval/metrics.py. Data are read from --data-root
++(the original working copy); nothing is written there.
++
++Gate 1 (ANALYSIS_PRESPEC.md §3): B1 scorer validation, S_alpha 0.717216 / MAE 0.074463, tol 1e-5.
++Gate 2: every committed metric reproduced at 6 dp.
++
++Outputs:
++  RUNS/an01/an01_rescored_full.csv          full-precision per-run metrics (128 rows)
++  RUNS/an01/an01_per_image.csv.gz           per-image S_alpha and MAE (same metric classes)
++  RESULT_TABLES/AN-01_original_vs_recomputed.csv
++  EXPERIMENT_LOGS/AN-01_gates.json
++"""
++import argparse
++import csv
++import gzip
++import json
++import os
++import sys
++import time
++from multiprocessing import Pool
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True, help='STUDENT_RESULTS dir')
++ap.add_argument('--workers', type=int, default=16)
++ap.add_argument('--limit', type=int, default=0, help='debug: only first N tasks')
++a = ap.parse_args()
++
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(WT, 'rebuild/ABC'))
++sys.path.insert(0, os.path.join(WT, 'rebuild'))
++sys.path.insert(0, os.path.join(WT, 'Eval'))
++import abc_evaluate as E          # noqa: E402  (base, unchanged)
++import metrics as Measure         # noqa: E402  (base Eval/metrics.py)
++import cv2                        # noqa: E402
++
++KEYS = E.METRIC_KEYS
++
++
++def per_image(gt_dir, pred_dir):
++    """Per-image S_alpha and MAE with the SAME classes and the SAME read/resize as score()."""
++    SM, MAE = Measure.Smeasure(), Measure.MAE()
++    names = sorted(os.listdir(gt_dir))
++    for nm in names:
++        pred = cv2.imread(os.path.join(pred_dir, nm), cv2.IMREAD_GRAYSCALE)
++        gt = cv2.imread(os.path.join(gt_dir, nm), cv2.IMREAD_GRAYSCALE)
++        if pred.shape != gt.shape:
++            pred = cv2.resize(pred, (gt.shape[1], gt.shape[0]), interpolation=cv2.INTER_NEAREST)
++        SM.step(pred=pred, gt=gt)
++        MAE.step(pred=pred, gt=gt)
++    return names, [float(x) for x in SM.sms], [float(x) for x in MAE.maes]
++
++
++def task(t):
++    rid, ep = t
++    gt_dir = os.path.join(DR, 'Dataset/Test', ep, 'GT')
++    pred_dir = os.path.join(DR, 'Result/ABC', rid, ep)
++    t0 = time.time()
++    agg = E.score(gt_dir, pred_dir)                      # committed scorer, unchanged
++    names, sms, maes = per_image(gt_dir, pred_dir)
++    return dict(rid=rid, ep=ep, agg=agg, names=names, sms=sms, maes=maes, sec=time.time() - t0)
++
++
++def main():
++    t0 = time.time()
++    out_runs = os.path.join(SR, 'RUNS/an01')
++    os.makedirs(out_runs, exist_ok=True)
++    gates = {}
++    # ---- Gate 1
++    b1 = os.path.join(DR, 'Result/SINet/S2C')
++    if os.path.isdir(b1):
++        v = E.score(os.path.join(DR, 'Dataset/Test/COD10K/GT'), b1)
++        gates['gate1'] = dict(Sm=v['Sm'], MAE=v['MAE'], ref_Sm=E.B1_SA, ref_MAE=E.B1_MAE,
++                              d_Sm=abs(v['Sm'] - E.B1_SA), d_MAE=abs(v['MAE'] - E.B1_MAE),
++                              tol=E.TOL, passed=bool(abs(v['Sm'] - E.B1_SA) < E.TOL
++                                                     and abs(v['MAE'] - E.B1_MAE) < E.TOL))
++    else:
++        gates['gate1'] = dict(passed=None, note='B1 predictions absent')
++    print('gate1', gates['gate1'], flush=True)
++    if gates['gate1'].get('passed') is False:
++        json.dump(gates, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-01_gates.json'), 'w'), indent=1)
++        sys.exit('AN-01 HALT: scorer does not reproduce B1')
++
++    man = list(csv.DictReader(open(os.path.join(SR, 'RESULT_TABLES/run_manifest.csv'))))
++    committed = {(r['runid'], r['endpoint']): r for r in
++                 csv.DictReader(open(os.path.join(WT, 'rebuild/ABC/out/se/abc_metrics.csv')))}
++    camp_csv = {'ABC': 'rebuild/ABC/out/abc_metrics.csv', 'T2': 'rebuild/ABC/out/t2/abc_metrics.csv',
++                'SE': 'rebuild/ABC/out/se/abc_metrics.csv'}
++    camp = {c: {(r['runid'], r['endpoint']): r for r in csv.DictReader(open(os.path.join(WT, p)))}
++            for c, p in camp_csv.items()}
++    tasks, meta = [], {}
++    for r in man:
++        rid = '%s_%s_s%s' % (r['architecture'], r['arm'], r['seed'])
++        tasks.append((rid, r['endpoint']))
++        meta[(rid, r['endpoint'])] = r
++    if a.limit:
++        tasks = tasks[:a.limit]
++    res = []
++    with Pool(a.workers) as pool:
++        for i, x in enumerate(pool.imap_unordered(task, tasks), 1):
++            res.append(x)
++            print('[%d/%d] %s %s %.0fs Sm=%.6f' % (i, len(tasks), x['rid'], x['ep'], x['sec'],
++                                                 x['agg']['Sm']), flush=True)
++    res.sort(key=lambda x: (x['rid'], x['ep']))
++
++    # ---- full-precision table + per-image
++    with open(os.path.join(out_runs, 'an01_rescored_full.csv'), 'w', newline='') as f:
++        w = csv.writer(f)
++        w.writerow(['runid', 'arch', 'arm', 'seed', 'endpoint', 'n', 'shape_mismatch'] + list(KEYS)
++                   + ['per_image_mean_Sm', 'per_image_mean_MAE'])
++        for x in res:
++            m = meta[(x['rid'], x['ep'])]
++            w.writerow([x['rid'], m['architecture'], m['arm'], m['seed'], x['ep'], x['agg']['n'],
++                        x['agg']['shape_mismatch']] + [repr(x['agg'][k]) for k in KEYS]
++                       + [repr(sum(x['sms']) / len(x['sms'])), repr(sum(x['maes']) / len(x['maes']))])
++    with gzip.open(os.path.join(out_runs, 'an01_per_image.csv.gz'), 'wt') as f:
++        w = csv.writer(f)
++        w.writerow(['runid', 'endpoint', 'name', 'Sm', 'MAE'])
++        for x in res:
++            for nm, s, e in zip(x['names'], x['sms'], x['maes']):
++                w.writerow([x['rid'], x['ep'], nm, '%.10f' % s, '%.10f' % e])
++
++    # ---- Gate 2 comparison
++    rows, n_mis, n_cmp, max_pi_dev = [], 0, 0, 0.0
++    for x in res:
++        key = (x['rid'], x['ep'])
++        m = meta[key]
++        c_se = committed[key]
++        c_tr = camp[m['trained_in']].get(key)
++        pi_dev = max(abs(sum(x['sms']) / len(x['sms']) - x['agg']['Sm']),
++                     abs(sum(x['maes']) / len(x['maes']) - x['agg']['MAE']))
++        max_pi_dev = max(max_pi_dev, pi_dev)
++        for k in KEYS:
++            rec6 = '%.6f' % x['agg'][k]
++            n_cmp += 1
++            eq_se = rec6 == c_se[k]
++            eq_tr = (rec6 == c_tr[k]) if c_tr else None
++            if not eq_se or eq_tr is False:
++                n_mis += 1
++            rows.append(dict(runid=x['rid'], architecture=m['architecture'], arm=m['arm'],
++                             seed=m['seed'], endpoint=x['ep'], trained_in=m['trained_in'], metric=k,
++                             n_images=x['agg']['n'], committed_se_csv=c_se[k],
++                             committed_trained_campaign_csv=(c_tr[k] if c_tr else ''),
++                             recomputed_6dp=rec6, recomputed_full=repr(x['agg'][k]),
++                             abs_diff_vs_se=abs(float(c_se[k]) - x['agg'][k]),
++                             exact_6dp_match_se=eq_se, exact_6dp_match_trained=eq_tr,
++                             prediction_sha=m['prediction_sha'], gt_sha=m['dataset_manifest_sha'],
++                             metric_code_sha=m['metric_code_sha'], status='post-review re-score'))
++    with open(os.path.join(SR, 'RESULT_TABLES/AN-01_original_vs_recomputed.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(rows[0]))
++        w.writeheader()
++        w.writerows(rows)
++    gates['gate2'] = dict(n_compared=n_cmp, n_mismatch=n_mis, passed=(n_mis == 0),
++                          n_tasks=len(res), max_per_image_mean_vs_aggregate=max_pi_dev)
++    gates['seconds'] = round(time.time() - t0, 1)
++    gates['generated_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
++    json.dump(gates, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-01_gates.json'), 'w'), indent=1)
++    print(json.dumps(gates, indent=1))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an02_overlap_exposure.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an02_overlap_exposure.py
+new file mode 100644
+index 0000000..952d743
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an02_overlap_exposure.py
+@@ -0,0 +1,288 @@
++#!/usr/bin/env python
++"""AN-02 -- realised overlap, foreground identity, pseudo-label sets and theoretical exposure.
++
++Method: ANALYSIS_PRESPEC.md §5. Reads the committed stem lists (this worktree, base 8d1d079) and the
++materialised pools / renders in the original working copy (read-only).
++
++Outputs:
++  RESULT_TABLES/AN-02_overlap_by_seed.csv
++  RESULT_TABLES/AN-02_exposure_by_run.csv
++  RESULT_TABLES/AN-02_pseudolabel_overlap.csv
++  RESULT_TABLES/AN-02_pool_verification.csv
++  RESULT_TABLES/AN-02_hand_inspection.csv
++  EXPERIMENT_LOGS/AN-02_summary.json
++"""
++import argparse
++import csv
++import hashlib
++import itertools
++import json
++import os
++import re
++import sys
++import time
++from collections import Counter, defaultdict
++from multiprocessing import Pool
++
++import numpy as np
++from PIL import Image
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++ap.add_argument('--workers', type=int, default=8)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(WT, 'rebuild'))
++import common as C        # noqa: E402  (base; used only for dir_digest definition check)
++
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++ARMS = ['B', 'C10', 'CSHUF', 'CINV']
++ARCH = {'SINet': dict(steps=253, batch=16, epochs=39, fx_steps=341),
++        'SINetv2': dict(steps=127, batch=32, epochs=99, fx_steps=171)}
++BASE_N, BUDGET = 4447, 1000
++OUT_ABC = os.path.join(WT, 'rebuild/ABC/out')
++
++
++def sha(p, bs=1 << 22):
++    h = hashlib.sha256()
++    with open(p, 'rb') as f:
++        for b in iter(lambda: f.read(bs), b''):
++            h.update(b)
++    return h.hexdigest()
++
++
++def stems_for(arm, seed):
++    fn = {'B': 'abc_stems_B_s%d.txt' % seed, 'C10': 'abc_stems_C_a1.0.txt',
++          'CSHUF': 'abc_stems_CSHUF.txt', 'CINV': 'abc_stems_CINV.txt'}[arm]
++    return [l.strip() for l in open(os.path.join(OUT_ABC, 'se', fn)) if l.strip()]
++
++
++def inode_digest(path, cache):
++    """Reproduces common.dir_digest: sha256 over sorted '<sha256>  <name>\\n'; hashes each inode once."""
++    names = sorted(f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)))
++    h = hashlib.sha256()
++    for nm in names:
++        p = os.path.join(path, nm)
++        st = os.stat(p)
++        k = (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns)
++        if k not in cache:
++            cache[k] = sha(p)
++        h.update(('%s  %s\n' % (cache[k], nm)).encode())
++    return len(names), h.hexdigest(), names
++
++
++def pool_job(rid):
++    cache = {}
++    pdir = os.path.join(DR, 'Dataset/Source/ABC', rid)
++    ni, hi, names_i = inode_digest(os.path.join(pdir, 'Image'), cache)
++    ng, hg, names_g = inode_digest(os.path.join(pdir, 'GT'), cache)
++    r2 = pdir + '_iteration2'
++    r2_names = sorted(os.listdir(os.path.join(r2, 'Image'))) if os.path.isdir(os.path.join(r2, 'Image')) else None
++    return rid, ni, hi, names_i, ng, hg, r2_names
++
++
++def main():
++    t0 = time.time()
++    rt = os.path.join(SR, 'RESULT_TABLES')
++    pools = json.load(open(os.path.join(OUT_ABC, 'se/abc_pools.json')))['pools']
++    runs = list(csv.DictReader(open(os.path.join(OUT_ABC, 'se/abc_runs.csv'))))
++    runmeta = {r['runid']: r for r in runs}
++    base_stems = sorted(os.path.splitext(f)[0] for f in os.listdir(os.path.join(DR, 'Dataset/Source/HKU-IS_raw/imgs')))
++    assert len(base_stems) == BASE_N
++    S = {(arm, s): stems_for(arm, s) for arm in ARMS for s in SEEDS}
++    for k, v in S.items():
++        assert len(v) == BUDGET and len(set(v)) == BUDGET, k
++
++    # ---- 0. dir_digest definition check on one pool (base function vs inode-cached reproduction)
++    probe = os.path.join(DR, 'Dataset/Source/ABC/SINet_B_s42/GT')
++    n0, h0, _ = C.dir_digest(probe)
++    n1, h1, _ = inode_digest(probe, {})
++    digest_def_ok = (n0 == n1 and h0 == h1)
++    assert digest_def_ok, 'digest reproduction differs from base common.dir_digest'
++
++    # ---- 1. pool verification (all 64 runs)
++    rids = sorted(runmeta)
++    with Pool(a.workers) as pool:
++        pres = {x[0]: x for x in pool.imap_unordered(pool_job, rids)}
++    pv, r2sets = [], {}
++    for rid in rids:
++        _, ni, hi, names_i, ng, hg, r2_names = pres[rid]
++        arch, arm, s = rid.split('_')[0], rid.split('_')[1], int(rid.split('_s')[-1])
++        inj = sorted(n[4:-4] for n in names_i if n.startswith('SOD_'))
++        base_in_pool = sorted(n[:-4] for n in names_i if not n.startswith('SOD_'))
++        committed = pools[rid]
++        r1_names = set(names_i)
++        appended = sorted(n for n in (r2_names or []) if n not in r1_names) if r2_names is not None else None
++        r2sets[rid] = appended
++        pv.append(dict(runid=rid, architecture=arch, arm=arm, seed=s, n_image=ni, n_gt=ng,
++                       image_digest_recomputed=hi, image_digest_committed=committed['image_digest'],
++                       gt_digest_recomputed=hg, gt_digest_committed=committed['gt_digest'],
++                       digests_match=(hi == committed['image_digest'] and hg == committed['gt_digest']),
++                       injected_stems_match_committed_list=(inj == sorted(S[(arm, s)])),
++                       base_stems_complete=(base_in_pool == base_stems),
++                       round2_pool_present=r2_names is not None,
++                       round2_pool_size=len(r2_names) if r2_names is not None else '',
++                       round2_appended=len(appended) if appended is not None else '',
++                       committed_pool_r2=runmeta[rid]['pool_r2'], committed_n_appended=runmeta[rid]['n_appended'],
++                       appended_matches_committed=(appended is not None and len(appended) == int(runmeta[rid]['n_appended']))))
++
++    # ---- 2. overlap by seed for every arm pair (stems identical across architectures)
++    ov = []
++    exp_rand = BUDGET * BUDGET / BASE_N
++    for s in SEEDS:
++        for X, Y in itertools.combinations(ARMS, 2):
++            I = len(set(S[(X, s)]) & set(S[(Y, s)]))
++            one = BUDGET - I
++            ov.append(dict(seed=s, arm_x=X, arm_y=Y, intersection=I, one_sided_diff=one,
++                           symmetric_diff=2 * one, jaccard=I / (2 * BUDGET - I),
++                           frac_injection_differs=one / BUDGET,
++                           frac_of_5447_pool_one_sided=one / (BASE_N + BUDGET),
++                           frac_of_5447_pool_symmetric=2 * one / (BASE_N + BUDGET),
++                           frac_of_union_of_two_pools_symmetric=2 * one / (BASE_N + 2 * BUDGET - I),
++                           expected_random_intersection=exp_rand, intersection_over_chance=I / exp_rand,
++                           pair_type=('C-family (deterministic, same at every seed)' if 'B' not in (X, Y)
++                                      else 'B vs C-family (B redrawn per seed)'),
++                           foreground_identity='render stem = base-pool foreground'))
++    # B vs B across seeds (how different are two random draws)
++    bb = [len(set(S[('B', s1)]) & set(S[('B', s2)])) for s1, s2 in itertools.combinations(SEEDS, 2)]
++
++    # ---- 3. foreground identity / render bytes
++    ren_img = os.path.join(DR, 'Dataset/LAKERED/output/HKU-IS/images')
++    ren_msk = os.path.join(DR, 'Dataset/LAKERED/output/HKU-IS/masks')
++    all_inj = sorted(set().union(*[set(v) for v in S.values()]))
++    novel = [st for st in all_inj if st not in set(base_stems)]
++    with Pool(a.workers) as pool:
++        h_img = dict(zip(base_stems, pool.map(sha, [os.path.join(ren_img, 'SOD_%s.jpg' % st) for st in base_stems])))
++        h_msk = dict(zip(base_stems, pool.map(sha, [os.path.join(ren_msk, 'SOD_%s.png' % st) for st in base_stems])))
++    dup_img = sum(c - 1 for c in Counter(h_img.values()).values() if c > 1)
++    dup_msk = sum(c - 1 for c in Counter(h_msk.values()).values() if c > 1)
++
++    # ---- 4. hand inspection: 12 injected items by the global RNG
++    rng = np.random.default_rng(20261111)
++    pick = [all_inj[i] for i in sorted(rng.choice(len(all_inj), size=12, replace=False))]
++    hi_rows = []
++    for st in pick:
++        ip, mp = os.path.join(ren_img, 'SOD_%s.jpg' % st), os.path.join(ren_msk, 'SOD_%s.png' % st)
++        bp = os.path.join(DR, 'Dataset/Source/HKU-IS/GT', '%s.png' % st)
++        im, mk, bg = Image.open(ip), np.array(Image.open(mp).convert('L')), np.array(Image.open(bp).convert('L'))
++        same_shape = mk.shape == bg.shape
++        hi_rows.append(dict(stem=st, render_image=os.path.relpath(ip, DR), render_size='%dx%d' % im.size,
++                            mask_size='%dx%d' % (mk.shape[1], mk.shape[0]), mask_unique_values=len(np.unique(mk)),
++                            mask_binary=bool(set(np.unique(mk)).issubset({0, 255})),
++                            base_gt_size='%dx%d' % (bg.shape[1], bg.shape[0]),
++                            mask_equals_base_gt_pixelwise=bool(same_shape and np.array_equal(mk > 127, bg > 127)),
++                            mask_iou_with_base_gt=(float(((mk > 127) & (bg > 127)).sum() / max(1, ((mk > 127) | (bg > 127)).sum()))
++                                                   if same_shape else ''),
++                            in_arms=' '.join(sorted({arm for (arm, s), v in S.items() if st in set(v)}))))
++
++    # ---- 5. pseudo-label (round-2 appended) overlap between arms at equal seed and architecture
++    pl = []
++    for arch in ARCH:
++        for s in SEEDS:
++            for X, Y in itertools.combinations(ARMS, 2):
++                ax, ay = r2sets['%s_%s_s%d' % (arch, X, s)], r2sets['%s_%s_s%d' % (arch, Y, s)]
++                if ax is None or ay is None:
++                    continue
++                I = len(set(ax) & set(ay))
++                camo = lambda z: sum(1 for n in z if n.startswith('camourflage'))   # noqa: E731
++                pl.append(dict(architecture=arch, seed=s, arm_x=X, arm_y=Y, n_x=len(ax), n_y=len(ay),
++                               intersection=I, jaccard=I / (len(ax) + len(ay) - I),
++                               only_x=len(ax) - I, only_y=len(ay) - I, camo_x=camo(ax), camo_y=camo(ay),
++                               note='pseudo-label sets are post-treatment (first-round policy outcome); mediator, not adjusted'))
++
++    # ---- 6. theoretical exposure per run (pinned schedule as executed) + FX-style unpinned reference
++    ex = []
++    for rid in rids:
++        r = runmeta[rid]
++        arch, arm, s = r['arch'], r['arm'], int(r['seed'])
++        A = ARCH[arch]
++        assert int(r['total_step_set']) == A['steps']
++        draws = A['steps'] * A['batch']
++        p1, p2 = int(r['pool_r1']), int(r['pool_r2'])
++        other = {}
++        for Y in ARMS:
++            if Y != arm:
++                other[Y] = BUDGET - len(set(S[(arm, s)]) & set(S[(Y, s)]))
++        for rnd, pool_n in ((1, p1), (2, p2)):
++            per_item = draws / pool_n
++            ex.append(dict(runid=rid, architecture=arch, arm=arm, seed=s, round=rnd, pool_size=pool_n,
++                           steps_per_epoch=A['steps'], batch=A['batch'], epochs=A['epochs'],
++                           source_draws_per_epoch=draws, source_loader_batches=-(-pool_n // A['batch']),
++                           frac_pool_seen_per_epoch=per_item,
++                           expected_visits_per_item_per_epoch=per_item,
++                           expected_visits_per_item_per_round=per_item * A['epochs'],
++                           injected_share_of_draws=BUDGET / pool_n,
++                           expected_injected_visits_per_round=BUDGET * per_item * A['epochs'],
++                           arm_specific_vs_B=other.get('B', ''), arm_specific_vs_C10=other.get('C10', ''),
++                           arm_specific_vs_CSHUF=other.get('CSHUF', ''), arm_specific_vs_CINV=other.get('CINV', ''),
++                           arm_specific_share_of_draws_vs_B=(other['B'] / pool_n) if 'B' in other else '',
++                           arm_specific_share_of_draws_vs_C10=(other['C10'] / pool_n) if 'C10' in other else '',
++                           unpinned_fx_steps_reference=A['fx_steps'] if rnd == 1 else '',
++                           unpinned_visits_per_item_per_epoch=(1.0 if rnd == 1 else ''),
++                           pseudo_count=r['n_appended'] if rnd == 2 else 0,
++                           exposure_status='THEORETICAL (expected under uniform shuffle, truncated epoch); '
++                                           'actual per-sample visits UNVERIFIED -- no sampler trace logged'))
++
++    # ---- 7. search for a sampler trace in run logs
++    trace_hits = {}
++    pat = re.compile(r'(sampler|indices|index|visit|batch_ids|perm)', re.I)
++    for rid in rids:
++        for lp in (os.path.join(DR, 'Snapshot/ABC', rid, 'training_log.log'), os.path.join(DR, 'rebuild/ABC', rid + '.log')):
++            if os.path.isfile(lp):
++                n = 0
++                with open(lp, errors='replace') as f:
++                    for line in f:
++                        if pat.search(line):
++                            n += 1
++                trace_hits[os.path.relpath(lp, DR)] = n
++
++    def wcsv(name, rs):
++        with open(os.path.join(rt, name), 'w', newline='') as f:
++            w = csv.DictWriter(f, fieldnames=list(rs[0]))
++            w.writeheader()
++            for r in rs:
++                w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for k, v in r.items()})
++    wcsv('AN-02_pool_verification.csv', pv)
++    wcsv('AN-02_overlap_by_seed.csv', ov)
++    wcsv('AN-02_exposure_by_run.csv', ex)
++    wcsv('AN-02_pseudolabel_overlap.csv', pl)
++    wcsv('AN-02_hand_inspection.csv', hi_rows)
++
++    def summ(X, Y):
++        xs = [o for o in ov if o['arm_x'] == X and o['arm_y'] == Y]
++        f = [o['frac_injection_differs'] for o in xs]
++        g = [o['frac_of_5447_pool_one_sided'] for o in xs]
++        return dict(min_frac_differs=min(f), max_frac_differs=max(f), mean_frac_differs=float(np.mean(f)),
++                    mean_frac_of_5447=float(np.mean(g)), min_one_sided=min(o['one_sided_diff'] for o in xs),
++                    max_one_sided=max(o['one_sided_diff'] for o in xs))
++    pairs = {'%s-%s' % p: summ(*p) for p in itertools.combinations(ARMS, 2)}
++    per_arm_pl = defaultdict(list)
++    for r in runs:
++        per_arm_pl[r['arm']].append(int(r['n_appended']))
++    summary = dict(
++        generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), digest_definition_matches_base=digest_def_ok,
++        pools_all_digests_match=all(p['digests_match'] for p in pv),
++        pools_all_injected_match=all(p['injected_stems_match_committed_list'] for p in pv),
++        pools_all_base_complete=all(p['base_stems_complete'] for p in pv),
++        round2_appended_all_match=all(p['appended_matches_committed'] for p in pv),
++        pair_summary=pairs, expected_random_intersection=exp_rand,
++        B_vs_B_across_seeds_intersection=dict(min=min(bb), max=max(bb), mean=float(np.mean(bb))),
++        injected_stems_union=len(all_inj), injected_stems_novel_vs_base_pool=len(novel),
++        render_images_byte_duplicates=dup_img, render_masks_byte_duplicates=dup_msk,
++        hand_inspection_all_binary=all(h['mask_binary'] for h in hi_rows),
++        hand_inspection_mask_equals_base_gt=sum(h['mask_equals_base_gt_pixelwise'] for h in hi_rows),
++        pseudo_label_mean_by_arm={k: float(np.mean(v)) for k, v in per_arm_pl.items()},
++        pseudo_label_range_by_arm={k: [min(v), max(v)] for k, v in per_arm_pl.items()},
++        pseudo_label_audit_targets=dict(B=1977, C10=2025, CSHUF=1990, CINV=1979),
++        sampler_trace_search=dict(pattern=pat.pattern, files_scanned=len(trace_hits),
++                                  files_with_hits=sum(1 for v in trace_hits.values() if v)),
++        seconds=round(time.time() - t0, 1))
++    json.dump(summary, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-02_summary.json'), 'w'), indent=1)
++    json.dump(trace_hits, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-02_sampler_trace_search.json'), 'w'), indent=1)
++    print(json.dumps(summary, indent=1))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an03_interaction.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an03_interaction.py
+new file mode 100644
+index 0000000..acf2764
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an03_interaction.py
+@@ -0,0 +1,202 @@
++#!/usr/bin/env python
++"""AN-03 -- architecture-dependent boundary contrasts and the formal architecture interaction.
++
++ANALYSIS_PRESPEC.md §7. Input: RUNS/exp02/exp02_per_run.csv (EXP-02; Gate 3 must have passed) and
++RUNS/an01/an01_rescored_full.csv (S_alpha, for the same grid). Statistics: statlib.py (NumPy only),
++cross-checked against scipy.
++
++Outputs:
++  RESULT_TABLES/AN-03_arch_boundary_grid.csv
++  RESULT_TABLES/AN-03_interaction.csv
++  RESULT_TABLES/EXP-02_rescored_predictions.csv   (one aggregate row per legitimate cell x arm)
++  FIGURES/AN-03_architecture_contrasts.png
++  EXPERIMENT_LOGS/AN-03_checks.json
++"""
++import argparse
++import csv
++import hashlib
++import json
++import math
++import os
++import sys
++
++import numpy as np
++from scipy import stats
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++SR = a.sr
++sys.path.insert(0, os.path.join(SR, 'scripts'))
++import statlib as SL       # noqa: E402
++
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++SEEDS3 = [42, 43, 45]
++ARCHS = ['SINet', 'SINetv2']
++EPS = ['COD10K', 'NC4K']
++THR = [0.4, 0.5, 0.6]
++METRICS = ['boundary_iou', 'boundary_f', 'Sm']
++CONTRASTS = [('C10', 'B'), ('CINV', 'B'), ('CSHUF', 'B'), ('C10', 'CINV'), ('C10', 'CSHUF')]
++HEADLINE = [('boundary_iou', 0.5, 'COD10K', 'C10-B'), ('boundary_iou', 0.5, 'COD10K', 'CINV-B')]
++
++
++def sha(p):
++    return hashlib.sha256(open(p, 'rb').read()).hexdigest()
++
++
++def main():
++    meta = json.load(open(os.path.join(SR, 'EXPERIMENT_LOGS/EXP-02_meta.json')))
++    assert meta['gate3']['passed'], 'EXP-02 Gate 3 failed -- AN-03 must not use these values'
++    src_b = os.path.join(SR, 'RUNS/exp02/exp02_per_run.csv')
++    src_s = os.path.join(SR, 'RUNS/an01/an01_rescored_full.csv')
++    V, N = {}, {}
++    for r in csv.DictReader(open(src_b)):
++        if r['arm'] in ('A0', 'A2'):
++            continue
++        for m in ('boundary_iou', 'boundary_f'):
++            V[(m, float(r['thresh']), r['arch'], r['endpoint'], r['arm'], int(r['seed']))] = float(r[m])
++            N[(m, float(r['thresh']), r['arch'], r['endpoint'], r['arm'], int(r['seed']))] = (int(r['n']), int(r['n_nan_' + m]))
++    for r in csv.DictReader(open(src_s)):
++        for t in THR:     # S_alpha has no threshold; replicate so the grid is rectangular (flagged)
++            V[('Sm', t, r['arch'], r['endpoint'], r['arm'], int(r['seed']))] = float(r['Sm'])
++            N[('Sm', t, r['arch'], r['endpoint'], r['arm'], int(r['seed']))] = (int(r['n']), 0)
++    checks = dict(scipy_mismatch=[])
++
++    # ---- per-arm aggregate rows (EXP-02 deliverable)
++    agg = []
++    for m in ('boundary_iou', 'boundary_f'):
++        for t in THR:
++            for arch in ARCHS:
++                for ep in EPS:
++                    for arm in ('B', 'C10', 'CSHUF', 'CINV'):
++                        xs = [V[(m, t, arch, ep, arm, s)] for s in SEEDS]
++                        mu, sd = SL.mean_sd(xs)
++                        agg.append(dict(metric=m, threshold=t, architecture=arch, endpoint=ep, arm=arm, n_seeds=8,
++                                        seeds=' '.join(map(str, SEEDS)), mean=mu, sd=sd,
++                                        n_images_per_run=N[(m, t, arch, ep, arm, SEEDS[0])][0],
++                                        nan_images_excluded_total=sum(N[(m, t, arch, ep, arm, s)][1] for s in SEEDS),
++                                        status='post-review exploratory; boundary metrics are post-hoc',
++                                        data_sha256=sha(src_b)))
++    # ---- grid of contrasts
++    grid = []
++    for m in METRICS:
++        for t in THR:
++            if m == 'Sm' and t != 0.5:
++                continue
++            for arch in ARCHS:
++                for ep in EPS:
++                    bar_sd, _ = SL.pooled_sd([[V[(m, t, arch, ep, arm, s)] for s in SEEDS] for arm in ('B', 'C10', 'CSHUF', 'CINV')])
++                    bar3, _ = SL.pooled_sd([[V[(m, t, arch, ep, arm, s)] for s in SEEDS3] for arm in ('B', 'C10', 'CSHUF', 'CINV')])
++                    for X, Y in CONTRASTS:
++                        for subset, seeds, bsd in (('8-seed', SEEDS, bar_sd), ('3-seed {42,43,45}', SEEDS3, bar3)):
++                            x = np.array([V[(m, t, arch, ep, X, s)] for s in seeds])
++                            y = np.array([V[(m, t, arch, ep, Y, s)] for s in seeds])
++                            P, W = SL.paired(x, y), SL.welch(x, y)
++                            if not math.isclose(P['p'], float(stats.ttest_rel(x, y).pvalue), rel_tol=1e-9, abs_tol=1e-12):
++                                checks['scipy_mismatch'].append((m, t, arch, ep, X, Y, subset))
++                            grid.append(dict(
++                                metric=m, threshold=(t if m != 'Sm' else 'n/a'), architecture=arch, endpoint=ep,
++                                contrast='%s-%s' % (X, Y), seed_subset=subset, n_pairs=len(seeds),
++                                seeds=' '.join(map(str, seeds)), mean_D=P['mean'], sd_D=P['sd'],
++                                paired_ci95_lo=P['ci95'][0], paired_ci95_hi=P['ci95'][1], paired_p=P['p'],
++                                welch_ci95_lo=W['ci95'][0], welch_ci95_hi=W['ci95'][1], welch_p=W['p'],
++                                sign_pos=P['n_pos'], sign_neg=P['n_neg'],
++                                bar_2x_pooled_sd_4arms=2 * bsd, gap_over_bar=abs(P['mean']) / (2 * bsd),
++                                clears_bar_descriptive=abs(P['mean']) > 2 * bsd,
++                                sign_rule=('%d/%d' % (max(P['n_pos'], P['n_neg']), len(seeds))),
++                                headline=((m, t, ep, '%s-%s' % (X, Y)) in HEADLINE and subset == '8-seed'),
++                                units=('S_alpha' if m == 'Sm' else m.replace('_', ' ')),
++                                status='post-review exploratory; decides nothing',
++                                test_selection_status='held-out endpoints; no test-label selection'))
++    # Holm across the 8-seed grid (sensitivity only)
++    idx8 = [i for i, g in enumerate(grid) if g['seed_subset'] == '8-seed']
++    hp = SL.holm([grid[i]['paired_p'] for i in idx8])
++    for i, h in zip(idx8, hp):
++        grid[i]['holm_p_grid'] = h
++    for g in grid:
++        g.setdefault('holm_p_grid', '')
++    # ---- interaction
++    inter = []
++    for m in METRICS:
++        for t in THR:
++            if m == 'Sm' and t != 0.5:
++                continue
++            for ep in EPS:
++                for X, Y in CONTRASTS:
++                    dS = np.array([V[(m, t, 'SINet', ep, X, s)] - V[(m, t, 'SINet', ep, Y, s)] for s in SEEDS])
++                    dV = np.array([V[(m, t, 'SINetv2', ep, X, s)] - V[(m, t, 'SINetv2', ep, Y, s)] for s in SEEDS])
++                    W = SL.welch(dS, dV)
++                    sp = stats.ttest_ind(dS, dV, equal_var=False)
++                    if not math.isclose(W['p'], float(sp.pvalue), rel_tol=1e-9, abs_tol=1e-12):
++                        checks['scipy_mismatch'].append(('interaction', m, t, ep, X, Y))
++                    perm_p, nperm = SL.permutation_two_group_exact(dS, dV)
++                    E = SL.paired(dS, dV)
++                    inter.append(dict(
++                        metric=m, threshold=(t if m != 'Sm' else 'n/a'), endpoint=ep, contrast='%s-%s' % (X, Y),
++                        n_seeds_per_arch=8, D_SINet=float(dS.mean()), D_SINetv2=float(dV.mean()),
++                        delta_model=W['mean'], welch_se=W['se'], welch_df=W['df'],
++                        welch_ci95_lo=W['ci95'][0], welch_ci95_hi=W['ci95'][1], welch_p=W['p'],
++                        perm_p_exact=perm_p, perm_n_splits=nperm,
++                        seed_matched_ci95_lo=E['ci95'][0], seed_matched_ci95_hi=E['ci95'][1], seed_matched_p=E['p'],
++                        headline=((m, t, ep, '%s-%s' % (X, Y)) in HEADLINE),
++                        interpretation_rule='interaction inferred only from this CI/permutation, never from '
++                                            'separate per-architecture significance',
++                        status='post-review exploratory'))
++    hp = SL.holm([r['welch_p'] for r in inter])
++    for r, h in zip(inter, hp):
++        r['holm_p_interaction_family'] = h
++
++    def wcsv(name, rs):
++        with open(os.path.join(SR, 'RESULT_TABLES', name), 'w', newline='') as f:
++            w = csv.DictWriter(f, fieldnames=list(rs[0]))
++            w.writeheader()
++            for r in rs:
++                w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for k, v in r.items()})
++    wcsv('EXP-02_rescored_predictions.csv', agg)
++    wcsv('AN-03_arch_boundary_grid.csv', grid)
++    wcsv('AN-03_interaction.csv', inter)
++
++    # ---- figure: headline metric, all thresholds, both endpoints, 8-seed paired CI per architecture
++    import matplotlib
++    matplotlib.use('Agg')
++    import matplotlib.pyplot as plt
++    fig, axes = plt.subplots(2, 3, figsize=(12, 6.4), sharey='row')
++    cols = {'SINet': '#2a6fbb', 'SINetv2': '#d1762b'}
++    for i, ep in enumerate(EPS):
++        for j, t in enumerate(THR):
++            ax = axes[i, j]
++            for k, (X, Y) in enumerate(CONTRASTS):
++                for o, arch in enumerate(ARCHS):
++                    g = next(g for g in grid if g['metric'] == 'boundary_iou' and g['threshold'] == t
++                             and g['architecture'] == arch and g['endpoint'] == ep
++                             and g['contrast'] == '%s-%s' % (X, Y) and g['seed_subset'] == '8-seed')
++                    xpos = k + (o - 0.5) * 0.3
++                    ax.errorbar([xpos], [g['mean_D']], yerr=[[g['mean_D'] - g['paired_ci95_lo']],
++                                                             [g['paired_ci95_hi'] - g['mean_D']]],
++                                fmt='o', color=cols[arch], capsize=3, label=arch if (k == 0) else None)
++            ax.axhline(0, color='0.5', lw=0.8)
++            ax.set_xticks(range(len(CONTRASTS)))
++            ax.set_xticklabels(['%s-%s' % c for c in CONTRASTS], rotation=30, fontsize=8)
++            ax.set_title('%s, threshold %.1f' % (ep, t), fontsize=9)
++            if j == 0:
++                ax.set_ylabel('Boundary-IoU difference\n(paired 95% CI, 8 seeds)', fontsize=8)
++    axes[0, 0].legend(fontsize=8, frameon=False)
++    fig.suptitle('Post-review exploratory: boundary-IoU contrasts by architecture (decides nothing)', fontsize=10)
++    fig.tight_layout()
++    fig.savefig(os.path.join(SR, 'FIGURES/AN-03_architecture_contrasts.png'), dpi=150)
++    checks.update(n_grid=len(grid), n_interaction=len(inter), data_sha256_boundary=sha(src_b),
++                  data_sha256_sa=sha(src_s), gate3=meta['gate3'])
++    json.dump(checks, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-03_checks.json'), 'w'), indent=1, default=str)
++    print(json.dumps(checks, indent=1, default=str))
++    for g in grid:
++        if g['headline']:
++            print('HEADLINE', {k: g[k] for k in ('metric', 'threshold', 'architecture', 'endpoint', 'contrast',
++                                                 'mean_D', 'paired_ci95_lo', 'paired_ci95_hi', 'gap_over_bar', 'sign_rule')})
++    for r in inter:
++        if r['headline']:
++            print('INTERACTION', {k: r[k] for k in ('contrast', 'D_SINet', 'D_SINetv2', 'delta_model', 'welch_ci95_lo',
++                                                    'welch_ci95_hi', 'welch_p', 'perm_p_exact')})
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py
+new file mode 100644
+index 0000000..58676b5
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py
+@@ -0,0 +1,257 @@
++#!/usr/bin/env python
++"""AN-04 -- foreground diversity, cluster structure and target coverage (ANALYSIS_PRESPEC.md §8).
++
++Committed estimator, UNCHANGED: rebuild/A3/a3_appearance_signature.precision_recall (Kynkaanniemi et al.
++2019), called with device='cpu' on the committed E0 embedding cache (original working copy, read-only).
++Endpoint labels are used ONLY in the descriptive eta^2 diagnostic; nothing feeds any selection.
++
++Outputs:
++  RESULT_TABLES/AN-04_gate4_coverage_reproduction.csv
++  RESULT_TABLES/AN-04_foreground_coverage.csv
++  RESULT_TABLES/AN-04_cluster_domain_mix.csv
++  RESULT_TABLES/AN-04_cluster_structure.csv
++  FIGURES/AN-04_coverage.png
++  EXPERIMENT_LOGS/AN-04_summary.json
++"""
++import argparse
++import csv
++import gzip
++import json
++import os
++import sys
++import time
++from collections import defaultdict
++
++import numpy as np
++from PIL import Image
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++ap.add_argument('--n-boot', type=int, default=1000)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(SR, 'scripts'))
++import basepatch      # noqa: E402
++
++A, c1_space = basepatch.setup(WT, DR)
++sys.path.insert(0, os.path.join(WT, 'rebuild/A3'))
++import a3_appearance_signature as A3     # noqa: E402  (base; only precision_recall is used)
++from c1_targeted_vs_random import softmax_alloc, largest_remainder   # noqa: E402
++
++E0 = os.path.join(DR, 'rebuild/E0/cache')
++TAGS = ('dinoL224', 'dinoL518', 'clipL224')
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++KS = (3, 5, 10)
++RNG = np.random.default_rng(20261111)
++OUT_SE = os.path.join(WT, 'rebuild/ABC/out/se')
++
++
++def l2(x):
++    x = x.astype(np.float64)
++    return x / np.linalg.norm(x, axis=1, keepdims=True)
++
++
++def pr(real, fake, k):
++    return A3.precision_recall(real.astype(np.float32), fake.astype(np.float32), k, device='cpu')
++
++
++def stems_of(arm, s=None):
++    fn = ('abc_stems_B_s%d.txt' % s) if arm == 'B' else {
++        'C10': 'abc_stems_C_a1.0.txt', 'CSHUF': 'abc_stems_CSHUF.txt', 'CINV': 'abc_stems_CINV.txt'}[arm]
++    return [l.strip() for l in open(os.path.join(OUT_SE, fn)) if l.strip()]
++
++
++def main():
++    t0 = time.time()
++    rt = os.path.join(SR, 'RESULT_TABLES')
++    names = {t: json.load(open(os.path.join(E0, '%s_names.json' % t))) for t in TAGS}
++    bank = {t: {sk: l2(np.load(os.path.join(E0, '%s_%s_cls.npy' % (t, sk))))
++                for sk in ('tgt', 'raw', 'auth', 'local', 'test')} for t in TAGS}
++    nm = names['dinoL518']
++    tgt_names = [os.path.splitext(x)[0] for x in nm['tgt']]
++    is_camo = np.array([n.lower().startswith('camo') for n in tgt_names])
++    local_names = [os.path.splitext(x)[0].replace('SOD_', '') for x in nm['local']]
++    lidx = {n: i for i, n in enumerate(local_names)}
++    # ---- Gate 4: reproduce the committed coverage table (k=5) for the rows whose inputs are in E0
++    committed = {(r['embedder'], r['set'], r['k']): r for r in csv.DictReader(open(os.path.join(WT, 'rebuild/A3/out/a3_coverage.csv')))}
++    g4 = []
++    for t in TAGS:
++        for label, sk in (("authors' pool", 'auth'), ('local renders', 'local'), ('raw HKU-IS (pre-LAKE-RED)', 'raw')):
++            p, r = pr(bank[t]['tgt'], bank[t][sk], 5)
++            c = committed[(t, label, '5')]
++            g4.append(dict(embedder=t, set=label, k=5, precision=p, recall=r, committed_precision=c['precision'],
++                           committed_recall=c['recall'], recall_match_4dp=('%.4f' % r) == ('%.4f' % float(c['recall'])),
++                           precision_match_4dp=('%.4f' % p) == ('%.4f' % float(c['precision']))))
++        # COD10K part vs CAMO part of the target
++        p, r = pr(bank[t]['tgt'][~is_camo], bank[t]['tgt'][is_camo], 5)
++        c = committed[(t, 'COD10K 3040 vs CAMO 1000', '5')]
++        g4.append(dict(embedder=t, set='COD10K 3040 vs CAMO 1000', k=5, precision=p, recall=r,
++                       committed_precision=c['precision'], committed_recall=c['recall'],
++                       recall_match_4dp=('%.4f' % r) == ('%.4f' % float(c['recall'])),
++                       precision_match_4dp=('%.4f' % p) == ('%.4f' % float(c['precision']))))
++    gate4 = all(g['recall_match_4dp'] for g in g4)
++    # ---- per-arm injected sets and the realised training pools
++    sets = {'C10': stems_of('C10'), 'CSHUF': stems_of('CSHUF'), 'CINV': stems_of('CINV')}
++    for s in SEEDS:
++        sets['B_s%d' % s] = stems_of('B', s)
++    cov = []
++    for t in TAGS:
++        T = bank[t]['tgt']
++        for setname, st in sets.items():
++            F = bank[t]['local'][[lidx[x] for x in st]]
++            for k in KS:
++                p, r = pr(T, F, k)
++                # recall stratified by target domain
++                p_c, r_c = pr(T[~is_camo], F, k)
++                p_m, r_m = pr(T[is_camo], F, k)
++                row = dict(embedder=t, compared_set=setname, set_kind='injected renders (1000)', k=k, n=len(st),
++                           precision=p, recall=r, recall_cod10k_part=r_c, recall_camo_part=r_m,
++                           distinct_foreground_ids=len(set(st)), novel_foregrounds_vs_base=0)
++                if t == 'dinoL518' and k == 5 and a.n_boot:
++                    bs = []
++                    for _ in range(a.n_boot):     # group bootstrap over foreground IDs (stems)
++                        pick = RNG.integers(0, len(st), len(st))
++                        bs.append(pr(T, F[pick], k)[1])
++                    row.update(recall_boot95_lo=float(np.quantile(bs, 0.025)), recall_boot95_hi=float(np.quantile(bs, 0.975)),
++                               n_boot=a.n_boot, boot_unit='foreground ID (render stem), with replacement')
++                cov.append(row)
++        for setname, F in (('base pool (authors, 4447)', bank[t]['auth']), ('raw HKU-IS (4447)', bank[t]['raw']),
++                           ('all renders (4447)', bank[t]['local'])):
++            for k in KS:
++                p, r = pr(T, F, k)
++                cov.append(dict(embedder=t, compared_set=setname, set_kind='reference pool', k=k, n=len(F), precision=p,
++                                recall=r, recall_cod10k_part=pr(T[~is_camo], F, k)[1],
++                                recall_camo_part=pr(T[is_camo], F, k)[1]))
++    # ---- foreground identity: render vs its own base / raw image (same stem)
++    raw_names = [os.path.splitext(x)[0] for x in nm['raw']]
++    auth_names = [os.path.splitext(x)[0] for x in nm['auth']]
++    ridx = {n: i for i, n in enumerate(raw_names)}
++    aidx = {n: i for i, n in enumerate(auth_names)}
++    common_st = [s for s in local_names if s in ridx and s in aidx]
++    fg = {}
++    for t in TAGS:
++        L = bank[t]['local'][[lidx[s] for s in common_st]]
++        R = bank[t]['raw'][[ridx[s] for s in common_st]]
++        Au = bank[t]['auth'][[aidx[s] for s in common_st]]
++        cos_lr, cos_la = (L * R).sum(1), (L * Au).sum(1)
++        # nearest-neighbour rank: is a render's nearest raw image its own source?
++        nn_self = float((np.argmax(L @ R.T, axis=1) == np.arange(len(common_st))).mean())
++        fg[t] = dict(n=len(common_st), cos_render_vs_own_raw_median=float(np.median(cos_lr)),
++                     cos_render_vs_own_authors_median=float(np.median(cos_la)),
++                     render_nn_raw_is_own_source=nn_self)
++    ious = []
++    for s in common_st:
++        m1 = np.asarray(Image.open(os.path.join(DR, 'Dataset/LAKERED/output/HKU-IS/masks', 'SOD_%s.png' % s)).convert('L')) > 127
++        m2 = np.asarray(Image.open(os.path.join(DR, 'Dataset/Source/HKU-IS/GT', '%s.png' % s)).convert('L')) > 127
++        ious.append(float((m1 & m2).sum() / max(1, (m1 | m2).sum())) if m1.shape == m2.shape else float('nan'))
++    ious = np.array(ious)
++    fg['render_mask_vs_base_gt_iou'] = dict(median=float(np.nanmedian(ious)), p05=float(np.nanpercentile(ious, 5)),
++                                            min=float(np.nanmin(ious)), n_shape_mismatch=int(np.isnan(ious).sum()),
++                                            n_identical=int((ious == 1.0).sum()))
++    # ---- cluster structure (committed dinoL518 k=75 partition)
++    sp = c1_space.load_space('dinoL518')
++    asg = json.load(open(os.path.join(WT, 'rebuild/B1/out/b1_cluster_assignment_dinoL518.json')))
++    lab_key = 'target_labels'
++    lab_by_name = {os.path.splitext(n)[0]: int(l) for n, l in zip(asg['target_names'], asg['target_labels'])}
++    keep = np.array([n in lab_by_name for n in tgt_names])
++    labels = np.array([lab_by_name[n] for n in np.array(tgt_names)[keep]])
++    is_camo_l = is_camo[keep]
++    from sklearn.metrics import silhouette_score, silhouette_samples
++    Tg = bank['dinoL518']['tgt'][keep]
++    sil_cos = float(silhouette_score(Tg, labels, metric='cosine'))
++    sil_euc = float(silhouette_score(Tg, labels, metric='euclidean'))
++    sil_s = silhouette_samples(Tg, labels, metric='cosine')
++    nearest_cent = np.argmax(Tg @ sp.centroids.T, axis=1)
++    # endpoint eta^2 (descriptive only)
++    E = bank['dinoL518']['test']
++    test_names = [os.path.splitext(x)[0] for x in nm['test']]
++    ecl = np.argmax(E @ sp.centroids.T, axis=1)
++
++    def eta2(err):
++        v = np.array([err[n] for n in test_names])
++        g = v.mean()
++        tot = ((v - g) ** 2).sum()
++        btw = sum((ecl == c).sum() * (v[ecl == c].mean() - g) ** 2 for c in np.unique(ecl))
++        return float(btw / tot)
++    b1 = {r['name']: float(r['one_minus_sa']) for r in csv.DictReader(open(os.path.join(WT, 'rebuild/B1/out/b1_scores_SINet-S2C_test.csv')))}
++    eta = dict(committed_predictions_SINet_S2C=eta2(b1))
++    per = defaultdict(lambda: defaultdict(list))
++    with gzip.open(os.path.join(SR, 'RUNS/an01/an01_per_image.csv.gz'), 'rt') as f:
++        for r in csv.DictReader(f):
++            if r['endpoint'] != 'COD10K':
++                continue
++            arch, arm = r['runid'].split('_')[0], r['runid'].split('_')[1]
++            per[(arch, arm)][os.path.splitext(r['name'])[0]].append(1.0 - float(r['Sm']))
++    for (arch, arm), d in sorted(per.items()):
++        eta['%s_%s_8seed_mean' % (arch, arm)] = eta2({k: float(np.mean(v)) for k, v in d.items()})
++    # ---- CAMO share of budget, per arm
++    camo_frac = np.array([is_camo_l[labels == c].mean() if (labels == c).any() else 0.0 for c in range(sp.k)])
++    mix = []
++    for arm, kind in (('C10', None), ('CSHUF', 'shuffled'), ('CINV', 'rank_reversed')):
++        sigma, _ = A.es_permutation(sp.es, kind)
++        al = largest_remainder(softmax_alloc(sp.es if kind is None else sp.es[sigma], 1.0), 1000)
++        mix.append(dict(arm=arm, budget_weighted_camo_share=float((al * camo_frac).sum() / 1000),
++                        pool_camo_share=float(is_camo.mean()),
++                        enrichment=float((al * camo_frac).sum() / 1000 / is_camo.mean()),
++                        n_target_labelled=int(keep.sum()),
++                        top2_quota_share=float(np.sort(al)[-2:].sum() / 1000)))
++    pool_hist = np.bincount(np.argmax(sp.cut @ sp.centroids.T, axis=1), minlength=sp.k)
++    exp_b = pool_hist / pool_hist.sum() * 1000
++    mix.append(dict(arm='B (expected)', budget_weighted_camo_share=float((exp_b * camo_frac).sum() / 1000),
++                    pool_camo_share=float(is_camo.mean()),
++                    enrichment=float((exp_b * camo_frac).sum() / 1000 / is_camo.mean()), top2_quota_share=''))
++    per_cluster = []
++    for c in range(sp.k):
++        m = labels == c
++        per_cluster.append(dict(cluster=c, n_target=int(m.sum()), camo_frac=float(camo_frac[c]),
++                                target_es=float(sp.es[c]), silhouette_mean_cosine=float(sil_s[m].mean()) if m.any() else '',
++                                n_test_assigned=int((ecl == c).sum()), n_cutouts_nearest=int(pool_hist[c])))
++
++    def wcsv(name, rs):
++        with open(os.path.join(rt, name), 'w', newline='') as f:
++            cols = []
++            for r in rs:
++                cols += [c for c in r if c not in cols]
++            w = csv.DictWriter(f, fieldnames=cols)
++            w.writeheader()
++            for r in rs:
++                w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for k, v in r.items()})
++    wcsv('AN-04_gate4_coverage_reproduction.csv', g4)
++    wcsv('AN-04_foreground_coverage.csv', cov)
++    wcsv('AN-04_cluster_domain_mix.csv', mix + [dict(arm='cluster %d' % r['cluster'], **r) for r in per_cluster])
++    struct = [dict(quantity='silhouette (cosine, the 4033 labelled target images, committed k=75 labels)', value=sil_cos),
++              dict(quantity='silhouette (euclidean on L2-normalised)', value=sil_euc),
++              dict(quantity='committed silhouette_mean (b1_k_sweep, manuscript 0.1600)',
++                   value=json.load(open(os.path.join(WT, 'rebuild/DIAG/out/diag_clusters.json')))['partition_stability']['silhouette_mean']),
++              dict(quantity='committed-label vs nearest-centroid agreement (target)', value=float((nearest_cent == labels).mean()))]
++    struct += [dict(quantity='eta^2 between-cluster share of (1-S_alpha), COD10K-test, ' + k, value=v) for k, v in eta.items()]
++    wcsv('AN-04_cluster_structure.csv', struct)
++    # ---- figure
++    import matplotlib
++    matplotlib.use('Agg')
++    import matplotlib.pyplot as plt
++    fig, axes = plt.subplots(1, 3, figsize=(12, 3.8), sharey=True)
++    for ax, t in zip(axes, TAGS):
++        rows = [r for r in cov if r['embedder'] == t and r['k'] == 5]
++        lab = [r['compared_set'] for r in rows]
++        ax.barh(range(len(rows)), [r['recall'] for r in rows], color=['#888' if 'pool' in r['set_kind'] else '#2a6fbb' for r in rows])
++        ax.set_yticks(range(len(rows)))
++        ax.set_yticklabels(lab, fontsize=7)
++        ax.set_xlim(0, 1)
++        ax.set_title('%s, k=5 recall of real target' % t, fontsize=9)
++    fig.suptitle('Post-review exploratory: how much of the real target each injected set covers', fontsize=10)
++    fig.tight_layout()
++    fig.savefig(os.path.join(SR, 'FIGURES/AN-04_coverage.png'), dpi=150)
++    summ = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), gate4_passed=gate4,
++                gate4=[(g['embedder'], g['set'], round(g['recall'], 4), g['committed_recall']) for g in g4],
++                foreground=fg, silhouette_cosine=sil_cos, silhouette_euclidean=sil_euc, eta2=eta, camo_mix=mix,
++                labels_key=lab_key, seconds=round(time.time() - t0, 1),
++                note='endpoint labels used only for the descriptive eta^2; no selection uses them')
++    json.dump(summ, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-04_summary.json'), 'w'), indent=1)
++    print(json.dumps(summ, indent=1))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04b_signal_correlations.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04b_signal_correlations.py
+new file mode 100644
+index 0000000..a8f8773
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04b_signal_correlations.py
+@@ -0,0 +1,89 @@
++#!/usr/bin/env python
++"""AN-04 (part b): uncertainty score vs per-pixel and structural error (+0.8553 vs +0.4276).
++
++Calls the UNCHANGED base function rebuild/B1/b1_es_error_correlation.step_correlate (k = 75, 10 k-means
++seeds, clusters with >= 15 endpoint images), with only E0_CACHE redirected to the original working
++copy's committed cache. Gate: SINet/S2C must reproduce the committed b1_correlations.json values to 1e-9.
++Adds an architecture breakdown (every committed per-image score file) and a COD10K super-class
++breakdown of the per-image Spearman rho. Endpoint labels are used only descriptively.
++
++Outputs: RESULT_TABLES/AN-04_signal_correlations.csv, EXPERIMENT_LOGS/AN-04b_summary.json
++"""
++import argparse
++import csv
++import json
++import os
++import sys
++import time
++
++import numpy as np
++from scipy.stats import spearmanr
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++for p in (os.path.join(WT, 'rebuild'), os.path.join(WT, 'rebuild/B1')):
++    sys.path.insert(0, p)
++import b1_es_error_correlation as B1      # noqa: E402  (base, unchanged)
++
++B1.E0_CACHE = os.path.join(DR, 'rebuild/E0/cache')
++ARCHS = ['SINet/S2C', 'SINet-v2/S2C', 'SegMaR/S2C', 'SINet/S2C_MT', 'SINet/S2C_SO']
++
++
++def main():
++    t0 = time.time()
++    X, tnames, lmeta = B1.load_target('dinoL518')
++    committed = json.load(open(os.path.join(WT, 'rebuild/B1/out/b1_correlations.json')))['SINet/S2C|test|k75']
++    rows, gate = [], {}
++    for arch in ARCHS:
++        r = B1.step_correlate(X, tnames, 75, arch, 'test', tag='dinoL518')
++        if r is None:
++            continue
++        row = dict(arch=arch, k=75, n_images=r['n_images'])
++        for err in B1.ERRORS:
++            pc = r['percluster_%s' % err]
++            row['percluster_rho_mean_' + err] = pc['rho_mean']
++            row['percluster_rho_sd_' + err] = pc['rho_sd']
++            row['per_image_rho_' + err] = r['per_image'][err]['rho']
++        row['ratio_structural_over_pixel'] = row['percluster_rho_mean_one_minus_sa'] / row['percluster_rho_mean_mae']
++        rows.append(row)
++        if arch == 'SINet/S2C':
++            for err in ('mae', 'one_minus_sa'):
++                mine = r['percluster_%s' % err]['rho_mean']
++                ref = committed['percluster_%s' % err]['rho_mean']
++                gate[err] = dict(mine=mine, committed=ref, match_1e9=abs(mine - ref) < 1e-9)
++        # super-class breakdown of the per-image rho (descriptive)
++        sc = {}
++        for s in B1.load_scores(arch, 'test'):
++            parts = s['name'].split('-')
++            key = parts[3] if len(parts) > 3 else 'other'
++            sc.setdefault(key, []).append(s)
++        for key, ss in sorted(sc.items()):
++            if len(ss) < 30:
++                continue
++            rows.append(dict(arch=arch, k='per-image, super-class %s' % key, n_images=len(ss),
++                             per_image_rho_mae=float(spearmanr([x['es'] for x in ss], [x['mae'] for x in ss]).statistic),
++                             per_image_rho_one_minus_sa=float(spearmanr([x['es'] for x in ss], [x['one_minus_sa'] for x in ss]).statistic),
++                             per_image_rho_one_minus_iou=float(spearmanr([x['es'] for x in ss], [x['one_minus_iou'] for x in ss]).statistic)))
++    cols = []
++    for r in rows:
++        cols += [c for c in r if c not in cols]
++    with open(os.path.join(SR, 'RESULT_TABLES/AN-04_signal_correlations.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=cols)
++        w.writeheader()
++        for r in rows:
++            w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else v) for k, v in r.items()})
++    summ = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), target_meta=lmeta, gate=gate,
++                gate_passed=all(g['match_1e9'] for g in gate.values()),
++                archs={r['arch']: dict(mae=r['percluster_rho_mean_mae'], one_minus_sa=r['percluster_rho_mean_one_minus_sa'],
++                                       ratio=r['ratio_structural_over_pixel']) for r in rows if r['k'] == 75},
++                seconds=round(time.time() - t0, 1))
++    json.dump(summ, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-04b_summary.json'), 'w'), indent=1, default=str)
++    print(json.dumps(summ, indent=1, default=str))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_chameleon.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_chameleon.py
+new file mode 100644
+index 0000000..443ea25
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_chameleon.py
+@@ -0,0 +1,327 @@
++#!/usr/bin/env python
++"""AN-05 -- CHAMELEON duplicate re-run, exact-hash scopes, protocol pathways and mask releases.
++
++ANALYSIS_PRESPEC.md §9. Every detector is the committed code, UNCHANGED:
++  Tier A  rebuild/D2_reaudit/release/detect_contamination.py (CLI, run as a subprocess)
++  Tier B  rebuild/DIAG/diag_chameleon_ext.py main()  (module path globals repointed, OUT redirected)
++  Adjud.  rebuild/D2_FINAL_AUDIT/adjudicate.py main() (same)
++  Masks   rebuild/D2_reaudit/d2r_reaudit.py _mask_white / source_polarity / _mask_object
++Thresholds are the published ones; none is changed. Data are read from --data-root only.
++
++Stages (--stage): tierA, tierB, adjudicate, tables, all.
++"""
++import argparse
++import csv
++import hashlib
++import io
++import json
++import os
++import re
++import subprocess
++import sys
++import time
++from collections import defaultdict
++
++import numpy as np
++from PIL import Image
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++ap.add_argument('--stage', default='all')
++ap.add_argument('--workers', type=int, default=8)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++RUN = os.path.join(SR, 'RUNS/an05')
++os.makedirs(RUN, exist_ok=True)
++PY = sys.executable
++DET = os.path.join(WT, 'rebuild/D2_reaudit/release/detect_contamination.py')
++CHAM = os.path.join(DR, 'Dataset/chameleon_new/animals')         # author-sourced release (76)
++CHAM_REPO = os.path.join(DR, 'Dataset/Test/CHAMELEON/Imgs')      # repo copy
++POOLS = {   # name -> (dir, role in THIS paper's protocol)
++    'target_4040': (os.path.join(DR, 'Dataset/Target/Image'), 'unlabelled target (COD10K-train 3040 + CAMO-train 1000)'),
++    'source_hkuis_4447': (os.path.join(DR, 'Dataset/Source/HKU-IS/Image'), 'supervised source (labels used)'),
++    'source_hkuis_raw': (os.path.join(DR, 'Dataset/Source/HKU-IS_raw/imgs'), 'supervised source, raw release'),
++    'renders_4447': (os.path.join(DR, 'Dataset/LAKERED/output/HKU-IS/images'), 'synthetic injection pool (labels used)'),
++    'camo250_val': (os.path.join(DR, 'Dataset/Val/CAMO/Imgs'), 'checkpoint selection (MAE)'),
++    'cod10k_test': (os.path.join(DR, 'Dataset/Test/COD10K/Imgs'), 'held-out primary endpoint'),
++    'nc4k_test': (os.path.join(DR, 'Dataset/Test/NC4K/Imgs'), 'held-out secondary endpoint (negative control)'),
++}
++
++
++def log(m):
++    print('[%s] %s' % (time.strftime('%H:%M:%S'), m), flush=True)
++
++
++def sha(p):
++    return hashlib.sha256(open(p, 'rb').read()).hexdigest()
++
++
++def stage_tierA():
++    cmds = []
++    r = subprocess.run([PY, '-I', '-B', DET, '--self-test'], capture_output=True, text=True)
++    open(os.path.join(RUN, 'tierA_selftest.log'), 'w').write(r.stdout + r.stderr + '\nrc=%d\n' % r.returncode)
++    cmds.append(('self-test', r.returncode))
++    for name, (d, _) in POOLS.items():
++        js, cs = os.path.join(RUN, 'tierA_%s.json' % name), os.path.join(RUN, 'tierA_%s.csv' % name)
++        cmd = [PY, '-I', '-B', DET, CHAM, d, '--json', js, '--csv', cs, '--workers', str(a.workers)]
++        log('Tier A vs %s' % name)
++        r = subprocess.run(cmd, capture_output=True, text=True)
++        open(os.path.join(RUN, 'tierA_%s.log' % name), 'w').write(' '.join(cmd) + '\n' + r.stdout + r.stderr
++                                                                   + '\nrc=%d\n' % r.returncode)
++        cmds.append((name, r.returncode))
++    # repo copy vs target as well (the "byte-identical release" check is done in tables)
++    json.dump(cmds, open(os.path.join(RUN, 'tierA_rc.json'), 'w'))
++
++
++def stage_tierB():
++    sys.path.insert(0, os.path.join(WT, 'rebuild/DIAG'))
++    import diag_chameleon_ext as X
++    X.CHAM_DIR, X.TRAIN_DIR = CHAM, POOLS['target_4040'][0]
++    X.NC4K_DIR, X.COD_TEST_DIR = POOLS['nc4k_test'][0], POOLS['cod10k_test'][0]
++    X.COMMITTED = os.path.join(WT, 'rebuild/D2_reaudit/out/chameleon_contaminated.json')   # base, committed
++    X.OUT = os.path.join(RUN, 'tierB')
++    sys.argv = ['diag_chameleon_ext.py', '--workers', str(a.workers)]
++    log('Tier B (unchanged diag_chameleon_ext.main)')
++    X.main()
++
++
++def stage_adjudicate():
++    sys.path.insert(0, os.path.join(WT, 'rebuild/D2_FINAL_AUDIT'))
++    import adjudicate as J
++    J.CHAM_DIR, J.TRAIN_DIR = CHAM, POOLS['target_4040'][0]
++    J.EXT_JSON = os.path.join(RUN, 'tierB', 'diag_chameleon_ext.json')
++    J.CONFIRMED = os.path.join(WT, 'rebuild/D2_reaudit/out/chameleon_contaminated.json')
++    J.OUT = os.path.join(RUN, 'adjudicate')
++    sys.argv = ['adjudicate.py']
++    log('Adjudication (unchanged adjudicate.main)')
++    J.main()
++
++
++def stage_tables():
++    rt = os.path.join(SR, 'RESULT_TABLES')
++    names = sorted(os.listdir(CHAM), key=lambda s: int(re.search(r'(\d+)', s).group(1)))
++    assert len(names) == 76
++    stem = lambda n: os.path.splitext(n)[0]      # noqa: E731
++    # ---- Tier A results per pool
++    tA = {}
++    for name in POOLS:
++        js = os.path.join(RUN, 'tierA_%s.json' % name)
++        tA[name] = json.load(open(js)) if os.path.isfile(js) else None
++    committedA = json.load(open(os.path.join(WT, 'rebuild/D2_reaudit/out/chameleon_contaminated.json')))
++    # ---- Tier B + adjudication
++    adj = json.load(open(os.path.join(RUN, 'adjudicate', 'adjudication.json')))
++    ext = json.load(open(os.path.join(RUN, 'tierB', 'diag_chameleon_ext.json')))
++    # ---- exact hashes and decoded-pixel identity vs every pool
++    def pix_hash(p):
++        with Image.open(p) as im:
++            arr = np.asarray(im.convert('RGB'))
++        return hashlib.sha256(arr.tobytes() + str(arr.shape).encode()).hexdigest()
++    cham_sha = {n: sha(os.path.join(CHAM, n)) for n in names}
++    cham_pix = {n: pix_hash(os.path.join(CHAM, n)) for n in names}
++    repo_names = sorted(os.listdir(CHAM_REPO))
++    repo_sha = {stem(n): sha(os.path.join(CHAM_REPO, n)) for n in repo_names}
++    exact = defaultdict(dict)
++    for pname, (d, _) in POOLS.items():
++        fs = sorted(os.listdir(d))
++        hs, ps = defaultdict(list), defaultdict(list)
++        for f in fs:
++            p = os.path.join(d, f)
++            hs[sha(p)].append(f)
++        for n in names:
++            exact[n][pname] = hs.get(cham_sha[n], [])
++        # pixel identity only where a same-dimension file exists (cheap)
++        dims_c = {n: Image.open(os.path.join(CHAM, n)).size for n in names}
++        need = set(dims_c.values())
++        for f in fs:
++            p = os.path.join(d, f)
++            try:
++                if Image.open(p).size in need:
++                    ps[pix_hash(p)].append(f)
++            except Exception:                                  # noqa: BLE001
++                pass
++        for n in names:
++            exact[n][pname + '_pixel'] = ps.get(cham_pix[n], [])
++    # ---- per-image ledger
++    confA = {}
++    for pr in tA['target_4040']['pairs']:
++        confA.setdefault(stem(pr['image_a']), []).append(pr)
++    uncheckedA = {stem(r['name']) for r in tA['target_4040']['nn_rows'] if r['nearest'] is None}
++    ext_match = {stem(r['chameleon_image']): r for r in ext['rows']
++                 if r.get('verdict') == 'MATCH' and r.get('at_operating_point')}
++    adj_ext = {stem(r['chameleon_image']): r for r in adj if r.get('group') == 'extension'}
++    committed_final = {stem(r['image']): r for r in json.load(open(os.path.join(
++        WT, 'rebuild/D2_FINAL_AUDIT/out/final_verdicts.json')))['rows']}
++
++    def transform_consistent(r):
++        # Reproduction consistency check of the manuscript's adjudication criterion ("same photograph
++        # rescaled or cropped": a full-resolution homography exists, near-similarity, high correlation).
++        # NOT a threshold of the published method; the committed decisions were a documented judgement.
++        if r is None or r.get('verdict') in ('NO HOMOGRAPHY', 'NO OVERLAP'):
++            return False
++        return abs(r.get('shear_deg', 99)) <= 5.0 and r.get('corr', 0) >= 0.90
++    pool_of = lambda f: ('COD10K-train' if f.startswith('COD10K') else ('CAMO-train' if f.lower().startswith('camo') else 'other'))  # noqa: E731
++    rows = []
++    for n in names:
++        s = stem(n)
++        pa = confA.get(s, [])
++        partner_a = sorted({p['image_b'] for p in pa})
++        rb = adj_ext.get(s)
++        b_ok = (s in ext_match) and transform_consistent(rb)
++        if partner_a:
++            status, tier, partners = 'confirmed', 'A', partner_a
++        elif b_ok:
++            status, tier, partners = 'confirmed', 'B', [rb['partner']]
++        elif s in uncheckedA:
++            status, tier, partners = 'unchecked', '', []
++        else:
++            status, tier, partners = 'tierA_checked_no_match', '', []
++        cf = committed_final.get(s, {})
++        rows.append(dict(
++            chameleon=s, status=status, tier=tier, partners=' '.join(partners),
++            partner_pools=' '.join(sorted({pool_of(f) for f in partners})),
++            in_cod10k_train=any(pool_of(f) == 'COD10K-train' for f in partners),
++            in_camo_train=any(pool_of(f) == 'CAMO-train' for f in partners),
++            tierA_mean_abs=(min(p['mean_abs'] for p in pa) if pa else ''),
++            tierA_n_partners=len(partner_a), tierA_no_same_dim_candidate=(s in uncheckedA),
++            tierB_match_at_operating_point=(s in ext_match),
++            tierB_inliers=(ext_match[s]['n_inlier'] if s in ext_match else ''),
++            adj_residual=(rb.get('residual_mean', '') if rb else ''), adj_corr=(rb.get('corr', '') if rb else ''),
++            adj_scale=('%s/%s' % (rb.get('scale_x', ''), rb.get('scale_y', '')) if rb else ''),
++            adj_shear_deg=(rb.get('shear_deg', '') if rb else ''), adj_verdict=(rb.get('verdict', '') if rb else ''),
++            tierB_transform_consistent=(transform_consistent(rb) if rb else ''),
++            committed_final_verdict=cf.get('verdict', ''), committed_final_tier=cf.get('tier', ''),
++            committed_partner=cf.get('partner', ''), committed_pool=cf.get('pool', ''),
++            agrees_with_committed=(
++                (status == 'confirmed') == (cf.get('verdict') == 'CONTAMINATED')
++                and (status == 'unchecked') == (cf.get('verdict') == 'UNCHECKED')),
++            exact_sha_target=' '.join(exact[n]['target_4040']), exact_sha_camo250=' '.join(exact[n]['camo250_val']),
++            exact_sha_source=' '.join(exact[n]['source_hkuis_4447'] + exact[n]['source_hkuis_raw'] + exact[n]['renders_4447']),
++            exact_sha_cod10k_test=' '.join(exact[n]['cod10k_test']), exact_sha_nc4k=' '.join(exact[n]['nc4k_test']),
++            pixel_identical_target=' '.join(exact[n]['target_4040_pixel']),
++            pixel_identical_camo250=' '.join(exact[n]['camo250_val_pixel']),
++            author_release_equals_repo_copy=(cham_sha[n] == repo_sha.get(s)),
++            sha256=cham_sha[n]))
++    n_conf = sum(r['status'] == 'confirmed' for r in rows)
++    n_cod = sum(r['status'] == 'confirmed' and r['in_cod10k_train'] for r in rows)
++    n_unch = sum(r['status'] == 'unchecked' for r in rows)
++    n_neg = sum(r['status'] == 'tierA_checked_no_match' for r in rows)
++    assert len(rows) == 76 and n_conf + n_unch + n_neg == 76
++    for r in rows:
++        r.update(confirmed_floor_total=n_conf, in_cod10k_train_total=n_cod, unchecked_total=n_unch,
++                 tierA_checked_no_match_total=n_neg)
++    with open(os.path.join(rt, 'AN-05_chameleon_pairs.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(rows[0]))
++        w.writeheader()
++        w.writerows(rows)
++    # ---- protocol pathways
++    # Tier-A matches against the validation and test splits (released detector, unchanged tolerance)
++    def tierA_names(pool):
++        j = tA.get(pool)
++        return {stem(p['image_a']) for p in j['pairs']} if j else set()
++    camo_tA, test_tA = tierA_names('camo250_val'), tierA_names('cod10k_test')
++    paths = []
++    for r in rows:
++        dup = r['status'] == 'confirmed'
++        camo250 = bool(r['exact_sha_camo250'] or r['pixel_identical_camo250'] or r['chameleon'] in camo_tA)
++        in_test = r['chameleon'] in test_tA
++
++        def lvl(hit):
++            return 'direct' if hit else 'unknown'
++        paths.append(dict(
++            chameleon=r['chameleon'], status=r['status'], partner_pools=r['partner_pools'],
++            this_paper_supervised_source_labels=('direct' if r['exact_sha_source'] else 'not-detected') +
++            ' (source = HKU-IS authors pool + raw + renders; exact/pixel identity: none; Tier A: no same-dimension '
++            'candidates in source pools; Tier B not run against source)',
++            this_paper_unlabelled_target_image=lvl(dup) + (' (photo in the 4040-image target pool; image only, no label)' if dup else
++                                                           ' (no partner found in the target pool; not shown absent)'),
++            this_paper_checkpoint_selection=('direct (%s in CAMO-250)' % ('byte-identical' if r['exact_sha_camo250'] else 're-encoded')
++                                             if camo250 else 'not-detected (exact/pixel/Tier A vs CAMO-250)'),
++            this_paper_test_endpoint='absent (CHAMELEON is not an endpoint here)',
++            cross_benchmark_cod10k_test=('direct (re-encode of a COD10K-test image)' if in_test else 'not-detected (Tier A)'),
++            common_supervised_protocol_train_labels=lvl(dup) + (' (partner in public %s, mask available)' % r['partner_pools'] if dup else ''),
++            common_protocol_checkpoint_selection=('direct if CAMO-test is used for selection' if camo250 else 'protocol-dependent'),
++            common_protocol_test='CHAMELEON is the evaluated test set'))
++    with open(os.path.join(rt, 'AN-05_protocol_paths.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(paths[0]))
++        w.writeheader()
++        w.writerows(paths)
++    # ---- mask releases
++    sys.path.insert(0, os.path.join(WT, 'rebuild/D2_reaudit'))
++    sys.path.insert(0, os.path.join(WT, 'rebuild'))
++    sys.path.insert(0, os.path.join(WT, 'Eval'))
++    import d2r_reaudit as R
++    import metrics as Measure
++    md_a = os.path.join(DR, 'Dataset/chameleon_new/masks')
++    md_r = os.path.join(DR, 'Dataset/Test/CHAMELEON/GT')
++    ma = {int(re.search(r'(\d+)', f).group(1)): f for f in os.listdir(md_a)}
++    mr = {int(re.search(r'(\d+)', f).group(1)): f for f in os.listdir(md_r)}
++    pol_a, wf_a = R.source_polarity([os.path.join(md_a, f) for f in ma.values()])
++    pol_r, wf_r = R.source_polarity([os.path.join(md_r, f) for f in mr.values()])
++    preds = os.path.join(DR, 'rebuild/D2_reaudit/preds')
++    mrows, maes = [], {'author': [], 'repo': []}
++    for n in names:
++        k = int(re.search(r'(\d+)', n).group(1))
++        wa, _ = R._mask_white(os.path.join(md_a, ma[k]))
++        wr, _ = R._mask_white(os.path.join(md_r, mr[k]))
++        oa, _ = R._mask_object(os.path.join(md_a, ma[k]), pol_a)
++        orr, _ = R._mask_object(os.path.join(md_r, mr[k]), pol_r)
++        same = wa.shape == wr.shape
++        iou_stored = float((wa & wr).sum() / max(1, (wa | wr).sum())) if same else float('nan')
++        A_, B_ = oa > 127, orr > 127
++        iou_al = float((A_ & B_).sum() / max(1, (A_ | B_).sum())) if same else float('nan')
++        row = dict(chameleon=stem(n), author_mask=ma[k], repo_mask=mr[k], author_mask_sha=sha(os.path.join(md_a, ma[k])),
++                   repo_mask_sha=sha(os.path.join(md_r, mr[k])), same_shape=same, iou_as_stored=iou_stored,
++                   iou_polarity_aligned=iou_al, identical_after_alignment=bool(same and np.array_equal(A_, B_)),
++                   author_polarity=pol_a, repo_polarity=pol_r)
++        pp = os.path.join(preds, stem(n) + '.png')
++        if os.path.isfile(pp):
++            pred = np.asarray(Image.open(pp).convert('L'))
++            for tag, g in (('author', oa), ('repo', orr)):
++                p = pred if pred.shape == g.shape else np.asarray(Image.fromarray(pred).resize((g.shape[1], g.shape[0]), Image.NEAREST))
++                m = Measure.MAE()
++                m.step(pred=p, gt=g)
++                row['mae_' + tag] = float(m.get_results()['mae'])
++                maes[tag].append(row['mae_' + tag])
++        mrows.append(row)
++    with open(os.path.join(rt, 'AN-05_mask_release.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(mrows[0]))
++        w.writeheader()
++        w.writerows(mrows)
++    ious = [r['iou_polarity_aligned'] for r in mrows]
++    summary = dict(
++        generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
++        tierA_selftest_rc=json.load(open(os.path.join(RUN, 'tierA_rc.json')))[0],
++        tierA={k: (dict(contaminated=v['contaminated']['n'], sweep=v['tolerance_sweep'],
++                        n_unchecked=v['nearest_neighbour']['n_unchecked'], pairs=v['pairs_confirmed'])
++                   if v else None) for k, v in tA.items()},
++        tierB_operating_point=ext.get('operating_point', ext.get('threshold')),
++        tierB_keys=list(ext)[:30],
++        confirmed_floor=n_conf, in_cod10k_train=n_cod, unchecked=n_unch, tierA_checked_no_match=n_neg,
++        exact_sha_matches={p: sum(1 for n in names if exact[n][p]) for p in POOLS},
++        pixel_identical_matches={p: sum(1 for n in names if exact[n][p + '_pixel']) for p in POOLS},
++        camo250_exact_names=[stem(n) for n in names if exact[n]['camo250_val']],
++        author_release_equals_repo_copy=sum(r['author_release_equals_repo_copy'] for r in rows),
++        masks=dict(author_polarity=pol_a, author_white_frac=wf_a, repo_polarity=pol_r, repo_white_frac=wf_r,
++                   mean_iou_as_stored=float(np.nanmean([r['iou_as_stored'] for r in mrows])),
++                   mean_iou_aligned=float(np.nanmean(ious)),
++                   n_identical_after_alignment=sum(r['identical_after_alignment'] for r in mrows),
++                   n_iou_ge_0p9=int(sum(1 for x in ious if x >= 0.9)),
++                   mae_author=float(np.mean(maes['author'])) if maes['author'] else None,
++                   mae_repo=float(np.mean(maes['repo'])) if maes['repo'] else None,
++                   n_preds=len(maes['author']), preds_source='rebuild/D2_reaudit/preds (SINet S2C Tea_epoch_best, committed)'))
++    json.dump(summary, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-05_summary.json'), 'w'), indent=1, default=str)
++    print(json.dumps(summary, indent=1, default=str))
++
++
++if __name__ == '__main__':
++    st = a.stage
++    if st in ('tierA', 'all'):
++        stage_tierA()
++    if st in ('tierB', 'all'):
++        stage_tierB()
++    if st in ('adjudicate', 'all'):
++        stage_adjudicate()
++    if st in ('tables', 'all'):
++        stage_tables()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_cross_benchmark.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_cross_benchmark.py
+new file mode 100644
+index 0000000..a42152e
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_cross_benchmark.py
+@@ -0,0 +1,68 @@
++#!/usr/bin/env python
++"""AN-05 addendum: where each of the 76 CHAMELEON photographs also appears across public COD splits.
++
++Reads only AN-05 outputs (Tier-A JSONs from the unchanged released detector, the pairs ledger). The test
++and validation pools were part of the pre-specified pool list (ANALYSIS_PRESPEC.md §9). No threshold
++is changed. Output: RESULT_TABLES/AN-05_cross_benchmark.csv, EXPERIMENT_LOGS/AN-05_cross_benchmark.json
++"""
++import argparse
++import collections
++import csv
++import json
++import os
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++SR = a.sr
++RUN, RT = os.path.join(SR, 'RUNS/an05'), os.path.join(SR, 'RESULT_TABLES')
++
++
++def tierA(pool):
++    j = json.load(open(os.path.join(RUN, 'tierA_%s.json' % pool)))
++    out = collections.defaultdict(list)
++    for p in j['pairs']:
++        out[p['image_a'][:-4]].append((p['image_b'], p['mean_abs']))
++    gap = j['nearest_neighbour']['largest_gap']
++    return out, gap
++
++
++test, gap_t = tierA('cod10k_test')
++val, gap_v = tierA('camo250_val')
++nc4k, _ = tierA('nc4k_test')
++rows = []
++for r in csv.DictReader(open(os.path.join(RT, 'AN-05_chameleon_pairs.csv'))):
++    s = r['chameleon']
++    t = test.get(s, [])
++    v = val.get(s, [])
++    in_train = r['status'] == 'confirmed'
++    rows.append(dict(
++        chameleon=s, training_pool_status=r['status'], training_partner_pools=r['partner_pools'],
++        cod10k_test_partner=' '.join(x for x, _ in t), cod10k_test_mean_abs=(min(d for _, d in t) if t else ''),
++        camo250_partner=' '.join(x for x, _ in v) or r['exact_sha_camo250'],
++        camo250_byte_identical=bool(r['exact_sha_camo250']),
++        nc4k_partner=' '.join(x for x, _ in nc4k.get(s, [])),
++        in_any_public_training_split=in_train,
++        in_cod10k_test=bool(t), in_camo250=bool(v or r['exact_sha_camo250']),
++        duplicated_anywhere_checked=bool(in_train or t or v or r['exact_sha_camo250']),
++        note='Tier A = same-dimension re-encode (released detector, unchanged tolerance 6/255); a lower bound'))
++with open(os.path.join(RT, 'AN-05_cross_benchmark.csv'), 'w', newline='') as f:
++    w = csv.DictWriter(f, fieldnames=list(rows[0]))
++    w.writeheader()
++    w.writerows(rows)
++c = collections.Counter
++summ = dict(
++    n=len(rows),
++    in_training_pools=sum(r['in_any_public_training_split'] for r in rows),
++    in_cod10k_test=sum(r['in_cod10k_test'] for r in rows),
++    in_cod10k_test_by_training_status=dict(c(r['training_pool_status'] for r in rows if r['in_cod10k_test'])),
++    in_both_training_and_cod10k_test=sum(r['in_any_public_training_split'] and r['in_cod10k_test'] for r in rows),
++    in_camo250=sum(r['in_camo250'] for r in rows),
++    camo250_names=[r['chameleon'] for r in rows if r['in_camo250']],
++    camo250_byte_identical=sum(r['camo250_byte_identical'] for r in rows),
++    in_nc4k=sum(bool(r['nc4k_partner']) for r in rows),
++    duplicated_somewhere=sum(r['duplicated_anywhere_checked'] for r in rows),
++    not_found_anywhere=[r['chameleon'] for r in rows if not r['duplicated_anywhere_checked']],
++    cod10k_test_nn_gap=gap_t, camo250_nn_gap=gap_v)
++json.dump(summ, open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-05_cross_benchmark.json'), 'w'), indent=1)
++print(json.dumps(summ, indent=1))
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_pseudolabel_exposure.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_pseudolabel_exposure.py
+new file mode 100644
+index 0000000..c317729
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an05_pseudolabel_exposure.py
+@@ -0,0 +1,49 @@
++#!/usr/bin/env python
++"""AN-05 addendum: was the transductive path actually exercised in this paper's 64 eight-seed runs?
++
++For each run, list the round-2 pool (Dataset/Source/ABC/<rid>_iteration2/Image, read-only) and count how
++many of the training-pool partners of the 50 confirmed CHAMELEON duplicates were appended there with the
++teacher's prediction as a pseudo-label. Descriptive; decides nothing.
++Output: RESULT_TABLES/AN-05_pseudolabel_exposure.csv, EXPERIMENT_LOGS/AN-05_pseudolabel_exposure.json
++"""
++import argparse
++import csv
++import json
++import os
++import statistics as st
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++RT = os.path.join(a.sr, 'RESULT_TABLES')
++pairs = list(csv.DictReader(open(os.path.join(RT, 'AN-05_chameleon_pairs.csv'))))
++partner_to_cham = {}
++for r in pairs:
++    if r['status'] == 'confirmed':
++        for p in r['partners'].split():
++            partner_to_cham[os.path.splitext(p)[0]] = r['chameleon']
++runs = sorted({'%s_%s_s%s' % (r['architecture'], r['arm'], r['seed'])
++               for r in csv.DictReader(open(os.path.join(RT, 'run_manifest.csv')))})
++rows = []
++for rid in runs:
++    r1 = {os.path.splitext(n)[0] for n in os.listdir(os.path.join(a.data_root, 'Dataset/Source/ABC', rid, 'Image'))}
++    r2 = {os.path.splitext(n)[0] for n in os.listdir(os.path.join(a.data_root, 'Dataset/Source/ABC', rid + '_iteration2', 'Image'))}
++    app = r2 - r1
++    hit = sorted({partner_to_cham[n] for n in app if n in partner_to_cham})
++    rows.append(dict(runid=rid, n_appended=len(app), n_cham_partners_appended=len(hit),
++                     chameleon_images_pseudolabelled=' '.join(hit)))
++with open(os.path.join(RT, 'AN-05_pseudolabel_exposure.csv'), 'w', newline='') as f:
++    w = csv.DictWriter(f, fieldnames=list(rows[0]))
++    w.writeheader()
++    w.writerows(rows)
++v = [r['n_cham_partners_appended'] for r in rows]
++ever = set()
++for r in rows:
++    ever |= set(r['chameleon_images_pseudolabelled'].split())
++summ = dict(n_runs=len(rows), n_partner_images=len(partner_to_cham), per_run_min=min(v), per_run_max=max(v),
++            per_run_mean=st.mean(v), chameleon_images_pseudolabelled_in_any_run=len(ever),
++            note='these photos were seen unlabelled in round 1 by every run, and some were re-used in round 2 '
++                 'with the model\'s own predicted mask; no CHAMELEON ground truth is used anywhere')
++json.dump(summ, open(os.path.join(a.sr, 'EXPERIMENT_LOGS/AN-05_pseudolabel_exposure.json'), 'w'), indent=1)
++print(json.dumps(summ, indent=1))
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/audit_independent.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/audit_independent.py
+new file mode 100644
+index 0000000..1b2f61e
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/audit_independent.py
+@@ -0,0 +1,249 @@
++#!/usr/bin/env python
++"""Independent verification pass (brief §7). Deliberately does NOT import statlib or any analysis script.
++
++Recomputes headline numbers from raw per-run tables and committed manifests with separate code
++(plain Python + scipy.stats), then checks that each number appears, as stated, in the documents that
++cite it. Also: relative-link check over all Markdown, character count of the OpenReview text, scan of
++reviewer-facing text for private paths, manuscript integrity re-run.
++
++Exit code 0 only if every check passes. Writes EXPERIMENT_LOGS/AUDIT_independent.json.
++"""
++import argparse
++import csv
++import glob
++import json
++import math
++import os
++import re
++import subprocess
++import sys
++from collections import defaultdict
++
++from scipy import stats
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++REB = os.path.dirname(SR)
++RT = os.path.join(SR, 'RESULT_TABLES')
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++results = []
++
++
++def check(name, ok, detail=''):
++    results.append(dict(check=name, passed=bool(ok), detail=str(detail)[:400]))
++
++
++def mean(x):
++    return sum(x) / len(x)
++
++
++def sd(x):
++    m = mean(x)
++    return math.sqrt(sum((v - m) ** 2 for v in x) / (len(x) - 1))
++
++
++def doc(name):
++    return open(os.path.join(SR, name), encoding='utf-8').read()
++
++
++def fmt(v, nd=4, sign=True):
++    s = ('%+.' + str(nd) + 'f') % v if sign else ('%.' + str(nd) + 'f') % v
++    return s.replace('-', '−') if s.startswith('-') else s
++
++
++def appears(text, s):
++    return s in text or s.replace('−', '-') in text
++
++
++# ------------------------------------------------------------------ 1. S_alpha re-score vs committed
++mine = {(r['runid'], r['endpoint']): r for r in csv.DictReader(open(os.path.join(SR, 'RUNS/an01/an01_rescored_full.csv')))}
++comm = {(r['runid'], r['endpoint']): r for r in csv.DictReader(open(os.path.join(WT, 'rebuild/ABC/out/se/abc_metrics.csv')))}
++keys = ('Sm', 'wFm', 'MAE', 'adpEm', 'meanEm', 'maxEm', 'adpFm', 'meanFm', 'maxFm')
++mism = [(k, m) for k in comm for m in keys if '%.6f' % float(mine[k][m]) != comm[k][m]]
++check('AN-01 all committed metrics reproduce at 6 dp', len(comm) == 128 and not mism, '%d rows, %d mismatches' % (len(comm), len(mism)))
++
++# ------------------------------------------------------------------ 2. paired / Welch primary and cells
++S = defaultdict(dict)
++for r in mine.values():
++    S[(r['arch'], r['endpoint'], r['arm'])][int(r['seed'])] = float(r['Sm'])
++reb, short = doc('FINAL_UPDATED_REBUTTAL.md'), doc('FINAL_UPDATED_REBUTTAL_OPENREVIEW.md')
++doc1 = doc('DOC-01_MANUSCRIPT_PROPOSED_EDITS.md')
++for arch, ep in (('SINet', 'COD10K'), ('SINet', 'NC4K'), ('SINetv2', 'COD10K'), ('SINetv2', 'NC4K')):
++    x = [S[(arch, ep, 'C10')][s] for s in SEEDS]
++    y = [S[(arch, ep, 'B')][s] for s in SEEDS]
++    d = [p - q for p, q in zip(x, y)]
++    se = sd(d) / math.sqrt(8)
++    t95 = stats.t.ppf(0.975, 7)
++    lo, hi = mean(d) - t95 * se, mean(d) + t95 * se
++    w = stats.ttest_ind(x, y, equal_var=False)
++    ci_w = w.confidence_interval(0.95)
++    tost = max(stats.t.sf((mean(d) + 0.005) / se, 7), stats.t.cdf((mean(d) - 0.005) / se, 7))
++    s_p = '[%s, %s]' % (fmt(lo), fmt(hi))
++    s_w = '[%s, %s]' % (fmt(ci_w.low), fmt(ci_w.high))
++    check('rebuttal cites paired CI %s %s %s' % (arch, ep, s_p), appears(reb, s_p))
++    check('rebuttal cites Welch CI %s %s %s' % (arch, ep, s_w), appears(reb, s_w))
++    check('TOST paired p %s %s = %.3f cited' % (arch, ep, tost), appears(reb, '%.3f' % tost))
++    if (arch, ep) == ('SINet', 'COD10K'):
++        u1 = mean(d) + stats.t.ppf(0.95, 7) * se
++        r_xy = stats.pearsonr(x, y)[0]
++        for t in (reb, short):
++            check('primary paired CI in both versions', appears(t, s_p))
++        check('primary one-sided bound +%.4f' % u1, appears(reb, fmt(u1)) and appears(short, fmt(u1)))
++        check('primary r = %.2f' % r_xy, appears(short, 'r = ' + fmt(r_xy, 2)))
++        check('primary 6/8 seeds positive', sum(v > 0 for v in d) == 6 and '6 of 8 seeds' in reb)
++        check('DOC-01 Edit 3 paired CI', appears(doc1, '$[%s, %s]$' % (('%+.4f' % lo), ('%+.4f' % hi))))
++
++# ------------------------------------------------------------------ 3. overlap from raw stem files
++stems = lambda f: set(l.strip() for l in open(os.path.join(WT, 'rebuild/ABC/out/se', f)) if l.strip())  # noqa: E731
++c10 = stems('abc_stems_C_a1.0.txt')
++inter = [len(stems('abc_stems_B_s%d.txt' % s) & c10) for s in SEEDS]
++frac = mean([(1000 - i) / 5447 for i in inter])
++check('B∩C10 range %d–%d' % (min(inter), max(inter)), min(inter) == 209 and max(inter) == 246 and '209–246' in reb and '209–246' in short)
++check('B vs C10 differing share of pool %.1f%%' % (100 * frac), '%.1f%%' % (100 * frac) == '14.1%' and '14.1%' in reb and '14.1%' in short)
++cf = [1000 - len(stems(p) & stems(q)) for p, q in (('abc_stems_C_a1.0.txt', 'abc_stems_CSHUF.txt'),
++                                                  ('abc_stems_C_a1.0.txt', 'abc_stems_CINV.txt'),
++                                                  ('abc_stems_CSHUF.txt', 'abc_stems_CINV.txt'))]
++check('C-family differing %d–%d of 1000 (45–51%%)' % (min(cf), max(cf)), min(cf) == 452 and max(cf) == 511)
++check('C-family share of pool 8.3–9.4%%', '%.1f' % (100 * min(cf) / 5447) == '8.3' and '%.1f' % (100 * max(cf) / 5447) == '9.4')
++
++# ------------------------------------------------------------------ 4. boundary headline from per-run table
++B = defaultdict(dict)
++for r in csv.DictReader(open(os.path.join(SR, 'RUNS/exp02/exp02_per_run.csv'))):
++    if r['endpoint'] == 'COD10K' and r['thresh'] == '0.5':
++        B[(r['arch'], r['arm'])][int(r['seed'])] = float(r['boundary_iou'])
++for arch in ('SINet', 'SINetv2'):
++    for arm in ('C10', 'CINV'):
++        d = [B[(arch, arm)][s] - B[(arch, 'B')][s] for s in SEEDS]
++        se = sd(d) / math.sqrt(8)
++        t95 = stats.t.ppf(0.975, 7)
++        s_ci = '%s [%s, %s]' % (fmt(mean(d)), fmt(mean(d) - t95 * se), fmt(mean(d) + t95 * se))
++        check('boundary %s %s-B %s cited' % (arch, arm, s_ci), appears(reb, s_ci))
++    # three-seed bar ratio reproduces the manuscript
++    for arm, want in (('C10', '1.37'), ('CINV', '1.34')):
++        d3 = [B[(arch, arm)][s] - B[(arch, 'B')][s] for s in (42, 43, 45)]
++        pooled = math.sqrt(sum(sum((B[(arch, m)][s] - mean([B[(arch, m)][t] for t in (42, 43, 45)])) ** 2
++                                   for s in (42, 43, 45)) for m in ('B', 'C10', 'CSHUF', 'CINV')) / 8)
++        if arch == 'SINet':
++            check('3-seed %s-B bar ratio = %s' % (arm, want), '%.2f' % (abs(mean(d3)) / (2 * pooled)) == want)
++# interaction, independent: Welch on per-seed differences
++for arm, want in (('C10', '+0.0044 [−0.0075, +0.0163]'), ('CINV', '+0.0065 [−0.0001, +0.0131]')):
++    dS = [B[('SINet', arm)][s] - B[('SINet', 'B')][s] for s in SEEDS]
++    dV = [B[('SINetv2', arm)][s] - B[('SINetv2', 'B')][s] for s in SEEDS]
++    w = stats.ttest_ind(dS, dV, equal_var=False)
++    ci = w.confidence_interval(0.95)
++    got = '%s [%s, %s]' % (fmt(mean(dS) - mean(dV)), fmt(ci.low), fmt(ci.high))
++    check('interaction %s = %s' % (arm, got), got == want and appears(reb, got))
++
++# ------------------------------------------------------------------ 5. EXP-01 preflight
++pf = {int(r['N']): float(r['DC_mean']) for r in csv.DictReader(open(os.path.join(RT, 'EXP-01_preflight.csv')))}
++for n, s in ((1000, '14.1%'), (2000, '17.2%'), (3000, '13.1%')):
++    check('preflight DC(%d) = %s' % (n, s), '%.1f%%' % (100 * pf[n]) == s and s in short)
++by = [r for r in csv.DictReader(open(os.path.join(RT, 'EXP-01_preflight_by_seed.csv'))) if r['N'] == '1000']
++check('preflight N=1000 matches raw stems', sorted(int(r['intersection']) for r in by) == sorted(inter))
++
++# ------------------------------------------------------------------ 6. CHAMELEON from detector JSON + ledgers
++tA = json.load(open(os.path.join(SR, 'RUNS/an05/tierA_target_4040.json')))
++check('Tier A 41 and sweep 11/26/37/40/41', tA['contaminated']['n'] == 41 and
++      [tA['tolerance_sweep'][k] for k in ('1.0', '2.0', '3.0', '5.0', '6.0')] == [11, 26, 37, 40, 41])
++P = list(csv.DictReader(open(os.path.join(RT, 'AN-05_chameleon_pairs.csv'))))
++cnt = defaultdict(int)
++for r in P:
++    cnt[r['status']] += 1
++cod = sum(1 for r in P if r['status'] == 'confirmed' and r['in_cod10k_train'] == 'True')
++check('76 = 50 + 16 + 10; 44 in COD10K-train', len(P) == 76 and cnt['confirmed'] == 50 and cnt['unchecked'] == 16
++      and cnt['tierA_checked_no_match'] == 10 and cod == 44)
++tt = json.load(open(os.path.join(SR, 'RUNS/an05/tierA_cod10k_test.json')))
++tv = json.load(open(os.path.join(SR, 'RUNS/an05/tierA_camo250_val.json')))
++test_names = {p['image_a'][:-4] for p in tt['pairs']}
++check('32 CHAMELEON photos in COD10K-test incl. all 16 unchecked',
++      len(test_names) == 32 and all(r['chameleon'] in test_names for r in P if r['status'] == 'unchecked'))
++check('4 in CAMO-250', len({p['image_a'] for p in tv['pairs']}) == 4)
++X = list(csv.DictReader(open(os.path.join(RT, 'AN-05_cross_benchmark.csv'))))
++check('74/76 duplicated somewhere', sum(r['duplicated_anywhere_checked'] == 'True' for r in X) == 74 and '74 of 76' in reb)
++M = list(csv.DictReader(open(os.path.join(RT, 'AN-05_mask_release.csv'))))
++ma, mr = mean([float(r['mae_author']) for r in M]), mean([float(r['mae_repo']) for r in M])
++check('mask MAE 0.2196 / 0.0816', '%.4f' % ma == '0.2196' and '%.4f' % mr == '0.0816' and '0.2196' in short)
++pl = [int(r['n_cham_partners_appended']) for r in csv.DictReader(open(os.path.join(RT, 'AN-05_pseudolabel_exposure.csv')))]
++check('pseudo-label re-use 14–32 per run', min(pl) == 14 and max(pl) == 32 and '14–32' in short)
++
++# ------------------------------------------------------------------ 6b. AN-04: independent k-NN recall (numpy, not A3 code)
++import numpy as np   # noqa: E402
++E0 = os.path.join(DR, 'rebuild/E0/cache')
++nm = json.load(open(os.path.join(E0, 'dinoL518_names.json')))
++tgt = np.load(os.path.join(E0, 'dinoL518_tgt_cls.npy')).astype(np.float64)
++loc = np.load(os.path.join(E0, 'dinoL518_local_cls.npy')).astype(np.float64)
++tgt /= np.linalg.norm(tgt, axis=1, keepdims=True)
++loc /= np.linalg.norm(loc, axis=1, keepdims=True)
++lidx = {os.path.splitext(n)[0].replace('SOD_', ''): i for i, n in enumerate(nm['local'])}
++
++
++def knn_recall(real, fake, k=5):
++    dff = np.sqrt(np.maximum(2 - 2 * fake @ fake.T, 0))
++    np.fill_diagonal(dff, np.inf)
++    rad = np.sort(dff, axis=1)[:, k - 1]
++    drf = np.sqrt(np.maximum(2 - 2 * real @ fake.T, 0))
++    return float((drf <= rad[None, :] + 1e-6).any(axis=1).mean())
++
++
++cov = {r['compared_set']: float(r['recall']) for r in csv.DictReader(open(os.path.join(RT, 'AN-04_foreground_coverage.csv')))
++       if r['embedder'] == 'dinoL518' and r['k'] == '5'}
++for setname, st_ in (('C10', c10), ('B_s42', stems('abc_stems_B_s42.txt'))):
++    mine_r = knn_recall(tgt, loc[[lidx[s] for s in sorted(st_)]])
++    check('independent k-NN recall %s = %.3f (table %.3f)' % (setname, mine_r, cov[setname]), abs(mine_r - cov[setname]) < 0.002)
++b_rng = [cov['B_s%d' % s] for s in SEEDS]
++cf_rng = [cov[x] for x in ('C10', 'CSHUF', 'CINV')]
++check('coverage ranges cited 0.35–0.43 / 0.62–0.64', '%.2f–%.2f' % (min(b_rng), max(b_rng)) == '0.35–0.43'
++      and '%.2f–%.2f' % (min(cf_rng), max(cf_rng)) == '0.62–0.64' and '0.62–0.64' in reb and '0.35–0.43' in reb)
++g4 = list(csv.DictReader(open(os.path.join(RT, 'AN-04_gate4_coverage_reproduction.csv'))))
++check('Gate 4: 12/12 committed coverage values at 4 dp', len(g4) == 12 and all(r['recall_match_4dp'] == 'True' for r in g4))
++eta = {r['quantity']: float(r['value']) for r in csv.DictReader(open(os.path.join(RT, 'AN-04_cluster_structure.csv')))}
++e_c = [v for k_, v in eta.items() if 'committed_predictions' in k_][0]
++check('eta^2 committed = %.3f cited as 20.5%%' % e_c, '%.1f%%' % (100 * e_c) == '20.5%' and '20.5%' in reb)
++sc = json.load(open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-04b_summary.json')))
++check('signal correlations reproduce exactly', sc['gate_passed'])
++
++# ------------------------------------------------------------------ 7. character count (independent of the writer)
++txt = open(os.path.join(SR, 'FINAL_UPDATED_REBUTTAL_OPENREVIEW.md'), encoding='utf-8').read()
++wc = subprocess.run(['wc', '-m', os.path.join(SR, 'FINAL_UPDATED_REBUTTAL_OPENREVIEW.md')], capture_output=True,
++                    text=True, env={'LC_ALL': 'C.UTF-8'}).stdout.split()[0]
++check('OpenReview text <= 5000 code points (python %d, wc -m %s)' % (len(txt), wc), len(txt) <= 5000 and int(wc) == len(txt))
++
++# ------------------------------------------------------------------ 8. reviewer-facing text has no private paths
++part_a = reb.split('## Part B')[0]
++bad = [p for p in ('/home/', 'rebuild/', 'Snapshot', 'RESULT_TABLES', '.py', '.csv', 'TH-0', 'AN-0', 'EXP-0', 'DOC-0')
++       if p in part_a.split('---', 1)[1] or p in txt]
++check('no private paths / task codes in reviewer-facing text', not bad, bad)
++allmd = {os.path.basename(m): open(m, encoding='utf-8').read() for m in glob.glob(os.path.join(SR, '*.md'))}
++ph = {k: re.findall(r'\{\{[^}]*\}\}', v) for k, v in allmd.items() if '{{' in v}
++check('no unfilled placeholders in any STUDENT_RESULTS document', not ph, ph)
++
++# ------------------------------------------------------------------ 9. Markdown relative links
++broken = []
++for md in glob.glob(os.path.join(REB, '**', '*.md'), recursive=True):
++    for target in re.findall(r'\]\(([^)#\s]+)(?:#[^)]*)?\)', open(md, encoding='utf-8').read()):
++        if re.match(r'^[a-z]+://', target):
++            continue
++        if not os.path.exists(os.path.normpath(os.path.join(os.path.dirname(md), target))):
++            broken.append('%s -> %s' % (os.path.relpath(md, REB), target))
++check('all relative Markdown links resolve', not broken, broken)
++
++# ------------------------------------------------------------------ 10. manuscript integrity re-run
++r = subprocess.run([sys.executable, '-I', '-B', os.path.join(SR, 'scripts/manuscript_check.py'), '--tex',
++                    os.path.join(DR, 'AD-PCHGS-250926.tex'), '--bib', os.path.join(DR, 'reference 1.bib'),
++                    '--inputs-dir', os.path.join(WT, 'rebuild/FinalPaper/AD-PCH-230926'),
++                    '--out', os.path.join(SR, 'EXPERIMENT_LOGS/00_manuscript_check/manuscript_integrity_final.json')],
++                   capture_output=True, text=True)
++mi = json.load(open(os.path.join(SR, 'EXPERIMENT_LOGS/00_manuscript_check/manuscript_integrity_final.json')))
++check('manuscript unchanged (sha) and refs/cites resolve', r.returncode == 0 and
++      mi['tex_sha256'] == '84d3bf97ea881b14b13d2a80af4593ba83f9a68416e5f0113adfe877acfc771a')
++
++out = dict(n_checks=len(results), n_failed=sum(not x['passed'] for x in results), checks=results)
++json.dump(out, open(os.path.join(SR, 'EXPERIMENT_LOGS/AUDIT_independent.json'), 'w'), indent=1, ensure_ascii=False)
++for x in results:
++    print('%s  %s  %s' % ('PASS' if x['passed'] else 'FAIL', x['check'], '' if x['passed'] else x['detail']))
++print('\n%d checks, %d failed' % (out['n_checks'], out['n_failed']))
++sys.exit(0 if out['n_failed'] == 0 else 1)
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/basepatch.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/basepatch.py
+new file mode 100644
+index 0000000..871ef11
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/basepatch.py
+@@ -0,0 +1,29 @@
++"""Point the UNCHANGED base selection code (rebuild/ABC/abc_common.py, rebuild/C1/*) at the original
++working copy's gitignored data, read-only.
++
++Only two data lookups are redirected:
++  * c1_space.E0_CACHE  -> <data-root>/rebuild/E0/cache   (committed embedding cache, gitignored)
++  * abc_common.base_stems() -> lists <data-root>/Dataset/Source/HKU-IS_raw/imgs
++Everything else (B1 cluster files, selection functions, constants) is the base worktree's.
++Callers must verify that N=1000 reproduces the committed stem files byte for byte.
++"""
++import os
++import sys
++
++
++def setup(worktree, data_root):
++    for p in (os.path.join(worktree, 'rebuild'), os.path.join(worktree, 'rebuild/C1'),
++              os.path.join(worktree, 'rebuild/ABC'), worktree):
++        if p not in sys.path:
++            sys.path.insert(0, p)
++    import common as C              # noqa: F401
++    import c1_space
++    import abc_common as A
++    c1_space.E0_CACHE = os.path.join(data_root, 'rebuild/E0/cache')
++    c1_space.clear_cache()
++    raw = os.path.join(data_root, 'Dataset/Source/HKU-IS_raw/imgs')
++
++    def base_stems():
++        return sorted(os.path.splitext(f)[0] for f in os.listdir(raw))
++    A.base_stems = base_stems
++    return A, c1_space
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/build_run_manifest.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/build_run_manifest.py
+new file mode 100644
+index 0000000..5691e43
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/build_run_manifest.py
+@@ -0,0 +1,181 @@
++#!/usr/bin/env python
++"""Build the §3 run manifest and an immutable SHA256 inventory for the 64 eight-seed runs.
++
++Run list = the committed rebuild/ABC/out/se/abc_runs.csv at the base commit (this worktree).
++Data are READ from the original working copy (--data-root); nothing is written there.
++
++Outputs (under --out-dir):
++  RESULT_TABLES/run_manifest.csv                 one row per run x endpoint (128 rows)
++  EXPERIMENT_LOGS/checksums/prediction_files.sha256.gz   per-file hashes of every prediction
++  EXPERIMENT_LOGS/checksums/gt_files.sha256.gz           per-file hashes of endpoint GT
++  EXPERIMENT_LOGS/checksums/checkpoints.sha256           Tea_epoch_best.pth hashes
++  EXPERIMENT_LOGS/checksums/manifest_meta.json
++"""
++import argparse
++import csv
++import gzip
++import hashlib
++import json
++import os
++import re
++import subprocess
++import sys
++import time
++from multiprocessing import Pool
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--out-dir', required=True)
++ap.add_argument('--workers', type=int, default=16)
++a = ap.parse_args()
++
++WT, DR, OUT = a.worktree, a.data_root, a.out_dir
++ENDPOINTS = ('COD10K', 'NC4K')
++BASE_OUT = os.path.join(WT, 'rebuild/ABC/out')
++
++
++def sha_file(p, bs=1 << 22):
++    h = hashlib.sha256()
++    with open(p, 'rb') as f:
++        while True:
++            b = f.read(bs)
++            if not b:
++                break
++            h.update(b)
++    return h.hexdigest()
++
++
++def sha_bytes(b):
++    return hashlib.sha256(b).hexdigest()
++
++
++def hash_dir(d):
++    names = sorted(os.listdir(d))
++    rows = [(n, sha_file(os.path.join(d, n))) for n in names]
++    digest = sha_bytes(''.join('%s\t%s\n' % r for r in rows).encode())
++    return d, rows, digest
++
++
++def git(*args):
++    return subprocess.check_output(['git', '-C', WT] + list(args), text=True).strip()
++
++
++def main():
++    t0 = time.time()
++    os.makedirs(os.path.join(OUT, 'RESULT_TABLES'), exist_ok=True)
++    ck = os.path.join(OUT, 'EXPERIMENT_LOGS', 'checksums')
++    os.makedirs(ck, exist_ok=True)
++    runs = list(csv.DictReader(open(os.path.join(BASE_OUT, 'se/abc_runs.csv'))))
++    assert len(runs) == 64, len(runs)
++    metrics = {(r['runid'], r['endpoint']): r
++               for r in csv.DictReader(open(os.path.join(BASE_OUT, 'se/abc_metrics.csv')))}
++
++    # trained-in campaign: B/C10 at committed seeds -> ABC; CSHUF/CINV at committed seeds -> T2; else SE
++    def trained_in(arm, seed):
++        if seed in (42, 43, 45):
++            return 'ABC' if arm in ('B', 'C10') else 'T2'
++        return 'SE'
++    cmd_file = {'ABC': 'abc_commands.txt', 'T2': 't2/abc_commands.txt', 'SE': 'se/abc_commands.txt'}
++    camp_commit, camp_cmds = {}, {}
++    for c, f in cmd_file.items():
++        txt = open(os.path.join(BASE_OUT, f)).read().splitlines()
++        m = re.search(r'commit (\S+)( \(dirty\))?', txt[1])
++        camp_commit[c] = m.group(1) + (' (dirty)' if m.group(2) else '')
++        camp_cmds[c] = [l for l in txt if 'MyTrain.py' in l]
++    camp_metrics = {'ABC': 'rebuild/ABC/out/abc_metrics.csv', 'T2': 'rebuild/ABC/out/t2/abc_metrics.csv',
++                    'SE': 'rebuild/ABC/out/se/abc_metrics.csv'}
++
++    def stems_file(arm, seed):
++        return {'B': 'abc_stems_B_s%d.txt' % seed, 'C10': 'abc_stems_C_a1.0.txt',
++                'CSHUF': 'abc_stems_CSHUF.txt', 'CINV': 'abc_stems_CINV.txt'}[arm]
++
++    metric_code = {p: sha_file(os.path.join(WT, p)) for p in ('Eval/metrics.py', 'rebuild/ABC/abc_evaluate.py')}
++    metric_code_sha = sha_bytes(json.dumps(metric_code, sort_keys=True).encode())
++
++    # ---- hash all directories in parallel
++    dirs = [os.path.join(DR, 'Dataset/Test', e, 'GT') for e in ENDPOINTS]
++    for r in runs:
++        for e in ENDPOINTS:
++            dirs.append(os.path.join(DR, 'Result/ABC', r['runid'], e))
++    ckpts = [os.path.join(DR, 'Snapshot/ABC', r['runid'], 'Tea_epoch_best.pth') for r in runs]
++    with Pool(a.workers) as pool:
++        dres = {d: (rows, dig) for d, rows, dig in pool.imap_unordered(hash_dir, dirs)}
++        cres = dict(zip(ckpts, pool.map(sha_file, ckpts)))
++    gt_digest = {e: dres[os.path.join(DR, 'Dataset/Test', e, 'GT')][1] for e in ENDPOINTS}
++
++    with gzip.open(os.path.join(ck, 'prediction_files.sha256.gz'), 'wt') as f:
++        for r in runs:
++            for e in ENDPOINTS:
++                for n, h in dres[os.path.join(DR, 'Result/ABC', r['runid'], e)][0]:
++                    f.write('%s  Result/ABC/%s/%s/%s\n' % (h, r['runid'], e, n))
++    with gzip.open(os.path.join(ck, 'gt_files.sha256.gz'), 'wt') as f:
++        for e in ENDPOINTS:
++            for n, h in dres[os.path.join(DR, 'Dataset/Test', e, 'GT')][0]:
++                f.write('%s  Dataset/Test/%s/GT/%s\n' % (h, e, n))
++    with open(os.path.join(ck, 'checkpoints.sha256'), 'w') as f:
++        for p in ckpts:
++            f.write('%s  %s\n' % (cres[p], os.path.relpath(p, DR)))
++
++    cols = ['campaign', 'trained_in', 'architecture', 'endpoint', 'arm', 'seed', 'round', 'git_sha',
++            'config_sha', 'dataset_manifest_sha', 'inject_manifest_sha', 'checkpoint_sha',
++            'prediction_sha', 'source_count', 'target_count', 'injected_count', 'pseudo_count',
++            'steps_per_epoch', 'checkpoint_selection_split', 'metric_code_sha', 'raw_log_path',
++            'metric_path', 'status', 'n_pred_files', 'n_gt_files', 'pred_names_match_gt',
++            'pred_newest_mtime', 'committed_Sm']
++    out_rows, problems = [], []
++    for r in runs:
++        rid, arm, seed, arch = r['runid'], r['arm'], int(r['seed']), r['arch']
++        camp = trained_in(arm, seed)
++        cmd = [l for l in camp_cmds[camp] if '--save_model ./Snapshot/ABC/%s/' % rid in l]
++        if len(cmd) != 1:
++            problems.append('%s: %d command lines in %s' % (rid, len(cmd), cmd_file[camp]))
++        sf = stems_file(arm, seed)
++        inj = sha_file(os.path.join(BASE_OUT, 'se', sf))
++        # stems used when the run was TRAINED (ABC/T2 out dirs for committed seeds)
++        sub = {'ABC': '', 'T2': 't2', 'SE': 'se'}[camp]
++        inj_trained = sha_file(os.path.join(BASE_OUT, sub, sf))
++        if inj != inj_trained:
++            problems.append('%s: stems differ between se/ and %s/' % (rid, sub or 'ABC'))
++        log = os.path.join(DR, 'Snapshot/ABC', rid, 'training_log.log')
++        for e in ENDPOINTS:
++            pd = os.path.join(DR, 'Result/ABC', rid, e)
++            rows, dig = dres[pd]
++            gtn = [n for n, _ in dres[os.path.join(DR, 'Dataset/Test', e, 'GT')][0]]
++            newest = max(os.path.getmtime(os.path.join(pd, n)) for n, _ in rows)
++            ok = (r['failed_checks'] == '' and r['tea_best'] == 'True' and [n for n, _ in rows] == gtn)
++            if not ok:
++                problems.append('%s/%s: integrity check failed' % (rid, e))
++            out_rows.append(dict(
++                campaign='SE', trained_in=camp, architecture=arch, endpoint=e, arm=arm, seed=seed,
++                round='final (round 2), Tea_epoch_best.pth', git_sha=camp_commit[camp],
++                config_sha=sha_bytes(cmd[0].encode()) if len(cmd) == 1 else '',
++                dataset_manifest_sha=gt_digest[e], inject_manifest_sha=inj,
++                checkpoint_sha=cres[os.path.join(DR, 'Snapshot/ABC', rid, 'Tea_epoch_best.pth')],
++                prediction_sha=dig, source_count=r['pool_r1'], target_count=4040,
++                injected_count=1000, pseudo_count=r['n_appended'],
++                steps_per_epoch=int(r['total_step_set']),
++                checkpoint_selection_split='CAMO-250 (Dataset/Val/CAMO, MAE)',
++                metric_code_sha=metric_code_sha,
++                raw_log_path='Snapshot/ABC/%s/training_log.log' % rid,
++                metric_path=camp_metrics[camp] + ' ; rebuild/ABC/out/se/abc_metrics.csv',
++                status='OK' if ok else 'INTEGRITY_FAIL', n_pred_files=len(rows), n_gt_files=len(gtn),
++                pred_names_match_gt=[n for n, _ in rows] == gtn,
++                pred_newest_mtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(newest)),
++                committed_Sm=metrics[(rid, e)]['Sm']))
++    with open(os.path.join(OUT, 'RESULT_TABLES/run_manifest.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=cols)
++        w.writeheader()
++        w.writerows(out_rows)
++    meta = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
++                worktree_head=git('rev-parse', 'HEAD'), data_root=DR, n_runs=len(runs),
++                n_rows=len(out_rows), campaign_commits=camp_commit, metric_code=metric_code,
++                gt_digest=gt_digest, problems=problems, seconds=round(time.time() - t0, 1),
++                digest_definition='sha256 over sorted lines "<filename>\\t<sha256(file)>\\n"')
++    json.dump(meta, open(os.path.join(ck, 'manifest_meta.json'), 'w'), indent=1)
++    print(json.dumps(meta, indent=1))
++    sys.exit(1 if problems else 0)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp01_preflight.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp01_preflight.py
+new file mode 100644
+index 0000000..6a49395
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp01_preflight.py
+@@ -0,0 +1,105 @@
++#!/usr/bin/env python
++"""EXP-01 preflight (CPU only) -- does a larger matched budget actually enlarge the B-vs-C10 contrast?
++
++ANALYSIS_PRESPEC.md §10. Uses the UNCHANGED base selection (abc_common.arm_b_stems / arm_c_stems,
++C1 allocation + greedy selection) at budget N by rebinding abc_common.BUDGET. N=1000 must reproduce
++the committed stem files byte for byte. No training is launched (EXP-01 training is BLOCKED: no GPU).
++
++Primary contrast (fixed before running): DC(N) = mean_seeds (N - |B_N ∩ C10_N|) / (4447 + N).
++Pass: some N in {2000, 3000} with DC(N) >= 1.5 * DC(1000) AND min_seeds DC(N) > max_seeds DC(1000).
++
++Outputs: RESULT_TABLES/EXP-01_preflight.csv, RESULT_TABLES/EXP-01_preflight_by_seed.csv,
++         EXPERIMENT_LOGS/EXP-01_preflight.json
++"""
++import argparse
++import csv
++import json
++import os
++import sys
++import time
++
++import numpy as np
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(SR, 'scripts'))
++import basepatch          # noqa: E402
++
++A, c1_space = basepatch.setup(WT, DR)
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++BUDGETS = [1000, 2000, 3000, 4447]
++BASE_N = 4447
++ARCH = {'SINet': dict(steps=253, batch=16), 'SINetv2': dict(steps=127, batch=32)}
++OUT_SE = os.path.join(WT, 'rebuild/ABC/out/se')
++
++
++def main():
++    t0 = time.time()
++    by_seed, rows = [], []
++    repro = {}
++    for N in BUDGETS:
++        A.BUDGET = N
++        c10, cell = A.arm_c_stems(1.0, None)
++        if N == 1000:
++            repro['C10'] = c10 == [l.strip() for l in open(os.path.join(OUT_SE, 'abc_stems_C_a1.0.txt'))]
++        dcs = []
++        for s in SEEDS:
++            b = A.arm_b_stems(s)
++            if N == 1000:
++                repro['B_s%d' % s] = b == [l.strip() for l in open(os.path.join(OUT_SE, 'abc_stems_B_s%d.txt' % s))]
++            I = len(set(b) & set(c10))
++            dc = (N - I) / (BASE_N + N)
++            dcs.append(dc)
++            r = dict(N=N, seed=s, n_B=len(b), n_C10=len(c10), intersection=I, one_sided_diff=N - I,
++                     jaccard=I / (2 * N - I), expected_random_intersection=N * N / BASE_N,
++                     frac_injection_differs=(N - I) / N, DC_frac_training_pool_differs=dc,
++                     distinct_foreground_ids_B=len(set(b)), distinct_foreground_ids_C10=len(set(c10)),
++                     novel_foregrounds_vs_base_pool=0, c10_n_displaced=cell['n_displaced'],
++                     c10_clusters_funded=cell['clusters_funded'], c10_max_alloc_share=cell['max_alloc_share'])
++            for arch, p in ARCH.items():
++                draws = p['steps'] * p['batch']
++                r['%s_pinned_arm_specific_visits_per_epoch' % arch] = (N - I) * draws / (BASE_N + N)
++                r['%s_unpinned_arm_specific_visits_per_epoch' % arch] = float(N - I)
++                r['%s_unpinned_steps' % arch] = -(-(BASE_N + N) // p['batch'])
++            by_seed.append(r)
++        rows.append(dict(N=N, DC_mean=float(np.mean(dcs)), DC_min=float(np.min(dcs)), DC_max=float(np.max(dcs)),
++                         one_sided_diff_mean=float(np.mean([x['one_sided_diff'] for x in by_seed if x['N'] == N])),
++                         jaccard_mean=float(np.mean([x['jaccard'] for x in by_seed if x['N'] == N])),
++                         frac_injection_differs_mean=float(np.mean([x['frac_injection_differs'] for x in by_seed if x['N'] == N])),
++                         SINet_pinned_arm_specific_visits_per_epoch_mean=float(np.mean(
++                             [x['SINet_pinned_arm_specific_visits_per_epoch'] for x in by_seed if x['N'] == N])),
++                         SINetv2_pinned_arm_specific_visits_per_epoch_mean=float(np.mean(
++                             [x['SINetv2_pinned_arm_specific_visits_per_epoch'] for x in by_seed if x['N'] == N])),
++                         c10_n_displaced=cell['n_displaced'], c10_clusters_funded=cell['clusters_funded'],
++                         c10_max_alloc_share=cell['max_alloc_share'], c10_alloc_entropy_norm=cell['alloc_entropy_norm']))
++    A.BUDGET = 1000
++    base = next(r for r in rows if r['N'] == 1000)
++    for r in rows:
++        r['DC_ratio_vs_1000'] = r['DC_mean'] / base['DC_mean']
++        r['passes_ratio_1p5'] = r['DC_ratio_vs_1000'] >= 1.5
++        r['passes_min_gt_max1000'] = r['DC_min'] > base['DC_max']
++        r['passes_preflight'] = (r['N'] in (2000, 3000) and r['passes_ratio_1p5'] and r['passes_min_gt_max1000'])
++    passing = [r['N'] for r in rows if r['passes_preflight']]
++    for name, rs in (('EXP-01_preflight.csv', rows), ('EXP-01_preflight_by_seed.csv', by_seed)):
++        with open(os.path.join(SR, 'RESULT_TABLES', name), 'w', newline='') as f:
++            w = csv.DictWriter(f, fieldnames=list(rs[0]))
++            w.writeheader()
++            for r in rs:
++                w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for k, v in r.items()})
++    out = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
++               reproduction_N1000=repro, reproduction_all=all(repro.values()),
++               rule='pass iff some N in {2000,3000}: DC(N) >= 1.5*DC(1000) and min_seed DC(N) > max_seed DC(1000)',
++               passing_budgets=passing, preflight_passed=bool(passing),
++               proposed_N=(min(passing) if passing else None),
++               training_status='BLOCKED (compute: no GPU available before the 17 Nov cutoff)',
++               summary=rows, seconds=round(time.time() - t0, 1))
++    json.dump(out, open(os.path.join(SR, 'EXPERIMENT_LOGS/EXP-01_preflight.json'), 'w'), indent=1)
++    print(json.dumps(out, indent=1))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_boundary.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_boundary.py
+new file mode 100644
+index 0000000..641b272
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_boundary.py
+@@ -0,0 +1,143 @@
++#!/usr/bin/env python
++"""EXP-02 -- boundary metrics re-scored from stored predictions (post-review, exploratory).
++
++Calls the committed per-image worker diag_boundary._job UNCHANGED (base rebuild/DIAG/diag_boundary.py,
++commit 8d1d079), with its module globals pointed at the original working copy's data (read-only):
++  PRED_ROOT = <data-root>/Result/ABC, GT_DIR = <data-root>/Dataset/Test/<EP>/GT, ENDPOINT, _THRESH.
++
++Runs: the 64 eight-seed runs (run_manifest.csv) on COD10K and NC4K, plus the 12 committed A0/A2
++three-seed runs on COD10K only (Gate 3 reproduction, ANALYSIS_PRESPEC.md §7). Thresholds 0.4/0.5/0.6.
++
++Outputs:
++  RUNS/exp02/exp02_per_image.csv.gz         per image x run x endpoint x threshold
++  RUNS/exp02/exp02_per_run.csv              nanmean per run x endpoint x threshold (committed aggregation)
++  RESULT_TABLES/EXP-02_gate3_reproduction.csv
++  EXPERIMENT_LOGS/EXP-02_meta.json
++"""
++import argparse
++import csv
++import gzip
++import json
++import os
++import sys
++import time
++from multiprocessing import Pool
++
++import numpy as np
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++ap.add_argument('--workers', type=int, default=8)
++ap.add_argument('--limit', type=int, default=0, help='debug: images per run')
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(WT, 'rebuild/DIAG'))
++import diag_boundary as DB        # noqa: E402  (base, unchanged)
++
++THRESHOLDS = (0.4, 0.5, 0.6)
++METRICS = ('boundary_iou', 'boundary_f', 'boundary_prec', 'boundary_rec', 'iou')
++COMMITTED = {0.5: 'diag_boundary_per_run.csv', 0.4: 'diag_boundary_per_run_t0.40.csv',
++             0.6: 'diag_boundary_per_run_t0.60.csv'}
++
++
++def job(t):
++    rid, ep, thr, stem = t
++    DB.PRED_ROOT = os.path.join(DR, 'Result/ABC')
++    DB.GT_DIR = os.path.join(DR, 'Dataset/Test', ep, 'GT')
++    DB.ENDPOINT = ep
++    DB._THRESH = thr
++    r = DB._job((rid, stem))
++    r['endpoint'], r['thresh'] = ep, thr
++    return r
++
++
++def main():
++    t0 = time.time()
++    out = os.path.join(SR, 'RUNS/exp02')
++    os.makedirs(out, exist_ok=True)
++    man = list(csv.DictReader(open(os.path.join(SR, 'RESULT_TABLES/run_manifest.csv'))))
++    runs8 = sorted({'%s_%s_s%s' % (r['architecture'], r['arm'], r['seed']) for r in man})
++    assert len(runs8) == 64
++    abc = list(csv.DictReader(open(os.path.join(WT, 'rebuild/ABC/out/abc_runs.csv'))))
++    gate_only = sorted(r['runid'] for r in abc if r['arm'] in ('A0', 'A2'))
++    assert len(gate_only) == 12, gate_only
++    stems = {ep: sorted(os.path.splitext(f)[0] for f in os.listdir(os.path.join(DR, 'Dataset/Test', ep, 'GT'))
++                        if f.endswith('.png')) for ep in ('COD10K', 'NC4K')}
++    if a.limit:
++        stems = {k: v[:a.limit] for k, v in stems.items()}
++    jobs = []
++    for thr in THRESHOLDS:
++        for rid in runs8:
++            for ep in ('COD10K', 'NC4K'):
++                jobs += [(rid, ep, thr, s) for s in stems[ep]]
++        for rid in gate_only:
++            jobs += [(rid, 'COD10K', thr, s) for s in stems['COD10K']]
++    print('jobs %d workers %d' % (len(jobs), a.workers), flush=True)
++    rows = []
++    with Pool(a.workers) as pool:
++        for i, r in enumerate(pool.imap_unordered(job, jobs, chunksize=64), 1):
++            rows.append(r)
++            if i % 50000 == 0:
++                print('  %d / %d  %.0fs' % (i, len(jobs), time.time() - t0), flush=True)
++    errs = [r for r in rows if 'error' in r]
++    rows = [r for r in rows if 'error' not in r]
++    rows.sort(key=lambda x: (x['thresh'], x['runid'], x['endpoint'], x['name']))
++    with gzip.open(os.path.join(out, 'exp02_per_image.csv.gz'), 'wt') as f:
++        w = csv.writer(f)
++        w.writerow(['thresh', 'runid', 'endpoint', 'name'] + list(METRICS) + ['gt_fg_frac'])
++        for r in rows:
++            w.writerow([r['thresh'], r['runid'], r['endpoint'], r['name']]
++                       + ['%.9g' % r[m] for m in METRICS] + ['%.9g' % r['gt_fg_frac']])
++    # committed aggregation: nanmean over images, per run
++    by = {}
++    for r in rows:
++        by.setdefault((r['thresh'], r['runid'], r['endpoint']), []).append(r)
++    agg = []
++    for (thr, rid, ep), rs in sorted(by.items()):
++        p = rid.split('_')
++        d = dict(thresh=thr, runid=rid, arch=p[0], arm=p[1], seed=int(p[2][1:]), endpoint=ep, n=len(rs))
++        for m in METRICS:
++            v = np.array([x[m] for x in rs], dtype=np.float64)
++            d[m] = float(np.nanmean(v))
++            d['n_nan_' + m] = int(np.isnan(v).sum())
++        agg.append(d)
++    with open(os.path.join(out, 'exp02_per_run.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(agg[0]))
++        w.writeheader()
++        for d in agg:
++            w.writerow({k: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for k, v in d.items()})
++    # Gate 3
++    mine = {(d['thresh'], d['runid']): d for d in agg if d['endpoint'] == 'COD10K'}
++    g3, worst, n_cmp = [], 0.0, 0
++    for thr, fn in COMMITTED.items():
++        for c in csv.DictReader(open(os.path.join(WT, 'rebuild/DIAG/out', fn))):
++            m = mine.get((thr, c['runid']))
++            for k in METRICS:
++                if m is None:
++                    g3.append(dict(thresh=thr, runid=c['runid'], metric=k, committed=c[k], recomputed='',
++                                   abs_diff='', match_1e9=False, note='run not recomputed'))
++                    continue
++                dlt = abs(float(c[k]) - m[k])
++                worst, n_cmp = max(worst, dlt), n_cmp + 1
++                g3.append(dict(thresh=thr, runid=c['runid'], metric=k, committed=c[k], recomputed=repr(m[k]),
++                               abs_diff=dlt, match_1e9=dlt <= 1e-9, note='n_committed=%s n_mine=%d'
++                               % (c['n'], m['n'])))
++    with open(os.path.join(SR, 'RESULT_TABLES/EXP-02_gate3_reproduction.csv'), 'w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(g3[0]))
++        w.writeheader()
++        w.writerows(g3)
++    meta = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), n_jobs=len(jobs),
++                n_rows=len(rows), n_errors=len(errs), errors=errs[:20], thresholds=THRESHOLDS,
++                biou_frac=DB.BIOU_FRAC, bf_frac=DB.BF_FRAC, gate3=dict(
++                    n_compared=n_cmp, max_abs_diff=worst,
++                    n_fail=sum(1 for x in g3 if not x['match_1e9']),
++                    passed=all(x['match_1e9'] for x in g3)),
++                seconds=round(time.time() - t0, 1), limit=a.limit)
++    json.dump(meta, open(os.path.join(SR, 'EXPERIMENT_LOGS/EXP-02_meta.json'), 'w'), indent=1)
++    print(json.dumps({k: v for k, v in meta.items() if k != 'errors'}, indent=1))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_reinfer.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_reinfer.py
+new file mode 100644
+index 0000000..255c094
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/exp02_reinfer.py
+@@ -0,0 +1,103 @@
++#!/usr/bin/env python
++"""EXP-02 two-image CPU re-inference check (ANALYSIS_PRESPEC.md §7). NO GPU: CUDA_VISIBLE_DEVICES=''.
++
++Re-runs base MyTest.py's pipeline (test_dataset transform -> model -> bilinear upsample to GT size ->
++sigmoid -> min-max -> cv2.imwrite(cam*255)) on CPU for runs SINet_C10_s46 and SINetv2_C10_s46, on the
++first and last image of the sorted COD10K GT list, and compares with the stored prediction PNGs.
++
++SINet_ResNet50's constructor would load ImageNet weights from a relative path; that step is skipped
++(the checkpoint then overwrites every tensor, asserted below). SINet-v2 is built with
++imagenet_pretrained=False for the same reason (no download).
++Pass: max|diff| <= 2 grey levels and >= 99.9% of pixels within +-1.
++"""
++import argparse
++import json
++import os
++import sys
++import time
++
++os.environ['CUDA_VISIBLE_DEVICES'] = ''
++import cv2                       # noqa: E402
++import numpy as np               # noqa: E402
++import torch                     # noqa: E402
++import torch.nn.functional as F  # noqa: E402
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, WT)
++sys.path.insert(0, os.path.join(WT, 'Eval'))
++from Src.model.SINet.SINet import SINet_ResNet50                  # noqa: E402
++from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network     # noqa: E402
++from Src.utils.Dataloader import test_dataset                     # noqa: E402
++import metrics as Measure                                         # noqa: E402
++
++assert not torch.cuda.is_available(), 'GPU visible -- refusing to run'
++torch.set_num_threads(4)
++SINet_ResNet50.initialize_weights = lambda self: None
++RUNS = [('SINet_C10_s46', 'SINet'), ('SINetv2_C10_s46', 'SINet-v2')]
++
++
++def main():
++    out_dir = os.path.join(SR, 'RUNS/exp02_reinfer')
++    os.makedirs(out_dir, exist_ok=True)
++    img_root = os.path.join(DR, 'Dataset/Test/COD10K/Imgs') + '/'
++    gt_root = os.path.join(DR, 'Dataset/Test/COD10K/GT') + '/'
++    loader = test_dataset(image_root=img_root, gt_root=gt_root, testsize=352, mode='test')
++    gts = sorted(os.listdir(gt_root))
++    targets = [gts[0], gts[-1]]
++    res = []
++    for rid, net in RUNS:
++        model = SINet_ResNet50() if net == 'SINet' else Network(imagenet_pretrained=False)
++        ck = os.path.join(DR, 'Snapshot/ABC', rid, 'Tea_epoch_best.pth')
++        state = torch.load(ck, map_location='cpu')
++        model.load_state_dict(state, strict=True)
++        loaded = model.state_dict()
++        copied = sum(torch.equal(v, loaded[k]) for k, v in state.items())
++        assert copied == len(state) == len(loaded), (copied, len(state), len(loaded))
++        model.eval()
++        for gname in targets:
++            loader.index = [os.path.basename(p).replace('.jpg', '.png') for p in loader.images].index(gname)
++            image, gt, name, _ = loader.load_data()
++            assert name == gname, (name, gname)
++            gt = np.asarray(gt, np.float32)
++            t0 = time.time()
++            with torch.no_grad():
++                if net == 'SINet':
++                    _, cam = model(image)
++                else:
++                    _, _, _, cam = model(image)
++                cam = F.interpolate(cam, size=gt.shape, mode='bilinear', align_corners=True)
++                cam = cam.sigmoid().numpy().squeeze()
++            cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
++            os.makedirs(os.path.join(out_dir, rid), exist_ok=True)
++            outp = os.path.join(out_dir, rid, name)
++            cv2.imwrite(outp, cam * 255)
++            mine = cv2.imread(outp, cv2.IMREAD_GRAYSCALE).astype(np.int32)
++            stored = cv2.imread(os.path.join(DR, 'Result/ABC', rid, 'COD10K', name), cv2.IMREAD_GRAYSCALE).astype(np.int32)
++            g8 = cv2.imread(os.path.join(gt_root, name), cv2.IMREAD_GRAYSCALE)
++            d = np.abs(mine - stored)
++            sm = []
++            for p in (mine, stored):
++                m = Measure.Smeasure()
++                m.step(pred=p.astype(np.uint8), gt=g8)
++                sm.append(float(m.get_results()['sm']))
++            r = dict(runid=rid, image=name, shape=list(mine.shape), max_abs_diff=int(d.max()),
++                     mean_abs_diff=float(d.mean()), frac_within_1=float((d <= 1).mean()),
++                     sa_cpu=sm[0], sa_stored=sm[1], sa_abs_diff=abs(sm[0] - sm[1]), seconds=round(time.time() - t0, 1),
++                     passed=bool(d.max() <= 2 and (d <= 1).mean() >= 0.999), tensors_loaded=copied,
++                     checkpoint=os.path.relpath(ck, DR), device='cpu', torch=torch.__version__)
++            res.append(r)
++            print(json.dumps(r), flush=True)
++    summ = dict(generated_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), rows=res,
++                all_passed=all(r['passed'] for r in res),
++                rule='max|diff| <= 2 grey levels and >= 99.9% of pixels within +-1 (ANALYSIS_PRESPEC.md §7)')
++    json.dump(summ, open(os.path.join(SR, 'EXPERIMENT_LOGS/EXP-02_reinference.json'), 'w'), indent=1)
++    print(json.dumps({k: v for k, v in summ.items() if k != 'rows'}))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_claim_map.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_claim_map.py
+new file mode 100644
+index 0000000..3862693
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_claim_map.py
+@@ -0,0 +1,71 @@
++#!/usr/bin/env python
++"""Write RESULT_TABLES/DOC-01_claim_evidence_map.csv: manuscript claim -> status after review -> evidence."""
++import argparse
++import csv
++import os
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++
++R = [
++    # id, label, manuscript claim (abridged), status, post-review evidence, proposed action (DOC-01 edit)
++    ('C1', 'abstract; sec:null; tab:trained', 'Targeting does not beat random; 8-seed gap +0.0024, 0.34x bar, WITHIN NOISE',
++     'SUPPORTED (reproduced exactly)', 'AN-01_original_vs_recomputed.csv; TH-01_paired_inference.csv', 'keep; add bound (Edits 1, 3, 9)'),
++    ('C2', 'sec:null', 'Post-hoc interval [-0.0020, +0.0067] excludes the reference effect',
++     'SUPPORTED; interval is Welch; paired gives [-0.0023, +0.0070]', 'TH-01_paired_inference.csv; TH-01_tost_table_reproduction.csv',
++     'add paired interval, one-sided bound +0.0061, scale note (Edit 3)'),
++    ('C3', 'sec:concentration; tab:tost', 'Five of sixteen gaps equivalent at +-0.005; primary not (p = 0.101)',
++     'SUPPORTED (Welch); paired: 6 of 16, primary p = 0.111', 'TH-01_paired_inference.csv', 'add paired count (Edit 5)'),
++    ('C4', 'sec:null', '"no score of any quality helped here"', 'OVERSTATED (oracle tested at 3 seeds, bar 0.0061)',
++     'tab:trained (submitted)', 'soften (Edit 2)'),
++    ('C5', 'abstract; sec:concentration; tab:boundary; app:diag', 'On SINet boundary metrics concentration clears its bar (C10-B 1.37x, CINV-B 1.34x); "strongest form of the result"',
++     'NOT SUPPORTED AT 8 SEEDS for C10-B (0.30x, CI spans 0); CINV-B 0.64x, uncorrected CI excludes 0; 3-seed values reproduce exactly',
++     'AN-03_arch_boundary_grid.csv; EXP-02_gate3_reproduction.csv', 'replace with 8-seed result; withdraw "strongest form" (Edits 1, 4)'),
++    ('C6', 'sec:concentration', 'SINet-v2 resolves none of it', 'SUPPORTED descriptively; interaction NOT resolved (C10-B p 0.43; CINV-B p 0.053)',
++     'AN-03_interaction.csv', 'report direct interaction test (Edit 4)'),
++    ('C7', 'sec:concentration; fig:thesis(a)', 'Geometric separation comes from concentration, reproduced by shuffled/reversed allocations',
++     'NOT RE-TESTED (no post-review analysis touches it); quota-multiset identity VERIFIED', 'TH-02_quota_invariants.csv',
++     'keep; state it is geometric only (Edits 1, 4)'),
++    ('C8', 'app:diag (attenuation)', 'About 48% of injected images differ between any two arms; effective contrast near 8.8%',
++     'INCORRECT for B vs C10 (77%; 14.1% of pool); correct for C-family pairs (45-51%; 8.3-9.4%)', 'AN-02_overlap_by_seed.csv',
++     'correct (Edit 6)'),
++    ('C9', 'app:method', 'Pinned steps 253/127 so appended images displace exposure', 'SUPPORTED; theoretical exposure quantified; actual visits unverified',
++     'AN-02_exposure_by_run.csv; AN-02_sampler_trace_search.json', 'add exposure figures (Edit 6)'),
++    ('C10', 'app:controls', 'Pseudo-label means 1977/2025/1990/1979, range 1817-2259 "across the seed expansion"',
++     'SUPPORTED for the 40 SE-trained runs; all 64 runs: 1991/2007/2020/2015, range 1782-2278', 'AN-02_summary.json', 'qualify (Edit 7)'),
++    ('C11', 'app:method', 'CINV single fixed point is the median; same-shape arms preserve allocation shape',
++     'VERIFIED (multiset identical; CSHUF rho -0.03351; s_e 0.0101)', 'TH-02_quota_invariants.csv', 'none'),
++    ('C12', 'sec:discussion', 'Need a foreground supply not already exhausted', 'SUPPORTED: larger N gives <= 1.22x contrast; 0 new foregrounds among 4106 injected',
++     'EXP-01_preflight.csv; AN-02_summary.json', 'add preflight + generator scope (Edit 8)'),
++    ('C13', 'sec:why', 'Synthetic coverage 0.13-0.54 vs real source 0.71-0.75; silhouette 0.1600; ~1/5 variance between clusters; 51.5% budget on CAMO',
++     'SUPPORTED (coverage 12/12 at 4 dp; eta^2 0.2046; silhouette 0.156 Euclidean / 0.253 cosine; CAMO 51.5% nearest-centroid, 53.0% committed labels)',
++     'AN-04_gate4_coverage_reproduction.csv; AN-04_cluster_structure.csv; AN-04_cluster_domain_mix.csv',
++     'note distance convention; optional label-based CAMO share (Edit 10)'),
++    ('C19', 'sec:concentration', 'Targeting "covers no more of the target manifold"',
++     'ESTIMATOR-DEPENDENT: C1 target recall saturated (~1.0); appendix k-NN recall (k=5) on injected renders: concentrated 0.62-0.64 vs random 0.35-0.43',
++     'AN-04_foreground_coverage.csv; rebuild/C1/out/c1_coverage.csv', 'qualify (Edit 10.4)'),
++    ('C20', 'sec:why', 'ES tracks per-pixel error about twice as strongly as structural error; ordering holds for three estimator families on both architectures',
++     'SUPPORTED for SINet, SINet-v2, SegMaR, SINet-MT (reproduced exactly for SINet); REVERSED for source-only SINet (0.355 vs 0.458)',
++     'AN-04_signal_correlations.csv; AN-04b_summary.json', 'add exception (Edit 10.3)'),
++    ('C21', 'tab:arms; sec:concentration', 'Same-shape arms hold concentration fixed and differ only in direction',
++     'SUPPORTED for quotas; but domain mix differs strongly (CAMO share C10 0.530, CSHUF 0.285, CINV 0.199)',
++     'AN-04_cluster_domain_mix.csv; TH-02_quota_invariants.csv', 'mention as untested candidate explanation (Edit 10.2)'),
++    ('C14', 'sec:contamination; app:chamext', '50/76 (41 + 9), 44 COD10K-train, 16 unchecked, 0 exact-hash vs training',
++     'SUPPORTED (reproduced exactly)', 'AN-05_chameleon_pairs.csv', 'keep'),
++    ('C15', 'app:chamext', 'Three CHAMELEON images byte-identical to CAMO-250', 'INCOMPLETE: 4 (adds animal-28 re-encode)',
++     'AN-05_cross_benchmark.csv', 'amend (DOC-02 item 3)'),
++    ('C16', 'sec:contamination', 'Sixteen unchecked; uncontaminated subset is 10 images',
++     'INCOMPLETE: all 16 and 8 of the 10 are COD10K-test re-encodes; the 10 are same-dimension negatives only',
++     'AN-05_cross_benchmark.csv', 'amend (DOC-02 items 1, 2, 4)'),
++    ('C17', 'app:masks', 'Releases differ in polarity; IoU 0.0 / 0.6932; MAE 0.2196 vs 0.0816', 'SUPPORTED (reproduced exactly)',
++     'AN-05_mask_release.csv', 'keep'),
++    ('C18', 'sec:contamination', 'Difficulty analysis found no leaked-subset advantage', 'NOT RE-RUN (submitted evidence)', 'rebuild/D2_reaudit/D2R_RESULTS.md',
++     'keep; no inflation claimed'),
++]
++cols = ['claim_id', 'manuscript_label', 'manuscript_claim', 'status_after_review', 'evidence', 'proposed_action']
++with open(os.path.join(a.sr, 'RESULT_TABLES/DOC-01_claim_evidence_map.csv'), 'w', newline='') as f:
++    w = csv.writer(f)
++    w.writerow(cols)
++    w.writerows(R)
++print('wrote', len(R), 'rows')
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_figures.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_figures.py
+new file mode 100644
+index 0000000..0ff58fa
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/make_figures.py
+@@ -0,0 +1,112 @@
++#!/usr/bin/env python
++"""Figures from committed RESULT_TABLES only (no new computation): AN-02 and AN-05."""
++import argparse
++import csv
++import os
++from collections import defaultdict
++
++import matplotlib
++matplotlib.use('Agg')
++import matplotlib.pyplot as plt     # noqa: E402
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--sr', required=True)
++ap.add_argument('--which', default='an02,an05')
++a = ap.parse_args()
++RT, FG = os.path.join(a.sr, 'RESULT_TABLES'), os.path.join(a.sr, 'FIGURES')
++C = {'B-C10': '#2a6fbb', 'B-CSHUF': '#5aa0d8', 'B-CINV': '#9cc7ec', 'C10-CSHUF': '#d1762b',
++     'C10-CINV': '#e59a5c', 'CSHUF-CINV': '#f0bf91'}
++
++
++def rows(n):
++    return list(csv.DictReader(open(os.path.join(RT, n))))
++
++
++def an02():
++    ov = rows('AN-02_overlap_by_seed.csv')
++    ex = rows('AN-02_exposure_by_run.csv')
++    pf = rows('EXP-01_preflight.csv')
++    fig, ax = plt.subplots(1, 3, figsize=(13, 3.9))
++    pairs = ['B-C10', 'B-CSHUF', 'B-CINV', 'C10-CSHUF', 'C10-CINV', 'CSHUF-CINV']
++    for i, p in enumerate(pairs):
++        x, y = p.split('-')
++        v = [float(r['frac_injection_differs']) for r in ov if r['arm_x'] == x and r['arm_y'] == y]
++        ax[0].scatter([i] * len(v), v, color=C[p], s=18, zorder=3)
++    ax[0].axhline(0.48, color='0.3', ls='--', lw=1)
++    ax[0].text(5.4, 0.49, 'manuscript "about 48%"', ha='right', fontsize=7, color='0.3')
++    ax[0].set_xticks(range(len(pairs)))
++    ax[0].set_xticklabels(pairs, rotation=30, fontsize=8)
++    ax[0].set_ylim(0, 1)
++    ax[0].set_ylabel('share of the 1,000 injected images\nthat differ (one dot per seed)', fontsize=8)
++    ax[0].set_title('Injected-set difference by arm pair', fontsize=9)
++    for arch, mk in (('SINet', 'o'), ('SINetv2', 's')):
++        for rnd in ('1', '2'):
++            v = [float(r['arm_specific_share_of_draws_vs_B']) for r in ex
++                 if r['architecture'] == arch and r['round'] == rnd and r['arm'] == 'C10']
++            ax[1].scatter([int(rnd) + (0.1 if arch == 'SINetv2' else -0.1)] * len(v), v, marker=mk,
++                          color='#2a6fbb' if arch == 'SINet' else '#d1762b', s=18,
++                          label='%s' % arch if rnd == '1' else None)
++    ax[1].set_xticks([1, 2])
++    ax[1].set_xticklabels(['round 1', 'round 2'])
++    ax[1].set_ylim(0, 0.2)
++    ax[1].set_ylabel('expected share of source draws on\nC10-only images (vs B), per epoch', fontsize=8)
++    ax[1].set_title('Theoretical exposure (no sampler trace logged)', fontsize=9)
++    ax[1].legend(fontsize=7, frameon=False)
++    ns = [int(r['N']) for r in pf]
++    ax[2].plot(ns, [float(r['DC_mean']) for r in pf], 'o-', color='#2a6fbb')
++    ax[2].fill_between(ns, [float(r['DC_min']) for r in pf], [float(r['DC_max']) for r in pf], color='#2a6fbb', alpha=0.2)
++    ax[2].axhline(1.5 * float(pf[0]['DC_mean']), color='0.3', ls='--', lw=1)
++    ax[2].text(4400, 1.5 * float(pf[0]['DC_mean']) + 0.004, 'pre-specified pass line (1.5x N=1000)', ha='right', fontsize=7)
++    ax[2].set_xlabel('matched budget N', fontsize=8)
++    ax[2].set_ylabel('share of training pool differing,\nB_N vs C10_N (8 seeds)', fontsize=8)
++    ax[2].set_title('EXP-01 preflight: larger N does not enlarge the contrast', fontsize=9)
++    fig.suptitle('Post-review exploratory (AN-02, EXP-01 preflight)', fontsize=10)
++    fig.tight_layout()
++    fig.savefig(os.path.join(FG, 'AN-02_overlap_exposure.png'), dpi=150)
++
++
++def an05():
++    pr = rows('AN-05_chameleon_pairs.csv')
++    pp = rows('AN-05_protocol_paths.csv')
++    cols = ['common_supervised_protocol_train_labels', 'this_paper_unlabelled_target_image',
++            'this_paper_checkpoint_selection', 'cross_benchmark_cod10k_test', 'this_paper_supervised_source_labels']
++    labels = ['common protocol:\nsupervised training\n(image + mask)', 'this paper:\nunlabelled target\n(image only)',
++              'this paper:\ncheckpoint selection\n(CAMO-250)', 'also a COD10K-test\nphotograph\n(cross-benchmark)',
++              'this paper:\nsupervised source\n(HKU-IS + renders)']
++    cat = defaultdict(lambda: defaultdict(int))
++    for r in pp:
++        for c in cols:
++            cat[c][r[c].split(' ')[0]] += 1
++    fig, ax = plt.subplots(figsize=(9.5, 4.2))
++    colors = {'direct': '#c0392b', 'unknown': '#9a9a9a', 'not-detected': '#2e8b57', 'absent': '#2e8b57'}
++    for i, c in enumerate(cols):
++        left = 0
++        for k in ('direct', 'unknown', 'not-detected'):
++            n = cat[c].get(k, 0)
++            if n:
++                ax.barh(i, n, left=left, color=colors[k], label=k)
++                ax.text(left + n / 2, i, str(n), ha='center', va='center', fontsize=8, color='white')
++                left += n
++    ax.set_yticks(range(len(cols)))
++    ax.set_yticklabels(labels, fontsize=7)
++    ax.set_xlim(0, 76)
++    ax.set_xlabel('CHAMELEON images (76)', fontsize=8)
++    h, l = ax.get_legend_handles_labels()
++    seen = {}
++    for hh, ll in zip(h, l):
++        seen.setdefault(ll, hh)
++    ax.legend(seen.values(), seen.keys(), fontsize=7, frameon=True, facecolor='white', framealpha=1.0, loc='upper left', bbox_to_anchor=(1.01, 1.0))
++    n_conf = sum(r['status'] == 'confirmed' for r in pr)
++    ax.set_title('Where the 76 CHAMELEON photographs also appear, by pathway (%d confirmed training-pool duplicates;\n'
++                 '"unknown" = no partner found, not shown absent; "not-detected" = searched, none found -- a lower bound)'
++                 % n_conf, fontsize=8)
++    fig.tight_layout()
++    fig.savefig(os.path.join(FG, 'AN-05_protocol_paths.png'), dpi=150)
++
++
++if __name__ == '__main__':
++    w = a.which.split(',')
++    if 'an02' in w:
++        an02()
++    if 'an05' in w:
++        an05()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/manuscript_check.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/manuscript_check.py
+new file mode 100644
+index 0000000..fe3d8f8
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/manuscript_check.py
+@@ -0,0 +1,77 @@
++#!/usr/bin/env python
++"""Read-only integrity check of the submitted manuscript: cite keys vs bib, labels vs refs.
++
++Reads the manuscript and bib from the original working copy (never writes there) and the
++\\input files from this worktree's base commit (rebuild/FinalPaper/AD-PCH-230926/).
++Writes one JSON report to the path given by --out.
++"""
++import argparse
++import hashlib
++import json
++import os
++import re
++import sys
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--tex', required=True)
++ap.add_argument('--bib', required=True)
++ap.add_argument('--inputs-dir', required=True, help='directory holding the \\input files')
++ap.add_argument('--out', required=True)
++a = ap.parse_args()
++
++
++def sha(p):
++    return hashlib.sha256(open(p, 'rb').read()).hexdigest()
++
++
++def strip_comments(s):
++    return re.sub(r'(?<!\\)%.*', '', s)
++
++
++main = strip_comments(open(a.tex, encoding='utf-8').read())
++inputs = re.findall(r'\\input\{([^}]+)\}', main)
++texts = {'<main>': main}
++missing_inputs = []
++for name in inputs:
++    fn = name if name.endswith('.tex') else name + '.tex'
++    p = os.path.join(a.inputs_dir, fn)
++    if os.path.isfile(p):
++        texts[fn] = strip_comments(open(p, encoding='utf-8').read())
++    else:
++        missing_inputs.append(fn)
++figs = re.findall(r'\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}', main)
++missing_figs = [f for f in figs if not os.path.isfile(os.path.join(a.inputs_dir, f))]
++
++allt = '\n'.join(texts.values())
++cite_cmds = re.findall(r'\\(?:no)?cite[a-zA-Z]*\*?(?:\[[^\]]*\])*\{([^}]+)\}', allt)
++cited = sorted({k.strip() for grp in cite_cmds for k in grp.split(',')
++                if k.strip() and not k.strip().startswith('#')})
++main_cmds = re.findall(r'\\(?:no)?cite[a-zA-Z]*\*?(?:\[[^\]]*\])*\{([^}]+)\}', main)
++cited_main = sorted({k.strip() for grp in main_cmds for k in grp.split(',')
++                     if k.strip() and not k.strip().startswith('#')})
++bib = open(a.bib, encoding='utf-8').read()
++entries = re.findall(r'@([a-zA-Z]+)\s*\{\s*([^,\s]+)\s*,', bib)
++bib_keys = [k for t, k in entries if t.lower() not in ('comment', 'preamble', 'string')]
++dup_bib = sorted({k for k in bib_keys if bib_keys.count(k) > 1})
++missing_cites = [k for k in cited if k not in set(bib_keys)]
++labels = re.findall(r'\\label\{([^}]+)\}', allt)
++refs = re.findall(r'\\(?:ref|eqref|autoref|cref|Cref|pageref)\{([^}]+)\}', allt)
++ref_keys = sorted({k.strip() for grp in refs for k in grp.split(',')
++                   if not k.strip().startswith('#')})  # '#n' = macro parameters
++undefined = [r for r in ref_keys if r not in set(labels)]
++dup_labels = sorted({l for l in labels if labels.count(l) > 1})
++
++rep = dict(
++    tex=a.tex, tex_sha256=sha(a.tex), bib=a.bib, bib_sha256=sha(a.bib),
++    inputs=inputs, missing_inputs=missing_inputs, figures=figs, missing_figures=missing_figs,
++    n_unique_cited_keys=len(cited), n_unique_cited_keys_main_file_only=len(cited_main),
++    cited_only_in_inputs=[k for k in cited if k not in set(cited_main)],
++    n_bib_entries=len(bib_keys), uncited_bib_entries=[k for k in bib_keys if k not in set(cited)], duplicate_bib_keys=dup_bib,
++    cited_keys_missing_from_bib=missing_cites,
++    n_labels=len(labels), duplicate_labels=dup_labels, n_unique_refs=len(ref_keys),
++    undefined_refs=undefined,
++    note='syntax-level check only; no external semantic verification of references')
++os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
++json.dump(rep, open(a.out, 'w'), indent=1)
++print(json.dumps({k: v for k, v in rep.items() if k not in ('inputs', 'figures')}, indent=1))
++sys.exit(0 if not (missing_cites or undefined or missing_inputs or missing_figs or dup_labels) else 1)
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/statlib.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/statlib.py
+new file mode 100644
+index 0000000..f466f8e
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/statlib.py
+@@ -0,0 +1,209 @@
++"""Independent statistics for the dypE follow-up: pure Python/NumPy, no scipy.
++
++Student-t CDF via the regularized incomplete beta function (continued fraction, Lentz's method);
++quantiles by bisection. Every function here is cross-checked against scipy by the callers.
++"""
++import itertools
++import math
++
++import numpy as np
++
++
++# ---------------------------------------------------------------- Student t
++def _betacf(a, b, x, itmax=500, eps=1e-16):
++    tiny = 1e-300
++    qab, qap, qam = a + b, a + 1.0, a - 1.0
++    c, d = 1.0, 1.0 - qab * x / qap
++    d = tiny if abs(d) < tiny else d
++    d = 1.0 / d
++    h = d
++    for m in range(1, itmax + 1):
++        m2 = 2 * m
++        aa = m * (b - m) * x / ((qam + m2) * (a + m2))
++        d = 1.0 + aa * d
++        d = tiny if abs(d) < tiny else d
++        c = 1.0 + aa / c
++        c = tiny if abs(c) < tiny else c
++        d = 1.0 / d
++        h *= d * c
++        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2))
++        d = 1.0 + aa * d
++        d = tiny if abs(d) < tiny else d
++        c = 1.0 + aa / c
++        c = tiny if abs(c) < tiny else c
++        d = 1.0 / d
++        de = d * c
++        h *= de
++        if abs(de - 1.0) < eps:
++            break
++    return h
++
++
++def betainc_reg(a, b, x):
++    if x <= 0.0:
++        return 0.0
++    if x >= 1.0:
++        return 1.0
++    lbt = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b) + a * math.log(x) + b * math.log1p(-x)
++    bt = math.exp(lbt)
++    if x < (a + 1.0) / (a + b + 2.0):
++        return bt * _betacf(a, b, x) / a
++    return 1.0 - bt * _betacf(b, a, 1.0 - x) / b
++
++
++def t_cdf(t, df):
++    x = df / (df + t * t)
++    tail = 0.5 * betainc_reg(df / 2.0, 0.5, x)
++    return 1.0 - tail if t > 0 else tail
++
++
++def t_sf(t, df):
++    return t_cdf(-t, df)
++
++
++def t_ppf(q, df):
++    lo, hi = -1e4, 1e4
++    for _ in range(300):
++        mid = 0.5 * (lo + hi)
++        if t_cdf(mid, df) < q:
++            lo = mid
++        else:
++            hi = mid
++        if hi - lo < 1e-14 * max(1.0, abs(mid)):
++            break
++    return 0.5 * (lo + hi)
++
++
++# ---------------------------------------------------------------- summaries
++def mean_sd(x):
++    x = np.asarray(x, dtype=np.float64)
++    m = float(x.sum() / len(x))
++    sd = math.sqrt(float(((x - m) ** 2).sum()) / (len(x) - 1))
++    return m, sd
++
++
++def paired(x, y, delta=0.005):
++    """Paired analysis of D = x - y (same index = same seed)."""
++    d = np.asarray(x, dtype=np.float64) - np.asarray(y, dtype=np.float64)
++    n = len(d)
++    m, sd = mean_sd(d)
++    se = sd / math.sqrt(n)
++    df = n - 1
++    t95, t90 = t_ppf(0.975, df), t_ppf(0.95, df)
++    tstat = m / se if se > 0 else float('nan')
++    p = 2.0 * t_sf(abs(tstat), df) if se > 0 else float('nan')
++    p_lo = t_sf((m + delta) / se, df)       # H0: D <= -delta
++    p_hi = t_cdf((m - delta) / se, df)      # H0: D >= +delta
++    ci90 = (m - t90 * se, m + t90 * se)
++    return dict(n=n, mean=m, sd=sd, se=se, df=df, t=tstat, p=p,
++                ci95=(m - t95 * se, m + t95 * se), ci90=ci90,
++                upper_one_sided_95=m + t90 * se, lower_one_sided_95=m - t90 * se,
++                p_tost=max(p_lo, p_hi), equivalent=(ci90[0] > -delta and ci90[1] < delta),
++                smallest_delta=max(abs(ci90[0]), abs(ci90[1])),
++                n_pos=int((d > 0).sum()), n_neg=int((d < 0).sum()), n_zero=int((d == 0).sum()))
++
++
++def welch(x, y, delta=0.005):
++    x, y = np.asarray(x, np.float64), np.asarray(y, np.float64)
++    nx, ny = len(x), len(y)
++    mx, sx = mean_sd(x)
++    my, sy = mean_sd(y)
++    vx, vy = sx * sx / nx, sy * sy / ny
++    se = math.sqrt(vx + vy)
++    df = (vx + vy) ** 2 / (vx * vx / (nx - 1) + vy * vy / (ny - 1))
++    d = mx - my
++    t95, t90 = t_ppf(0.975, df), t_ppf(0.95, df)
++    p_lo = t_sf((d + delta) / se, df)
++    p_hi = t_cdf((d - delta) / se, df)
++    return dict(mean=d, se=se, df=df, t=d / se, p=2.0 * t_sf(abs(d / se), df),
++                ci95=(d - t95 * se, d + t95 * se), ci90=(d - t90 * se, d + t90 * se),
++                upper_one_sided_95=d + t90 * se, p_tost=max(p_lo, p_hi),
++                equivalent=(d - t90 * se > -delta and d + t90 * se < delta),
++                smallest_delta=abs(d) + t90 * se)
++
++
++def signflip_exact(d):
++    """Two-sided exact sign-flip p for the mean of d (all 2^n sign vectors)."""
++    d = np.asarray(d, np.float64)
++    n = len(d)
++    obs = abs(d.mean())
++    signs = np.array(list(itertools.product((1.0, -1.0), repeat=n)))
++    stats_ = np.abs((signs * d).mean(axis=1))
++    return float((stats_ >= obs - 1e-15).sum() / len(signs)), len(signs)
++
++
++def _norm_cdf(z):
++    return 0.5 * math.erfc(-z / math.sqrt(2.0))
++
++
++def _norm_ppf(q):
++    lo, hi = -40.0, 40.0
++    for _ in range(200):
++        mid = 0.5 * (lo + hi)
++        if _norm_cdf(mid) < q:
++            lo = mid
++        else:
++            hi = mid
++    return 0.5 * (lo + hi)
++
++
++def bootstrap_mean(d, n_boot, rng, level=0.95):
++    """Percentile and BCa intervals for the mean of d (paired bootstrap over pairs)."""
++    d = np.asarray(d, np.float64)
++    n = len(d)
++    idx = rng.integers(0, n, size=(n_boot, n))
++    bs = d[idx].mean(axis=1)
++    a2 = (1 - level) / 2
++    pct = (float(np.quantile(bs, a2)), float(np.quantile(bs, 1 - a2)))
++    theta = d.mean()
++    prop = float((bs < theta).mean())
++    prop = min(max(prop, 1.0 / (n_boot + 1)), 1 - 1.0 / (n_boot + 1))
++    z0 = _norm_ppf(prop)
++    jack = np.array([np.delete(d, i).mean() for i in range(n)])
++    jm = jack.mean()
++    num, den = ((jm - jack) ** 3).sum(), 6.0 * (((jm - jack) ** 2).sum()) ** 1.5
++    acc = float(num / den) if den > 0 else 0.0
++    out = []
++    for q in (a2, 1 - a2):
++        zq = _norm_ppf(q)
++        adj = _norm_cdf(z0 + (z0 + zq) / (1 - acc * (z0 + zq)))
++        out.append(float(np.quantile(bs, adj)))
++    return dict(pct=pct, bca=tuple(out), z0=z0, acc=acc, n_boot=n_boot)
++
++
++def permutation_two_group_exact(a, b):
++    """Exact two-sided permutation p for mean(a) - mean(b) over all relabelings."""
++    a, b = np.asarray(a, np.float64), np.asarray(b, np.float64)
++    pool = np.concatenate([a, b])
++    na, n = len(a), len(a) + len(b)
++    obs = abs(a.mean() - b.mean())
++    tot = pool.sum()
++    cnt = k = 0
++    for comb in itertools.combinations(range(n), na):
++        sa = pool[list(comb)].sum()
++        diff = sa / na - (tot - sa) / (n - na)
++        cnt += abs(diff) >= obs - 1e-15
++        k += 1
++    return cnt / k, k
++
++
++def holm(ps):
++    ps = [float('nan') if p is None else p for p in ps]
++    order = sorted(range(len(ps)), key=lambda i: ps[i])
++    m = len(ps)
++    adj = [0.0] * m
++    run = 0.0
++    for r, i in enumerate(order):
++        run = max(run, min(1.0, (m - r) * ps[i]))
++        adj[i] = run
++    return adj
++
++
++def pooled_sd(groups):
++    """Pooled within-group SD (ddof 1 per group), df = sum(n_g - 1)."""
++    ss = dfs = 0.0
++    for g in groups:
++        g = np.asarray(g, np.float64)
++        ss += float(((g - g.mean()) ** 2).sum())
++        dfs += len(g) - 1
++    return math.sqrt(ss / dfs), int(dfs)
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th01_paired.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th01_paired.py
+new file mode 100644
+index 0000000..0d04470
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th01_paired.py
+@@ -0,0 +1,191 @@
++#!/usr/bin/env python
++"""TH-01 -- paired inference on the eight-seed S_alpha table (post-review, exploratory).
++
++Input: RUNS/an01/an01_rescored_full.csv (AN-01 re-score; Gate 2 must have passed).
++Method: ANALYSIS_PRESPEC.md §4. Independent implementation = statlib.py (NumPy only),
++cross-checked against scipy to <= 1e-12 on every t-based quantity.
++
++Outputs:
++  RESULT_TABLES/TH-01_paired_inference.csv
++  RESULT_TABLES/TH-01_seed_differences.csv      (per seed: x, y, D; plus leave-one-out rows)
++  RESULT_TABLES/TH-01_tost_table_reproduction.csv  (Welch rows vs manuscript tab:tost)
++  EXPERIMENT_LOGS/TH-01_checks.json
++"""
++import argparse
++import csv
++import hashlib
++import json
++import math
++import os
++import re
++import sys
++
++import numpy as np
++from scipy import stats
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, SR = a.worktree, a.sr
++sys.path.insert(0, os.path.join(SR, 'scripts'))
++import statlib as SL          # noqa: E402
++
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++CELLS = [('SINet', 'COD10K'), ('SINet', 'NC4K'), ('SINetv2', 'COD10K'), ('SINetv2', 'NC4K')]
++CONTRASTS = [('C10', 'B', 'primary'), ('C10', 'CSHUF', 'secondary'), ('C10', 'CINV', 'secondary'),
++             ('CSHUF', 'CINV', 'secondary'), ('CINV', 'B', 'secondary'), ('CSHUF', 'B', 'secondary')]
++DELTA, REF = 0.005, 0.0142
++RNG = np.random.default_rng(20261111)
++NBOOT = 20000
++
++
++def sha(p):
++    return hashlib.sha256(open(p, 'rb').read()).hexdigest()
++
++
++def close(a_, b_, tol=1e-12):
++    return abs(a_ - b_) <= tol * max(1.0, abs(a_), abs(b_))
++
++
++def main():
++    src = os.path.join(SR, 'RUNS/an01/an01_rescored_full.csv')
++    gates = json.load(open(os.path.join(SR, 'EXPERIMENT_LOGS/AN-01_gates.json')))
++    assert gates['gate2']['passed'], 'AN-01 Gate 2 failed; TH-01 must not run on unverified values'
++    v = {}
++    for r in csv.DictReader(open(src)):
++        v[(r['arch'], r['endpoint'], r['arm'], int(r['seed']))] = float(r['Sm'])
++    verdict = json.load(open(os.path.join(WT, 'rebuild/ABC/out/se/abc_verdict.json')))['verdicts']
++    checks = dict(scipy_mismatches=[], known_answer={}, sigma_hat_reproduction={})
++
++    # ---- known-answer test: t for D = [1,2,3,4,5] is mean/(sd/sqrt n) = 3/(sqrt(2.5)/sqrt 5)
++    ka = SL.paired([1, 2, 3, 4, 5], [0, 0, 0, 0, 0])
++    checks['known_answer'] = dict(t=ka['t'], expected=3 / (math.sqrt(2.5) / math.sqrt(5)),
++                                  passed=close(ka['t'], 3 / (math.sqrt(2.5) / math.sqrt(5))))
++    for q, dfq in ((0.975, 7), (0.95, 7), (0.975, 13.3)):
++        if not close(SL.t_ppf(q, dfq), float(stats.t.ppf(q, dfq)), 1e-11):
++            checks['scipy_mismatches'].append(('t_ppf', q, dfq))
++
++    rows, seedrows, primary_ps = [], [], []
++    for arch, ep in CELLS:
++        key = '%s|%s' % (arch, ep)
++        # sigma_hat reproduction (committed pooled 4-arm SD, df 28)
++        sh, dfp = SL.pooled_sd([[v[(arch, ep, arm, s)] for s in SEEDS] for arm in ('B', 'C10', 'CSHUF', 'CINV')])
++        checks['sigma_hat_reproduction'][key] = dict(mine=sh, committed=verdict[key]['sigma_hat'], df=dfp,
++                                                     match_1e9=abs(sh - verdict[key]['sigma_hat']) < 1e-9)
++        for X, Y, role in CONTRASTS:
++            x = np.array([v[(arch, ep, X, s)] for s in SEEDS])
++            y = np.array([v[(arch, ep, Y, s)] for s in SEEDS])
++            d = x - y
++            P = SL.paired(x, y, DELTA)
++            W = SL.welch(x, y, DELTA)
++            sf_p, n_sf = SL.signflip_exact(d)
++            bt = SL.bootstrap_mean(d, NBOOT, RNG)
++            # scipy cross-checks
++            sp_p = float(stats.ttest_rel(x, y).pvalue)
++            sp_w = stats.ttest_ind(x, y, equal_var=False)
++            t95 = float(stats.t.ppf(0.975, 7))
++            for nm, mine, ref in (('paired_p', P['p'], sp_p), ('paired_ci95_lo', P['ci95'][0], d.mean() - t95 * d.std(ddof=1) / math.sqrt(8)),
++                                  ('welch_p', W['p'], float(sp_w.pvalue)), ('welch_t', W['t'], float(sp_w.statistic)),
++                                  ('paired_tost', P['p_tost'], max(float(stats.t.sf((d.mean() + DELTA) / P['se'], 7)),
++                                                                   float(stats.t.cdf((d.mean() - DELTA) / P['se'], 7))))):
++                if not close(mine, ref, 1e-10):
++                    checks['scipy_mismatches'].append((key, X, Y, nm, mine, ref))
++            r_xy = float(np.corrcoef(x, y)[0, 1])
++            vx, vy, vd = float(np.var(x, ddof=1)), float(np.var(y, ddof=1)), float(np.var(d, ddof=1))
++            gap_key = '%s->%s' % (Y, X)
++            committed = verdict[key]['gaps'].get(gap_key)
++            bar = 2 * verdict[key]['sigma_hat']
++            row = dict(
++                architecture=arch, endpoint=ep, endpoint_role='primary' if ep == 'COD10K' else 'secondary',
++                contrast='%s-%s' % (X, Y), contrast_role=role, units='S_alpha (absolute, alpha=0.5)',
++                n_pairs=8, seeds=' '.join(map(str, SEEDS)), pairing='training seed (B redraws its stems per seed)',
++                mean_D=P['mean'], sd_D=P['sd'], se_paired=P['se'], df_paired=7,
++                paired_ci95_lo=P['ci95'][0], paired_ci95_hi=P['ci95'][1],
++                paired_ci90_lo=P['ci90'][0], paired_ci90_hi=P['ci90'][1],
++                paired_t=P['t'], paired_p_two_sided=P['p'], sign_pos=P['n_pos'], sign_neg=P['n_neg'],
++                paired_upper_one_sided_95=P['upper_one_sided_95'],
++                boot_pct95_lo=bt['pct'][0], boot_pct95_hi=bt['pct'][1],
++                boot_bca95_lo=bt['bca'][0], boot_bca95_hi=bt['bca'][1], n_boot=NBOOT,
++                signflip_p_exact=sf_p, signflip_n_vectors=n_sf,
++                paired_tost_p_delta0p005=P['p_tost'], paired_equivalent_delta0p005=P['equivalent'],
++                paired_smallest_equiv_delta=P['smallest_delta'],
++                welch_se=W['se'], welch_df=W['df'], welch_ci95_lo=W['ci95'][0], welch_ci95_hi=W['ci95'][1],
++                welch_p_two_sided=W['p'], welch_tost_p_delta0p005=W['p_tost'],
++                welch_equivalent_delta0p005=W['equivalent'], welch_smallest_equiv_delta=W['smallest_delta'],
++                welch_upper_one_sided_95=W['upper_one_sided_95'],
++                r_xy_across_seeds=r_xy, var_x=vx, var_y=vy, var_D=vd, var_x_plus_var_y=vx + vy,
++                cov_xy=(vx + vy - vd) / 2, se_ratio_paired_over_welch=P['se'] / W['se'],
++                paired_ci95_excludes_ref_0p0142=P['ci95'][1] < REF,
++                paired_ci95_excludes_0p005=P['ci95'][1] < DELTA,
++                paired_ci95_excludes_0=(P['ci95'][0] > 0 or P['ci95'][1] < 0),
++                welch_ci95_excludes_ref_0p0142=W['ci95'][1] < REF,
++                committed_sigma_hat_SE=verdict[key]['sigma_hat'], committed_bar_2sigma=bar,
++                gap_over_bar=abs(P['mean']) / bar,
++                committed_verdict=(committed or {}).get('verdict', 'not a committed SE gap'),
++                committed_sign_consistent=(committed or {}).get('sign_consistent', ''),
++                alpha=0.05, ci_level='95% two-sided (90% for TOST)',
++                status='post-review exploratory; decides nothing',
++                test_selection_status='held-out endpoint; no test-label selection',
++                data_sha256=sha(src), code_sha256=sha(os.path.abspath(__file__)))
++            rows.append(row)
++            if role == 'primary':
++                primary_ps.append(P['p'])
++            for s, xi, yi in zip(SEEDS, x, y):
++                seedrows.append(dict(architecture=arch, endpoint=ep, contrast='%s-%s' % (X, Y), kind='seed',
++                                     seed=s, x=xi, y=yi, D=xi - yi, mean_D=None, ci95_lo=None, ci95_hi=None))
++            for j, s in enumerate(SEEDS):
++                L = SL.paired(np.delete(x, j), np.delete(y, j), DELTA)
++                seedrows.append(dict(architecture=arch, endpoint=ep, contrast='%s-%s' % (X, Y),
++                                     kind='leave_one_out', seed=s, x=None, y=None, D=None, mean_D=L['mean'],
++                                     ci95_lo=L['ci95'][0], ci95_hi=L['ci95'][1]))
++    hp = SL.holm(primary_ps)
++    i = 0
++    for r in rows:
++        r['holm_p_primary_family'] = ''
++        if r['contrast_role'] == 'primary':
++            r['holm_p_primary_family'] = hp[i]
++            i += 1
++
++    def wcsv(name, rs):
++        with open(os.path.join(SR, 'RESULT_TABLES', name), 'w', newline='') as f:
++            w = csv.DictWriter(f, fieldnames=list(rs[0]))
++            w.writeheader()
++            for r in rs:
++                w.writerow({k: ('' if val is None else (repr(float(val)) if isinstance(val, (float, np.floating)) else (int(val) if isinstance(val, np.integer) else val)))
++                            for k, val in r.items()})
++    wcsv('TH-01_paired_inference.csv', rows)
++    wcsv('TH-01_seed_differences.csv', seedrows)
++
++    # ---- reproduce manuscript tab:tost (Welch) at 4 dp
++    tex = open(os.path.join(WT, 'rebuild/FinalPaper/AD-PCH-230926/table_tost_equivalence.tex')).read()
++    pat = re.compile(r'^(SINet(?:-v2)?) & (COD10K|NC4K) & \$\\mathrm\{(\w+)\}-\\mathrm\{(\w+)\}\$ & '
++                     r'\$([+-]\d\.\d{4})\$ & \$\[([+-]\d\.\d{4}), ([+-]\d\.\d{4})\]\$ & (?:\\textbf\{)?(\d\.\d{4})\}? & '
++                     r'\$(\d\.\d{4})\$', re.M)
++    rep = []
++    for m in pat.finditer(tex):
++        arch = 'SINetv2' if m.group(1) == 'SINet-v2' else 'SINet'
++        r = next(x for x in rows if x['architecture'] == arch and x['endpoint'] == m.group(2)
++                 and x['contrast'] == '%s-%s' % (m.group(3), m.group(4)))
++        mine = ('%+.4f' % r['mean_D'], '%+.4f' % r['welch_ci95_lo'], '%+.4f' % r['welch_ci95_hi'],
++                '%.4f' % r['welch_tost_p_delta0p005'], '%.4f' % r['welch_smallest_equiv_delta'])
++        pub = (m.group(5), m.group(6), m.group(7), m.group(8), m.group(9))
++        rep.append(dict(architecture=arch, endpoint=m.group(2), contrast='%s-%s' % (m.group(3), m.group(4)),
++                        published_delta=pub[0], recomputed_delta=mine[0], published_ci95=('[%s, %s]' % pub[1:3]),
++                        recomputed_welch_ci95=('[%s, %s]' % mine[1:3]), published_tost_p=pub[3],
++                        recomputed_welch_tost_p=mine[3], published_smallest_delta=pub[4],
++                        recomputed_smallest_delta=mine[4], all_match_4dp=(pub == mine),
++                        interval_type='Welch (unpaired), as stated in the tab:tost caption'))
++    wcsv('TH-01_tost_table_reproduction.csv', rep)
++    checks['tost_table'] = dict(n_rows=len(rep), n_match=sum(r['all_match_4dp'] for r in rep))
++    checks['data_sha256'] = sha(src)
++    json.dump(checks, open(os.path.join(SR, 'EXPERIMENT_LOGS/TH-01_checks.json'), 'w'), indent=1, default=str)
++    print(json.dumps(checks, indent=1, default=str))
++    ok = (not checks['scipy_mismatches'] and checks['known_answer']['passed']
++          and checks['tost_table']['n_match'] == 16
++          and all(x['match_1e9'] for x in checks['sigma_hat_reproduction'].values()))
++    sys.exit(0 if ok else 1)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th02_quota_invariants.py b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th02_quota_invariants.py
+new file mode 100644
+index 0000000..423eb9c
+--- /dev/null
++++ b/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th02_quota_invariants.py
+@@ -0,0 +1,176 @@
++#!/usr/bin/env python
++"""TH-02 -- quota-multiset invariants and concentration indicators (ANALYSIS_PRESPEC.md §6).
++
++Recomputes every arm's 75 quotas with the UNCHANGED base functions (softmax_alloc,
++largest_remainder, es_permutation) on the committed target_es, and the selected stems with the
++unchanged arm_c_stems / arm_b_stems. Verifies them against the committed stem files.
++
++Outputs:
++  RESULT_TABLES/TH-02_quota_invariants.csv     one row per arm (summary + invariant checks)
++  RESULT_TABLES/TH-02_quota_vectors.csv        75 clusters x arms (nominal quotas, realised counts)
++  EXPERIMENT_LOGS/TH-02_checks.json
++"""
++import argparse
++import csv
++import json
++import math
++import os
++import sys
++
++import numpy as np
++
++ap = argparse.ArgumentParser()
++ap.add_argument('--worktree', required=True)
++ap.add_argument('--data-root', required=True)
++ap.add_argument('--sr', required=True)
++a = ap.parse_args()
++WT, DR, SR = a.worktree, a.data_root, a.sr
++sys.path.insert(0, os.path.join(SR, 'scripts'))
++import basepatch          # noqa: E402
++
++A, c1_space = basepatch.setup(WT, DR)
++from c1_targeted_vs_random import (softmax_alloc, largest_remainder, rank_by_centroid,   # noqa: E402
++                                   serving_orders)
++
++SEEDS = [42, 43, 45, 46, 47, 48, 49, 50]
++OUT_SE = os.path.join(WT, 'rebuild/ABC/out/se')
++
++
++def conc(counts):
++    q = np.asarray(counts, np.float64)
++    p = q / q.sum()
++    k = len(p)
++    nz = p[p > 0]
++    ent = float(-(nz * np.log(nz)).sum() / math.log(k))
++    hhi = float((p ** 2).sum())
++    srt = np.sort(p)
++    gini = float((2 * np.arange(1, k + 1) - k - 1) @ srt / (k * srt.sum()))
++    return dict(entropy_norm=ent, hhi=hhi, hhi_effective_clusters=1.0 / hhi, gini=gini,
++                max_share=float(p.max()), clusters_funded=int((q > 0).sum()),
++                tv_from_uniform=float(0.5 * np.abs(p - 1.0 / k).sum()))
++
++
++def greedy_with_cluster(alloc, order_idx, serving):
++    """Re-implementation of base greedy_select that also records which cluster took each item."""
++    taken = np.zeros(order_idx.shape[0], dtype=bool)
++    picked, by, displaced = [], {}, 0
++    for c in serving:
++        need = int(alloc[c])
++        if need <= 0:
++            continue
++        got = 0
++        for row in order_idx[:, c]:
++            if taken[row]:
++                displaced += 1
++                continue
++            taken[row] = True
++            picked.append(int(row))
++            by[int(row)] = c
++            got += 1
++            if got == need:
++                break
++    return np.array(sorted(picked)), by, displaced
++
++
++def main():
++    sp = c1_space.load_space(A.EMBEDDER)
++    es = sp.es
++    k = sp.k
++    s_e = float(np.std(es))                         # population SD, as softmax_alloc uses
++    scores, order = rank_by_centroid(sp)
++    nearest = np.argmax(sp.cut @ sp.centroids.T, axis=1)   # each cutout's nearest centroid
++    name_idx = {n: i for i, n in enumerate(sp.names)}
++    arms = {'C10': None, 'CSHUF': 'shuffled', 'CINV': 'rank_reversed', 'CORACLE': 'oracle_rank'}
++    committed_file = {'C10': 'abc_stems_C_a1.0.txt', 'CSHUF': 'abc_stems_CSHUF.txt',
++                      'CINV': 'abc_stems_CINV.txt'}
++    vec, summ, checks = {}, [], dict(s_e=s_e, s_e_manuscript=0.0101, k=k)
++    es_rank = np.argsort(np.argsort(es, kind='stable'), kind='stable')   # 0 = lowest ES
++    for arm, kind in arms.items():
++        sigma, info = A.es_permutation(es, kind)
++        es_used = es if kind is None else es[sigma]
++        p = softmax_alloc(es_used, 1.0)
++        alloc = largest_remainder(p, A.BUDGET)
++        serving = serving_orders(alloc, es_used)[A.SERVING]
++        idx, by, disp = greedy_with_cluster(alloc, order, serving)
++        stems_base, cell = A.arm_c_stems(A.ARM_ALPHA[arm], A.ARM_ES_PERM[arm])
++        mine = [sp.names[i] for i in idx]
++        same_as_base_call = mine == stems_base
++        cf = committed_file.get(arm)
++        committed = [l.strip() for l in open(os.path.join(OUT_SE, cf))] if cf else None
++        realised = np.bincount([by[i] for i in idx], minlength=k)
++        nearest_hist = np.bincount(nearest[idx], minlength=k)
++        fixed = np.where(sigma == np.arange(k))[0]
++        vec[arm] = dict(alloc=alloc, realised=realised, nearest=nearest_hist)
++        row = dict(arm=arm, kind=str(kind), sum_quotas=int(alloc.sum()),
++                   sorted_quota_multiset=' '.join(map(str, sorted(alloc.tolist(), reverse=True))),
++                   perm_rho=info.get('perm_rho'), perm_fixed_points=int(len(fixed)),
++                   fixed_point_clusters=' '.join(map(str, fixed.tolist())),
++                   fixed_point_es_rank_1based=' '.join(str(int(es_rank[f]) + 1) for f in fixed),
++                   n_displaced=disp, n_displaced_committed_cell=cell['n_displaced'],
++                   selection_equals_base_arm_c_stems=same_as_base_call,
++                   selection_equals_committed_file=(None if committed is None else mine == committed),
++                   realised_equals_nominal=bool(np.array_equal(realised, alloc)),
++                   n_clusters_realised_ne_nominal=int((realised != alloc).sum()),
++                   uses_endpoint_labels=(arm == 'CORACLE'),
++                   **{'nominal_' + kk: vv for kk, vv in conc(alloc).items()},
++                   **{'nearest_centroid_' + kk: vv for kk, vv in conc(nearest_hist).items()})
++        summ.append(row)
++    # B: expected counts (uniform draw) and realised per seed, by nearest centroid
++    pool_hist = np.bincount(nearest, minlength=k)
++    exp_b = pool_hist * A.BUDGET / len(nearest)
++    vec['B_expected'] = dict(alloc=exp_b, realised=exp_b, nearest=exp_b)
++    summ.append(dict(arm='B (expected under uniform draw)', kind='uniform', sum_quotas=float(exp_b.sum()),
++                     **{'nominal_' + kk: vv for kk, vv in conc(exp_b).items()},
++                     **{'nearest_centroid_' + kk: vv for kk, vv in conc(exp_b).items()}))
++    b_ok = []
++    for s in SEEDS:
++        st = A.arm_b_stems(s)
++        committed = [l.strip() for l in open(os.path.join(OUT_SE, 'abc_stems_B_s%d.txt' % s))]
++        b_ok.append(st == committed)
++        h = np.bincount(nearest[[name_idx[x] for x in st]], minlength=k)
++        vec['B_s%d' % s] = dict(alloc=h, realised=h, nearest=h)
++        summ.append(dict(arm='B_s%d' % s, kind='uniform draw', sum_quotas=int(h.sum()),
++                         selection_equals_committed_file=st == committed,
++                         **{'nearest_centroid_' + kk: vv for kk, vv in conc(h).items()}))
++    # invariants
++    ms = {arm: sorted(vec[arm]['alloc'].tolist()) for arm in arms}
++    checks.update(
++        all_sum_1000=all(int(vec[arm]['alloc'].sum()) == 1000 for arm in arms),
++        multiset_equal_C10_CSHUF=ms['C10'] == ms['CSHUF'], multiset_equal_C10_CINV=ms['C10'] == ms['CINV'],
++        multiset_equal_C10_CORACLE=ms['C10'] == ms['CORACLE'],
++        per_cluster_C10_vs_CSHUF_differs=int((vec['C10']['alloc'] != vec['CSHUF']['alloc']).sum()),
++        per_cluster_C10_vs_CINV_differs=int((vec['C10']['alloc'] != vec['CINV']['alloc']).sum()),
++        cinv_single_fixed_point_is_median=(
++            next(r for r in summ if r['arm'] == 'CINV')['fixed_point_es_rank_1based'] == str((k + 1) // 2)),
++        cshuf_no_fixed_point=next(r for r in summ if r['arm'] == 'CSHUF')['perm_fixed_points'] == 0,
++        cshuf_rho=next(r for r in summ if r['arm'] == 'CSHUF')['perm_rho'],
++        c_family_selection_matches_committed=all(r['selection_equals_committed_file'] for r in summ
++                                                 if r['arm'] in committed_file),
++        b_selection_matches_committed_all_seeds=all(b_ok),
++        es_ties=int(len(es) - len(np.unique(es))),
++        quota_remainder_units=int(1000 - np.floor(softmax_alloc(es, 1.0) * 1000).sum()))
++    with open(os.path.join(SR, 'RESULT_TABLES/TH-02_quota_invariants.csv'), 'w', newline='') as f:
++        cols = []
++        for r in summ:
++            cols += [c for c in r if c not in cols]
++        w = csv.DictWriter(f, fieldnames=cols)
++        w.writeheader()
++        for r in summ:
++            w.writerow({c: (repr(float(v)) if isinstance(v, (float, np.floating)) else (int(v) if isinstance(v, np.integer) else v)) for c, v in r.items()})
++    with open(os.path.join(SR, 'RESULT_TABLES/TH-02_quota_vectors.csv'), 'w', newline='') as f:
++        w = csv.writer(f)
++        keys = list(vec)
++        w.writerow(['cluster', 'target_es', 'es_rank_1based', 'n_target', 'n_cutouts_nearest']
++                   + ['%s_%s' % (kk, t) for kk in keys for t in ('nominal', 'realised', 'nearest')])
++        for c in range(k):
++            w.writerow([c, repr(float(es[c])), int(es_rank[c]) + 1, int(sp.n_target[c]), int(pool_hist[c])]
++                       + [('%.6g' % vec[kk][t][c]) for kk in keys for t in ('alloc', 'realised', 'nearest')])
++    json.dump(checks, open(os.path.join(SR, 'EXPERIMENT_LOGS/TH-02_checks.json'), 'w'), indent=1, default=str)
++    print(json.dumps(checks, indent=1, default=str))
++    for r in summ[:4]:
++        print(r['arm'], {kk: r[kk] for kk in ('nominal_entropy_norm', 'nominal_hhi', 'nominal_gini', 'nominal_max_share',
++                                              'nominal_clusters_funded', 'n_displaced', 'realised_equals_nominal')})
++
++
++if __name__ == '__main__':
++    main()

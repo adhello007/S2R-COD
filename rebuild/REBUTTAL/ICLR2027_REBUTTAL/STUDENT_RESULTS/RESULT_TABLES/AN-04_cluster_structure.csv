@@ -1,0 +1,14 @@
+quantity,value
+"silhouette (cosine, the 4033 labelled target images, committed k=75 labels)",0.2530216713539745
+silhouette (euclidean on L2-normalised),0.1563227950022685
+"committed silhouette_mean (b1_k_sweep, manuscript 0.1600)",0.1600050979353254
+committed-label vs nearest-centroid agreement (target),0.9454500371931565
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, committed_predictions_SINet_S2C",0.20464831852615256
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINet_B_8seed_mean",0.20840546667459767
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINet_C10_8seed_mean",0.20892556540110288
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINet_CINV_8seed_mean",0.20922025864836344
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINet_CSHUF_8seed_mean",0.20750215079405354
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINetv2_B_8seed_mean",0.1982422960169576
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINetv2_C10_8seed_mean",0.18873111608505433
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINetv2_CINV_8seed_mean",0.19597048903769798
+"eta^2 between-cluster share of (1-S_alpha), COD10K-test, SINetv2_CSHUF_8seed_mean",0.19633361545589073

@@ -24,7 +24,7 @@ pushed). **Base:** `8d1d079`. **Nothing was posted to OpenReview.** The author c
 | TH-02 | VERIFIED | Same-shape arms share the quota multiset exactly; the CINV fixed point is the median cluster |
 | AN-03 | VERIFIED (exploratory findings) | Three-seed boundary effect does not hold for C10−B at eight seeds; interaction not resolved |
 | EXP-02 | PARTIALLY VERIFIED | Re-score exact (Gate 3); CPU re-inference 3/4 within pre-specified tolerance, 1 just outside |
-| AN-04 | {{AN04_STATUS}} | {{AN04_LINE}} |
+| AN-04 | PARTIALLY VERIFIED | Coverage, η² and correlations reproduce; concentrated sets cover more of the target than random (0.62–0.64 vs 0.35–0.43); k-NN bootstrap invalid |
 | AN-05 | VERIFIED | All counts reproduce; new: 32 COD10K-test and a 4th CAMO-250 duplicate; 74/76 duplicated somewhere |
 | EXP-01 | BLOCKED (preflight FAILED) | Larger N raises the B–C10 contrast at most 1.22× (needs 1.5×); no GPU |
 | EXP-03 | BLOCKED | No generator of genuinely new foregrounds available |
@@ -62,12 +62,17 @@ pushed). **Base:** `8d1d079`. **Nothing was posted to OpenReview.** The author c
      undercounted it by one (`animal-28`). It now also uses Tier A, and the tables stage was rerun.
    - (c) AN-04 crashed on its first launch before writing any output (`stems_of` formatted a
      filename with a seed of None). It was fixed and rerun.
-3. **Not done although useful:** Tier B was not run on the 10 same-dimension negatives or against the
+3. **Pre-specified procedure found invalid (reported, not replaced):** the AN-04 group bootstrap over
+   foreground IDs (prespec §8) resamples with replacement. Duplicates shrink the k-NN radii, so the
+   intervals are biased downward: C10's point estimate of 0.620 lies above its own interval
+   [0.391, 0.556]. The intervals stay in the CSV, are marked not citable, and no coverage interval is
+   reported anywhere.
+4. **Not done although useful:** Tier B was not run on the 10 same-dimension negatives or against the
    source pools. This was not pre-specified, and §9 of the prespec fixes Tier B to the published
    scope.
-4. **Pre-specified check that failed:** the EXP-02 CPU re-inference tolerance on one of four images
+5. **Pre-specified check that failed:** the EXP-02 CPU re-inference tolerance on one of four images
    (99.84% of pixels within ±1 against the required 99.9%). It is reported, not re-tuned.
-5. **Disclosure:** the primary S-measure paired and Welch intervals were computed in memory during
+6. **Disclosure:** the primary S-measure paired and Welch intervals were computed in memory during
    discovery, before the prespec was committed (prespec §1.1).
 
 ## Assumptions and inputs
@@ -99,7 +104,7 @@ in the patch.
 
 ## Commits (local)
 `55061ba` brief, verbatim 01/02, manifest, prespec · `686bcc0` AN-01/TH-01/AN-02/TH-02/EXP-01/EXP-02/AN-03 ·
-`1a7fcda` AN-05 · {{FINAL_COMMITS}}
+`1a7fcda` AN-05 · `669da0c` DOC-01/02 drafts, claim map, audit script · `41ec748` AN-04b and draft documents · the final packaging commit, which is the branch head (`git log -1`)
 
 ## For the author to decide
 1. Whether to post the short version (`FINAL_UPDATED_REBUTTAL_OPENREVIEW.md`, 5,000-character limit)

@@ -1,6 +1,6 @@
 {
- "n_checks": 47,
- "n_failed": 1,
+ "n_checks": 53,
+ "n_failed": 0,
  "checks": [
   {
    "check": "AN-01 all committed metrics reproduce at 6 dp",
@@ -213,6 +213,36 @@
    "detail": ""
   },
   {
+   "check": "independent k-NN recall C10 = 0.620 (table 0.620)",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "independent k-NN recall B_s42 = 0.428 (table 0.428)",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "coverage ranges cited 0.35–0.43 / 0.62–0.64",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "Gate 4: 12/12 committed coverage values at 4 dp",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "eta^2 committed = 0.205 cited as 20.5%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "signal correlations reproduce exactly",
+   "passed": true,
+   "detail": ""
+  },
+  {
    "check": "OpenReview text <= 5000 code points (python 4658, wc -m 4658)",
    "passed": true,
    "detail": ""
@@ -223,9 +253,9 @@
    "detail": "[]"
   },
   {
-   "check": "no unfilled placeholders",
-   "passed": false,
-   "detail": "['{{AN04:coverage_sentence}}', '{{AN04:diversity_sentence}}', '{{COUNT_AUDIT}}']"
+   "check": "no unfilled placeholders in any STUDENT_RESULTS document",
+   "passed": true,
+   "detail": "{}"
   },
   {
    "check": "all relative Markdown links resolve",

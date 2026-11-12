@@ -15,7 +15,7 @@ selection records of the 64 committed eight-seed runs. No new training was run. 
 | TH-02 | VERIFIED | Same-shape arms share the quota multiset exactly |
 | AN-03 | VERIFIED | Three-seed boundary effect gone for C10−B at eight seeds; interaction unresolved |
 | EXP-02 | PARTIALLY VERIFIED | Exact re-score; CPU re-inference 3/4 within tolerance |
-| AN-04 | {{AN04_STATUS}} | {{AN04_LINE}} |
+| AN-04 | PARTIALLY VERIFIED | Coverage, η² and correlations reproduce; concentrated sets cover more of the target than random (0.62–0.64 vs 0.35–0.43); k-NN bootstrap invalid |
 | AN-05 | VERIFIED | 50/44/16 reproduced; 32 COD10K-test and 4 CAMO-250 duplicates; 74/76 duplicated somewhere |
 | EXP-01 | BLOCKED | Preflight fails: larger N gives ≤ 1.22× contrast |
 | EXP-03 | BLOCKED | No new-foreground generator |
@@ -69,7 +69,34 @@ selection records of the 64 committed eight-seed runs. No new training was run. 
 - ![architecture contrasts](FIGURES/AN-03_architecture_contrasts.png)
 
 ## 4. Coverage and foreground novelty
-{{AN04_SECTION}}
+| Set (1,000 images unless noted) | k-NN recall of real target, k = 5 (dinoL518) | dinoL224 | clipL224 |
+|---|---|---|---|
+| Random (B), 8 independent draws | 0.349–0.428 | 0.272–0.448 | 0.053–0.229 |
+| Targeted (C10) / shuffled (CSHUF) / reversed (CINV) | 0.620 / 0.644 / 0.631 | 0.523 / 0.534 / 0.498 | 0.238 / 0.248 / 0.199 |
+| All 4,447 renders / authors' pool (reproduced) | 0.542 / 0.483 | 0.467 / 0.483 | 0.135 / 0.128 |
+| Raw HKU-IS photographs, the generator's input (reproduced) | 0.710 | 0.747 | 0.747 |
+
+- **Novelty:** 0 of 4,106 injected foregrounds are new. Render masks match their base masks at median
+  IoU 0.968 (none identical). A render's nearest raw photograph is its own source in 43–73% of cases,
+  depending on the embedder.
+- **Structure:**
+  - The silhouette of the committed partition is 0.156 (Euclidean, the convention behind the paper's
+    0.1600) and 0.253 under cosine distance.
+  - The between-cluster share of structural error is 20.5%, reproduced; it is 18.9–20.9% with each
+    arm's own predictions.
+- **Signal:**
+  - +0.8553 / +0.4276 reproduce exactly.
+  - The pixel-over-structure ordering holds for SINet, SINet-v2, SegMaR and SINet-MT, but **reverses
+    for the source-only SINet baseline** (0.355 vs 0.458).
+- **Domain mix:** budget-weighted CAMO share is C10 0.530, CSHUF 0.285, CINV 0.199 (pool 0.248).
+  Same-shape arms differ strongly in domain, so this is a candidate, untested explanation for the
+  CINV signal.
+- **Conflicting outcome, reported:** the paper says targeting "covers no more of the target manifold"
+  (a measure saturated near 1.0). Under the appendix's own k-NN recall, concentrated selections cover
+  more than random draws of equal size, yet trained accuracy did not follow.
+- **Caveat:** the pre-specified foreground bootstrap is invalid for k-NN recall, because duplicates
+  shrink the radii. No interval is reported for coverage.
+- ![coverage](FIGURES/AN-04_coverage.png)
 
 ## 5. CHAMELEON protocol pathways
 

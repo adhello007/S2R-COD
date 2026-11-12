@@ -11,13 +11,13 @@ been posted.*
 We thank the reviewer for a careful reading and for recognising the controls and the CHAMELEON
 audit. The review asked us to bound the null more precisely, separate geometry from downstream
 accuracy, and spell out contamination pathways. We have done all three using the trained models we
-already had. Every number below marked **post-review** was recomputed after the review from the
-stored predictions and selection records of the 64 eight-seed runs, with no new training. Before any
-new number was produced, we checked that every stored per-run metric reproduces the submitted value
-exactly, 1,152 of 1,152 to six decimals. The post-review analyses are exploratory: none re-decides a
-pre-registered verdict. Two results go against
-statements in the submission, and we report them first: the boundary-metric result does not hold at
-eight seeds (CW-02), and the "8.8%" contrast describes the wrong comparison (CW-01).
+already had. The numbers under "Additional validation" and "Results" are post-review. We recomputed
+them from the stored predictions and selection records of the 64 eight-seed runs, with no new
+training. Before producing any new number, we checked that every stored per-run metric reproduces the
+submitted value exactly, 1,152 of 1,152 to six decimals. The post-review analyses are exploratory:
+none re-decides a pre-registered verdict. Two results go against statements in the submission, and we
+report them first: the boundary-metric result does not hold at eight seeds (CW-02), and the "8.8%"
+contrast describes the wrong comparison (CW-01).
 
 ### CW-01. Statistical sensitivity and interpretation of the negative result
 
@@ -92,13 +92,21 @@ are verified to share one quota multiset exactly: every quota vector sums to 1,0
 after sorting, while 72–73 of the 75 cluster quotas differ between arms.
 
 Generator scope: every one of the 4,106 distinct renders injected across arms and seeds re-renders a
-foreground already in the base pool (0 new objects). {{AN04:coverage_sentence}}
+foreground already in the base pool (0 new objects). Each render's mask matches its base mask at
+median IoU 0.97, and none is identical. Measured with the appendix's coverage estimator (k-NN recall, k = 5), every 1,000-image synthetic set covers far less of
+the real target than the generator's own source photographs do (0.71). The share covered is 0.35–0.43
+for random draws and 0.62–0.64 for the three concentrated selections, which differ only in direction
+and cover about equally. Concentration moves the set closer to the target, but trained accuracy did not
+follow. The pool-level values reproduce the submitted appendix table exactly.
 
 **Interpretation.**
 1. Geometry: concentration changes the selected data. This is unchanged.
 2. Downstream: we find **no resolved benefit of concentration**. The targeted and reversed arms have
    identical concentration, but only the reversed arm shows a gain, so concentration cannot explain
-   it. We report that gain as an exploratory, unexplained signal on one architecture.
+   it. We report that gain as an exploratory signal on one architecture. One candidate explanation,
+   which we have not tested: the three same-shape arms put very different shares of the budget on CAMO
+   images (53%, 29% and 20% for targeted, shuffled and reversed), and neither endpoint contains CAMO
+   images.
 3. Architecture: the interaction is not resolved either way. We cannot say the two architectures
    differ, or that they agree.
 4. Generator: our null covers a fixed, offline pool of re-rendered backgrounds around existing
@@ -150,7 +158,11 @@ foreground-diversity and coverage audit.
 foregrounds that targeting ranks, so the two converge as the budget grows. The preflight fails, and we
 did not train. A fixed-budget alternative, drawing the random arm only from images the targeted arm did
 not pick, would raise the share to 18.4%. That is a different sampling algorithm and we did not run it.
-{{AN04:diversity_sentence}}
+On diversity: the renders re-use base foregrounds one-to-one (median mask IoU 0.97 with the original),
+and synthetic sets cover at most 0.64 of the real target, against 0.71 for the real photographs the
+generator started from. Only about a fifth of the endpoint's structural-error variance lies between
+clusters (20.5%, reproduced; 18.9–20.9% with each arm's own predictions). That caps what any
+cluster-wise allocation could change.
 
 **Interpretation.** Whether a much larger contrast, or more diverse foregrounds, would change the
 conclusion is untested. In this pool a larger budget cannot produce it, and testing new foregrounds
@@ -205,6 +217,8 @@ overlaps touches a number in our paper, because CHAMELEON is not one of our endp
   and the direct interaction test, and withdraw "the strongest form of the result".
 - **Appendix:** correct the 48% / 8.8% sentence, add the exposure and pseudo-label overlap, and qualify
   the pseudo-label means (40 vs 64 runs).
+- **Concentration and why-it-fails sections:** state that "covers no more of the target manifold"
+  depends on the coverage estimator, and add the different domain mix of the same-shape arms.
 - **Discussion:** add the larger-budget preflight and the generator scope (re-rendered fixed pool;
   new-object generation untested).
 - **CHAMELEON sections:** add the 32 COD10K-test duplicates and the fourth CAMO-250 duplicate, the
@@ -227,4 +241,20 @@ is kept as its own file so that its character count covers exactly what would be
 
 ## Part C: Character-count audit of Part B
 
-{{COUNT_AUDIT}}
+| Measure | Value |
+|---|---|
+| File | `FINAL_UPDATED_REBUTTAL_OPENREVIEW.md` (exactly the text to paste) |
+| SHA256 | `b29ec58716b9604bd3e4e9f84d76bc17bcf12b61afa52a1eea74283c98be16fb` |
+| Unicode code points, Python `len(str)` | **4658** |
+| Unicode code points, `wc -m` (C.UTF-8) | **4658** |
+| Code points after NFC normalisation | 4658 |
+| Code points without the final newline | 4657 |
+| UTF-8 bytes (`wc -c`) | 4685 |
+| Lines | 25 |
+| Non-ASCII characters used | 6 distinct (U+00B1 U+00D7 U+03C3 U+2013 U+2212 U+2264) |
+| Limit | 5,000 characters including headings and Markdown |
+| Margin | 342 characters |
+| Verdict | PASS |
+
+The two counters are independent: the Python string length, and coreutils `wc -m` in a UTF-8 locale.
+If OpenReview counts UTF-8 bytes instead of characters, the text is 4685 bytes, still under 5,000.
