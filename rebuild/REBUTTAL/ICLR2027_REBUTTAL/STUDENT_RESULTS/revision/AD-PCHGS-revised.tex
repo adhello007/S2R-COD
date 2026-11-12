@@ -10,6 +10,13 @@
 
 
 \newcommand{\atemp}{\tau}
+% Rebuttal revision: outcome-dependent text is held in these two macros and filled from the pre-registered
+% decision sentences once the result exists (dose-response: after its 35 SINet runs; confirmatory equivalence
+% campaign: after its 81 runs). A compiled PDF that still shows "[pending]" is not final.
+\newcommand{\cdrverdict}{\textbf{[dose-response result pending]}}
+\newcommand{\eqverdict}{\textbf{[confirmatory equivalence result pending]}}
+\newcommand{\cdrshort}{\textbf{[one-sentence dose-response result pending]}}
+\newcommand{\eqshort}{\textbf{[one-sentence equivalence result pending]}}
 
 \title{Concentration, Not Uncertainty: Why Targeted Synthetic Data Doesn't Help Camouflaged Object Detection}
 
@@ -45,7 +52,7 @@ Anonymous Institution \\
 %accuracy so does one that reverses the uncertainty signal outright. Separately, $50$ of
 %CHAMELEON's $76$ images are copies of training data, while the standard check reports $0$ overlap.
 
-Camouflaged object detection requires pixel-accurate masks, but obtaining such annotations is slow and costly, making synthetic training images an attractive alternative. Under a fixed generation budget, however, it remains unclear which real-image regions to target for synthetic data generation. We study an uncertainty-guided generation strategy that clusters the unlabelled real images, identifies clusters on which the model is least certain, allocates synthetic generation toward those clusters, and iteratively retrains the model. Across 103 training runs, uncertainty-based targeting does not outperform random allocation. Five independent controls further show that this null result is not an artifact: targeted training sets are measurably different from random sets, but the difference is explained by concentrating the generation budget rather than by where uncertainty is concentrated, as every concentration rule we test reproduces the effect and, on boundary accuracy, so does aiming at the clusters the model was most certain about. Separately, we find substantial data contamination in CHAMELEON, with 50 of its 76 images duplicated from training data despite the standard overlap check reporting zero overlap. Together, these results show that, under a fixed synthetic-data budget, budget concentration, not uncertainty-based targeting, accounts for the observed training-set effects.
+Camouflaged object detection requires pixel-accurate masks, but obtaining such annotations is slow and costly, making synthetic training images an attractive alternative. Under a fixed generation budget, however, it remains unclear which real-image regions to target for synthetic data generation. We study an uncertainty-guided allocation strategy that clusters the unlabelled real images, identifies clusters on which the model is least certain, allocates a fixed pool of synthetic images toward those clusters, and retrains the model. Across 103 training runs, uncertainty-based targeting shows no detectable advantage over random allocation. At eight seeds the primary gap is $+0.0024$ $S_\alpha$, with a 95\% interval of $-0.0020$ to $+0.0067$: an advantage as large as the published method's own gain ($+0.0142$) is excluded, but smaller ones are not. \eqshort{} Five controls address the main ways the design itself could produce such a null. Targeted training sets are nonetheless measurably different from random ones, and that difference comes from concentrating the budget rather than from where it is aimed: every concentrating rule we test reproduces it. \cdrshort{} Separately, we find substantial data contamination in CHAMELEON, with 50 of its 76 images duplicated from training data despite the standard overlap check reporting zero overlap. These conclusions are bounded to the setting tested: allocation over a fixed, offline pool of LAKE-RED renders that re-use 4,447 foregrounds with new backgrounds, $k = 75$ clusters of frozen self-supervised features, two SINet architectures with two-round self-training, and a budget of 1,000 images.
 \end{abstract}
 
 % =====================================================================
@@ -65,27 +72,32 @@ features~\citep{oquab2024dinov2} so the budget spreads rather than piling onto n
 composition is ours, and we failed to make it function.
 
 
-A targeted training set really is measurably different from a random one of the same size: a classifier, shown images from each, learns to tell which set an image came from even images it never saw. But it is picking up concentration, not aim. Targeting piles the budget onto a few clusters, and any rule that piles it the same way works just as well: point the same lopsided budget at the wrong clusters and the classifier still wins. Only removing the unevenness itself defeats it. What looked like the effect of targeting was the effect of concentrating, the
-comparison that settles it is not a random set, but one with the same lopsided shape
-aimed at nothing in particular.
+A targeted training set really is measurably different from a random one of the same size: a classifier, shown images from each, learns to tell which set an image came from even images it never saw. But it is picking up concentration, not aim. Targeting piles the budget onto a few clusters, and any rule that piles it the same way works just as well: point the same lopsided budget at the wrong clusters and the classifier still wins. Only removing the unevenness itself defeats it. What looked like an effect of targeting on the training set was an effect of concentrating it; the
+comparison that settles this is not a random set, but one with the same lopsided shape
+aimed at nothing in particular. Whether concentration also changes trained accuracy is a separate question, and we
+test it directly rather than infer it from the training sets.
 
 
-In terms of trained accuracy, modifying the direction of the uncertainty signal shows no measurable effect that this design can resolve. That null is
-bounded rather than absolute, and a positive control confirms that the measurement detects a real effect.
-Substituting a perfect score using a test-set error for ours changes nothing. Extending training to accommodate extra images without reducing steps on real data shows no improvement. Moreover, re-running the decisive comparison at eight
+In terms of trained accuracy, targeting shows no detectable advantage over random allocation. That null is
+bounded rather than absolute: at eight seeds it excludes an advantage the size of the published method's own gain,
+but not one between about $+0.005$ and $+0.0067$ $S_\alpha$, and a positive control confirms that the measurement
+detects a real effect.
+Substituting a perfect score using a test-set error for ours produces no detectable change either. Extending training to accommodate extra images without reducing steps on real data shows no improvement. Moreover, re-running the decisive comparison at eight
 seeds per scenario leaves the gap \emph{smaller} than it was at three. Separately, we expose a major flaw in the standard CHAMELEON test set, where 50 of its 76 images are direct copies from COD10K and CAMO training sets. Standard duplicate checks fail to flag these because they were re-saved in different formats, eliminating byte-level matches. The main contributions of this paper are:
 
 \begin{itemize}
 \item \textit{A control} that separates aiming a generation budget from merely concentrating it. Because a steered selection differs from random in two ways at once where it points and how unevenly it is spread a random baseline conflates them. Ours fixes the shape and scrambles only the signal; our own method does not survive it.
-\item \textit{A bounded null on the direction}, defended by five independent controls: a positive
-control, a perfect-score oracle, an unpinned optimization schedule, a same-shape shuffle, and a seed
-expansion rather than asserted once.
+\item \textit{A bounded null on the direction}: no detectable advantage, with the sizes of effect that are and are
+not excluded stated, and five independent controls: a positive control, a perfect-score oracle, an unpinned
+optimization schedule, a same-shape shuffle, and a seed expansion.
 \item \textit{Three checks run before any training} and precede any cluster-wise acquisition
 policy: whether the target data clusters at all, what the funded clusters are made of, and how much of the endpoint's error sits between clusters rather than within them.
 \item \textit{CHAMELEON is $50$ of $76$ images ($65.8\%$) training data} for models trained on
 COD10K, while exact hashing reports $0$ overlap; we release a re-encode-tolerant detector, the
 confirmed pair list and a clean evaluation protocol.
 \end{itemize}
+These conclusions concern the allocation of a fixed, background-varied render pool, not uncertainty-guided generation
+in general; Section~\ref{sec:discussion} states the scope exactly.
 
 
 % =====================================================================
@@ -226,8 +238,9 @@ generated content, respectively, so neither has an allocation to place.
 \label{fig:arms}
 \end{figure}
 
-Write $\hat{\sigma}$ for the seed-to-seed wobble, the pooled within-arm standard deviation of $S_\alpha$, taken at the conventional $\alpha = 0.5$. A gap is a \textsc{real effect} only if it exceeds twice that wobble \emph{and} every seed agrees on
-its sign; a smaller gap is \textsc{within noise}; one that clears the bar without agreeing in sign is
+Write $\hat{\sigma}$ for the seed-to-seed wobble, the pooled within-arm standard deviation of $S_\alpha$, taken at the conventional $\alpha = 0.5$. A gap is a \textsc{real effect} only if it exceeds twice that wobble \emph{and} the seeds agree on
+its sign (every seed at three seeds; at least seven of eight in the eight-seed expansion, a threshold fixed before
+that campaign ran); a smaller gap is \textsc{within noise}; one that clears the bar without agreeing in sign is
 \textsc{inconclusive}, and is reported as such rather than resolved by adding seeds. The rule applies
 per architecture, and a disagreement between them is reported as a disagreement. We report no
 $p$-values at three seeds. Appendix~\ref{app:method} records the rule's provenance, the seeds, and
@@ -243,7 +256,7 @@ of the above.
 
 \subsection{Does Targeting Beat Random}
 \label{sec:null}
-The loop is specified, so the first question is the one it was built to answer. \textit{Aiming the budget by uncertainty did not beat spending it at random.} On the primary endpoint at eight seeds
+The loop is specified, so the first question is the one it was built to answer. \textit{Aiming the budget by uncertainty showed no detectable advantage over spending it at random.} On the primary endpoint at eight seeds
 per arm, the gap between the targeted allocation and a random one is $+0.0024$, about a third of
 the spread it would have had to clear, and every one of the sixteen gaps that campaign decides
 returns the same verdict.
@@ -279,19 +292,11 @@ PC & \emph{can this design see anything?} & $3$ & C10$-$MT & $+0.0197$ & $0.0060
 \end{center}
 \end{table}
 
-That is the plain form of what the seed expansion returned, and it is worth stating before the arithmetic, because the
-arithmetic looks backward. Eight seeds per arm give a truer estimate of the seed-to-seed spread
-than three did: the real spread is \emph{larger} than the optimistic three-seed guess, while the gap
-itself halved, from $+0.0050$ to $+0.0024$. So the bar sits at $0.0069$ on $28$ degrees of freedom,
-not the $0.0034$ the pre-registration projected: $\hat{\sigma}$ is a per-run spread and does not
-shrink with seeds, so that projection was an error. The gap now sits inside even the tightest bar
-measured on this cell, $0.0055$. Appendix~\ref{app:diag} gives the per-arm spreads.
-
 Each of the following is a reason the null might be an artifact rather than a result, and each has a campaign attached rather than a concession.
 
 \emph{Perhaps we chose a bad uncertainty estimator}. The oracle campaign replaces the score with each cluster's \emph{true} error on the endpoint, information no real method could have, and nothing moves. All eight of its gaps are within noise, and not one is even directionally stable.
 The substitution was not a small one, either. Our score and the truth it stands in for agree at a
-rank correlation of $+0.2372$, so we replaced the signal with something several times better aimed, and the trained result did not notice. This converts \emph{our score did not help} into the stronger \emph{no score of any quality helped here}.
+rank correlation of $+0.2372$, so we replaced the signal with something several times better aimed, and the trained result did not notice. So the absence of a detectable advantage is not specific to our score: a score aimed with the true endpoint error shows none either.
 
 \emph{Perhaps the added images were never really trained on.} They were not, under the committed
 schedule: steps per epoch are set by the shorter of two data loaders, so appended images displace
@@ -300,7 +305,7 @@ epoch from $253$ to $341$ on one architecture and $127$ to $171$ on the other. T
 stays within noise in all four cells and \emph{shrinks} to $+0.0014$. Growing the budget did not
 reveal the effect the pin was hiding.
 
-\emph{Perhaps three seeds are too few.} It was, and that is what the seed expansion above measures.
+\emph{Perhaps three seeds are too few.} They were, which is why the seed expansion above exists.
 It is a separate campaign with its own arms, noise estimate, and verdicts rather than extra seeds
 bolted onto a finished one, because adding seeds after seeing a result is how a null gets talked
 into existence.
@@ -314,21 +319,31 @@ about, so a positive control at $0.02$ licenses \emph{the instrument works}, not
 seen the effect we are nulling}.
 
 The decisive statement is the pre-registered one above: no effect on the primary cell larger than the bar the seed expansion
-measured. A post-hoc interval on the two arms actually compared is tighter still,
-placing the gap in $[-0.0020, +0.0067]$, which \textit{excludes the reference effect by more than a
-factor of two} while admitting effects a few times smaller. That interval decides nothing, the
-frozen rule admits no interval but it is a stronger honest statement than ``we could not have
-seen it''. Section~\ref{sec:concentration} reports the eight-seed equivalence tests.
+measured. That rule was built to catch effects the size of the reference effect, not effects near zero: simulated
+exactly, it detects a true advantage of $+0.005$ only about one time in five, and the effect it detects with 80\%
+probability is about $0.0087$. Two conclusions therefore have to be kept apart. A difference is \emph{not detected}
+when its 95\% interval contains zero; two arms are \emph{equivalent} when the whole 90\% interval of their difference
+lies inside a margin small enough not to matter, here $\pm 0.005$, about a third of the reference effect. On the
+primary cell the post-hoc interval for the two arms actually compared is $[-0.0020, +0.0067]$: nothing is detected
+and the reference effect is \textit{excluded by more than a factor of two}, but equivalence is not established
+(TOST $p = 0.101$), because advantages between about $+0.005$ and $+0.0067$ remain possible.
+Table~\ref{tab:ci_tost} applies the same distinction to all sixteen eight-seed contrasts. These intervals are post hoc
+and decide nothing. \eqverdict
+
+\input{table_ci_tost.tex}
 
 % =====================================================================
-\subsection{Concentration, Not Targeting}
+\subsection{Concentration, Not Targeting, Shapes the Training Set}
 \label{sec:concentration}
-The null hypothesis states that the direction of the signal did not move the endpoint. It does not say that targeting
-changes nothing, and it plainly does change something, because a targeted training set is easy to
-tell apart from a random one. \textit{What makes it different is that the budget is concentrated on
-a few clusters, not that it is aimed at the right ones.} The geometry of the selected set shows it;
-trained accuracy at eight seeds is consistent with it, and the one family of metrics on which
-concentration is large enough to resolve supports it, post hoc and on one architecture.
+The null above concerns the endpoint. It does not say that targeting changes nothing, and it plainly does change
+something, because a targeted training set is easy to tell apart from a random one. Three claims follow, and they rest
+on different evidence. \textit{First, established: what makes a targeted training set different is that the budget is
+concentrated on a few clusters, not that it is aimed at the right ones}; the geometry of the selected sets shows this.
+\textit{Second, established: where the concentrated budget points makes no detectable difference to trained accuracy},
+because arms with the same concentration and different directions cannot be told apart. \textit{Third, a hypothesis
+until tested: that concentration itself changes trained accuracy.} The same-shape arms cannot answer this, because the
+effect of the shape cancels from every comparison among them, so we tested it with a separate pre-registered experiment
+that varies concentration and averages direction out (end of this section).
 
 Aim a generation budget at the clusters where the model is least confident and the training set you get really does
 look different from a randomly chosen one of the same size, train a probe to tell the two apart. It succeeds easily, on images it has never seen. However, re-run the selection with the uncertainty
@@ -352,21 +367,20 @@ the absence of an ordering: if direction were what mattered, reversing it would 
 nothing is paid. Even the destroyed-against-reversed contrast, which carries the strongest sign
 agreement in the campaign at $8/8$ on one cell, does not reach two-thirds of its bar.
 
-At eight seeds, a formal equivalence test becomes informative. However, it adds no asymmetry: five of
-sixteen gaps are equivalent within $\pm 0.005$, four direction contrasts and one
-targeting-versus-random gap, on NC4K (Table~\ref{tab:tost}). On the primary cell, targeting against
-its own shuffle is equivalent ($p = 0.019$) and targeting against random is not ($p = 0.101$).
-These tests are post-hoc and decide nothing.
+At eight seeds, a formal equivalence test becomes informative, and it adds no asymmetry (Table~\ref{tab:ci_tost}).
+Before any correction for multiple comparisons, five of the sixteen gaps are equivalent within $\pm 0.005$: four
+direction contrasts, and the targeting-versus-random gap on NC4K only. On the primary cell, targeting against its own
+shuffle is equivalent ($p = 0.019$) and targeting against random is not ($p = 0.101$). After a Holm correction across
+the sixteen, none is equivalent. These tests are post hoc and decide nothing.
 
 The acquisition signal of Equation~\ref{eq:es} is boundary-focused, but $S_\alpha$ is structure-aware rather than boundary-specific, so the campaign never measured the quantity the signal was built to
-move. Re-scoring every run's committed predictions with two boundary metrics closes that gap (Table~\ref{tab:boundary}), and on SINet, the concentration effect finally clears its bar. So does
-the anti-targeted arm, at $1.34\times$ against targeted selection's $1.37\times$, the same effect
-to within a tenth of a bar, while the two direction contrasts stay far inside it.
-\textit{This is the strongest form of the result we have}, because it is the one place where the
-same instrument resolves concentration and fails to resolve direction \emph{in the same cells}: the
-null on direction is not simply an absence of sensitivity.
-
-\input{table_subgroup_metrics.tex}
+move. We therefore re-scored every committed prediction with two boundary metrics (Table~\ref{tab:boundary} in Appendix~\ref{app:diag}). At
+three seeds, on SINet, both comparisons of a concentrated arm against random cleared their bars, the targeted arm at
+$1.37\times$ and the anti-targeted arm at $1.34\times$, while the direction contrasts stayed far inside theirs.
+\textit{At eight seeds that pattern does not hold}: on SINet the targeted arm sits at $0.30\times$ its bar
+($+0.0046$ Boundary-IoU) and the anti-targeted arm at $0.64\times$ ($+0.0098$), both within noise, and SINet-v2
+resolves none of the contrasts at either seed count. The boundary metrics therefore do not establish that
+concentration changes accuracy.
 
 \begin{figure}[t]
 \begin{center}
@@ -380,9 +394,13 @@ vary only direction; points are seeds, rules are arm means, the band is the $\pm
 \label{fig:thesis}
 \end{figure}
 
-These metrics were not pre-registered and re-decide no verdict; Table~\ref{tab:trained} stands. They binarise predictions
-where $S_\alpha$ does not, though the pattern survives every binarisation threshold we swept. Moreover, \textit{SINet-v2 resolves none of it}, which we report rather than leading with the architecture
-that cooperates.
+These metrics were not pre-registered and re-decide no verdict; Table~\ref{tab:trained} stands. They binarise
+predictions where $S_\alpha$ does not. The question they could not settle, whether concentration changes accuracy, is
+the one our dose-response experiment was designed for. It holds the budget at 1,000 images and sets three levels of
+concentration: cluster-uniform, the committed shape, and one twice as concentrated. Each concentrated level is
+realised with five independent random directions, so direction averages out, and the experiment was pre-registered
+with Boundary-IoU on SINet as its primary measure. \cdrverdict{} The planned replication on SINet-v2 was not run, for
+lack of compute.
 
 % =====================================================================
 \subsection{Why It Fails}
@@ -469,7 +487,7 @@ differing pixel dimensions in each pair's labels.}
 \label{sec:discussion}
 Two kinds of evidence sit underneath this paper and should not be run together. The
 \emph{geometric} result is positive, and we state it without hedging: concentration, not the
-direction of the uncertainty signal, produces the separation that makes targeted selection look like it works. The \emph{downstream} result is a null under stated sensitivity, it does not show that uncertainty guidance cannot work, and we have named the size at which it would have. Four things transfer beyond this setup. \textit{Three checks cost no training and should precede any
+direction of the uncertainty signal, produces the separation that makes targeted selection look like it works. The \emph{downstream} result is a null under stated sensitivity: it excludes an advantage the size of the published method's own gain, leaves smaller ones open, and does not show that uncertainty guidance cannot work. Four things transfer beyond this setup. \textit{Three checks cost no training and should precede any
 cluster-wise allocation:} whether the data separates into clusters at all, what the funded clusters
 are made of relative to the pool they are drawn from, and how much of the endpoint's error sits
 between clusters rather than within them. \textit{The discriminating control is not a random
@@ -486,13 +504,28 @@ only that this build could not have shown that it does. One pattern runs through
 benchmark alike: \textit{a control that returns zero is informative only if it could have returned
 something else.}
 
+\textit{Scope.} Every conclusion here is bounded to what was tested. The generator is LAKE-RED, run once, offline,
+before any training; it never sees the score. Its pool re-uses each of 4,447 HKU-IS foregrounds with a new background,
+so the allocation chooses among background variations of foregrounds the base pool already contains. Two renders of
+the same foreground on different backgrounds share most of their embedding variance (intraclass correlation $0.71$ in
+frozen DINOv2 features). In 52 of the 75 target clusters, the nearest available foreground cut-out lies farther from
+the cluster's centre than the cluster's median real image, partly because a cut-out on a plain background and a full
+photograph differ as images. The allocation acts on $k = 75$ $k$-means clusters of frozen self-supervised features,
+with a budget of $N = 1000$ images, for SINet and SINet-v2 trained with two-round self-training at a pinned number of
+steps, and is read on COD10K-test and NC4K. We tested allocation, not generation: a generator that synthesises new
+foregrounds for the hardest clusters, or one steered by the score while it generates, is outside this experiment, and
+we make no claim about other generators.
+
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
-Under a fixed synthetic-data budget, aiming generation at the clusters a model finds hardest did not beat spending it at random. Across $103$ trained runs and five controls that each close a different
-route to an artifactual null, the gap stays within noise. Targeting does change the training set,
-but through concentration rather than aim, which only a same-shape control exposes. Independently,
+Under a fixed synthetic-data budget, aiming a pool of generated images at the clusters a model finds hardest showed no detectable advantage over spending it at random. Across $103$ trained runs and five controls that each close a different
+route to an artifactual null, the gap stays within noise; an advantage the size of the published method's own gain is
+excluded, and smaller ones are not. \eqshort{} Targeting does change the training set,
+but through concentration rather than aim, which only a same-shape control exposes. \cdrshort{} These conclusions hold
+for allocation over a fixed LAKE-RED render pool that varies only backgrounds, with the clusters, architectures,
+training scheme and budget we tested. Independently,
 $50$ of CHAMELEON's $76$ images are altered copies of COD10K and CAMO training images, which exact
 hashing misses. Both findings argue for one practice: before crediting an acquisition rule or
 trusting a duplicate check, run the version of the test that could have failed.
@@ -708,7 +741,8 @@ campaign uses $\atemp = 1.0$, $N = 1000$.
 
 \paragraph{Metrics.} $S_\alpha$ at $\alpha = 0.5$ is the primary endpoint metric; mean absolute
 error (MAE) on CAMO-250 is the checkpoint-selection metric; $F_\beta^w$ and the E-measure $E_\phi$
-are computed and reported, but they decide nothing.
+(the mean E-measure over thresholds, the variant SINet-V2 and RISE report) are computed and reported, but they decide
+nothing.
 The $F$-measures apply $\beta$ in the non-squared form, so the metric name rather than a formula is what identifies them.
 
 \paragraph{Degrees of freedom.} Each campaign's $\hat{\sigma}$ is pooled within-arm across that
@@ -721,7 +755,10 @@ four-arm campaign: A0, A2, B, C10), SE (seed expansion), OR (oracle, arm CORACLE
 optimization schedule, arms A0FX, BFX, C10FX), and PC (positive control against a mean-teacher arm,
 MT); T2 is the falsification campaign (CSHUF, CINV). Every campaign but PC uses the three bands of
 Section~\ref{sec:method}. PC's pre-registration names its outcomes \textsc{detected} ($\Delta > 2\hat{\sigma}$
-with all seeds agreeing in sign) and \textsc{not detected} ($|\Delta| \le 2\hat{\sigma}$).
+with all seeds agreeing in sign) and \textsc{not detected} ($|\Delta| \le 2\hat{\sigma}$). The eight-seed expansion
+requires at least seven of eight seed-paired differences to agree in sign, a threshold its pre-registration fixed
+before its first run: under a fair coin, seven or more of eight has probability $9/256 \approx 0.035$, stricter than
+three of three ($0.125$).
 
 \paragraph{A2 controls one confound.} A2 pairs the authors' original photographs with the
 authors' masks, whose mean foreground fraction differs from the raw masks by $0.0058$ on $1000$ of
@@ -785,6 +822,16 @@ FX & SINet $\cdot$ COD10K & 3 & C10FX$-$BFX & $+0.0014$ & $0.0116$ & $0.12$ & 2/
 \end{tabular}
 \end{center}
 \end{table}
+
+\paragraph{Why the eight-seed bar is wider than the three-seed one.} The seed expansion's arithmetic looks backward. Eight seeds per arm give a truer estimate of the seed-to-seed spread
+than three did: the real spread is \emph{larger} than the optimistic three-seed guess, while the gap
+itself halved, from $+0.0050$ to $+0.0024$. So the bar sits at $0.0069$ on $28$ degrees of freedom,
+not the $0.0034$ the pre-registration projected: $\hat{\sigma}$ is a per-run spread and does not
+shrink with seeds, so that projection was an error. The gap now sits inside even the tightest bar
+measured on this cell, $0.0055$. Appendix~\ref{app:diag} gives the per-arm spreads.
+
+\input{table_boundary_8seed.tex}
+
 
 \paragraph{Why the committed bar is so wide, and why we did not narrow it.} The four-arm campaign
 pools its within-arm spread across all four of its arms, and one of them dominates. On the primary
@@ -990,8 +1037,9 @@ GPU-hours across its $40$ trained runs.
 
 \paragraph{What differs between arms beyond the injected images.} The pseudo-labeling step between
 rounds selects target images using each arm's \emph{own} first-round model, so each arm appends a
-different number of differently-labeled images. Across the seed expansion, the means are $1977$ (B),
-$2025$ (C10), $1990$ (CSHUF) and $1979$ (CINV), with per-run values spanning $1817$ to $2259$. This
+different number of differently-labeled images. Over the 40 runs the seed expansion added (seeds 46--50), the means
+are $1977$ (B), $2025$ (C10), $1990$ (CSHUF) and $1979$ (CINV), with per-run values spanning $1817$ to $2259$; over all
+eight seeds they are $1991$, $2007$, $2020$ and $2015$, spanning $1782$ to $2278$. This
 is legitimately part of ``closed loop'' and is reported rather than absorbed: it is a second place where the arms differ beyond the injection, and it is high-variance. The step count stays pinned
 regardless, which is asserted per run.
 
