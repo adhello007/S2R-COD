@@ -1,0 +1,29 @@
+cham   x val    dhash candidate, rejected by MAD   3
+cham   x val    near-duplicate (confirmed)         8
+nc4k   x val    dhash candidate, rejected by MAD   3
+nc4k   x val    near-duplicate (confirmed)         7
+raw    x nc4k   near-duplicate (confirmed)         1
+raw    x val    near-duplicate (confirmed)         3
+test   x nc4k   dhash candidate, rejected by MAD   13
+test   x nc4k   near-duplicate (confirmed)         4
+test   x val    dhash candidate, rejected by MAD   3
+test   x val    near-duplicate (confirmed)         7
+tgt    x nc4k   dhash candidate, rejected by MAD   19
+tgt    x nc4k   near-duplicate (confirmed)         32
+tgt    x test   dhash candidate, rejected by MAD   17
+tgt    x test   exact sha256                       7
+tgt    x test   near-duplicate (confirmed)         9
+tgt    x val    dhash candidate, rejected by MAD   8
+tgt    x val    near-duplicate (confirmed)         9
+val    x cham   exact sha256                       3
+tgt      n= 4040 unique= 4038 27d2c723371e38ff
+test     n= 2026 unique= 2026 89921f3c7359036b
+test_gt  n= 2026 unique= 2026 68e17ea9d93613de
+nc4k     n= 4121 unique= 4121 b6e6f18b2312bc6b
+nc4k_gt  n= 4121 unique= 4121 9d85d106488aaf27
+val      n=  250 unique=  250 137c00af46805762
+val_gt   n=  250 unique=  250 2c75c4147e263170
+raw      n= 4447 unique= 4443 751354bc50f76608
+auth     n= 4447 unique= 4447 4a123b2a6f4348f1
+local    n= 4447 unique= 4445 986bc4eeba5ba293
+cham     n=   76 unique=   76 16e2307ca722c7f8

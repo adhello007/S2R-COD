@@ -1,0 +1,30 @@
+split,path,n_files,content_sha256,n_unique_sha
+tgt,Dataset/Target/Image,4040,27d2c723371e38ff0efc27c402deba895e1cbe0520facc7346a26414adf4e487,4038
+test,Dataset/Test/COD10K/Imgs,2026,89921f3c7359036b3079fd06d2e1f18032d107d80af62793638f02cf1c84b0b0,2026
+test_gt,Dataset/Test/COD10K/GT,2026,68e17ea9d93613deb53a29c3730e2ed86c46dfbbc97bbf7e7344e956cc4489cc,2026
+nc4k,Dataset/Test/NC4K/Imgs,4121,b6e6f18b2312bc6b7590b986a74f65f76ee5218e3a72b5c6458882f6c069f497,4121
+nc4k_gt,Dataset/Test/NC4K/GT,4121,9d85d106488aaf271777fce60d639bc3271d8c74a9c8528d7c0bf06f42c6b793,4121
+val,Dataset/Val/CAMO/Imgs,250,137c00af468057625141b0e921682ec0dea03197e80ebc9253fc470c5d0df96a,250
+val_gt,Dataset/Val/CAMO/GT,250,2c75c4147e2631708d7f8f86f1371beef97fe3c4367a5c4c7a0c3f051e660d92,250
+raw,Dataset/Source/HKU-IS_raw/imgs,4447,751354bc50f76608ece2855d89df16f05b8c72fe902bdb334dd3f0403fdb1c53,4443
+auth,Dataset/Source/HKU-IS/Image,4447,4a123b2a6f4348f13cb9dcacf4ecf2fd8f018f6515e3db3e4d50ad6a0a2da339,4447
+local,Dataset/LAKERED/output/HKU-IS/images,4447,986bc4eeba5ba293d9330588ac07ba8e0943015e42f6b5d21806166adb323f9f,4445
+cham,Dataset/Test/CHAMELEON/Imgs,76,16e2307ca722c7f8eaedc925f954e67d9d725a95998c3f8d87c3f242e3b52109,76
+cham x val,"dhash candidate, rejected by MAD",3,,
+cham x val,near-duplicate (confirmed),8,,
+nc4k x val,"dhash candidate, rejected by MAD",3,,
+nc4k x val,near-duplicate (confirmed),7,,
+raw x nc4k,near-duplicate (confirmed),1,,
+raw x val,near-duplicate (confirmed),3,,
+test x nc4k,"dhash candidate, rejected by MAD",13,,
+test x nc4k,near-duplicate (confirmed),4,,
+test x val,"dhash candidate, rejected by MAD",3,,
+test x val,near-duplicate (confirmed),7,,
+tgt x nc4k,"dhash candidate, rejected by MAD",19,,
+tgt x nc4k,near-duplicate (confirmed),32,,
+tgt x test,"dhash candidate, rejected by MAD",17,,
+tgt x test,exact sha256,7,,
+tgt x test,near-duplicate (confirmed),9,,
+tgt x val,"dhash candidate, rejected by MAD",8,,
+tgt x val,near-duplicate (confirmed),9,,
+val x cham,exact sha256,3,,
