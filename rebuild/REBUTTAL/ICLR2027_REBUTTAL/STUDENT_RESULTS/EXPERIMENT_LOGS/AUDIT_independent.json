@@ -243,7 +243,7 @@
    "detail": ""
   },
   {
-   "check": "OpenReview text <= 5000 code points (python 4658, wc -m 4658)",
+   "check": "OpenReview text <= 5000 code points (python 4955, wc -m 4955)",
    "passed": true,
    "detail": ""
   },

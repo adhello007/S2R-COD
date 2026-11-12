@@ -78,7 +78,7 @@ diversity and coverage of the target data.
 
 **Results.** Boundary-IoU at threshold 0.5, COD10K-test, eight seeds, gain over random (paired 95% CI):
 
-| | SINet | SINet-v2 | Difference between architectures |
+| | SINet | SINet-v2 | SINet − SINet-v2 (same Boundary-IoU cell) |
 |---|---|---|---|
 | Targeted | +0.0046 [−0.0066, +0.0158], 0.30× bar | +0.0002 [−0.0061, +0.0064] | +0.0044 [−0.0075, +0.0163], p = 0.43 |
 | Reversed signal | +0.0098 [+0.0039, +0.0157], 0.64× bar, 7/8 seeds | +0.0033 [−0.0009, +0.0074] | +0.0065 [−0.0001, +0.0131], p = 0.053 |
@@ -107,17 +107,18 @@ follow. The pool-level values reproduce the submitted appendix table exactly.
    which we have not tested: the three same-shape arms put very different shares of the budget on CAMO
    images (53%, 29% and 20% for targeted, shuffled and reversed), and neither endpoint contains CAMO
    images.
-3. Architecture: the interaction is not resolved either way. We cannot say the two architectures
-   differ, or that they agree.
+3. Architecture: on Boundary-IoU (threshold 0.5, COD10K-test), the interaction is not resolved either
+   way. We cannot say the two architectures differ, or that they agree.
 4. Generator: our null covers a fixed, offline pool of re-rendered backgrounds around existing
    foregrounds. It does not cover adaptive generation or synthesis of new objects. No generator able
    to create new foregrounds was available to us, so that experiment was not run and remains open.
 
 ### QA-01. How well do the results rule out smaller improvements?
 
-**Response.** There is no field-wide minimum meaningful S-measure gain for camouflaged object
-detection. +0.0142 is the gain of the reproduced method over its own baseline in our setup, a study
-reference rather than a standard. ±0.005 is a sensitivity margin we chose after the fact. We now
+**Response.** There is no validated minimum meaningful S-measure gain for camouflaged object
+detection. +0.0142 is the gain of the reproduced method over its own baseline in our setup, a
+study-specific reference rather than a standard. ±0.005 is an exploratory margin we chose after the
+fact. We therefore report bounds against both, so readers can apply their own threshold. We now
 provide the paired analysis the reviewer asked for.
 
 **Additional validation (post-review).** Paired analysis by matched training seed for all four
@@ -160,7 +161,9 @@ did not train. A fixed-budget alternative, drawing the random arm only from imag
 not pick, would raise the share to 18.4%. That is a different sampling algorithm and we did not run it.
 On diversity: the renders re-use base foregrounds one-to-one (median mask IoU 0.97 with the original),
 and synthetic sets cover at most 0.64 of the real target, against 0.71 for the real photographs the
-generator started from. Only about a fifth of the endpoint's structural-error variance lies between
+generator started from. On the appendix's coverage estimator, concentrated selections cover more of the
+real target than equal-size random draws (0.62–0.64 vs 0.35–0.43), yet trained accuracy did not follow.
+We give no interval for coverage, because resampling foregrounds biases this estimator. Only about a fifth of the endpoint's structural-error variance lies between
 clusters (20.5%, reproduced; 18.9–20.9% with each arm's own predictions). That caps what any
 cluster-wise allocation could change.
 
@@ -184,7 +187,8 @@ predictions.
 
 **Results.**
 - **Supervised training (image and mask).** A model trained the standard way on COD10K-train and
-  CAMO-train has fitted the ground-truth masks of 50 of the 76 CHAMELEON photographs. This breaks
+  CAMO-train has been trained on 50 of the 76 CHAMELEON photographs, with their own COD10K or CAMO
+  masks, not CHAMELEON's. This breaks
   independent evaluation whether or not the score moves.
 - **Unlabelled target adaptation (our protocol).** The same 50 photographs are in our unlabelled target
   pool. Every run sees them without labels. Between rounds, 14–32 of them per run (mean 24.7) were
@@ -244,17 +248,17 @@ is kept as its own file so that its character count covers exactly what would be
 | Measure | Value |
 |---|---|
 | File | `FINAL_UPDATED_REBUTTAL_OPENREVIEW.md` (exactly the text to paste) |
-| SHA256 | `b29ec58716b9604bd3e4e9f84d76bc17bcf12b61afa52a1eea74283c98be16fb` |
-| Unicode code points, Python `len(str)` | **4658** |
-| Unicode code points, `wc -m` (C.UTF-8) | **4658** |
-| Code points after NFC normalisation | 4658 |
-| Code points without the final newline | 4657 |
-| UTF-8 bytes (`wc -c`) | 4685 |
+| SHA256 | `cd513f81dfbaf16ea0ea724785e5469c0c847811a3f0c7f348e0bd63a365e880` |
+| Unicode code points, Python `len(str)` | **4955** |
+| Unicode code points, `wc -m` (C.UTF-8) | **4955** |
+| Code points after NFC normalisation | 4955 |
+| Code points without the final newline | 4954 |
+| UTF-8 bytes (`wc -c`) | 4987 |
 | Lines | 25 |
 | Non-ASCII characters used | 6 distinct (U+00B1 U+00D7 U+03C3 U+2013 U+2212 U+2264) |
 | Limit | 5,000 characters including headings and Markdown |
-| Margin | 342 characters |
+| Margin | 45 characters |
 | Verdict | PASS |
 
 The two counters are independent: the Python string length, and coreutils `wc -m` in a UTF-8 locale.
-If OpenReview counts UTF-8 bytes instead of characters, the text is 4685 bytes, still under 5,000.
+If OpenReview counts UTF-8 bytes instead of characters, the text is 4987 bytes, still under 5,000.

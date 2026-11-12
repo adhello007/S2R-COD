@@ -1,4 +1,4 @@
-# 2026-11-12T08:12:58Z python -I -B scripts/audit_independent.py (final)
+# 2026-11-12T08:24:02Z OMP_NUM_THREADS=4 nice -n 19 python -I -B scripts/audit_independent.py (after OpenReview edits)
 PASS  AN-01 all committed metrics reproduce at 6 dp  
 PASS  rebuttal cites paired CI SINet COD10K [−0.0023, +0.0070]  
 PASS  rebuttal cites Welch CI SINet COD10K [−0.0020, +0.0067]  
@@ -47,7 +47,7 @@ PASS  coverage ranges cited 0.35–0.43 / 0.62–0.64
 PASS  Gate 4: 12/12 committed coverage values at 4 dp  
 PASS  eta^2 committed = 0.205 cited as 20.5%  
 PASS  signal correlations reproduce exactly  
-PASS  OpenReview text <= 5000 code points (python 4658, wc -m 4658)  
+PASS  OpenReview text <= 5000 code points (python 4955, wc -m 4955)  
 PASS  no private paths / task codes in reviewer-facing text  
 PASS  no unfilled placeholders in any STUDENT_RESULTS document  
 PASS  all relative Markdown links resolve  
