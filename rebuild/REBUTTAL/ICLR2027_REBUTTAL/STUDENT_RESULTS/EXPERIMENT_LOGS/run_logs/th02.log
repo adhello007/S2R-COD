@@ -1,0 +1,24 @@
+# 2026-11-12T07:23:10Z python -I -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/th02_quota_invariants.py --worktree /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE --data-root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD --sr /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS
+{
+ "s_e": 0.010122479175327225,
+ "s_e_manuscript": 0.0101,
+ "k": 75,
+ "all_sum_1000": true,
+ "multiset_equal_C10_CSHUF": true,
+ "multiset_equal_C10_CINV": true,
+ "multiset_equal_C10_CORACLE": true,
+ "per_cluster_C10_vs_CSHUF_differs": 73,
+ "per_cluster_C10_vs_CINV_differs": 72,
+ "cinv_single_fixed_point_is_median": true,
+ "cshuf_no_fixed_point": true,
+ "cshuf_rho": -0.03351,
+ "c_family_selection_matches_committed": true,
+ "b_selection_matches_committed_all_seeds": true,
+ "es_ties": 0,
+ "quota_remainder_units": 37
+}
+C10 {'nominal_entropy_norm': 0.7866847141172733, 'nominal_hhi': 0.073948, 'nominal_gini': 0.6273333333333333, 'nominal_max_share': 0.194, 'nominal_clusters_funded': 75, 'n_displaced': 370, 'realised_equals_nominal': True}
+CSHUF {'nominal_entropy_norm': 0.7866847141172733, 'nominal_hhi': 0.07394799999999999, 'nominal_gini': 0.6273333333333333, 'nominal_max_share': 0.194, 'nominal_clusters_funded': 75, 'n_displaced': 404, 'realised_equals_nominal': True}
+CINV {'nominal_entropy_norm': 0.7866847141172733, 'nominal_hhi': 0.07394800000000001, 'nominal_gini': 0.6273333333333333, 'nominal_max_share': 0.194, 'nominal_clusters_funded': 75, 'n_displaced': 367, 'realised_equals_nominal': True}
+CORACLE {'nominal_entropy_norm': 0.7866847141172733, 'nominal_hhi': 0.073948, 'nominal_gini': 0.6273333333333333, 'nominal_max_share': 0.194, 'nominal_clusters_funded': 75, 'n_displaced': 509, 'realised_equals_nominal': True}
+rc=0

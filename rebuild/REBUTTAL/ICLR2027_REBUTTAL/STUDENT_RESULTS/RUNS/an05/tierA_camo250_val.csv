@@ -1,0 +1,5 @@
+rank,image_a,image_b,dims,mean_abs,p99_abs,max_abs,frac_gt8,content_std,qtables,qtable_methods_agree,qtable_hash_a,qtable_hash_b,format_a,format_b,formats_differ,pixel_identical,kb_a,kb_b
+1,animal-25.jpg,camourflage_00890.jpg,880x587,0.0,0.0,0,0.0,56.9,same,True,d8ae7c91c9d6ea8f,d8ae7c91c9d6ea8f,JPEG,JPEG,False,True,409,409
+2,animal-17.jpg,camourflage_00090.jpg,1200x947,0.0,0.0,0,0.0,59.7,same,True,3b25dfb0b7fbab94,3b25dfb0b7fbab94,JPEG,JPEG,False,True,211,211
+3,animal-60.jpg,camourflage_00998.jpg,880x707,0.0,0.0,0,0.0,76.5,same,True,94dd4523c501fb52,94dd4523c501fb52,JPEG,JPEG,False,True,322,322
+4,animal-28.jpg,camourflage_00235.jpg,610x401,0.607,2.0,6,0.0,45.8,na,True,,8fbd232b32e7d4c1,PNG,JPEG,True,False,438,223

@@ -1,0 +1,13 @@
+{
+ "scipy_mismatch": [],
+ "n_grid": 280,
+ "n_interaction": 70,
+ "data_sha256_boundary": "aa0c8eafef9fb2134f2fb20be70e7a27af0b7da97cb35f42bc55db3b2f28128c",
+ "data_sha256_sa": "bd245fce30e26980e5127a342de1945708593799977c87157918047e2e25ee54",
+ "gate3": {
+  "n_compared": 300,
+  "max_abs_diff": 1.1102230246251565e-16,
+  "n_fail": 0,
+  "passed": true
+ }
+}

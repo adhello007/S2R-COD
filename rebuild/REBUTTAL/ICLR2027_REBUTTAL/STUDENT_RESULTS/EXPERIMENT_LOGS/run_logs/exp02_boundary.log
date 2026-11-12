@@ -1,0 +1,49 @@
+# 2026-11-11T18:20:29Z CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=1 nice -n 19 /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python -I -B scripts/exp02_boundary.py --worktree /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE --data-root /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD --sr /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS --workers 8
+jobs 1253160 workers 8
+  50000 / 1253160  699s
+  100000 / 1253160  1529s
+  150000 / 1253160  2351s
+  200000 / 1253160  2798s
+  250000 / 1253160  3182s
+  300000 / 1253160  3556s
+  350000 / 1253160  4041s
+  400000 / 1253160  4778s
+  450000 / 1253160  5238s
+  500000 / 1253160  5477s
+  550000 / 1253160  5717s
+  600000 / 1253160  5957s
+  650000 / 1253160  6202s
+  700000 / 1253160  6449s
+  750000 / 1253160  6697s
+  800000 / 1253160  6946s
+  850000 / 1253160  7257s
+  900000 / 1253160  7491s
+  950000 / 1253160  7724s
+  1000000 / 1253160  7957s
+  1050000 / 1253160  8197s
+  1100000 / 1253160  8440s
+  1150000 / 1253160  8683s
+  1200000 / 1253160  8929s
+  1250000 / 1253160  9232s
+{
+ "generated_utc": "2026-11-11T20:55:02Z",
+ "n_jobs": 1253160,
+ "n_rows": 1253160,
+ "n_errors": 0,
+ "thresholds": [
+  0.4,
+  0.5,
+  0.6
+ ],
+ "biou_frac": 0.02,
+ "bf_frac": 0.0075,
+ "gate3": {
+  "n_compared": 300,
+  "max_abs_diff": 1.1102230246251565e-16,
+  "n_fail": 0,
+  "passed": true
+ },
+ "seconds": 9273.4,
+ "limit": 0
+}
+rc=0

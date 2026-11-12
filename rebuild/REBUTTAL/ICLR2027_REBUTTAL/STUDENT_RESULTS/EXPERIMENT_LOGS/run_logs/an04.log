@@ -1,0 +1,12 @@
+# 2026-11-12T07:23:24Z OMP_NUM_THREADS=8 nice -n 19 python -I -B scripts/an04_coverage.py --n-boot 2000
+Traceback (most recent call last):
+  File "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py", line 257, in <module>
+    main()
+  File "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py", line 96, in main
+    sets = {'C10': stems_of('C10'), 'CSHUF': stems_of('CSHUF'), 'CINV': stems_of('CINV')}
+                   ^^^^^^^^^^^^^^^
+  File "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an04_coverage.py", line 61, in stems_of
+    fn = {'B': 'abc_stems_B_s%d.txt' % s, 'C10': 'abc_stems_C_a1.0.txt', 'CSHUF': 'abc_stems_CSHUF.txt',
+               ~~~~~~~~~~~~~~~~~~~~~~^~~
+TypeError: %d format: a real number is required, not NoneType
+rc=1

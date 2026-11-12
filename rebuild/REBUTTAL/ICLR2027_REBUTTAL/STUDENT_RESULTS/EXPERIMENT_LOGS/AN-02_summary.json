@@ -1,0 +1,106 @@
+{
+ "generated_utc": "2026-11-12T07:23:09Z",
+ "digest_definition_matches_base": true,
+ "pools_all_digests_match": true,
+ "pools_all_injected_match": true,
+ "pools_all_base_complete": true,
+ "round2_appended_all_match": true,
+ "pair_summary": {
+  "B-C10": {
+   "min_frac_differs": 0.754,
+   "max_frac_differs": 0.791,
+   "mean_frac_differs": 0.766625,
+   "mean_frac_of_5447": 0.1407426106113457,
+   "min_one_sided": 754,
+   "max_one_sided": 791
+  },
+  "B-CSHUF": {
+   "min_frac_differs": 0.757,
+   "max_frac_differs": 0.786,
+   "mean_frac_differs": 0.7725,
+   "mean_frac_of_5447": 0.1418211859739306,
+   "min_one_sided": 757,
+   "max_one_sided": 786
+  },
+  "B-CINV": {
+   "min_frac_differs": 0.75,
+   "max_frac_differs": 0.796,
+   "mean_frac_differs": 0.774,
+   "mean_frac_of_5447": 0.1420965669175693,
+   "min_one_sided": 750,
+   "max_one_sided": 796
+  },
+  "C10-CSHUF": {
+   "min_frac_differs": 0.452,
+   "max_frac_differs": 0.452,
+   "mean_frac_differs": 0.452,
+   "mean_frac_of_5447": 0.08298145768312833,
+   "min_one_sided": 452,
+   "max_one_sided": 452
+  },
+  "C10-CINV": {
+   "min_frac_differs": 0.511,
+   "max_frac_differs": 0.511,
+   "mean_frac_differs": 0.511,
+   "mean_frac_of_5447": 0.0938131081329172,
+   "min_one_sided": 511,
+   "max_one_sided": 511
+  },
+  "CSHUF-CINV": {
+   "min_frac_differs": 0.454,
+   "max_frac_differs": 0.454,
+   "mean_frac_differs": 0.454,
+   "mean_frac_of_5447": 0.08334863227464659,
+   "min_one_sided": 454,
+   "max_one_sided": 454
+  }
+ },
+ "expected_random_intersection": 224.87069934787496,
+ "B_vs_B_across_seeds_intersection": {
+  "min": 195,
+  "max": 246,
+  "mean": 222.28571428571428
+ },
+ "injected_stems_union": 4106,
+ "injected_stems_novel_vs_base_pool": 0,
+ "render_images_byte_duplicates": 2,
+ "render_masks_byte_duplicates": 4,
+ "hand_inspection_all_binary": true,
+ "hand_inspection_mask_equals_base_gt": 0,
+ "pseudo_label_mean_by_arm": {
+  "B": 1991.0,
+  "C10": 2006.8125,
+  "CINV": 2015.0625,
+  "CSHUF": 2019.875
+ },
+ "pseudo_label_range_by_arm": {
+  "B": [
+   1817,
+   2103
+  ],
+  "C10": [
+   1782,
+   2259
+  ],
+  "CINV": [
+   1869,
+   2183
+  ],
+  "CSHUF": [
+   1859,
+   2278
+  ]
+ },
+ "pseudo_label_audit_targets": {
+  "B": 1977,
+  "C10": 2025,
+  "CSHUF": 1990,
+  "CINV": 1979
+ },
+ "sampler_trace_search": {
+  "pattern": "(sampler|indices|index|visit|batch_ids|perm)",
+  "files_scanned": 128,
+  "files_with_hits": 0
+ },
+ "seconds": 7.4
+}

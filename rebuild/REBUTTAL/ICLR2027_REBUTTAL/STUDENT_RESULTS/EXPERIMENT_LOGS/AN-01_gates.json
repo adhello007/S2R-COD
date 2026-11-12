@@ -1,0 +1,21 @@
+{
+ "gate1": {
+  "Sm": 0.7172156230064066,
+  "MAE": 0.07446323197740462,
+  "ref_Sm": 0.717216,
+  "ref_MAE": 0.074463,
+  "d_Sm": 3.7699359334286697e-07,
+  "d_MAE": 2.3197740461888827e-07,
+  "tol": 1e-05,
+  "passed": true
+ },
+ "gate2": {
+  "n_compared": 1152,
+  "n_mismatch": 0,
+  "passed": true,
+  "n_tasks": 128,
+  "max_per_image_mean_vs_aggregate": 2.220446049250313e-16
+ },
+ "seconds": 5187.0,
+ "generated_utc": "2026-11-11T19:45:00Z"
+}

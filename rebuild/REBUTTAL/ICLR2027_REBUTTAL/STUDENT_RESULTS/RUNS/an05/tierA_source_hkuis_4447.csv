@@ -1,0 +1,1 @@
+rank,image_a,image_b,dims,mean_abs,p99_abs,max_abs,frac_gt8,content_std,qtables,qtable_methods_agree,qtable_hash_a,qtable_hash_b,format_a,format_b,formats_differ,pixel_identical,kb_a,kb_b
