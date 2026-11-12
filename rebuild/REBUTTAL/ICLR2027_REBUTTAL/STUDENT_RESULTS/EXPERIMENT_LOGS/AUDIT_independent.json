@@ -1,0 +1,241 @@
+{
+ "n_checks": 47,
+ "n_failed": 1,
+ "checks": [
+  {
+   "check": "AN-01 all committed metrics reproduce at 6 dp",
+   "passed": true,
+   "detail": "128 rows, 0 mismatches"
+  },
+  {
+   "check": "rebuttal cites paired CI SINet COD10K [−0.0023, +0.0070]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites Welch CI SINet COD10K [−0.0020, +0.0067]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "TOST paired p SINet COD10K = 0.111 cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "primary paired CI in both versions",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "primary paired CI in both versions",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "primary one-sided bound +0.0061",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "primary r = -0.04",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "primary 6/8 seeds positive",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "DOC-01 Edit 3 paired CI",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites paired CI SINet NC4K [−0.0038, +0.0045]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites Welch CI SINet NC4K [−0.0033, +0.0040]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "TOST paired p SINet NC4K = 0.016 cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites paired CI SINetv2 COD10K [−0.0081, +0.0059]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites Welch CI SINetv2 COD10K [−0.0067, +0.0045]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "TOST paired p SINetv2 COD10K = 0.114 cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites paired CI SINetv2 NC4K [−0.0077, +0.0058]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "rebuttal cites Welch CI SINetv2 NC4K [−0.0068, +0.0049]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "TOST paired p SINetv2 NC4K = 0.100 cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "B∩C10 range 209–246",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "B vs C10 differing share of pool 14.1%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "C-family differing 452–511 of 1000 (45–51%)",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "C-family share of pool 8.3–9.4%%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary SINet C10-B +0.0046 [−0.0066, +0.0158] cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary SINet CINV-B +0.0098 [+0.0039, +0.0157] cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "3-seed C10-B bar ratio = 1.37",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "3-seed CINV-B bar ratio = 1.34",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary SINetv2 C10-B +0.0002 [−0.0061, +0.0064] cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "boundary SINetv2 CINV-B +0.0033 [−0.0009, +0.0074] cited",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "interaction C10 = +0.0044 [−0.0075, +0.0163]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "interaction CINV = +0.0065 [−0.0001, +0.0131]",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "preflight DC(1000) = 14.1%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "preflight DC(2000) = 17.2%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "preflight DC(3000) = 13.1%",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "preflight N=1000 matches raw stems",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "Tier A 41 and sweep 11/26/37/40/41",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "76 = 50 + 16 + 10; 44 in COD10K-train",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "32 CHAMELEON photos in COD10K-test incl. all 16 unchecked",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "4 in CAMO-250",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "74/76 duplicated somewhere",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "mask MAE 0.2196 / 0.0816",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "pseudo-label re-use 14–32 per run",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "OpenReview text <= 5000 code points (python 4658, wc -m 4658)",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "check": "no private paths / task codes in reviewer-facing text",
+   "passed": true,
+   "detail": "[]"
+  },
+  {
+   "check": "no unfilled placeholders",
+   "passed": false,
+   "detail": "['{{AN04:coverage_sentence}}', '{{AN04:diversity_sentence}}', '{{COUNT_AUDIT}}']"
+  },
+  {
+   "check": "all relative Markdown links resolve",
+   "passed": true,
+   "detail": "[]"
+  },
+  {
+   "check": "manuscript unchanged (sha) and refs/cites resolve",
+   "passed": true,
+   "detail": ""
+  }
+ ]
+}

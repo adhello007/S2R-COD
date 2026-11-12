@@ -1,0 +1,40 @@
+{
+ "tex": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/AD-PCHGS-250926.tex",
+ "tex_sha256": "84d3bf97ea881b14b13d2a80af4593ba83f9a68416e5f0113adfe877acfc771a",
+ "bib": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/reference 1.bib",
+ "bib_sha256": "1a97810228175472988c806b6ad213f8c60929f26cc3b7516d0caae4750dbab2",
+ "inputs": [
+  "math_commands.tex",
+  "table_subgroup_metrics.tex",
+  "table_tost_equivalence.tex",
+  "appendix_tables.tex",
+  "table_cluster_composition.tex",
+  "appendix_coverage.tex"
+ ],
+ "missing_inputs": [],
+ "figures": [
+  "figs/fig_arms.pdf",
+  "figs/fig1_thesis.pdf",
+  "figs/fig2_pairs.pdf",
+  "figs/fig_chameleon_pairs.pdf"
+ ],
+ "missing_figures": [],
+ "n_unique_cited_keys": 41,
+ "n_unique_cited_keys_main_file_only": 39,
+ "cited_only_in_inputs": [
+  "kynkaanniemi2019improved",
+  "lakens2017equivalence"
+ ],
+ "n_bib_entries": 43,
+ "uncited_bib_entries": [
+  "munjal2022robust",
+  "kirsch2023stochastic"
+ ],
+ "duplicate_bib_keys": [],
+ "cited_keys_missing_from_bib": [],
+ "n_labels": 35,
+ "duplicate_labels": [],
+ "n_unique_refs": 27,
+ "undefined_refs": [],
+ "note": "syntax-level check only; no external semantic verification of references"
+}

@@ -1,0 +1,14 @@
+{
+ "what": "scratch compile of the UNMODIFIED submitted manuscript (copies only; original untouched)",
+ "inputs": "S2R-COD/AD-PCHGS-250926.tex + 'reference 1.bib' (as reference.bib) + base rebuild/FinalPaper/AD-PCH-230926/ (inputs, figs, sty, bst)",
+ "command": "latexmk -pdf -interaction=nonstopmode -halt-on-error AD-PCHGS-250926.tex",
+ "latexmk_rc": 0,
+ "pages_total": 25,
+ "undefined_references_or_citations": 0,
+ "overfull_boxes": 1,
+ "conclusion_ends_on_page": 9,
+ "ai_use_statement_starts_on_page": 10,
+ "main_text_pages": 9,
+ "revision_limit_pages": 10,
+ "logs": ["AD-PCHGS-250926.log", "build.log"]
+}
