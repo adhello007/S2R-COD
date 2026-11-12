@@ -122,7 +122,7 @@ builds on, $0.7030 \rightarrow 0.7172$, or $+0.0142$. That is the size of effect
 be able to resolve, and the yardstick every sensitivity claim in this paper is measured against. The closest are LAKE-RED~\citep{zhao2024lakered}, whose background generation and compositing we use unchanged, and
 S2R-COD~\citep{luo2025s2rcod}, whose synthetic-to-real self-training protocol we follow. Relative to
 both, the only thing we add is an allocation layer that chooses \emph{which} generated images to
-append; the generator, the budget, and the training procedure are left alone. Synthetic-augmentation methods such as DatasetDM~\citep{wu2023datasetdm} address how to construct labeled data at all, which is a different question from how to spend a fixed amount of it.
+append; the generator, the budget, and the training procedure are left alone. Synthetic-augmentation methods such as DatasetDM~\citep{wu2023datasetdm} address how to construct labeled data at all, which is a different question from how to spend a fixed amount of it. Unsupervised RISE~\citep{du2025rise} reaches higher absolute accuracy by a different route, pseudo masks on the real target images (Appendix~\ref{app:related}).
 
 Every part of it is standard. Uncertainty sampling comes from active learning~\citep{settles2009active}, except that our query is answered by a generator rather than by a human annotator; the uncertainty is student-teacher disagreement of the
 kind mean-teacher training already minimises~\citep{tarvainen2017mean}; and $k$-means over frozen
@@ -617,6 +617,13 @@ regions, representing architectural progress outside our allocation experiment. 
 structure-aware S-measure~\citep{fan2017structure}, enhanced-alignment E-measure
 \citep{fan2018enhanced}, and weighted $F_\beta^w$~\citep{margolin2014evaluate} for comparability
 with S2R-COD.
+Unsupervised COD avoids masks altogether. RISE~\citep{du2025rise} clusters each training image with frozen DINOv2
+features, retrieves prototypes across the whole training set to produce pseudo masks for the 4,040 COD10K and CAMO
+training images, and trains SINet-V2 on them with SINet-V2's own recipe, reaching $S_\alpha$ $0.763$ on COD10K-test
+and $0.805$ on NC4K. Its detector is the SINet-V2 we use, and its training images are the same 4,040 images our
+pipeline uses as unlabelled targets. The gap between the two therefore isolates the source of supervision on those
+images, pseudo masks on the real images themselves against synthetic renders plus self-training, far more than any
+difference in detector or representation.
 
 \paragraph{Synthetic generation and domain adaptation.}
 Latent diffusion~\citep{rombach2022high} and DDIM~\citep{song2021denoising} provide the high-resolution
