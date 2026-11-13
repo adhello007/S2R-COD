@@ -32,6 +32,9 @@ done_n=$(echo "$pend_line" | sed -n 's/.*done \([0-9]*\),.*/\1/p'); done_n=${don
 ours() {  # our MyTrain/MyTest parent processes on GPU $1 (workers share the cmdline; count >0 means busy)
   for p in $(ls /proc | grep -E '^[0-9]+$'); do
     c=$( { tr '\0' ' ' < /proc/$p/cmdline; } 2>/dev/null ) || continue
+    # external (Caus) jobs run with CUDA_VISIBLE_DEVICES=<gpu> and --gpu 0, so their --gpu index is not the physical
+    # GPU; they are covered by the runner-state check below (11-13 display fix)
+    { tr '\0' '\n' < /proc/$p/environ; } 2>/dev/null | grep -q '^CUDA_VISIBLE_DEVICES=' && continue
     case "$c" in *MyTrain.py*"--gpu $1"*|*MyTest.py*"--gpu $1"*) echo "$c" | grep -o -- '--save_model [^ ]*\|--model_path [^ ]*' | head -1 ;; esac
   done | sort -u
 }
@@ -49,8 +52,8 @@ print(r['job'] if (fresh and r) else '')"; } 2>/dev/null )
   jobs_on=$(ours $g | sed 's#.*/\([^/]*\)/[^/]*$#\1#; s#.*/\([^/]*\)/$#\1#' | sort -u | tr '\n' ' ')
   util=$($NVS --query-gpu=utilization.gpu,memory.used,memory.free --format=csv,noheader,nounits -i $g 2>/dev/null | tr -d ' ')
   free_mb=$(echo "$util" | cut -d, -f3)
-  gpu_lines="$gpu_lines\n  GPU$g util%,used MiB,free MiB = $util | our job(s): ${jobs_on:-NONE}"
   [ -z "$jobs_on" ] && [ -n "$state_job" ] && jobs_on="$state_job(runner-state)"
+  gpu_lines="$gpu_lines\n  GPU$g util%,used MiB,free MiB = $util | our job(s): ${jobs_on:-NONE}"
   if [ -z "$jobs_on" ]; then
     idle=$((idle+1))
     if [ -n "$free_mb" ] && [ "$free_mb" -lt 24576 ]; then explained="$explained GPU$g-held-by-another-user"; fi
