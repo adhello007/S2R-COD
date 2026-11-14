@@ -202,6 +202,16 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     script moved or dropped. EQ stays at n = 27; if an outage leaves EQ unfinished, Amendment 1's
     INCOMPLETE rule applies. Every deliverable except the EQ results is due 16 Nov 22:00 IST; EQ results go
     in on 17 Nov after the last run, for delivery by 12:00.
+21. **The EQ analysis is triggered by cron, once** (authorised by the author 2026-11-14).
+    - `rebuild/RL5B/eq_autorun.sh` runs every 10 min and runs the committed `analysis/eq_analysis.py` exactly once.
+    - **Strict mode** as soon as all 81 runs are trained and inferred.
+    - **After the 2026-11-17 06:00 cutoff**, once no EQ run is in flight, with `--allow-incomplete` (Amendment 1's
+      INCOMPLETE rule).
+    - It computes and opens no EQ number before then. It runs under the CPU cap and logs to
+      `EXPERIMENT_LOGS/EXP01_autorun.log`; a marker prevents a second run.
+    - Its decision logic was tested on synthetic states (`--check` only) before installation.
+    - Reason: the agent acts only during conversation turns. The dose-response analysis, due on 11-13 14:25,
+      waited until 11-14 13:13 for that reason.
 17. **Removed from scope** (author, 2026-11-11):
     - the new-foreground campaign; it is not an RL5B task, and posted Part 4 rules out a weaker substitute
       for a new generator;
