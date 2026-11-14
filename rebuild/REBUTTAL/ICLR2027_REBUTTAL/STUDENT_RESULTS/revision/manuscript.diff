@@ -1,5 +1,5 @@
 --- revision/AD-PCHGS-original-copy.tex	2026-11-12 13:44:11.049279203 +0530
-+++ revision/AD-PCHGS-revised.tex	2026-11-12 14:00:27.790809465 +0530
++++ revision/AD-PCHGS-revised.tex	2026-11-14 13:24:58.029408988 +0530
 @@ -10,6 +10,13 @@
  
  
@@ -261,7 +261,7 @@
  $50$ of CHAMELEON's $76$ images are altered copies of COD10K and CAMO training images, which exact
  hashing misses. Both findings argue for one practice: before crediting an acquisition rule or
  trusting a duplicate check, run the version of the test that could have failed.
-@@ -584,6 +617,13 @@
+@@ -584,6 +617,17 @@
  structure-aware S-measure~\citep{fan2017structure}, enhanced-alignment E-measure
  \citep{fan2018enhanced}, and weighted $F_\beta^w$~\citep{margolin2014evaluate} for comparability
  with S2R-COD.
@@ -272,10 +272,14 @@
 +pipeline uses as unlabelled targets. The gap between the two therefore isolates the source of supervision on those
 +images, pseudo masks on the real images themselves against synthetic renders plus self-training, far more than any
 +difference in detector or representation.
++
++\input{gap_paragraph.tex}
++
++\input{table_protocol.tex}
  
  \paragraph{Synthetic generation and domain adaptation.}
  Latent diffusion~\citep{rombach2022high} and DDIM~\citep{song2021denoising} provide the high-resolution
-@@ -708,7 +748,8 @@
+@@ -708,7 +752,8 @@
  
  \paragraph{Metrics.} $S_\alpha$ at $\alpha = 0.5$ is the primary endpoint metric; mean absolute
  error (MAE) on CAMO-250 is the checkpoint-selection metric; $F_\beta^w$ and the E-measure $E_\phi$
@@ -285,7 +289,7 @@
  The $F$-measures apply $\beta$ in the non-squared form, so the metric name rather than a formula is what identifies them.
  
  \paragraph{Degrees of freedom.} Each campaign's $\hat{\sigma}$ is pooled within-arm across that
-@@ -721,7 +762,10 @@
+@@ -721,7 +766,10 @@
  optimization schedule, arms A0FX, BFX, C10FX), and PC (positive control against a mean-teacher arm,
  MT); T2 is the falsification campaign (CSHUF, CINV). Every campaign but PC uses the three bands of
  Section~\ref{sec:method}. PC's pre-registration names its outcomes \textsc{detected} ($\Delta > 2\hat{\sigma}$
@@ -297,7 +301,7 @@
  
  \paragraph{A2 controls one confound.} A2 pairs the authors' original photographs with the
  authors' masks, whose mean foreground fraction differs from the raw masks by $0.0058$ on $1000$ of
-@@ -786,6 +830,16 @@
+@@ -786,6 +834,16 @@
  \end{center}
  \end{table}
  
@@ -314,7 +318,7 @@
  \paragraph{Why the committed bar is so wide, and why we did not narrow it.} The four-arm campaign
  pools its within-arm spread across all four of its arms, and one of them dominates. On the primary
  cell the per-arm standard deviations are A0 $0.01727$, A2 $0.00193$, B $0.00181$ and C10 $0.00406$:
-@@ -990,8 +1044,9 @@
+@@ -990,8 +1048,9 @@
  
  \paragraph{What differs between arms beyond the injected images.} The pseudo-labeling step between
  rounds selects target images using each arm's \emph{own} first-round model, so each arm appends a
