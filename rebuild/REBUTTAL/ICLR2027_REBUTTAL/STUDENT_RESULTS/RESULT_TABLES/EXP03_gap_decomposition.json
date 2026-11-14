@@ -1,0 +1,58 @@
+[
+  {
+    "component": "label supervision, our recipe",
+    "arch": "SINet",
+    "endpoint": "COD10K",
+    "delta": 0.08718208333333333,
+    "lo": 0.08155713799904402,
+    "hi": 0.09280702866762264
+  },
+  {
+    "component": "label supervision, our recipe",
+    "arch": "SINet",
+    "endpoint": "NC4K",
+    "delta": 0.071322,
+    "lo": 0.06751321151981277,
+    "hi": 0.07513078848018723
+  },
+  {
+    "component": "label supervision, our recipe",
+    "arch": "SINetv2",
+    "endpoint": "COD10K",
+    "delta": 0.1117078749999999,
+    "lo": 0.10632516941787318,
+    "hi": 0.11709058058212662
+  },
+  {
+    "component": "label supervision, our recipe",
+    "arch": "SINetv2",
+    "endpoint": "NC4K",
+    "delta": 0.08952775000000013,
+    "lo": 0.08425898087434419,
+    "hi": 0.09479651912565606
+  },
+  {
+    "component": "recipe and reproduction",
+    "arch": "SINetv2",
+    "endpoint": "COD10K",
+    "delta": 0.008239000000000107
+  },
+  {
+    "component": "recipe and reproduction",
+    "arch": "SINetv2",
+    "endpoint": "NC4K",
+    "delta": 0.00867299999999993
+  },
+  {
+    "component": "unsupervised method and target supervision",
+    "arch": "SINetv2",
+    "endpoint": "COD10K",
+    "delta": 0.06826287500000006
+  },
+  {
+    "component": "unsupervised method and target supervision",
+    "arch": "SINetv2",
+    "endpoint": "NC4K",
+    "delta": 0.05623375000000008
+  }
+]
