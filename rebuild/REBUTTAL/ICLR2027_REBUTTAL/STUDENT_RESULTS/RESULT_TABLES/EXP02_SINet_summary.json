@@ -1,0 +1,1327 @@
+{
+  "arch": "SINet",
+  "deviation_incomplete": false,
+  "missing": [],
+  "analyses": {
+    "PRIMARY BIoU@0.5 COD10K": {
+      "metric": "boundary_iou@0.5 COD10K",
+      "D": 0.3307878125,
+      "mean_B": 0.32871562499999996,
+      "mean_LU": 0.33286,
+      "sigma_hat": 0.009647082889546344,
+      "df": 24,
+      "bar": 0.019294165779092688,
+      "allocation_means": {
+        "CDRLU": 0.33286,
+        "CDRL1P1": 0.3208203333333333,
+        "CDRL1P2": 0.33823733333333333,
+        "CDRL1P3": 0.3229396666666667,
+        "CDRL1P4": 0.337648,
+        "CDRL1P5": 0.33177666666666666,
+        "CDRLHP1": 0.33205899999999994,
+        "CDRLHP2": 0.33203266666666664,
+        "CDRLHP3": 0.334215,
+        "CDRLHP4": 0.3365766666666667,
+        "CDRLHP5": 0.3298026666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0005034125000000222,
+          "xbar": 0.026091436435439156,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.008111909130682153,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0021493874999999885,
+          "xbar": 0.11140090349638655,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.00256384503561871,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0008229874999999831,
+      "welch_units_reported": {
+        "delta": 0.0024346888888888696,
+        "ci95": [
+          -0.00237812593981839,
+          0.007247503717596129
+        ],
+        "df": 15.864656507660731,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0003133541666666684,
+        "between_perm_sd": 0.007526294076251761
+      },
+      "context_same_shape": {
+        "C10": 0.3389436666666667,
+        "CSHUF": 0.33518500000000007,
+        "CINV": 0.3385753333333333
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_iou@0.4 COD10K": {
+      "metric": "boundary_iou@0.4 COD10K",
+      "D": 0.33893704999999996,
+      "mean_B": 0.3370565,
+      "mean_LU": 0.3408176,
+      "sigma_hat": 0.007821009706411173,
+      "df": 24,
+      "bar": 0.015642019412822346,
+      "allocation_means": {
+        "CDRLU": 0.3408176,
+        "CDRL1P1": 0.33077133333333336,
+        "CDRL1P2": 0.34396999999999994,
+        "CDRL1P3": 0.33218333333333333,
+        "CDRL1P4": 0.34459533333333336,
+        "CDRL1P5": 0.3393363333333333,
+        "CDRLHP1": 0.3393023333333334,
+        "CDRLHP2": 0.3397293333333333,
+        "CDRLHP3": 0.3414216666666667,
+        "CDRLHP4": 0.343545,
+        "CDRLHP5": 0.33835499999999996
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0007657833333333253,
+          "xbar": 0.048956807501823206,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.006458824972254786,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0015336166666667372,
+          "xbar": 0.09804467225053912,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0020461274262480464,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.000383916666666706,
+      "welch_units_reported": {
+        "delta": 0.0018465666666667158,
+        "ci95": [
+          -0.0022904244080344137,
+          0.005983557741367845
+        ],
+        "df": 16.891751956213227,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.00023943888888888765,
+        "between_perm_sd": 0.005919068073857811
+      },
+      "context_same_shape": {
+        "C10": 0.345774,
+        "CSHUF": 0.3413293333333333,
+        "CINV": 0.34451366666666666
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_f@0.4 COD10K": {
+      "metric": "boundary_f@0.4 COD10K",
+      "D": 0.4145899,
+      "mean_B": 0.411916,
+      "mean_LU": 0.4172638,
+      "sigma_hat": 0.012533974248018862,
+      "df": 24,
+      "bar": 0.025067948496037724,
+      "allocation_means": {
+        "CDRLU": 0.4172638,
+        "CDRL1P1": 0.39937,
+        "CDRL1P2": 0.42399233333333336,
+        "CDRL1P3": 0.40424666666666664,
+        "CDRL1P4": 0.4217923333333333,
+        "CDRL1P5": 0.41649933333333333,
+        "CDRLHP1": 0.4156856666666666,
+        "CDRLHP2": 0.4155703333333333,
+        "CDRLHP3": 0.41930666666666666,
+        "CDRLHP4": 0.4201263333333333,
+        "CDRLHP5": 0.41370033333333334
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0014097666666666453,
+          "xbar": 0.0562378156668654,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.010869882194496057,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.002287966666666641,
+          "xbar": 0.09127059867018157,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0027239359145667646,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.00043909999999997007,
+      "welch_units_reported": {
+        "delta": 0.002518799999999932,
+        "ci95": [
+          -0.003790516063127391,
+          0.008828116063127256
+        ],
+        "df": 15.661799577853325,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.0003801777777777682,
+        "between_perm_sd": 0.010044092334229046
+      },
+      "context_same_shape": {
+        "C10": 0.4239633333333333,
+        "CSHUF": 0.4193576666666667,
+        "CINV": 0.421865
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_f@0.5 COD10K": {
+      "metric": "boundary_f@0.5 COD10K",
+      "D": 0.40063377499999997,
+      "mean_B": 0.39738475,
+      "mean_LU": 0.4038828,
+      "sigma_hat": 0.01556947828659222,
+      "df": 24,
+      "bar": 0.03113895657318444,
+      "allocation_means": {
+        "CDRLU": 0.4038828,
+        "CDRL1P1": 0.3819573333333333,
+        "CDRL1P2": 0.413298,
+        "CDRL1P3": 0.3879783333333333,
+        "CDRL1P4": 0.409089,
+        "CDRL1P5": 0.403213,
+        "CDRLHP1": 0.40287233333333333,
+        "CDRLHP2": 0.40150966666666665,
+        "CDRLHP3": 0.40569033333333326,
+        "CDRLHP4": 0.40732666666666667,
+        "CDRLHP5": 0.39924800000000005
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.001526641666666606,
+          "xbar": 0.049026744460066,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.0135632069351856,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0026956249999999793,
+          "xbar": 0.08656760844457255,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.003229950166454216,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0005844916666666311,
+      "welch_units_reported": {
+        "delta": 0.0031115111111110205,
+        "ci95": [
+          -0.004635613427286115,
+          0.010858635649508156
+        ],
+        "df": 15.44037854795357,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.00014327499999994275,
+        "between_perm_sd": 0.012595661391923809
+      },
+      "context_same_shape": {
+        "C10": 0.4119456666666667,
+        "CSHUF": 0.4074073333333333,
+        "CINV": 0.41027233333333335
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_iou@0.6 COD10K": {
+      "metric": "boundary_iou@0.6 COD10K",
+      "D": 0.318798225,
+      "mean_B": 0.31632025,
+      "mean_LU": 0.32127619999999996,
+      "sigma_hat": 0.011424614218140288,
+      "df": 24,
+      "bar": 0.022849228436280577,
+      "allocation_means": {
+        "CDRLU": 0.32127619999999996,
+        "CDRL1P1": 0.3063343333333333,
+        "CDRL1P2": 0.32837200000000005,
+        "CDRL1P3": 0.309412,
+        "CDRL1P4": 0.326641,
+        "CDRL1P5": 0.32031666666666664,
+        "CDRLHP1": 0.3210753333333333,
+        "CDRLHP2": 0.32005866666666666,
+        "CDRLHP3": 0.322967,
+        "CDRLHP4": 0.32537933333333335,
+        "CDRLHP5": 0.3176596666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0005830250000000148,
+          "xbar": 0.02551617887780723,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.009965216718945747,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.002629775000000001,
+          "xbar": 0.1150925077113054,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0029232404869330344,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.001023374999999993,
+      "welch_units_reported": {
+        "delta": 0.002950688888888886,
+        "ci95": [
+          -0.0028411355215083554,
+          0.008742513299286127
+        ],
+        "df": 15.51074665729992,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.00046538611111107686,
+        "between_perm_sd": 0.009275744204744545
+      },
+      "context_same_shape": {
+        "C10": 0.327925,
+        "CSHUF": 0.32450566666666664,
+        "CINV": 0.32833033333333334
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_f@0.6 COD10K": {
+      "metric": "boundary_f@0.6 COD10K",
+      "D": 0.3815637375,
+      "mean_B": 0.37771587500000003,
+      "mean_LU": 0.38541159999999997,
+      "sigma_hat": 0.01852301133935241,
+      "df": 24,
+      "bar": 0.03704602267870482,
+      "allocation_means": {
+        "CDRLU": 0.38541159999999997,
+        "CDRL1P1": 0.35860699999999995,
+        "CDRL1P2": 0.39748800000000006,
+        "CDRL1P3": 0.36609200000000003,
+        "CDRL1P4": 0.39201033333333335,
+        "CDRL1P5": 0.38504099999999997,
+        "CDRLHP1": 0.3853506666666666,
+        "CDRLHP2": 0.38317400000000007,
+        "CDRLHP3": 0.38762566666666665,
+        "CDRLHP4": 0.388989,
+        "CDRLHP5": 0.3804643333333333
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0017160708333333052,
+          "xbar": 0.04632267404834676,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.016781439282400355,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.003556995833333354,
+          "xbar": 0.09601559293375975,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.003419169452432036,
+          "a": false,
+          "b": true,
+          "c": true,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0009204624999999966,
+      "welch_units_reported": {
+        "delta": 0.003913244444444464,
+        "ci95": [
+          -0.005554530696665729,
+          0.013381019585554656
+        ],
+        "df": 15.264295103899684,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 9.554027777780583e-05,
+        "between_perm_sd": 0.01565199579665543
+      },
+      "context_same_shape": {
+        "C10": 0.39489100000000005,
+        "CSHUF": 0.39071733333333336,
+        "CINV": 0.393464
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary Sm COD10K": {
+      "metric": "Sm COD10K",
+      "D": 0.7157385624999999,
+      "mean_B": 0.715127125,
+      "mean_LU": 0.7163499999999999,
+      "sigma_hat": 0.004570889957109014,
+      "df": 24,
+      "bar": 0.009141779914218029,
+      "allocation_means": {
+        "CDRLU": 0.7163499999999999,
+        "CDRL1P1": 0.7136296666666667,
+        "CDRL1P2": 0.7183666666666667,
+        "CDRL1P3": 0.7141753333333334,
+        "CDRL1P4": 0.7188789999999999,
+        "CDRL1P5": 0.7154426666666667,
+        "CDRLHP1": 0.7160730000000001,
+        "CDRLHP2": 0.7162646666666665,
+        "CDRLHP3": 0.7176383333333334,
+        "CDRLHP4": 0.720056,
+        "CDRLHP5": 0.715954
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0003601041666667637,
+          "xbar": 0.03939103435499479,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.002403101410446245,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0014586375000000817,
+          "xbar": 0.15955727590110672,
+          "perms_agree": "5/5",
+          "between_perm_sd": 0.0017353909037703778,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0009093708333334227,
+      "welch_units_reported": {
+        "delta": 0.001384933333333338,
+        "ci95": [
+          -0.0007920404606485535,
+          0.0035619071273152295
+        ],
+        "df": 15.963712221215882,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.000502937499999967,
+        "between_perm_sd": 0.002177688057959093
+      },
+      "context_same_shape": {
+        "C10": 0.7184806666666667,
+        "CSHUF": 0.7169556666666667,
+        "CINV": 0.7193463333333332
+      },
+      "monotone_order": "D < L1 < LH"
+    },
+    "secondary wFm COD10K": {
+      "metric": "wFm COD10K",
+      "D": 0.47853080000000003,
+      "mean_B": 0.47582500000000005,
+      "mean_LU": 0.4812366,
+      "sigma_hat": 0.009793869390252929,
+      "df": 24,
+      "bar": 0.019587738780505858,
+      "allocation_means": {
+        "CDRLU": 0.4812366,
+        "CDRL1P1": 0.4656106666666667,
+        "CDRL1P2": 0.48850466666666664,
+        "CDRL1P3": 0.4690806666666667,
+        "CDRL1P4": 0.48270300000000005,
+        "CDRL1P5": 0.477592,
+        "CDRLHP1": 0.483941,
+        "CDRLHP2": 0.47910733333333333,
+        "CDRLHP3": 0.47717600000000004,
+        "CDRLHP4": 0.4749156666666667,
+        "CDRLHP5": 0.48500766666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.001832599999999962,
+          "xbar": 0.09355852763483885,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.009449991615516554,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0014987333333333352,
+          "xbar": 0.07651385134995302,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.004336649645111348,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": -0.00016693333333339666,
+      "welch_units_reported": {
+        "delta": 0.0019375777777776992,
+        "ci95": [
+          -0.004741402493860844,
+          0.008616558049416242
+        ],
+        "df": 16.97518889577615,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.0017598555555555229,
+        "between_perm_sd": 0.008454207458529258
+      },
+      "context_same_shape": {
+        "C10": 0.48744066666666663,
+        "CSHUF": 0.4771346666666667,
+        "CINV": 0.48354533333333327
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary MAE COD10K": {
+      "metric": "MAE COD10K",
+      "D": 0.07595725,
+      "mean_B": 0.07576350000000001,
+      "mean_LU": 0.076151,
+      "sigma_hat": 0.002349764864122934,
+      "df": 24,
+      "bar": 0.004699529728245868,
+      "allocation_means": {
+        "CDRLU": 0.076151,
+        "CDRL1P1": 0.07748300000000001,
+        "CDRL1P2": 0.07519933333333334,
+        "CDRL1P3": 0.07743633333333333,
+        "CDRL1P4": 0.07594866666666668,
+        "CDRL1P5": 0.07606366666666668,
+        "CDRLHP1": 0.076055,
+        "CDRLHP2": 0.076439,
+        "CDRLHP3": 0.07506766666666669,
+        "CDRLHP4": 0.07546366666666667,
+        "CDRLHP5": 0.074339
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.00046895000000000964,
+          "xbar": 0.099786580172363,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0010002332116950383,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": -0.00048438333333333805,
+          "xbar": 0.10307059670715978,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0008249572918238399,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": -7.716666666657268e-06,
+      "welch_units_reported": {
+        "delta": 0.00014297777777780296,
+        "ci95": [
+          -0.0013883202585662606,
+          0.0016742758141218665
+        ],
+        "df": 11.901847907315984,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0006122500000000086,
+        "between_perm_sd": 0.0009610320089477836
+      },
+      "context_same_shape": {
+        "C10": 0.07555833333333334,
+        "CSHUF": 0.077286,
+        "CINV": 0.07494666666666668
+      },
+      "monotone_order": "LH < D < L1"
+    },
+    "secondary meanEm COD10K": {
+      "metric": "meanEm COD10K",
+      "D": 0.74586975,
+      "mean_B": 0.7444815,
+      "mean_LU": 0.747258,
+      "sigma_hat": 0.007282478512002474,
+      "df": 24,
+      "bar": 0.014564957024004947,
+      "allocation_means": {
+        "CDRLU": 0.747258,
+        "CDRL1P1": 0.7332706666666667,
+        "CDRL1P2": 0.7524223333333334,
+        "CDRL1P3": 0.7395203333333334,
+        "CDRL1P4": 0.7490143333333332,
+        "CDRL1P5": 0.7446246666666667,
+        "CDRLHP1": 0.7490536666666667,
+        "CDRLHP2": 0.745683,
+        "CDRLHP3": 0.7478366666666667,
+        "CDRLHP4": 0.748297,
+        "CDRLHP5": 0.747273
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0020992833333333127,
+          "xbar": 0.14413247700445805,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.007605787688771371,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.001758916666666721,
+          "xbar": 0.12076360155184784,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.001268136033712498,
+          "a": false,
+          "b": true,
+          "c": true,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": -0.00017018333333329583,
+      "welch_units_reported": {
+        "delta": 0.0009095666666666391,
+        "ci95": [
+          -0.0035517332254953217,
+          0.0053708665588286
+        ],
+        "df": 15.31307686197099,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.0015110277777777847,
+        "between_perm_sd": 0.006953752417593311
+      },
+      "context_same_shape": {
+        "C10": 0.7508063333333332,
+        "CSHUF": 0.7473000000000001,
+        "CINV": 0.751834
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary boundary_iou@0.4 NC4K": {
+      "metric": "boundary_iou@0.4 NC4K",
+      "D": 0.3915613,
+      "mean_B": 0.39099799999999996,
+      "mean_LU": 0.3921246,
+      "sigma_hat": 0.0050653042790032785,
+      "df": 24,
+      "bar": 0.010130608558006557,
+      "allocation_means": {
+        "CDRLU": 0.3921246,
+        "CDRL1P1": 0.38858166666666666,
+        "CDRL1P2": 0.39714266666666664,
+        "CDRL1P3": 0.392012,
+        "CDRL1P4": 0.39538133333333336,
+        "CDRL1P5": 0.3919806666666667,
+        "CDRLHP1": 0.39065,
+        "CDRLHP2": 0.39136466666666664,
+        "CDRLHP3": 0.3913333333333333,
+        "CDRLHP4": 0.3920443333333334,
+        "CDRLHP5": 0.3914576666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.001458366666666655,
+          "xbar": 0.14395647194502045,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0033304412453740817,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": -0.00019130000000000535,
+          "xbar": 0.01888336706572426,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0004955259271162958,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0006335333333333248,
+      "welch_units_reported": {
+        "delta": 0.0010716555555556062,
+        "ci95": [
+          -0.0026451925597008644,
+          0.004788503670812077
+        ],
+        "df": 11.836381843128583,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0013833666666666633,
+        "between_perm_sd": 0.0029844967936171578
+      },
+      "context_same_shape": {
+        "C10": 0.39633633333333335,
+        "CSHUF": 0.39256966666666665,
+        "CINV": 0.3977456666666666
+      },
+      "monotone_order": "LH < D < L1"
+    },
+    "secondary boundary_f@0.4 NC4K": {
+      "metric": "boundary_f@0.4 NC4K",
+      "D": 0.4860707375,
+      "mean_B": 0.485058875,
+      "mean_LU": 0.48708260000000003,
+      "sigma_hat": 0.007143767533856193,
+      "df": 24,
+      "bar": 0.014287535067712387,
+      "allocation_means": {
+        "CDRLU": 0.48708260000000003,
+        "CDRL1P1": 0.47937233333333334,
+        "CDRL1P2": 0.4944516666666667,
+        "CDRL1P3": 0.48575799999999997,
+        "CDRL1P4": 0.49089199999999994,
+        "CDRL1P5": 0.48629266666666665,
+        "CDRLHP1": 0.485763,
+        "CDRLHP2": 0.487292,
+        "CDRLHP3": 0.4871473333333334,
+        "CDRLHP4": 0.486818,
+        "CDRLHP5": 0.485115
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0012825958333332332,
+          "xbar": 0.0897702666873379,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0057069028621291335,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.00035632916666666903,
+          "xbar": 0.024939862962920573,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0009463384818458043,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0008194625000000344,
+      "welch_units_reported": {
+        "delta": 0.0016064666666667504,
+        "ci95": [
+          -0.002604493137817839,
+          0.00581742647115134
+        ],
+        "df": 15.674655885453799,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0013747624999999042,
+        "between_perm_sd": 0.005109399219956181
+      },
+      "context_same_shape": {
+        "C10": 0.494206,
+        "CSHUF": 0.48790633333333333,
+        "CINV": 0.49334433333333333
+      },
+      "monotone_order": "D < LH < L1"
+    },
+    "secondary boundary_iou@0.5 NC4K": {
+      "metric": "boundary_iou@0.5 NC4K",
+      "D": 0.38177118749999994,
+      "mean_B": 0.380980375,
+      "mean_LU": 0.38256199999999996,
+      "sigma_hat": 0.006125830696503308,
+      "df": 24,
+      "bar": 0.012251661393006616,
+      "allocation_means": {
+        "CDRLU": 0.38256199999999996,
+        "CDRL1P1": 0.3780233333333333,
+        "CDRL1P2": 0.3891423333333333,
+        "CDRL1P3": 0.38211900000000004,
+        "CDRL1P4": 0.38627433333333333,
+        "CDRL1P5": 0.3815313333333333,
+        "CDRLHP1": 0.3821893333333333,
+        "CDRLHP2": 0.38201166666666664,
+        "CDRLHP3": 0.382004,
+        "CDRLHP4": 0.3832463333333333,
+        "CDRLHP5": 0.3811986666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.001646879166666726,
+          "xbar": 0.1344208849590622,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.004338086351018025,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0003588125000000275,
+          "xbar": 0.0292868443299324,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0007326290178376441,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0010028458333333767,
+      "welch_units_reported": {
+        "delta": 0.0016179222222222345,
+        "ci95": [
+          -0.0021027149970929753,
+          0.005338559441537444
+        ],
+        "df": 14.055487807004342,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0016444236111111676,
+        "between_perm_sd": 0.0038801070513105203
+      },
+      "context_same_shape": {
+        "C10": 0.38705133333333325,
+        "CSHUF": 0.3834033333333333,
+        "CINV": 0.38911
+      },
+      "monotone_order": "D < LH < L1"
+    },
+    "secondary boundary_f@0.5 NC4K": {
+      "metric": "boundary_f@0.5 NC4K",
+      "D": 0.4700458625,
+      "mean_B": 0.468569125,
+      "mean_LU": 0.4715226,
+      "sigma_hat": 0.008602475597821312,
+      "df": 24,
+      "bar": 0.017204951195642623,
+      "allocation_means": {
+        "CDRLU": 0.4715226,
+        "CDRL1P1": 0.46204433333333333,
+        "CDRL1P2": 0.48136366666666675,
+        "CDRL1P3": 0.46944400000000003,
+        "CDRL1P4": 0.475667,
+        "CDRL1P5": 0.4697246666666666,
+        "CDRLHP1": 0.4714876666666667,
+        "CDRLHP2": 0.4718186666666666,
+        "CDRLHP3": 0.47121799999999997,
+        "CDRLHP4": 0.47172433333333336,
+        "CDRLHP5": 0.4689653333333333
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0016028708333333253,
+          "xbar": 0.09316334670796818,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.007268661803324701,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.000996937500000017,
+          "xbar": 0.05794480255500546,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0011843696541949274,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0012999041666666433,
+      "welch_units_reported": {
+        "delta": 0.0024484777777777356,
+        "ci95": [
+          -0.0023971964239263704,
+          0.007294151979481842
+        ],
+        "df": 16.679733991145625,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0018165263888888505,
+        "between_perm_sd": 0.006522319196988729
+      },
+      "context_same_shape": {
+        "C10": 0.47923200000000005,
+        "CSHUF": 0.4729306666666666,
+        "CINV": 0.47892666666666667
+      },
+      "monotone_order": "D < LH < L1"
+    },
+    "secondary boundary_iou@0.6 NC4K": {
+      "metric": "boundary_iou@0.6 NC4K",
+      "D": 0.36765317499999994,
+      "mean_B": 0.36656075,
+      "mean_LU": 0.36874559999999995,
+      "sigma_hat": 0.0069710543575240815,
+      "df": 24,
+      "bar": 0.013942108715048163,
+      "allocation_means": {
+        "CDRLU": 0.36874559999999995,
+        "CDRL1P1": 0.3622903333333333,
+        "CDRL1P2": 0.37711300000000003,
+        "CDRL1P3": 0.3677346666666666,
+        "CDRL1P4": 0.3727763333333334,
+        "CDRL1P5": 0.3667836666666666,
+        "CDRLHP1": 0.36968766666666664,
+        "CDRLHP2": 0.3683823333333333,
+        "CDRLHP3": 0.368299,
+        "CDRLHP4": 0.3697436666666667,
+        "CDRLHP5": 0.3669483333333334
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.001686425000000047,
+          "xbar": 0.12095910557488586,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.00572358389278764,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0009590250000000577,
+          "xbar": 0.06878622305999892,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.001157176583086787,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0013227250000000246,
+      "welch_units_reported": {
+        "delta": 0.002172388888888821,
+        "ci95": [
+          -0.00200306262212248,
+          0.006347840399900122
+        ],
+        "df": 15.851090651914037,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0018020472222222694,
+        "between_perm_sd": 0.005127157209590139
+      },
+      "context_same_shape": {
+        "C10": 0.37369199999999997,
+        "CSHUF": 0.3700333333333334,
+        "CINV": 0.37595699999999993
+      },
+      "monotone_order": "D < LH < L1"
+    },
+    "secondary boundary_f@0.6 NC4K": {
+      "metric": "boundary_f@0.6 NC4K",
+      "D": 0.4481438125,
+      "mean_B": 0.44596662500000006,
+      "mean_LU": 0.4503209999999999,
+      "sigma_hat": 0.010044990911726434,
+      "df": 24,
+      "bar": 0.020089981823452868,
+      "allocation_means": {
+        "CDRLU": 0.4503209999999999,
+        "CDRL1P1": 0.43749600000000005,
+        "CDRL1P2": 0.4628103333333333,
+        "CDRL1P3": 0.44656233333333334,
+        "CDRL1P4": 0.4548463333333334,
+        "CDRL1P5": 0.44711533333333336,
+        "CDRLHP1": 0.45217700000000005,
+        "CDRLHP2": 0.45101600000000003,
+        "CDRLHP3": 0.449829,
+        "CDRLHP4": 0.4507063333333334,
+        "CDRLHP5": 0.4472446666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0016222541666667256,
+          "xbar": 0.08074940937840573,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.009536860499603034,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.0020507874999999842,
+          "xbar": 0.10208010729038654,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0018508274335790862,
+          "a": false,
+          "b": true,
+          "c": true,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0018365208333332994,
+      "welch_units_reported": {
+        "delta": 0.0035298888888889435,
+        "ci95": [
+          -0.0026328075761769716,
+          0.009692585353954859
+        ],
+        "df": 16.90817483339881,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0020627986111111385,
+        "between_perm_sd": 0.008598013898354441
+      },
+      "context_same_shape": {
+        "C10": 0.458983,
+        "CSHUF": 0.4524093333333334,
+        "CINV": 0.45857299999999995
+      },
+      "monotone_order": "D < L1 < LH"
+    },
+    "secondary Sm NC4K": {
+      "metric": "Sm NC4K",
+      "D": 0.7673326874999999,
+      "mean_B": 0.768015375,
+      "mean_LU": 0.76665,
+      "sigma_hat": 0.0040252284269205,
+      "df": 24,
+      "bar": 0.008050456853841,
+      "allocation_means": {
+        "CDRLU": 0.76665,
+        "CDRL1P1": 0.768154,
+        "CDRL1P2": 0.770209,
+        "CDRL1P3": 0.7701036666666666,
+        "CDRL1P4": 0.7690960000000001,
+        "CDRL1P5": 0.7675649999999999,
+        "CDRLHP1": 0.7657773333333333,
+        "CDRLHP2": 0.7664813333333335,
+        "CDRLHP3": 0.7672576666666666,
+        "CDRLHP4": 0.7685560000000001,
+        "CDRLHP5": 0.7667706666666666
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0016928458333334007,
+          "xbar": 0.21027947408049483,
+          "perms_agree": "5/5",
+          "between_perm_sd": 0.0011684025799735868,
+          "a": false,
+          "b": true,
+          "c": true,
+          "passed": false
+        },
+        "LH": {
+          "delta": -0.0003640874999999433,
+          "xbar": 0.04522569421960585,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0010367160867105942,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.0006643791666667287,
+      "welch_units_reported": {
+        "delta": 0.00013339999999995023,
+        "ci95": [
+          -0.0020060076408410675,
+          0.002272807640840968
+        ],
+        "df": 12.548241773992453,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0014066458333333864,
+        "between_perm_sd": 0.0012584094369922675
+      },
+      "context_same_shape": {
+        "C10": 0.7690133333333334,
+        "CSHUF": 0.7673083333333333,
+        "CINV": 0.7723156666666666
+      },
+      "monotone_order": "LH < D < L1"
+    },
+    "secondary wFm NC4K": {
+      "metric": "wFm NC4K",
+      "D": 0.6043259749999998,
+      "mean_B": 0.60371075,
+      "mean_LU": 0.6049411999999998,
+      "sigma_hat": 0.0069672236483886985,
+      "df": 24,
+      "bar": 0.013934447296777397,
+      "allocation_means": {
+        "CDRLU": 0.6049411999999998,
+        "CDRL1P1": 0.5976499999999999,
+        "CDRL1P2": 0.6139796666666667,
+        "CDRL1P3": 0.6038513333333332,
+        "CDRL1P4": 0.6059783333333334,
+        "CDRL1P5": 0.60459,
+        "CDRLHP1": 0.6072433333333334,
+        "CDRLHP2": 0.6030179999999999,
+        "CDRLHP3": 0.6020146666666667,
+        "CDRLHP4": 0.5977546666666667,
+        "CDRLHP5": 0.608837
+      },
+      "levels": {
+        "L1": {
+          "delta": 0.0008838916666666918,
+          "xbar": 0.06343212958802524,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.005849815479521135,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": -0.0005524416666665699,
+          "xbar": 0.03964575378560816,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0044036747508315235,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.00016572500000011647,
+      "welch_units_reported": {
+        "delta": 0.0006442333333332995,
+        "ci95": [
+          -0.006095682648191316,
+          0.007384149314857915
+        ],
+        "df": 12.962536759318473,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": 0.0007139138888889729,
+        "between_perm_sd": 0.00524877391256146
+      },
+      "context_same_shape": {
+        "C10": 0.611001,
+        "CSHUF": 0.6041899999999999,
+        "CINV": 0.612605
+      },
+      "monotone_order": "LH < D < L1"
+    },
+    "secondary MAE NC4K": {
+      "metric": "MAE NC4K",
+      "D": 0.08659172500000001,
+      "mean_B": 0.08631325000000001,
+      "mean_LU": 0.08687020000000001,
+      "sigma_hat": 0.0018587536310956095,
+      "df": 24,
+      "bar": 0.003717507262191219,
+      "allocation_means": {
+        "CDRLU": 0.08687020000000001,
+        "CDRL1P1": 0.08736733333333334,
+        "CDRL1P2": 0.08493933333333333,
+        "CDRL1P3": 0.08618166666666667,
+        "CDRL1P4": 0.08672066666666667,
+        "CDRL1P5": 0.08656533333333333,
+        "CDRLHP1": 0.08715866666666666,
+        "CDRLHP2": 0.08736633333333332,
+        "CDRLHP3": 0.08683466666666666,
+        "CDRLHP4": 0.08813733333333333,
+        "CDRLHP5": 0.08569066666666665
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.0002368583333333396,
+          "xbar": 0.06371428934175845,
+          "perms_agree": "3/5",
+          "between_perm_sd": 0.0008995731580403422,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": 0.00044580833333332515,
+          "xbar": 0.11992130798704918,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0008926852002059154,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": 0.00010447499999997889,
+      "welch_units_reported": {
+        "delta": 0.00032106666666666117,
+        "ci95": [
+          -0.0014323791029863195,
+          0.0020745124363196416
+        ],
+        "df": 10.456593600730987,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.00011305833333334625,
+        "between_perm_sd": 0.0008598512274418993
+      },
+      "context_same_shape": {
+        "C10": 0.08606666666666667,
+        "CSHUF": 0.08709766666666667,
+        "CINV": 0.08391466666666665
+      },
+      "monotone_order": "L1 < D < LH"
+    },
+    "secondary meanEm NC4K": {
+      "metric": "meanEm NC4K",
+      "D": 0.7911086875,
+      "mean_B": 0.791052375,
+      "mean_LU": 0.791165,
+      "sigma_hat": 0.004861233859720069,
+      "df": 24,
+      "bar": 0.009722467719440138,
+      "allocation_means": {
+        "CDRLU": 0.791165,
+        "CDRL1P1": 0.784132,
+        "CDRL1P2": 0.7967416666666667,
+        "CDRL1P3": 0.7916336666666668,
+        "CDRL1P4": 0.7924963333333332,
+        "CDRL1P5": 0.7890906666666666,
+        "CDRLHP1": 0.7920963333333333,
+        "CDRLHP2": 0.7899096666666666,
+        "CDRLHP3": 0.7906653333333334,
+        "CDRLHP4": 0.790288,
+        "CDRLHP5": 0.7906356666666667
+      },
+      "levels": {
+        "L1": {
+          "delta": -0.00028982083333328745,
+          "xbar": 0.029809390135982536,
+          "perms_agree": "2/5",
+          "between_perm_sd": 0.0046437650230054485,
+          "a": false,
+          "b": false,
+          "c": false,
+          "passed": false
+        },
+        "LH": {
+          "delta": -0.0003896875000000133,
+          "xbar": 0.04008113076280321,
+          "perms_agree": "4/5",
+          "between_perm_sd": 0.0008288023152584477,
+          "a": false,
+          "b": true,
+          "c": false,
+          "passed": false
+        }
+      },
+      "conclusion": "not supported",
+      "delta_C": -0.00033975416666653935,
+      "welch_units_reported": {
+        "delta": -0.0002959555555553939,
+        "ci95": [
+          -0.004063579598231857,
+          0.003471668487121069
+        ],
+        "df": 14.430451502011586,
+        "n_conc": 10,
+        "n_disp": 9
+      },
+      "sensitivity_L1_with_CSHUF": {
+        "delta": -0.000256076388888804,
+        "between_perm_sd": 0.004154332075833157
+      },
+      "context_same_shape": {
+        "C10": 0.7946806666666667,
+        "CSHUF": 0.7910213333333335,
+        "CINV": 0.7969900000000001
+      },
+      "monotone_order": "LH < L1 < D"
+    }
+  }
+}

@@ -1,6 +1,6 @@
---- revision/AD-PCHGS-original-copy.tex	2026-11-12 13:44:11.049279203 +0530
-+++ revision/AD-PCHGS-revised.tex	2026-11-14 13:24:58.029408988 +0530
-@@ -10,6 +10,13 @@
+--- rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/revision/AD-PCHGS-original-copy.tex	2026-11-12 13:44:11.049279203 +0530
++++ rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/revision/AD-PCHGS-revised.tex	2026-11-16 21:35:31.857983022 +0530
+@@ -10,6 +10,14 @@
  
  
  \newcommand{\atemp}{\tau}
@@ -11,10 +11,11 @@
 +\newcommand{\eqverdict}{\textbf{[confirmatory equivalence result pending]}}
 +\newcommand{\cdrshort}{\textbf{[one-sentence dose-response result pending]}}
 +\newcommand{\eqshort}{\textbf{[one-sentence equivalence result pending]}}
++\input{cdr_result.tex}  % dose-response result, filled 2026-11-16 from the pre-registered sentence
  
  \title{Concentration, Not Uncertainty: Why Targeted Synthetic Data Doesn't Help Camouflaged Object Detection}
  
-@@ -45,7 +52,7 @@
+@@ -45,7 +53,7 @@
  %accuracy so does one that reverses the uncertainty signal outright. Separately, $50$ of
  %CHAMELEON's $76$ images are copies of training data, while the standard check reports $0$ overlap.
  
@@ -23,7 +24,7 @@
  \end{abstract}
  
  % =====================================================================
-@@ -65,27 +72,32 @@
+@@ -65,27 +73,32 @@
  composition is ours, and we failed to make it function.
  
  
@@ -65,7 +66,7 @@
  
  
  % =====================================================================
-@@ -110,7 +122,7 @@
+@@ -110,7 +123,7 @@
  be able to resolve, and the yardstick every sensitivity claim in this paper is measured against. The closest are LAKE-RED~\citep{zhao2024lakered}, whose background generation and compositing we use unchanged, and
  S2R-COD~\citep{luo2025s2rcod}, whose synthetic-to-real self-training protocol we follow. Relative to
  both, the only thing we add is an allocation layer that chooses \emph{which} generated images to
@@ -74,7 +75,7 @@
  
  Every part of it is standard. Uncertainty sampling comes from active learning~\citep{settles2009active}, except that our query is answered by a generator rather than by a human annotator; the uncertainty is student-teacher disagreement of the
  kind mean-teacher training already minimises~\citep{tarvainen2017mean}; and $k$-means over frozen
-@@ -226,8 +238,9 @@
+@@ -226,8 +239,9 @@
  \label{fig:arms}
  \end{figure}
  
@@ -86,7 +87,7 @@
  \textsc{inconclusive}, and is reported as such rather than resolved by adding seeds. The rule applies
  per architecture, and a disagreement between them is reported as a disagreement. We report no
  $p$-values at three seeds. Appendix~\ref{app:method} records the rule's provenance, the seeds, and
-@@ -243,7 +256,7 @@
+@@ -243,7 +257,7 @@
  
  \subsection{Does Targeting Beat Random}
  \label{sec:null}
@@ -95,7 +96,7 @@
  per arm, the gap between the targeted allocation and a random one is $+0.0024$, about a third of
  the spread it would have had to clear, and every one of the sixteen gaps that campaign decides
  returns the same verdict.
-@@ -279,19 +292,11 @@
+@@ -279,19 +293,11 @@
  \end{center}
  \end{table}
  
@@ -116,7 +117,7 @@
  
  \emph{Perhaps the added images were never really trained on.} They were not, under the committed
  schedule: steps per epoch are set by the shorter of two data loaders, so appended images displace
-@@ -300,7 +305,7 @@
+@@ -300,7 +306,7 @@
  stays within noise in all four cells and \emph{shrinks} to $+0.0014$. Growing the budget did not
  reveal the effect the pin was hiding.
  
@@ -125,7 +126,7 @@
  It is a separate campaign with its own arms, noise estimate, and verdicts rather than extra seeds
  bolted onto a finished one, because adding seeds after seeing a result is how a null gets talked
  into existence.
-@@ -314,21 +319,31 @@
+@@ -314,21 +320,31 @@
  seen the effect we are nulling}.
  
  The decisive statement is the pre-registered one above: no effect on the primary cell larger than the bar the seed expansion
@@ -169,7 +170,7 @@
  
  Aim a generation budget at the clusters where the model is least confident and the training set you get really does
  look different from a randomly chosen one of the same size, train a probe to tell the two apart. It succeeds easily, on images it has never seen. However, re-run the selection with the uncertainty
-@@ -352,21 +367,20 @@
+@@ -352,21 +368,20 @@
  nothing is paid. Even the destroyed-against-reversed contrast, which carries the strongest sign
  agreement in the campaign at $8/8$ on one cell, does not reach two-thirds of its bar.
  
@@ -203,7 +204,7 @@
  
  \begin{figure}[t]
  \begin{center}
-@@ -380,9 +394,13 @@
+@@ -380,9 +395,13 @@
  \label{fig:thesis}
  \end{figure}
  
@@ -220,7 +221,7 @@
  
  % =====================================================================
  \subsection{Why It Fails}
-@@ -469,7 +487,7 @@
+@@ -469,7 +488,7 @@
  \label{sec:discussion}
  Two kinds of evidence sit underneath this paper and should not be run together. The
  \emph{geometric} result is positive, and we state it without hedging: concentration, not the
@@ -229,7 +230,7 @@
  cluster-wise allocation:} whether the data separates into clusters at all, what the funded clusters
  are made of relative to the pool they are drawn from, and how much of the endpoint's error sits
  between clusters rather than within them. \textit{The discriminating control is not a random
-@@ -486,13 +504,28 @@
+@@ -486,13 +505,28 @@
  benchmark alike: \textit{a control that returns zero is informative only if it could have returned
  something else.}
  
@@ -261,7 +262,7 @@
  $50$ of CHAMELEON's $76$ images are altered copies of COD10K and CAMO training images, which exact
  hashing misses. Both findings argue for one practice: before crediting an acquisition rule or
  trusting a duplicate check, run the version of the test that could have failed.
-@@ -584,6 +617,17 @@
+@@ -584,6 +618,17 @@
  structure-aware S-measure~\citep{fan2017structure}, enhanced-alignment E-measure
  \citep{fan2018enhanced}, and weighted $F_\beta^w$~\citep{margolin2014evaluate} for comparability
  with S2R-COD.
@@ -279,7 +280,7 @@
  
  \paragraph{Synthetic generation and domain adaptation.}
  Latent diffusion~\citep{rombach2022high} and DDIM~\citep{song2021denoising} provide the high-resolution
-@@ -708,7 +752,8 @@
+@@ -708,7 +753,8 @@
  
  \paragraph{Metrics.} $S_\alpha$ at $\alpha = 0.5$ is the primary endpoint metric; mean absolute
  error (MAE) on CAMO-250 is the checkpoint-selection metric; $F_\beta^w$ and the E-measure $E_\phi$
@@ -289,7 +290,7 @@
  The $F$-measures apply $\beta$ in the non-squared form, so the metric name rather than a formula is what identifies them.
  
  \paragraph{Degrees of freedom.} Each campaign's $\hat{\sigma}$ is pooled within-arm across that
-@@ -721,7 +766,10 @@
+@@ -721,7 +767,10 @@
  optimization schedule, arms A0FX, BFX, C10FX), and PC (positive control against a mean-teacher arm,
  MT); T2 is the falsification campaign (CSHUF, CINV). Every campaign but PC uses the three bands of
  Section~\ref{sec:method}. PC's pre-registration names its outcomes \textsc{detected} ($\Delta > 2\hat{\sigma}$
@@ -301,7 +302,7 @@
  
  \paragraph{A2 controls one confound.} A2 pairs the authors' original photographs with the
  authors' masks, whose mean foreground fraction differs from the raw masks by $0.0058$ on $1000$ of
-@@ -786,6 +834,16 @@
+@@ -786,6 +835,16 @@
  \end{center}
  \end{table}
  
@@ -318,7 +319,7 @@
  \paragraph{Why the committed bar is so wide, and why we did not narrow it.} The four-arm campaign
  pools its within-arm spread across all four of its arms, and one of them dominates. On the primary
  cell the per-arm standard deviations are A0 $0.01727$, A2 $0.00193$, B $0.00181$ and C10 $0.00406$:
-@@ -990,8 +1048,9 @@
+@@ -990,8 +1049,9 @@
  
  \paragraph{What differs between arms beyond the injected images.} The pseudo-labeling step between
  rounds selects target images using each arm's \emph{own} first-round model, so each arm appends a
