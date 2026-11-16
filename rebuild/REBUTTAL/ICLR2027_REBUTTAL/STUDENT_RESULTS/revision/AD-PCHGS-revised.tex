@@ -400,7 +400,7 @@ predictions where $S_\alpha$ does not. The question they could not settle, wheth
 the one our dose-response experiment was designed for. It holds the budget at 1,000 images and sets three levels of
 concentration: cluster-uniform, the committed shape, and one twice as concentrated. Each concentrated level is
 realised with five independent random directions, so direction averages out, and the experiment was pre-registered
-with Boundary-IoU on SINet as its primary measure. \cdrverdict{} The planned replication on SINet-v2 was not run, for
+with Boundary-IoU on SINet as its primary measure. \cdrverdict{} The levels delivered to the training set are closer than their quotas: assigning each selected render to its nearest cluster centre gives an effective number of clusters of 50, 45 and 41, against 75, 30 and 15 nominally (random selection: 43), because few foregrounds lie close to most clusters (Section~\ref{sec:discussion}). The planned replication on SINet-v2 was not run, for
 lack of compute.
 
 % =====================================================================
@@ -513,7 +513,7 @@ frozen DINOv2 features). In 52 of the 75 target clusters, the nearest available 
 the cluster's centre than the cluster's median real image, partly because a cut-out on a plain background and a full
 photograph differ as images. The allocation acts on $k = 75$ $k$-means clusters of frozen self-supervised features,
 with a budget of $N = 1000$ images, for SINet and SINet-v2 trained with two-round self-training at a pinned number of
-steps, and is read on COD10K-test and NC4K. We tested allocation, not generation: a generator that synthesises new
+steps, and is read on COD10K-test and NC4K. Every arm trains without real labels, well below supervised accuracy (Appendix~\ref{app:related}); whether the null holds at a higher operating point, for example with some real labels in the pool, was not tested. We tested allocation, not generation: a generator that synthesises new
 foregrounds for the hardest clusters, or one steered by the score while it generates, is outside this experiment, and
 we make no claim about other generators.
 

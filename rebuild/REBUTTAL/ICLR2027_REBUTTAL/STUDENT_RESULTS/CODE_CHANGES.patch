@@ -1,0 +1,1981 @@
+CODE_CHANGES.patch: git diff 8d1d079 (base commit) -> working tree, 2026-11-16 22:01, for the pipeline code only:
+  MyTrain.py CLS.py rebuild/ABC/*.py rebuild/RL5B/*.py rebuild/RL5B/*.sh
+Every change is additive with unchanged defaults (EXECUTION_STATUS.md, deviations 4, 5, 8, 15, 16).
+The analysis scripts are new files and are delivered as they are in STUDENT_RESULTS/analysis/.
+git apply ignores this header.
+
+diff --git a/CLS.py b/CLS.py
+index 3a58234..512b492 100644
+--- a/CLS.py
++++ b/CLS.py
+@@ -10,7 +10,7 @@ from Src.model.SINetV2.Network_Res2Net_GRA_NCD import Network
+ from Src.model.SegMaR.SegMaR import Generator
+ from Src.utils.Dataloader import test_dataset
+ 
+-def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteration=1, testsize=352, dataset_name='COD10K', network='SINet'):
++def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteration=1, testsize=352, dataset_name='COD10K', network='SINet', link=False):
+ 
+     # Copy source and GT directories to avoid overwriting
+     source_copy_root = source_root.rstrip('/\\') + f'_iteration{iteration + 1}/'
+@@ -19,14 +19,19 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
+     if os.path.exists(source_copy_root):
+         print(f'[Info] Source folder already exists. Removing: {source_copy_root}')
+         shutil.rmtree(source_copy_root)
+-    print(f'[Info] Copying source image folder: {source_root} -> {source_copy_root}')
+-    shutil.copytree(source_root, source_copy_root)
++    # PATCH P9 (RL5B rebuttal, disk footprint), OPT-IN via MyTrain.py --link_pool: hardlink
++    # the round-1 pool instead of byte-copying it. Every write below unlinks its destination
++    # first, so a file shared with the round-1 pool (and the render pool behind it) is never
++    # modified in place. link=False is the committed behaviour, byte for byte.
++    _copy = dict(copy_function=os.link) if link else {}
++    print(f'[Info] {"Linking" if link else "Copying"} source image folder: {source_root} -> {source_copy_root}')
++    shutil.copytree(source_root, source_copy_root, **_copy)
+ 
+     if os.path.exists(gt_copy_root):
+         print(f'[Info] GT folder already exists. Removing: {gt_copy_root}')
+         shutil.rmtree(gt_copy_root)
+-    print(f'[Info] Copying GT folder: {gt_root} -> {gt_copy_root}')
+-    shutil.copytree(gt_root, gt_copy_root)
++    print(f'[Info] {"Linking" if link else "Copying"} GT folder: {gt_root} -> {gt_copy_root}')
++    shutil.copytree(gt_root, gt_copy_root, **_copy)
+ 
+     # Define save paths for images and pseudo-labels
+     image_save_dir = os.path.join(source_copy_root, 'Image')
+@@ -152,6 +157,10 @@ def cls(model_path, source_root, gt_root, target_root, ES_loss, u, tau, iteratio
+             cam[cam < tau] = 0
+             cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
+ 
++            if link:   # PATCH P9: never write through a hardlink
++                for _dst in (os.path.join(pgt_save_dir, name), os.path.join(image_save_dir, name)):
++                    if os.path.lexists(_dst):
++                        os.remove(_dst)
+             cv2.imwrite(os.path.join(pgt_save_dir, name), cam * 255)
+             original_image.save(os.path.join(image_save_dir, name))
+ 
+diff --git a/MyTrain.py b/MyTrain.py
+index 68113f7..8d13b1f 100644
+--- a/MyTrain.py
++++ b/MyTrain.py
+@@ -156,17 +156,25 @@ def trainer(source_loader, target_loader, model, ema_model, optimizer, epoch, op
+     os.makedirs(save_path, exist_ok=True)
+ 
+ 
+-    if (epoch+1) % opt.save_epoch == 0:
+-        torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
+-        torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
++    if getattr(opt, 'save_ckpts', 'all') == 'minimal':
++        # PATCH P7 (RL5B rebuttal, disk footprint). OPT-IN ONLY. Save just the final
++        # epoch's student -- the Stu_<last>.pth that CLS.py loads; val() still writes
++        # the selected checkpoint. Saving fewer files touches no RNG and no weights.
++        if epoch + 1 == opt.epoch:
++            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
++    else:
++        if (epoch+1) % opt.save_epoch == 0:
++            torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
++            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
+ 
+-    if (epoch+1) > 35 and opt.network == 'SINet':
+-        torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
+-        torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
++        if (epoch+1) > 35 and opt.network == 'SINet':
++            torch.save(ema_model.state_dict(), save_path + 'Tea_%d.pth' % (epoch+1))
++            torch.save(model.state_dict(), save_path + 'Stu_%d.pth' % (epoch + 1))
+ 
+-def val(test_loader, ema_model, network, epoch, save_path):
++def val(test_loader, ema_model, network, epoch, save_path, ckpt_name='Tea_epoch_best.pth'):
+     """
+-    validation function
++    validation function. PATCH P8: ckpt_name defaults to the committed name; with
++    --val_net student the caller passes the student as ema_model and 'Stu_epoch_best.pth'.
+     """
+     global best_teamae, best_epoch
+     ema_model.eval()
+@@ -198,7 +206,7 @@ def val(test_loader, ema_model, network, epoch, save_path):
+             if mae < best_teamae:
+                 best_teamae = mae
+                 best_epoch = epoch
+-                torch.save(ema_model.state_dict(), save_path + 'Tea_epoch_best.pth')
++                torch.save(ema_model.state_dict(), save_path + ckpt_name)
+                 print('Save state_dict successfully! Best epoch:{}.'.format(epoch))
+ 
+ 
+@@ -248,6 +256,23 @@ if __name__ == "__main__":
+                              'target loader is cycled, so every source image is '
+                              'seen once per epoch and the optimisation budget '
+                              'scales with the pool.')
++    # PATCHES P7-P9 (RL5B rebuttal). All three are OPT-IN; their defaults reproduce the
++    # behaviour every committed run executed.
++    parser.add_argument('--save_ckpts', type=str, default='all', choices=['all', 'minimal'],
++                        help='PATCH P7. all (DEFAULT): the per-epoch Stu/Tea snapshots. '
++                             'minimal: only the final-epoch Stu_<last>.pth, the file CLS.py '
++                             'reads; the selected best checkpoint is still saved by val(). '
++                             'Training is unchanged.')
++    parser.add_argument('--val_net', type=str, default='teacher', choices=['teacher', 'student'],
++                        help='PATCH P8. teacher (DEFAULT): CAMO-MAE selection scores the EMA '
++                             'teacher and saves Tea_epoch_best.pth. student: scores the '
++                             'student and saves Stu_epoch_best.pth. Needed for source_only, '
++                             'whose EMA teacher never receives BatchNorm buffers '
++                             '(update_ema copies parameters only; Explanations/SOURCE_ONLY.md).')
++    parser.add_argument('--link_pool', action='store_true',
++                        help='PATCH P9. CLS.py builds its round-2 pool with hardlinks instead '
++                             'of byte copies and unlinks any destination before writing, so '
++                             'no linked file is ever modified. Pool content is identical.')
+     opt = parser.parse_args()
+ 
+     # Override hyperparameters for S2C
+@@ -370,9 +395,14 @@ if __name__ == "__main__":
+                     opt=opt, loss_func=LogitsBCE, total_step=total_step, alpha=opt.alpha, log_file_path=log_file_path)
+             if epoch_iter > 20:
+                 val_loader.index = 0
+-                val(test_loader=val_loader, ema_model=model_ema, network=opt.network, epoch=epoch_iter, save_path=opt.save_model)
++                if opt.val_net == 'student':      # PATCH P8, opt-in
++                    val(test_loader=val_loader, ema_model=model, network=opt.network, epoch=epoch_iter,
++                        save_path=opt.save_model, ckpt_name='Stu_epoch_best.pth')
++                else:
++                    val(test_loader=val_loader, ema_model=model_ema, network=opt.network, epoch=epoch_iter, save_path=opt.save_model)
+ 
+         # Confident label selection
+         if i < opt.iteration:
+-            new_source_root = cls(opt.save_model, opt.source_root, opt.source_root, opt.target_root, PGT_Loss, opt.u, opt.tau, iteration=i, network=opt.network)
++            new_source_root = cls(opt.save_model, opt.source_root, opt.source_root, opt.target_root, PGT_Loss, opt.u, opt.tau, iteration=i, network=opt.network,
++                                  link=opt.link_pool)
+             opt.source_root = new_source_root
+\ No newline at end of file
+diff --git a/rebuild/ABC/abc_build_pools.py b/rebuild/ABC/abc_build_pools.py
+index 7572ee5..ebf10c9 100644
+--- a/rebuild/ABC/abc_build_pools.py
++++ b/rebuild/ABC/abc_build_pools.py
+@@ -90,6 +90,11 @@ def main():
+                          'seed-expansion campaign (rebuild/SE/PREREGISTRATION_SE.md), which is \n'
+                          'a SEPARATE campaign and does NOT add seeds to any committed verdict.')
+     ap.add_argument('--tag', default='', help='output namespace; "t2" is additive')
++    ap.add_argument('--archs', default='SINet,SINetv2',
++                    help='RL5B (additive): comma list of architectures to build. The DEFAULT '
++                         'is both, exactly as every committed invocation. A single-architecture '
++                         'build makes the cross-architecture identity check vacuous; it is '
++                         'reported as such, never as evidence.')
+     args = ap.parse_args()
+     SEEDS = (tuple(int(x) for x in args.seeds.split(',') if x.strip())
+              if args.seeds else A.SEEDS)
+@@ -101,7 +106,8 @@ def main():
+     # names its own additive campaign (PREREGISTRATION_OR.md OR.2.8).
+     EXP = args.tag.upper() if args.tag else A.EXP
+     os.makedirs(OUT, exist_ok=True)
+-    runs = A.all_runs(arms=arms, seeds=SEEDS)
++    ARCHS = tuple(a.strip() for a in args.archs.split(',') if a.strip())
++    runs = A.all_runs(arms=arms, seeds=SEEDS, archs=ARCHS)
+ 
+     _p('=== s1 emit the arm stem selections ===')
+     sel = {}
+@@ -118,10 +124,11 @@ def main():
+                 else 'abc_stems_%s.txt' % arm)
+         with open(os.path.join(OUT, name), 'w') as fh:
+             fh.write('\n'.join(st) + '\n')
+-        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
++        exp = A.expected_cell(arm)      # == C1_CELL[alpha] for every committed arm
++        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(exp)
+         _p('  arm %-6s %d stems, perm=%-13s rho=%+.5f  shape reproduced = %s'
+            % (arm, len(st), cell['es_perm'], cell['perm_rho'],
+-              all(cell[k] == A.C1_CELL[alpha][k] for k in keys)))
++              all(cell[k] == exp[k] for k in keys)))
+ 
+     _p('=== s2 assemble %d arm pools ===' % len(runs))
+     built = []
+@@ -182,7 +189,7 @@ def main():
+                                len(report['gates'])),
+                     ', '.join(GATE for GATE in PFA.GATES)))
+     metrics.append(('arm_pools_assembled', len(built),
+-                    '%d arch x %d arms x %d seeds' % (2, len(arms), len(SEEDS))))
++                    '%d arch x %d arms x %d seeds' % (len(ARCHS), len(arms), len(SEEDS))))
+     metrics.append(('pool_size_A0', 4447, 'base authors\' pool only, unpadded'))
+     metrics.append(('pool_size_A2_B_C', 4447 + A.BUDGET,
+                     'base + B=%d, identical in A2/B/C' % A.BUDGET))
+diff --git a/rebuild/ABC/abc_common.py b/rebuild/ABC/abc_common.py
+index b1148fb..40a55bc 100644
+--- a/rebuild/ABC/abc_common.py
++++ b/rebuild/ABC/abc_common.py
+@@ -90,6 +90,54 @@ C1_CELL = {
+               alloc_entropy_norm=0.36203, tv_from_uniform=0.85906, n_displaced=115),
+ }
+ 
++# CDR (RL5B rebuttal, concentration dose-response; STUDENT_RESULTS/prereg/CDR.md). ADDITIVE.
++# Each CDR arm is one committed allocation: either the cluster-uniform quota vector, or a
++# softmax at temperature tau over target_es permuted by an EXPLICIT, pre-drawn sigma. The
++# sigmas are drawn once by rebuild/ABC/cdr_allocate.py under the pre-registered rule and
++# committed in CDR_MANIFEST; every script reads them from there, so pools, gates and
++# training can never disagree about an arm. Without the manifest no CDR arm exists.
++CDR_MANIFEST = 'rebuild/ABC/out/cdr/cdr_permutations.json'
++CDR_PREFIX = 'CDR'
++
++
++def _load_cdr():
++    import json
++    path = os.path.join(C.REPO, CDR_MANIFEST)
++    if not os.path.isfile(path):
++        return {}
++    arms = json.load(open(path))['arms']
++    for arm, spec in arms.items():
++        if not arm.startswith(CDR_PREFIX) or arm.endswith(FX_SUFFIX):
++            raise RuntimeError('CDR manifest: illegal arm name %r' % arm)
++        if spec['mode'] not in ('uniform', 'permuted'):
++            raise RuntimeError('CDR manifest: %s has unknown mode %r' % (arm, spec['mode']))
++    return arms
++
++
++CDR = _load_cdr()
++for _arm, _spec in CDR.items():
++    # uniform ignores alpha; 1.0 is a placeholder that no uniform code path reads
++    ARM_ALPHA[_arm] = 1.0 if _spec['mode'] == 'uniform' else float(_spec['tau'])
++    ARM_ES_PERM[_arm] = 'uniform' if _spec['mode'] == 'uniform' else 'cdr:' + _arm
++UNIFORM_CELL = dict(clusters_funded=75, max_alloc_share=0.014,
++                    alloc_entropy_norm=1.0, tv_from_uniform=0.0)
++
++
++def is_cdr(arm):
++    return arm in CDR
++
++
++def expected_cell(arm):
++    """The shape an arm's allocation must reproduce (gate G5 and the pool builder).
++    Committed arms: C1's committed cell at their alpha, exactly as before. CDR arms: the
++    analytic uniform cell, or the IDENTITY permutation's cell at the same tau -- a
++    permutation of the scores permutes p, so the shape keys must be identical."""
++    if not is_cdr(arm):
++        return C1_CELL[ARM_ALPHA[arm]]
++    if CDR[arm]['mode'] == 'uniform':
++        return UNIFORM_CELL
++    return arm_c_stems(ARM_ALPHA[arm], None)[1]
++
+ 
+ def set_out(tag=''):
+     """Point OUT at a subdirectory so an additive campaign cannot overwrite a
+@@ -265,6 +313,18 @@ def es_permutation(es, kind):
+         raise RuntimeError('T2 HALT: no permutation in %d draws from %d met the '
+                            'declared rule (no fixed point, |rho| <= %.2f)'
+                            % (SHUF_TRIES, SHUF_NS, SHUF_MAX_RHO))
++    if kind == 'uniform':
++        # CDR LU: no direction at all -- the scores are not used (arm_c_stems sets p = 1/k)
++        return np.arange(k), dict(es_perm='uniform', perm_rho=float('nan'),
++                                  perm_fixed_points=k, perm_seed=None)
++    if isinstance(kind, str) and kind.startswith('cdr:'):
++        spec = CDR[kind[4:]]
++        sigma = np.asarray(spec['sigma'], dtype=np.int64)
++        if sorted(sigma.tolist()) != list(range(k)):
++            raise RuntimeError('CDR HALT: %s sigma is not a permutation of 0..%d' % (kind, k - 1))
++        return sigma, dict(es_perm=kind, perm_rho=round(_spearman_perm(es, sigma), 5),
++                           perm_fixed_points=int((sigma == np.arange(k)).sum()),
++                           perm_seed=spec.get('draw_index'))
+     raise ValueError('unknown es_perm %r' % kind)
+ 
+ 
+@@ -284,7 +344,9 @@ def arm_c_stems(alpha, es_perm=None):
+     sp = c1_space.load_space(EMBEDDER)
+     sigma, info = es_permutation(sp.es, es_perm)
+     es = sp.es if es_perm is None else sp.es[sigma]
+-    p = softmax_alloc(es, alpha)
++    # CDR LU (additive): exact uniform shares; largest_remainder breaks the equal
++    # remainders by ascending cluster index (stable), so clusters 0..24 receive 14.
++    p = np.full(sp.k, 1.0 / sp.k) if es_perm == 'uniform' else softmax_alloc(es, alpha)
+     alloc = largest_remainder(p, BUDGET)
+     _, order = rank_by_centroid(sp)
+     serving = serving_orders(alloc, es)[SERVING]      # desc_nc reads alloc only
+diff --git a/rebuild/ABC/abc_preflight.py b/rebuild/ABC/abc_preflight.py
+index b0ab13c..ebb2a40 100644
+--- a/rebuild/ABC/abc_preflight.py
++++ b/rebuild/ABC/abc_preflight.py
+@@ -150,6 +150,9 @@ PATCH_MARKS = {
+     'preflight.py': ['Test/COD10K/Imgs'],
+ }
+ SKIP_DIRS = ('.venv', 'LAKE-RED', os.path.join('rebuild', 'reference'), '__pycache__')
++# RL5B: archived submission bundle; its trainer copy must equal the trainer at this commit
++ARCHIVE_DIRS = ('iclr2027_supplement',)
++ARCHIVE_REF_COMMIT = '8d1d079'
+ 
+ 
+ def gate_one_trainer():
+@@ -169,11 +172,41 @@ def gate_one_trainer():
+         absent = [m for m in marks if m not in src]
+         if absent:
+             missing[f] = absent
+-    ok = bool(len(found['MyTrain']) == 1 and len(found['MyTest']) == 1 and not missing)
++    # RL5B amendment (additive): a gitignored copy that is BYTE-IDENTICAL to the root
++    # trainer/tester is not a second trainer -- it cannot make arms differ. It is listed,
++    # never skipped. The archived submission bundle (iclr2027_supplement/, never executed by
++    # the pipeline) may instead be byte-identical to the root file AS COMMITTED AT THE
++    # SUBMISSION BASE (ARCHIVE_REF_COMMIT), i.e. it must be the frozen submitted trainer, not
++    # an edited one. Any other copy whose bytes differ still FAILs.
++    import hashlib
++    import subprocess
++    root_of = {'MyTrain': 'MyTrain.py', 'MyTest': 'MyTest.py'}
++    root_present, identical_copies, archival, divergent = {}, [], [], []
++    for key, paths in found.items():
++        norm = [os.path.normpath(p) for p in paths]
++        root_present[key] = root_of[key] in norm
++        ref = C.sha256(os.path.join(C.REPO, root_of[key]))
++        blob = subprocess.run(['git', '-C', C.REPO, 'show', '%s:%s' % (ARCHIVE_REF_COMMIT, root_of[key])],
++                              capture_output=True).stdout
++        ref_archive = hashlib.sha256(blob).hexdigest() if blob else None
++        for p in norm:
++            if p == root_of[key]:
++                continue
++            h = C.sha256(os.path.join(C.REPO, p))
++            if h == ref:
++                identical_copies.append(p)
++            elif p.split(os.sep)[0] in ARCHIVE_DIRS and h == ref_archive:
++                archival.append(p)
++            else:
++                divergent.append(p)
++    ok = bool(all(root_present.values()) and not divergent and not missing)
+     return dict(gate='one_trainer', passed=ok, mytrain=found['MyTrain'],
+                 mytest=found['MyTest'], patches_missing=missing,
++                byte_identical_copies=identical_copies, divergent_copies=divergent,
++                archival_copies_equal_to_submission=archival, archive_ref_commit=ARCHIVE_REF_COMMIT,
+                 note='ground rule 2: arms differ only by data dir and seed, so a '
+-                     'second trainer anywhere in the tree is a FAIL')
++                     'second trainer anywhere in the tree is a FAIL; byte-identical '
++                     'copies of the root files are reported, not counted')
+ 
+ 
+ # --- G4 ---------------------------------------------------------------------
+@@ -301,9 +334,10 @@ def gate_pools(runs):
+     for arm in cref:
+         alpha = A.ARM_ALPHA[arm]
+         _, cell = A.arm_c_stems(alpha, A.ARM_ES_PERM[arm])
+-        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(A.C1_CELL[alpha])
+-        repro[arm] = dict(measured=cell, c1=A.C1_CELL[alpha], asserted=list(keys),
+-                          match=all(cell[k] == A.C1_CELL[alpha][k] for k in keys))
++        exp = A.expected_cell(arm)      # == C1_CELL[alpha] for every committed arm
++        keys = A.SHAPE_KEYS if A.ARM_ES_PERM[arm] else tuple(exp)
++        repro[arm] = dict(measured=cell, c1=exp, asserted=list(keys),
++                          match=all(cell[k] == exp[k] for k in keys))
+     # pairwise overlap against chance over every distinct selected set in play
+     chance = A.BUDGET * A.BUDGET / 4447.0
+     sets = {m: set(A.arm_c_stems(A.ARM_ALPHA[m], A.ARM_ES_PERM[m])[0]) for m in cref}
+diff --git a/rebuild/ABC/abc_train.py b/rebuild/ABC/abc_train.py
+index 2dce967..f9f9b20 100644
+--- a/rebuild/ABC/abc_train.py
++++ b/rebuild/ABC/abc_train.py
+@@ -43,6 +43,15 @@ EPOCH = re.compile(r'Epoch Num: (\d+/\d+)')
+ STEP = re.compile(r'Global Step: \d+/(\d+)')
+ 
+ 
++# RL5B rebuttal (additive). rebuild/RL5B/rl5b_queue.py sets these for NEW campaigns only;
++# the defaults reproduce every committed invocation exactly.
++#   EXTRA_TRAIN_FLAGS  appended to the MyTrain.py command (e.g. --save_ckpts minimal --link_pool)
++#   WALL_MULT          replaces the 2x (3x for FX) wall-clock ceiling in verify_run when
++#                      several runs share a GPU; it never relaxes any other check
++EXTRA_TRAIN_FLAGS = []
++WALL_MULT = None
++
++
+ def _p(m):
+     print('[%s] %s' % (time.strftime('%H:%M:%S'), m), flush=True)
+ 
+@@ -57,7 +66,7 @@ def cmd_for(arch, arm, seed):
+             '--source_root', './' + A.pool_dir(rid) + '/',
+             '--target_root', './Dataset/Target/',
+             '--val_root', './Dataset/Val/CAMO/'] + (
+-        ['--exposure', 'fixed_exposures'] if A.is_fx(arm) else [])
++        ['--exposure', 'fixed_exposures'] if A.is_fx(arm) else []) + list(EXTRA_TRAIN_FLAGS)
+ 
+ 
+ def assert_ready(arch, arm, seed):
+@@ -129,7 +138,7 @@ def verify_run(arch, arm, seed):
+         last_epoch=d['last_epoch'] == spec['last_epoch'],
+         tea_best=bool(d['tea_best']),
+         wall=bool(d['wall_min'] is not None
+-                  and d['wall_min'] < (3 if A.is_fx(arm) else 2) * spec['ref_min']),
++                  and d['wall_min'] < (WALL_MULT or (3 if A.is_fx(arm) else 2)) * spec['ref_min']),
+         pool_r1=d['pool_r1'] == (4447 if A.base_arm(arm) == 'A0' else 4447 + A.BUDGET),
+         target=d['target_loaded_4040'] == 2)
+     d['checks'] = checks
+diff --git a/rebuild/ABC/cdr_allocate.py b/rebuild/ABC/cdr_allocate.py
+new file mode 100644
+index 0000000..e0dd93d
+--- /dev/null
++++ b/rebuild/ABC/cdr_allocate.py
+@@ -0,0 +1,280 @@
++#!/usr/bin/env python
++"""CDR (RL5B rebuttal) -- draw and commit the concentration dose-response allocations.
++
++Pre-registration: rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/prereg/CDR.md.
++This script implements the permutation-acceptance rule stated there; it is run ONCE, before any
++CDR run, and its output manifest (rebuild/ABC/out/cdr/cdr_permutations.json) is committed. Every
++other script (pool builder, gates, trainer driver) reads the arms from that manifest via
++abc_common.CDR, so the allocations cannot drift.
++
++Levels (budget N = 1000, committed target scores, committed fill rule):
++  LU  cluster-uniform quotas (largest remainder), no direction        -> arm CDRLU
++  L1  softmax at tau = 1.0 (the committed shape q*) under 5 new admissible permutations
++                                                                       -> arms CDRL1P1..CDRL1P5
++  LH  softmax at tau = tau_H (TH-02, N_eff(q(tau_H)) ~ N_eff(q*)/2) under 5 new permutations
++                                                                       -> arms CDRLHP1..CDRLHP5
++
++Acceptance rule (fixed before drawing; never chosen by inspecting consequences):
++  one stream, numpy default_rng(2027); candidate i is rng.permutation(75), i = 0, 1, 2, ...
++  A candidate is accepted at a level iff
++    (a) zero fixed points,
++    (b) |Spearman rho(permuted scores, scores)| <= 0.10,
++    (c) Jaccard(set, C10 set) <= J_C10 (0.35; relaxed to 0.40, 0.45, 0.50 in that order only if
++        fewer than 5 are accepted within 10,000 candidates at the current bound),
++    (d) Jaccard(set, every already-accepted set at the same level) <= 0.50 -- at L1 the committed
++        CSHUF set counts as already accepted (it is L1's permutation P0),
++    (e) Jaccard(set, LU set) <= 0.50, and at LH also Jaccard(set, every L1 set, CSHUF included)
++        <= 0.50, so the global set-distinctness gate (every pair among the CDR sets and CSHUF
++        <= 0.50) holds by construction for every drawn set.
++  L1 takes the first 5 accepted. LH continues the SAME stream from the candidate after L1's fifth
++  acceptance. If a level needs a relaxation step, that level is re-scanned from its own start
++  position with the next bound; the step used is recorded.
++
++Usage:
++  .venv/bin/python rebuild/ABC/cdr_allocate.py draw --tau-high 0.758
++  .venv/bin/python rebuild/ABC/cdr_allocate.py show --allocation_mode {uniform,permuted,tau} \
++        [--tau T] [--perm_seed I]        # print one allocation's quotas and set statistics
++"""
++import argparse
++import hashlib
++import json
++import math
++import os
++import sys
++
++import numpy as np
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++for _p in (os.path.dirname(_HERE), _HERE, os.path.join(os.path.dirname(_HERE), 'C1')):
++    if _p not in sys.path:
++        sys.path.insert(0, _p)
++import common as C                                            # noqa: E402
++import abc_common as A                                        # noqa: E402
++import c1_space                                               # noqa: E402
++from c1_targeted_vs_random import (softmax_alloc, largest_remainder, rank_by_centroid,  # noqa: E402
++                                   serving_orders, greedy_select)
++
++RNG_SEED = 2027
++MAX_RHO = 0.10
++J_C10_STEPS = (0.35, 0.40, 0.45, 0.50)
++J_PAIR_MAX = 0.50
++N_PER_LEVEL = 5
++SCAN = 10_000
++TAU_L1 = 1.0
++OUT_DIR = os.path.join(C.REPO, 'rebuild', 'ABC', 'out', 'cdr')
++
++
++def space():
++    return c1_space.load_space(A.EMBEDDER)
++
++
++def allocation(sp, mode, tau=None, sigma=None):
++    """(quotas, selected row indices, n_displaced, fill distances) for one allocation."""
++    es = sp.es
++    if mode == 'uniform':
++        p = np.full(sp.k, 1.0 / sp.k)
++        es_used = es
++    else:
++        es_used = es if sigma is None else es[np.asarray(sigma)]
++        p = softmax_alloc(es_used, tau)
++    q = largest_remainder(p, A.BUDGET)
++    scores, order = rank_by_centroid(sp)
++    serving = serving_orders(q, es_used)[A.SERVING]
++    idx, disp = greedy_select(q, order, serving)
++    return q, p, idx, disp
++
++
++def fill_distances(sp, q, es_used):
++    scores, order = rank_by_centroid(sp)
++    serving = serving_orders(q, es_used)[A.SERVING]
++    taken = np.zeros(order.shape[0], dtype=bool)
++    d = []
++    for c in serving:
++        need, got = int(q[c]), 0
++        for row in order[:, c]:
++            if got == need:
++                break
++            if taken[row]:
++                continue
++            taken[row] = True
++            d.append(1.0 - scores[row, c])
++            got += 1
++    d = np.array(d)
++    return float(d.mean()), float(np.quantile(d, 0.9)), float(d.max())
++
++
++def n_eff(q):
++    p = np.asarray(q, float) / np.sum(q)
++    p = p[p > 0]
++    return float(math.exp(-(p * np.log(p)).sum()))
++
++
++def jac(a, b):
++    a, b = set(a), set(b)
++    return len(a & b) / len(a | b)
++
++
++def spearman(es, sigma):
++    return A._spearman_perm(es, np.asarray(sigma))
++
++
++def stats_for(sp, name, mode, tau, sigma, idx, q, disp):
++    es_used = sp.es if (mode == 'uniform' or sigma is None) else sp.es[np.asarray(sigma)]
++    fm, f90, fmax = fill_distances(sp, q, es_used)
++    lab = np.argmax(sp.cut[idx] @ sp.centroids.T, axis=1)
++    induced = np.bincount(lab, minlength=sp.k)
++    stems = [sp.names[i] for i in idx]
++    return dict(arm=name, mode=mode, tau=tau, n_eff_nominal=n_eff(q), n_eff_induced=n_eff(induced),
++                max_quota=int(q.max()), clusters_funded=int((q > 0).sum()), n_displaced=int(disp),
++                fill_dist_mean=fm, fill_dist_p90=f90, fill_dist_max=fmax,
++                stems_sha256=hashlib.sha256(('\n'.join(stems) + '\n').encode()).hexdigest())
++
++
++def scan_level(sp, rng_state, tau, refs_same_level, refs_other, c10_set, bound, start_index):
++    """Scan candidates from start_index with a fresh default_rng(RNG_SEED) advanced to that index.
++    Returns (accepted list, index after the last candidate examined, counters)."""
++    rng = np.random.default_rng(RNG_SEED)
++    for _ in range(start_index):
++        rng.permutation(sp.k)
++    acc, cnt = [], dict(examined=0, fixed_point=0, rho=0, jaccard_c10=0, jaccard_pair=0)
++    i = start_index
++    while len(acc) < N_PER_LEVEL and i < start_index + SCAN:
++        sigma = rng.permutation(sp.k)
++        i += 1
++        cnt['examined'] += 1
++        if int((sigma == np.arange(sp.k)).sum()) != 0:
++            cnt['fixed_point'] += 1
++            continue
++        rho = spearman(sp.es, sigma)
++        if abs(rho) > MAX_RHO:
++            cnt['rho'] += 1
++            continue
++        q, p, idx, disp = allocation(sp, 'permuted', tau, sigma)
++        st = [sp.names[j] for j in idx]
++        jc = jac(st, c10_set)
++        if jc > bound:
++            cnt['jaccard_c10'] += 1
++            continue
++        others = list(refs_same_level.values()) + [a['stems'] for a in acc] + list(refs_other.values())
++        if any(jac(st, o) > J_PAIR_MAX for o in others):
++            cnt['jaccard_pair'] += 1
++            continue
++        acc.append(dict(draw_index=i - 1, sigma=[int(x) for x in sigma], rho=rho, jaccard_c10=jc,
++                        q=q, idx=idx, disp=disp, stems=st))
++    return acc, i, cnt
++
++
++def draw(tau_high):
++    sp = space()
++    c10, _ = A.arm_c_stems(1.0, None)
++    cshuf, _ = A.arm_c_stems(1.0, 'shuffled')
++    qu, _, idx_u, disp_u = allocation(sp, 'uniform')
++    lu = [sp.names[j] for j in idx_u]
++    manifest = dict(generated=C.now(), commit=C.git_commit(), rule=__doc__.split('Acceptance rule')[1].split('Usage:')[0].strip(),
++                    rng_seed=RNG_SEED, tau_L1=TAU_L1, tau_H=tau_high, budget=A.BUDGET, embedder=A.EMBEDDER,
++                    serving=A.SERVING, levels={}, arms={})
++    rows = [stats_for(sp, 'CDRLU', 'uniform', None, None, idx_u, qu, disp_u)]
++    rows[0].update(draw_index=None, rho=None, jaccard_c10=jac(lu, c10), level='LU')
++    manifest['arms']['CDRLU'] = dict(mode='uniform', tau=None, sigma=None, draw_index=None)
++    start = 0
++    accepted_sets = {}
++    for level, tau, prefix in (('L1', TAU_L1, 'CDRL1P'), ('LH', tau_high, 'CDRLHP')):
++        same = {'CSHUF': cshuf} if level == 'L1' else {}
++        other = {'CDRLU': lu}
++        if level == 'LH':
++            other['CSHUF'] = cshuf
++            other.update({k: v for k, v in accepted_sets.items() if k.startswith('CDRL1P')})
++        used = None
++        for step, bound in enumerate(J_C10_STEPS):
++            acc, end, cnt = scan_level(sp, None, tau, same, other, c10, bound, start)
++            if len(acc) == N_PER_LEVEL:
++                used = (step, bound, cnt)
++                break
++        if used is None:
++            raise SystemExit('CDR HALT: level %s found fewer than %d admissible permutations at every '
++                             'declared bound' % (level, N_PER_LEVEL))
++        manifest['levels'][level] = dict(tau=tau, start_index=start, end_index=end, relaxation_step=used[0],
++                                         jaccard_c10_bound=used[1], counters=used[2],
++                                         acceptance_rate=N_PER_LEVEL / used[2]['examined'])
++        for n, a in enumerate(acc, 1):
++            name = '%s%d' % (prefix, n)
++            accepted_sets[name] = a['stems']
++            manifest['arms'][name] = dict(mode='permuted', tau=tau, sigma=a['sigma'], draw_index=a['draw_index'],
++                                          rho=round(a['rho'], 5), jaccard_c10=round(a['jaccard_c10'], 4))
++            r = stats_for(sp, name, 'permuted', tau, a['sigma'], a['idx'], a['q'], a['disp'])
++            r.update(draw_index=a['draw_index'], rho=a['rho'], jaccard_c10=a['jaccard_c10'], level=level)
++            rows.append(r)
++        start = end
++    # global set-distinctness gate (every CDR pair, plus each vs C10 and CSHUF), asserted
++    allsets = dict(CDRLU=lu, **accepted_sets)
++    pair = {}
++    names = sorted(allsets)
++    for i_, a in enumerate(names):
++        for b in names[i_ + 1:]:
++            pair['%s|%s' % (a, b)] = round(jac(allsets[a], allsets[b]), 4)
++    for a in names:
++        pair['%s|C10' % a] = round(jac(allsets[a], c10), 4)
++        pair['%s|CSHUF' % a] = round(jac(allsets[a], cshuf), 4)
++    gate = all(v <= J_PAIR_MAX for k, v in pair.items() if not k.endswith('|C10'))
++    manifest['set_distinctness_gate'] = dict(passed=gate, max_pair_jaccard=J_PAIR_MAX, pairs=pair)
++    if not gate:
++        raise SystemExit('CDR HALT: set-distinctness gate failed: %s' % {k: v for k, v in pair.items() if v > J_PAIR_MAX})
++    os.makedirs(OUT_DIR, exist_ok=True)
++    C.save_json(os.path.join(OUT_DIR, 'cdr_permutations.json'), manifest)
++    for name, st in allsets.items():
++        with open(os.path.join(OUT_DIR, 'cdr_stems_%s.txt' % name), 'w') as fh:
++            fh.write('\n'.join(st) + '\n')
++    import csv
++    keys = ['arm', 'level', 'mode', 'tau', 'draw_index', 'rho', 'jaccard_c10', 'n_eff_nominal', 'n_eff_induced',
++            'max_quota', 'clusters_funded', 'n_displaced', 'fill_dist_mean', 'fill_dist_p90', 'fill_dist_max',
++            'stems_sha256']
++    with open(os.path.join(OUT_DIR, 'cdr_allocations.csv'), 'w', newline='') as fh:
++        w = csv.DictWriter(fh, fieldnames=keys)
++        w.writeheader()
++        for r in rows:
++            w.writerow({k: ('%.6g' % r[k] if isinstance(r[k], float) else r[k]) for k in keys})
++    for level, d in manifest['levels'].items():
++        print('%s tau %.3f: candidates %d-%d, relaxation step %d (J_C10 <= %.2f), acceptance rate %.4f, rejections %s'
++              % (level, d['tau'], d['start_index'], d['end_index'] - 1, d['relaxation_step'], d['jaccard_c10_bound'],
++                 d['acceptance_rate'], d['counters']))
++    for r in rows:
++        print('  %-9s draw %-5s rho %+.4f J(C10) %.4f N_eff nominal %5.2f induced %5.2f max quota %3d fill mean %.4f'
++              % (r['arm'], r['draw_index'], r['rho'] if r['rho'] is not None else float('nan'), r['jaccard_c10'],
++                 r['n_eff_nominal'], r['n_eff_induced'], r['max_quota'], r['fill_dist_mean']))
++    print('set-distinctness gate: %s (max pair Jaccard %.4f)' % (
++        'PASS' if gate else 'FAIL', max(v for k, v in pair.items() if not k.endswith('|C10'))))
++
++
++def show(mode, tau, perm_seed):
++    sp = space()
++    sigma = None
++    if mode == 'permuted':
++        rng = np.random.default_rng(RNG_SEED)
++        for _ in range(perm_seed):
++            rng.permutation(sp.k)
++        sigma = rng.permutation(sp.k)
++    t = None if mode == 'uniform' else (TAU_L1 if tau is None else tau)
++    q, p, idx, disp = allocation(sp, 'uniform' if mode == 'uniform' else 'permuted', t, sigma)
++    r = stats_for(sp, 'show', mode, t, sigma, idx, q, disp)
++    print(json.dumps(dict(r, quotas=[int(x) for x in q]), indent=1))
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    sub = ap.add_subparsers(dest='cmd', required=True)
++    d = sub.add_parser('draw')
++    d.add_argument('--tau-high', type=float, required=True)
++    s = sub.add_parser('show')
++    s.add_argument('--allocation_mode', choices=['uniform', 'permuted', 'tau'], required=True)
++    s.add_argument('--tau', type=float, default=None)
++    s.add_argument('--perm_seed', type=int, default=0, help='candidate index in the default_rng(2027) stream')
++    a = ap.parse_args()
++    if a.cmd == 'draw':
++        draw(a.tau_high)
++    else:
++        show('permuted' if a.allocation_mode == 'permuted' else a.allocation_mode,
++             a.tau, a.perm_seed)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/RL5B/eq_autorun.sh b/rebuild/RL5B/eq_autorun.sh
+new file mode 100644
+index 0000000..4d56bae
+--- /dev/null
++++ b/rebuild/RL5B/eq_autorun.sh
+@@ -0,0 +1,65 @@
++#!/usr/bin/env bash
++# One-shot trigger for the pre-registered EQ analysis (prereg/EQ.md, Amendment 1). Run by cron every 10 minutes;
++# authorised by the corresponding author on 2026-11-14. Runs analysis/eq_analysis.py exactly once:
++#
++#   * as soon as all 81 EQ runs are trained and inferred (no EQ job pending or running) -> strict mode
++#     (the script itself re-verifies all 81 and refuses if any is missing);
++#   * or, after the GPU cutoff (2026-11-17 06:00 IST), once no EQ run is still in flight -> --allow-incomplete,
++#     i.e. Amendment 1's INCOMPLETE rule: every completed run analysed, none dropped. Runs that started before the
++#     cutoff are allowed to finish first; no new run starts after it.
++#
++# Until one of those holds it computes nothing and opens no EQ number. It never deletes anything. The CPU cap
++# applies (nice 19, cores 40-47, BLAS threads 8). Usage: bash eq_autorun.sh [--check]  (--check: print the decision only)
++REPO=/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD
++cd "$REPO" || exit 1
++OUT=rebuild/RL5B/out
++S=rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS
++MARK="$OUT/eq_autorun.done"
++LOG="$S/EXPERIMENT_LOGS/EXP01_autorun.log"
++CHECK=0; [ "${1:-}" = "--check" ] && CHECK=1
++[ -f "$MARK" ] && { [ $CHECK = 1 ] && echo "already done: $(cat "$MARK")"; exit 0; }
++exec 8>"$OUT/eq_autorun.lock"
++flock -n 8 || exit 0
++STATE="$OUT/runner_state.json"; now=$(date +%s)
++# test-only overrides, honoured ONLY with --check (they can never launch the analysis)
++if [ $CHECK = 1 ]; then STATE=${EQ_AUTORUN_STATE:-$STATE}; now=${EQ_AUTORUN_NOW:-$now}; fi
++read -r eq_pending eq_running state_age <<<"$( { .venv/bin/python -c "
++import json,os,time
++p='$STATE'; s=json.load(open(p))
++pend=s.get('pending_by_campaign',{}).get('eq',0)
++run=sum(1 for v in s.get('running',{}).values() if v['job'].startswith(('SINet_B_s1','SINet_C10_s1','SINet_CSHUF_s1')))
++print(pend, run, int(time.time()-os.path.getmtime(p)))"; } 2>/dev/null )"
++eq_pending=${eq_pending:-999}; eq_running=${eq_running:-1}; state_age=${state_age:-99999}
++cutoff=$(date -d '2026-11-17 06:00:00' +%s)
++mode=""
++if [ "$state_age" -gt 600 ]; then
++  decision="wait: runner state is stale (${state_age}s); the watchdog restarts the runner"
++elif [ "$eq_pending" -eq 0 ] && [ "$eq_running" -eq 0 ]; then
++  mode="strict"; decision="all EQ jobs trained and inferred -> run the pre-registered analysis"
++elif [ "$now" -ge "$cutoff" ] && [ "$eq_running" -eq 0 ]; then
++  mode="incomplete"; decision="cutoff passed, no EQ run in flight, $eq_pending EQ jobs never started -> Amendment 1 INCOMPLETE rule"
++else
++  decision="wait: $eq_pending EQ jobs pending, $eq_running running"
++fi
++if [ $CHECK = 1 ]; then echo "$(date '+%F %T') decision: $decision"; exit 0; fi
++[ -z "$mode" ] && exit 0
++run_eq() {
++  ( cd "$S/analysis" && OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 \
++      nice -n 19 taskset -c 40-47 "$REPO/.venv/bin/python" eq_analysis.py --workers 8 "$@" )
++}
++echo "[$(date '+%F %T')] $decision" >> "$LOG"
++if [ "$mode" = "strict" ]; then
++  run_eq >> "$LOG" 2>&1; rc=$?
++  if [ $rc -ne 0 ] && [ "$now" -ge "$cutoff" ]; then
++    echo "[$(date '+%F %T')] strict run refused (rc=$rc) after the cutoff -> INCOMPLETE rule" >> "$LOG"
++    run_eq --allow-incomplete >> "$LOG" 2>&1; rc=$?; mode="incomplete"
++  elif [ $rc -ne 0 ]; then
++    echo "[$(date '+%F %T')] strict run refused (rc=$rc) before the cutoff -> waiting (a run may have been discarded and re-queued)" >> "$LOG"
++    exit 0
++  fi
++else
++  run_eq --allow-incomplete >> "$LOG" 2>&1; rc=$?
++fi
++echo "[$(date '+%F %T')] eq_analysis finished: mode=$mode rc=$rc" >> "$LOG"
++[ $rc -eq 0 ] && echo "$(date '+%F %T') mode=$mode rc=0" > "$MARK"
++exit 0
+diff --git a/rebuild/RL5B/make_jobs.py b/rebuild/RL5B/make_jobs.py
+new file mode 100644
+index 0000000..8bde70c
+--- /dev/null
++++ b/rebuild/RL5B/make_jobs.py
+@@ -0,0 +1,81 @@
++#!/usr/bin/env python
++"""Append one campaign's jobs to rebuild/RL5B/queue_jobs.json (append-only; a campaign is added once).
++
++Each job carries the commit that pre-registered its campaign; rl5b_queue.py refuses to launch a job
++if the pipeline files differ from that commit.
++
++  bridge   prereg/BRIDGE.md   1 SINet run (re-train of committed SINet_C10_s42), priority 1
++  e3c      prereg/E3.md       SUP-ours on real masks, SINet + SINet-v2 x seeds 42,43,45, priority 2
++  cdr      prereg/CDR.md      SINet: LU x 42,43,45,46,47 + L1/LH P1-P5 x 42,43,45 (35), priority 3
++  eq       prereg/EQ.md       SINet: B, C10, CSHUF x seeds 101-129 (87), interleaved by seed, priority 4
++  e3e      prereg/E3.md       RISE pseudo-label runs, SINet + SINet-v2 x 42,43,45, priority 5
++  cdrv2    prereg/CDR.md      SINet-v2 replication of cdr (35), priority 6
++
++Usage: .venv/bin/python rebuild/RL5B/make_jobs.py <campaign> --commit <hash>
++"""
++import argparse
++import json
++import os
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++JOBS = os.path.join(_HERE, 'queue_jobs.json')
++SPEC = {'SINet': dict(network='SINet', total_step='0253', last_epoch='039/040'),
++        'SINetv2': dict(network='SINet-v2', total_step='0127', last_epoch='099/100')}
++L1 = ['CDRL1P%d' % i for i in range(1, 6)]
++LH = ['CDRLHP%d' % i for i in range(1, 6)]
++
++
++def custom(id_, arch, method, iteration, seed, pool, tag, extra, ckpt, pool_r1, prio, campaign, commit):
++    s = SPEC[arch]
++    return dict(id=id_, kind='custom', campaign=campaign, commit=commit, priority=prio, arch=arch,
++                network=s['network'], method=method, iteration=iteration, seed=seed, pool=pool,
++                snap='Snapshot/RL5B/%s/%s' % (tag, id_), log='rebuild/RL5B/%s.log' % id_, extra=extra, ckpt=ckpt,
++                pred_root='Result/RL5B/%s/%s' % (tag, id_),
++                expect=dict(rounds=iteration, total_step=s['total_step'], last_epoch=s['last_epoch'], pool_r1=pool_r1))
++
++
++def abc(arch, arm, seed, prio, campaign, commit):
++    return dict(kind='abc', campaign=campaign, commit=commit, priority=prio, arch=arch, arm=arm, seed=seed)
++
++
++def build(campaign, commit):
++    if campaign == 'bridge':
++        return [custom('BRIDGE_SINet_C10_s42', 'SINet', 'ours', 2, 42, 'Dataset/Source/RL5B/bridge/SINet_C10_s42',
++                       'bridge', ['--save_ckpts', 'minimal', '--link_pool'], 'Tea_epoch_best.pth', 5447, 1, campaign, commit)]
++    if campaign in ('e3c', 'e3e'):
++        tag, pool, arm, prio = (('E3', 'Dataset/Source/RL5B/REAL4040', 'SUPREAL', 2) if campaign == 'e3c'
++                                else ('E3', 'Dataset/Source/RL5B/RISEPL', 'RISEPL', 5))
++        return [custom('E3_%s_%s_s%d' % (a, arm, s), a, 'source_only', 1, s, pool, tag,
++                       ['--val_net', 'student', '--save_ckpts', 'minimal'], 'Stu_epoch_best.pth', 4040, prio, campaign, commit)
++                for a in ('SINet', 'SINetv2') for s in (42, 43, 45)]
++    if campaign in ('cdr', 'cdrv2'):
++        arch, prio = ('SINet', 3) if campaign == 'cdr' else ('SINetv2', 6)
++        jobs = []
++        for s in (42, 43, 45):
++            for arm in ['CDRLU'] + L1 + LH:
++                jobs.append(abc(arch, arm, s, prio, campaign, commit))
++        for s in (46, 47):
++            jobs.append(abc(arch, 'CDRLU', s, prio, campaign, commit))
++        return jobs
++    if campaign == 'eq':
++        return [abc('SINet', arm, s, 4, campaign, commit) for s in range(101, 130) for arm in ('B', 'C10', 'CSHUF')]
++    raise SystemExit('unknown campaign %s' % campaign)
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('campaign')
++    ap.add_argument('--commit', required=True)
++    a = ap.parse_args()
++    data = json.load(open(JOBS)) if os.path.isfile(JOBS) else dict(jobs=[], campaigns={})
++    if a.campaign in data['campaigns']:
++        raise SystemExit('campaign %s already queued (append-only)' % a.campaign)
++    new = build(a.campaign, a.commit)
++    data['jobs'].extend(new)
++    data['campaigns'][a.campaign] = dict(commit=a.commit, n_jobs=len(new))
++    json.dump(data, open(JOBS, 'w'), indent=1)
++    print('queued %d %s jobs at commit %s' % (len(new), a.campaign, a.commit))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/RL5B/make_pools.py b/rebuild/RL5B/make_pools.py
+new file mode 100644
+index 0000000..f363e07
+--- /dev/null
++++ b/rebuild/RL5B/make_pools.py
+@@ -0,0 +1,132 @@
++#!/usr/bin/env python
++"""RL5B rebuttal -- build the source pools for runs outside the ABC namespace. Builds by hardlink
++(no bytes copied); verifies before it writes a manifest; never touches an existing pool.
++
++  bridge    Dataset/Source/RL5B/bridge/SINet_C10_s42 : a fresh copy of the committed pool of
++            SINet_C10_s42. Its Image/ and GT/ digests must equal the committed ones in
++            rebuild/ABC/out/abc_pools.json.
++  real4040  Dataset/Source/RL5B/REAL4040 : the 4040 target images (COD10K-train 3040 + CAMO-train
++            1000) with their REAL masks, from the benchmark training archive
++            Dataset/_download_ws4/TrainValDataset.zip (extracted to .../extract/COD-TrainDataset).
++            Every image must be byte-identical to Dataset/Target/Image; every image must have a mask.
++  risepl    Dataset/Source/RL5B/RISEPL : the 4040 target images with RISE's released pseudo masks
++            (Dataset/External/RISE/...); every target stem must have a pseudo mask.
++
++Usage: .venv/bin/python rebuild/RL5B/make_pools.py {bridge,real4040,risepl} [--pseudo-dir DIR]
++"""
++import argparse
++import hashlib
++import json
++import os
++import sys
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++_REPO = os.path.dirname(os.path.dirname(_HERE))
++sys.path.insert(0, os.path.join(_REPO, 'rebuild'))
++import common as C                                            # noqa: E402
++
++OUT = os.path.join(_REPO, 'rebuild', 'RL5B', 'out')
++
++
++def sha(p):
++    return C.sha256(p)
++
++
++def link_tree(pairs, dst_img, dst_gt):
++    os.makedirs(dst_img)
++    os.makedirs(dst_gt)
++    for (si, sg), (di, dg) in pairs:
++        os.link(si, os.path.join(dst_img, di))
++        os.link(sg, os.path.join(dst_gt, dg))
++
++
++def bridge():
++    rid = 'SINet_C10_s42'
++    src = os.path.join(_REPO, 'Dataset', 'Source', 'ABC', rid)
++    dst = os.path.join(_REPO, 'Dataset', 'Source', 'RL5B', 'bridge', rid)
++    if os.path.exists(dst):
++        raise SystemExit('exists, not touched: %s' % dst)
++    pools = json.load(open(os.path.join(_REPO, 'rebuild', 'ABC', 'out', 'abc_pools.json')))['pools']
++    ref = pools[rid]
++    names = sorted(os.listdir(os.path.join(src, 'Image')))
++    gts = sorted(os.listdir(os.path.join(src, 'GT')))
++    pairs = [((os.path.join(src, 'Image', a), os.path.join(src, 'GT', b)), (a, b)) for a, b in zip(names, gts)]
++    link_tree(pairs, os.path.join(dst, 'Image'), os.path.join(dst, 'GT'))
++    ni, hi, _ = C.dir_digest(os.path.join(dst, 'Image'))
++    ng, hg, _ = C.dir_digest(os.path.join(dst, 'GT'))
++    ok = (hi == ref['image_digest'] and hg == ref['gt_digest'] and ni == ref['n_image'])
++    man = dict(generated=C.now(), commit=C.git_commit(), pool=os.path.relpath(dst, _REPO), source=os.path.relpath(src, _REPO),
++               n_image=ni, n_gt=ng, image_digest=hi, gt_digest=hg, committed_image_digest=ref['image_digest'],
++               committed_gt_digest=ref['gt_digest'], digests_match_committed=ok)
++    C.save_json(os.path.join(OUT, 'pool_bridge_%s.json' % rid), man)
++    print(json.dumps(man, indent=1))
++    if not ok:
++        raise SystemExit('BRIDGE POOL MISMATCH -- do not train')
++
++
++def real4040():
++    ext = os.path.join(_REPO, 'Dataset', '_download_ws4', 'extract', 'COD-TrainDataset')
++    zipf = os.path.join(_REPO, 'Dataset', '_download_ws4', 'TrainValDataset.zip')
++    tgt = os.path.join(_REPO, 'Dataset', 'Target', 'Image')
++    dst = os.path.join(_REPO, 'Dataset', 'Source', 'RL5B', 'REAL4040')
++    if os.path.exists(dst):
++        raise SystemExit('exists, not touched: %s' % dst)
++    timgs = sorted(os.listdir(tgt))
++    stems = [os.path.splitext(t)[0] for t in timgs]
++    eimg = {os.path.splitext(f)[0]: f for f in os.listdir(os.path.join(ext, 'Imgs'))}
++    egt = {os.path.splitext(f)[0]: f for f in os.listdir(os.path.join(ext, 'GT'))}
++    missing_img = [s for s in stems if s not in eimg]
++    missing_gt = [s for s in stems if s not in egt]
++    bad = [s for s in stems if s in eimg and sha(os.path.join(ext, 'Imgs', eimg[s])) != sha(os.path.join(tgt, s + os.path.splitext(eimg[s])[1]))]
++    extra = sorted(set(eimg) - set(stems))
++    ok = not (missing_img or missing_gt or bad) and len(stems) == 4040
++    man = dict(generated=C.now(), commit=C.git_commit(), pool=os.path.relpath(dst, _REPO),
++               source_archive=os.path.relpath(zipf, _REPO), source_archive_sha256=sha(zipf) if os.path.isfile(zipf) else None,
++               n_target=len(stems), n_cod10k=sum(s.startswith('COD10K') for s in stems),
++               n_camo=sum(not s.startswith('COD10K') for s in stems), missing_images=missing_img[:20],
++               missing_masks=missing_gt[:20], images_not_byte_identical_to_target=bad[:20],
++               archive_extra_images=len(extra), verified=ok)
++    if not ok:
++        C.save_json(os.path.join(OUT, 'pool_real4040.json'), man)
++        raise SystemExit('REAL4040 verification failed -- see pool_real4040.json')
++    pairs = [((os.path.join(ext, 'Imgs', eimg[s]), os.path.join(ext, 'GT', egt[s])), (eimg[s], egt[s])) for s in stems]
++    link_tree(pairs, os.path.join(dst, 'Image'), os.path.join(dst, 'GT'))
++    ni, hi, _ = C.dir_digest(os.path.join(dst, 'Image'))
++    ng, hg, _ = C.dir_digest(os.path.join(dst, 'GT'))
++    man.update(n_image=ni, n_gt=ng, image_digest=hi, gt_digest=hg)
++    C.save_json(os.path.join(OUT, 'pool_real4040.json'), man)
++    print(json.dumps(man, indent=1))
++
++
++def risepl(pseudo_dir):
++    tgt = os.path.join(_REPO, 'Dataset', 'Target', 'Image')
++    dst = os.path.join(_REPO, 'Dataset', 'Source', 'RL5B', 'RISEPL')
++    if os.path.exists(dst):
++        raise SystemExit('exists, not touched: %s' % dst)
++    timgs = sorted(os.listdir(tgt))
++    pm = {os.path.splitext(f)[0]: f for f in os.listdir(pseudo_dir)}
++    stems = [os.path.splitext(t)[0] for t in timgs]
++    missing = [s for s in stems if s not in pm]
++    man = dict(generated=C.now(), commit=C.git_commit(), pool=os.path.relpath(dst, _REPO),
++               pseudo_dir=os.path.relpath(pseudo_dir, _REPO), n_target=len(stems), n_pseudo=len(pm),
++               missing_pseudo=len(missing), missing_examples=missing[:20], verified=not missing)
++    if missing:
++        C.save_json(os.path.join(OUT, 'pool_risepl.json'), man)
++        raise SystemExit('RISE pseudo masks do not cover the 4040 target stems (%d missing)' % len(missing))
++    pairs = [((os.path.join(tgt, t), os.path.join(pseudo_dir, pm[os.path.splitext(t)[0]])),
++              (t, os.path.splitext(t)[0] + os.path.splitext(pm[os.path.splitext(t)[0]])[1])) for t in timgs]
++    link_tree(pairs, os.path.join(dst, 'Image'), os.path.join(dst, 'GT'))
++    ni, hi, _ = C.dir_digest(os.path.join(dst, 'Image'))
++    ng, hg, _ = C.dir_digest(os.path.join(dst, 'GT'))
++    man.update(n_image=ni, n_gt=ng, image_digest=hi, gt_digest=hg)
++    C.save_json(os.path.join(OUT, 'pool_risepl.json'), man)
++    print(json.dumps(man, indent=1))
++
++
++if __name__ == '__main__':
++    ap = argparse.ArgumentParser()
++    ap.add_argument('which', choices=['bridge', 'real4040', 'risepl'])
++    ap.add_argument('--pseudo-dir', default='')
++    a = ap.parse_args()
++    os.makedirs(OUT, exist_ok=True)
++    {'bridge': bridge, 'real4040': real4040}.get(a.which, lambda: risepl(a.pseudo_dir))()
+diff --git a/rebuild/RL5B/rl5b_queue.py b/rebuild/RL5B/rl5b_queue.py
+new file mode 100644
+index 0000000..3d79172
+--- /dev/null
++++ b/rebuild/RL5B/rl5b_queue.py
+@@ -0,0 +1,368 @@
++#!/usr/bin/env python
++"""RL5B rebuttal -- one priority queue for every new training campaign (bridge, E3, CDR, EQ, ...).
++
++Runs, never scores. For each job it trains, verifies, and then runs inference on COD10K-test and
++NC4K in the same GPU slot. Scoring happens only after a campaign is complete, with the campaign's
++pre-committed analysis script, so nothing is looked at mid-campaign.
++
++Jobs live in an append-only JSON file (--jobs). A campaign's jobs are appended only after its
++pre-registration is committed; each job carries that commit. The file is re-read every cycle, so a
++campaign can be added while the queue runs.
++
++Job kinds
++  abc     an ABC-pipeline run (arch, arm, seed): pools, paths, command, verification and inference
++          are rebuild/ABC's own (abc_train.launch / verify_run / discard, abc_evaluate.infer_start),
++          with EXTRA_TRAIN_FLAGS = --save_ckpts minimal --link_pool (footprint only).
++  custom  an explicit run outside the ABC namespace (the bridge re-train; supervised baselines):
++          every path, the command and the expected verification values are in the job itself.
++
++Guards before every launch (the queue pauses, never skips, when one fails)
++  * branch is rebuttal/iclr27/wip2 and the pipeline files are unchanged since the job's commit
++    (git diff --quiet <commit> -- PIPELINE);
++  * free disk >= --min-free-gb (shared machine);
++  * the GPU has >= --min-gpu-free-gb free memory (never OOM another user's job).
++A run that fails verification is discarded and re-run from scratch with the SAME seed (once by
++default); it is never replaced by a new seed and never dropped silently.
++
++Usage
++  .venv/bin/python rebuild/RL5B/rl5b_queue.py --jobs rebuild/RL5B/queue_jobs.json [--dry-run]
++"""
++import argparse
++import datetime
++import hashlib
++import json
++import os
++import re
++import shutil
++import subprocess
++import sys
++import time
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++_REPO = os.path.dirname(os.path.dirname(_HERE))
++for _p in (os.path.join(_REPO, 'rebuild', 'ABC'), os.path.join(_REPO, 'rebuild'), _REPO):
++    if _p not in sys.path:
++        sys.path.insert(0, _p)
++import common as C                                            # noqa: E402
++import abc_common as A                                        # noqa: E402
++import abc_train as T                                         # noqa: E402
++import abc_evaluate as E                                      # noqa: E402
++
++PY = '.venv/bin/python'
++BRANCH = 'rebuttal/iclr27/wip2'
++PIPELINE = ['MyTrain.py', 'MyTest.py', 'CLS.py', 'Src', 'Eval/metrics.py', 'rebuild/common.py',
++            'rebuild/C1/c1_space.py', 'rebuild/C1/c1_targeted_vs_random.py', 'rebuild/ABC/abc_common.py',
++            'rebuild/ABC/abc_train.py', 'rebuild/ABC/abc_evaluate.py', 'rebuild/ABC/out/cdr/cdr_permutations.json',
++            'rebuild/RL5B/rl5b_queue.py']
++ABC_FLAGS = ['--save_ckpts', 'minimal', '--link_pool']
++ENDPOINTS = ('COD10K', 'NC4K')
++OUT = os.path.join(_REPO, 'rebuild', 'RL5B', 'out')
++EVENTS = os.path.join(OUT, 'queue_events.jsonl')
++TS = re.compile(r'^\[(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+)\]')
++EPOCH = re.compile(r'Epoch Num: (\d+/\d+)')
++STEP = re.compile(r'Global Step: \d+/(\d+)')
++
++
++def now():
++    return datetime.datetime.now().isoformat(timespec='seconds')
++
++
++def say(m):
++    print('[%s] %s' % (time.strftime('%m-%d %H:%M:%S'), m), flush=True)
++
++
++def event(**kw):
++    os.makedirs(OUT, exist_ok=True)
++    with open(EVENTS, 'a') as fh:
++        fh.write(json.dumps(dict(at=now(), **kw)) + '\n')
++
++
++def git(*args):
++    return subprocess.run(['git', '-C', _REPO] + list(args), capture_output=True, text=True)
++
++
++def pipeline_hash():
++    h = hashlib.sha256()
++    for p in PIPELINE:
++        r = git('ls-files', '-s', '--', p)
++        h.update(r.stdout.encode())
++        full = os.path.join(_REPO, p)
++        files = [full] if os.path.isfile(full) else sorted(
++            os.path.join(d, f) for d, _, fs in os.walk(full) for f in fs if f.endswith('.py'))
++        for f in files:
++            if os.path.isfile(f):
++                h.update(open(f, 'rb').read())
++    return h.hexdigest()[:16]
++
++
++def guard(job):
++    br = git('rev-parse', '--abbrev-ref', 'HEAD').stdout.strip()
++    if br != BRANCH:
++        return 'branch is %s, not %s' % (br, BRANCH)
++    r = git('diff', '--quiet', job['commit'], '--', *PIPELINE)
++    if r.returncode != 0:
++        return 'pipeline files differ from campaign commit %s' % job['commit']
++    return None
++
++
++def disk_free_gb():
++    return shutil.disk_usage(_REPO).free / 1e9
++
++
++def gpu_free_gb(gpu):
++    r = subprocess.run(['nvidia-smi', '--query-gpu=memory.free', '--format=csv,noheader,nounits', '-i', str(gpu)],
++                       capture_output=True, text=True)
++    try:
++        return float(r.stdout.strip()) / 1024
++    except ValueError:
++        return 0.0
++
++
++# ---------------------------------------------------------------- custom jobs
++def custom_cmd(job, gpu):
++    c = [PY, 'MyTrain.py', '--network', job['network'], '--task', 'S2C', '--method', job['method'],
++         '--iteration', str(job['iteration']), '--seed', str(job['seed']),
++         '--save_model', './' + job['snap'] + '/', '--source_root', './' + job['pool'] + '/',
++         '--target_root', './Dataset/Target/', '--val_root', './Dataset/Val/CAMO/'] + job.get('extra', []) + \
++        ['--gpu', str(gpu)]
++    return c
++
++
++def custom_verify(job):
++    snap = os.path.join(_REPO, job['snap'])
++    tl = os.path.join(snap, 'training_log.log')
++    d = dict(runid=job['id'])
++    if not os.path.isfile(tl):
++        return False, dict(d, fail='no training_log.log')
++    lines = open(tl).read().splitlines()
++    d['rounds'] = sum(1 for l in lines if l.startswith('Training Log'))
++    d['total_step_set'] = ','.join(sorted({m.group(1) for l in lines for m in [STEP.search(l)] if m}))
++    ep = [m.group(1) for l in lines for m in [EPOCH.search(l)] if m]
++    d['last_epoch'] = ep[-1] if ep else ''
++    st = [datetime.datetime.fromisoformat(m.group(1)) for l in lines for m in [TS.match(l)] if m]
++    d['wall_min'] = round((st[-1] - st[0]).total_seconds() / 60, 1) if st else None
++    run = open(os.path.join(_REPO, job['log'])).read() if os.path.isfile(os.path.join(_REPO, job['log'])) else ''
++    loaded = [int(x) for x in re.findall(r'Loaded (\d+) image-mask pairs', run)]
++    d['pool_r1'] = loaded[0] if loaded else None
++    d['pool_r2'] = loaded[1] if len(loaded) > 1 else None
++    d['n_appended'] = (loaded[1] - loaded[0]) if len(loaded) > 1 else None
++    be = re.findall(r'Best epoch:(\d+)', run)
++    d['best_epoch'] = int(be[-1]) if be else None
++    ex = job['expect']
++    checks = dict(rounds=d['rounds'] == ex['rounds'], total_step=d['total_step_set'] == ex['total_step'],
++                  last_epoch=d['last_epoch'] == ex['last_epoch'],
++                  ckpt=os.path.isfile(os.path.join(snap, job['ckpt'])), pool_r1=d['pool_r1'] == ex['pool_r1'])
++    d['checks'] = checks
++    d['failed_checks'] = [k for k, v in checks.items() if not v]
++    return not d['failed_checks'], d
++
++
++def custom_ready(job):
++    pool = os.path.join(_REPO, job['pool'])
++    if not os.path.isdir(os.path.join(pool, 'Image')):
++        return False, 'pool missing: %s' % job['pool']
++    if os.path.exists(os.path.join(_REPO, job['pool'].rstrip('/') + '_iteration2')):
++        return False, 'stale CLS output'
++    snap = os.path.join(_REPO, job['snap'])
++    if os.path.isdir(snap) and [f for f in os.listdir(snap) if f.endswith('.pth')]:
++        return False, 'snapshot dir already holds .pth'
++    return True, ''
++
++
++def custom_discard(job, why):
++    for p in (job['snap'], job['pool'].rstrip('/') + '_iteration2'):
++        full = os.path.join(_REPO, p)
++        if os.path.exists(full):
++            shutil.rmtree(full)
++    event(kind='discard', job=job['id'], why=why)
++
++
++# ---------------------------------------------------------------- generic
++def pred_dir(job, ep):
++    if job['kind'] == 'abc':
++        return A.pred_dir(A.runid(job['arch'], job['arm'], job['seed']), ep)
++    return os.path.join(job['pred_root'], ep)
++
++
++def infer_complete(job):
++    for ep in ENDPOINTS:
++        out = os.path.join(_REPO, pred_dir(job, ep))
++        gtn = len(os.listdir(os.path.join(_REPO, 'Dataset/Test/%s/GT' % ep)))
++        if not (os.path.isdir(out) and len(os.listdir(out)) == gtn):
++            return False
++    return True
++
++
++def trained_ok(job):
++    if job['kind'] == 'abc':
++        return T.verify_run(job['arch'], job['arm'], job['seed'])
++    return custom_verify(job)
++
++
++def start_train(job, gpu):
++    if job['kind'] == 'abc':
++        p, lg = T.launch(job['arch'], job['arm'], job['seed'], gpu)
++        return p, lg
++    cmd = custom_cmd(job, gpu)
++    os.makedirs(os.path.join(_REPO, job['snap']), exist_ok=True)
++    os.makedirs(os.path.dirname(os.path.join(_REPO, job['log'])), exist_ok=True)
++    lg = open(os.path.join(_REPO, job['log']), 'w')
++    lg.write('# RUNID   %s\n# started %s\n# commit  %s\n# CMD     %s\n\n' % (job['id'], C.now(), C.git_commit(), ' '.join(cmd)))
++    lg.flush()
++    return subprocess.Popen(cmd, cwd=_REPO, stdout=lg, stderr=subprocess.STDOUT), lg
++
++
++def start_infer(job, ep, gpu):
++    if job['kind'] == 'abc':
++        return E.infer_start(job['arch'], job['arm'], job['seed'], ep, gpu)
++    ck = './' + os.path.join(job['snap'], job['ckpt'])
++    cmd = [PY, 'MyTest.py', '--network', job['network'], '--gpu', str(gpu), '--dataset', ep,
++           '--model_path', ck, '--test_save', './' + pred_dir(job, ep)]
++    lg = open(os.path.join(_REPO, job['log'].replace('.log', '_infer_%s.log' % ep)), 'w')
++    return subprocess.Popen(cmd, cwd=_REPO, stdout=lg, stderr=subprocess.STDOUT), lg
++
++
++def ready(job):
++    if job['kind'] == 'abc':
++        return T.assert_ready(job['arch'], job['arm'], job['seed'])
++    return custom_ready(job)
++
++
++def discard(job, why):
++    if job['kind'] == 'abc':
++        journal = []
++        T.discard(job['arch'], job['arm'], job['seed'], why, journal)
++        event(kind='discard', job=job['id'], why=why)
++    else:
++        custom_discard(job, why)
++
++
++def load_jobs(path):
++    jobs = json.load(open(path))['jobs']
++    for j in jobs:
++        if j['kind'] == 'abc':
++            j.setdefault('id', A.runid(j['arch'], j['arm'], j['seed']))
++    return sorted(enumerate(jobs), key=lambda x: (x[1].get('priority', 100), x[0]))
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--jobs', required=True)
++    ap.add_argument('--gpus', default='0,1')
++    ap.add_argument('--slots-per-gpu', type=int, default=1)
++    ap.add_argument('--retries', type=int, default=1)
++    ap.add_argument('--min-free-gb', type=float, default=150.0)
++    ap.add_argument('--min-gpu-free-gb', type=float, default=24.0)
++    ap.add_argument('--poll', type=int, default=30)
++    ap.add_argument('--dry-run', action='store_true')
++    args = ap.parse_args()
++    T.EXTRA_TRAIN_FLAGS = list(ABC_FLAGS)
++    gpus = [int(g) for g in args.gpus.split(',')]
++    slots = [(g, i) for g in gpus for i in range(args.slots_per_gpu)]
++    running = {}          # slot -> dict(job, phase, proc, lg, ep_left)
++    attempts, gave_up, done = {}, set(), set()
++    say('queue start: slots %s, pipeline hash %s' % (slots, pipeline_hash()))
++    event(kind='queue_start', slots=slots, pipeline_hash=pipeline_hash(), head=git('rev-parse', 'HEAD').stdout.strip())
++    while True:
++        jobs = load_jobs(args.jobs)
++        busy = {s['job']['id'] for s in running.values()}
++        pending = []
++        for _, j in jobs:
++            if j['id'] in busy or j['id'] in gave_up or j['id'] in done:
++                continue
++            ok, _ = trained_ok(j)
++            if ok and infer_complete(j):
++                done.add(j['id'])
++                continue
++            pending.append((j, ok))
++        if args.dry_run:
++            for j, ok in pending:
++                say('PENDING %-26s %-8s prio %-3s %s' % (j['id'], j.get('campaign'), j.get('priority', 100),
++                                                         'trained, needs inference' if ok else 'needs training'))
++            say('done %d, pending %d' % (len(done), len(pending)))
++            return
++        # fill free slots
++        for slot in slots:
++            if slot in running or not pending:
++                continue
++            gpu = slot[0]
++            if disk_free_gb() < args.min_free_gb:
++                say('PAUSE disk free %.0f GB < %.0f GB' % (disk_free_gb(), args.min_free_gb))
++                break
++            if gpu_free_gb(gpu) < args.min_gpu_free_gb:
++                continue
++            j, trained = pending.pop(0)
++            why = guard(j)
++            if why:
++                say('PAUSE %s: %s' % (j['id'], why))
++                event(kind='guard_pause', job=j['id'], why=why)
++                pending.insert(0, (j, trained))
++                break
++            if trained:          # inference only (e.g. after a queue restart)
++                ep_left = [ep for ep in ENDPOINTS]
++                p, lg = start_infer(j, ep_left[0], gpu)
++                running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=ep_left)
++                continue
++            ok, why = ready(j)
++            if not ok:
++                discard(j, 'pre-launch: ' + why)
++                ok, why = ready(j)
++            if not ok:
++                say('SKIP %s -- %s' % (j['id'], why))
++                event(kind='not_launchable', job=j['id'], why=why)
++                gave_up.add(j['id'])
++                continue
++            p, lg = start_train(j, gpu)
++            say('TRAIN %-26s gpu %d pid %d' % (j['id'], gpu, p.pid))
++            event(kind='train_start', job=j['id'], gpu=gpu, pid=p.pid, head=git('rev-parse', 'HEAD').stdout.strip(),
++                  pipeline_hash=pipeline_hash(), campaign=j.get('campaign'), commit=j['commit'])
++            running[slot] = dict(job=j, phase='train', proc=p, lg=lg, ep_left=list(ENDPOINTS))
++        if not running and not pending:
++            say('queue idle: all jobs done or given up (done %d, gave up %d); waiting for new jobs' % (len(done), len(gave_up)))
++        time.sleep(args.poll)
++        for slot in list(running):
++            s = running[slot]
++            if s['proc'].poll() is None:
++                continue
++            s['lg'].close()
++            j, gpu = s['job'], slot[0]
++            if s['phase'] == 'train':
++                ok, d = trained_ok(j)
++                rc = s['proc'].returncode
++                n = attempts.get(j['id'], 0) + 1
++                attempts[j['id']] = n
++                if ok and rc == 0:
++                    say('OK    %-26s wall %.1fm n_appended %s best_epoch %s' % (j['id'], d['wall_min'], d['n_appended'], d['best_epoch']))
++                    event(kind='train_ok', job=j['id'], verify=d)
++                    p, lg = start_infer(j, s['ep_left'][0], gpu)
++                    running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=s['ep_left'])
++                else:
++                    why = 'rc=%s failed=%s' % (rc, d.get('failed_checks') or d.get('fail'))
++                    discard(j, why)
++                    del running[slot]
++                    if n > args.retries:
++                        gave_up.add(j['id'])
++                        say('GIVE UP %s after %d attempts (%s)' % (j['id'], n, why))
++                        event(kind='gave_up', job=j['id'], attempts=n, why=why)
++                    else:
++                        say('RETRY %s same seed (attempt %d): %s' % (j['id'], n + 1, why))
++            else:
++                ep = s['ep_left'].pop(0)
++                event(kind='infer_done', job=j['id'], endpoint=ep, rc=s['proc'].returncode)
++                if s['proc'].returncode != 0:
++                    say('INFER FAIL %s %s rc=%s' % (j['id'], ep, s['proc'].returncode))
++                    del running[slot]
++                    gave_up.add(j['id'])
++                    event(kind='infer_failed', job=j['id'], endpoint=ep)
++                elif s['ep_left']:
++                    p, lg = start_infer(j, s['ep_left'][0], gpu)
++                    running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=s['ep_left'])
++                else:
++                    say('DONE  %s (trained + inferred)' % j['id'])
++                    event(kind='job_done', job=j['id'])
++                    done.add(j['id'])
++                    del running[slot]
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/RL5B/rl5b_runner.py b/rebuild/RL5B/rl5b_runner.py
+new file mode 100644
+index 0000000..d60c61d
+--- /dev/null
++++ b/rebuild/RL5B/rl5b_runner.py
+@@ -0,0 +1,500 @@
++#!/usr/bin/env python
++"""RL5B runner v2 -- extends rl5b_queue.py (imported, NOT modified, so the guarded training pipeline and every
++job's command are byte-identical to what the pre-registrations committed).
++
++Adds, per the corresponding author's instructions of 2026-11-11:
++  * adoption: on start, MyTrain/MyTest/external-script processes already running (e.g. children of a
++    previous runner) are adopted and monitored, never killed or duplicated;
++  * external Caus scripts from rebuild/REBUTTAL/EXTERNAL_JOBS/Caus/*.sh: '00_*' pilots run on the next free
++    GPU; the others (at most 12) run in filename order after CDR SINet and the anchors and ahead of any EQ job
++    not yet started; START/END/exit/GPU-h in status.txt; an interrupted script is re-run from scratch;
++    GPU-hours counted separately from RL5B's;
++  * hard cutoff: nothing new starts after 2026-11-17 06:00 IST (inference of a run trained before the
++    cutoff completes that run, it is not a new job);
++  * E3-e (priority 7) starts only if its projected end is before the cutoff;
++  * disk rule: no job starts unless free disk >= projected footprint of everything not yet finished + 50 GB;
++  * a state file rebuild/RL5B/out/runner_state.json each cycle (read by watchdog.sh).
++
++Run: .venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json [--dry-run]
++"""
++import argparse
++import datetime as dt
++import hashlib
++import json
++import os
++import re
++import shutil
++import subprocess
++import sys
++import time
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, _HERE)
++import rl5b_queue as Q                                       # noqa: E402  (also puts rebuild/ABC on sys.path)
++
++REPO = Q._REPO
++CUTOFF = dt.datetime(2026, 11, 17, 6, 0, 0)
++EXT_DIR = os.path.join(REPO, 'rebuild', 'REBUTTAL', 'EXTERNAL_JOBS', 'Caus')
++EXT_STATUS = os.path.join(EXT_DIR, 'status.txt')
++EXT_LOGS = os.path.join(EXT_DIR, 'runner_logs')
++CAUS_WORKTREE = '/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus'
++EXT_MAX = 12
++EXT_PRIO_PILOT, EXT_PRIO = 0.0, 3.7
++BANNED = ('rm -rf', 'rm -fr', 'git push', 'git reset', 'git checkout', 'git clean', 'crontab', 'sudo ',
++          'shutdown', 'reboot', 'pkill', 'kill ')
++FOOT_GB = {'abc_SINet': 3.1, 'abc_SINetv2': 3.0, 'custom_1': 0.7, 'custom_2': 3.1, 'external': 5.5}
++DUR_H = {'abc_SINet': 1.82, 'abc_SINetv2': 2.08, 'custom_SINet_1': 0.70, 'custom_SINetv2_1': 0.85, 'custom_2': 1.82,
++         'external': 1.82}
++DISK_MARGIN_GB = 50.0
++STATE = os.path.join(Q.OUT, 'runner_state.json')
++PIDF = os.path.join(Q.OUT, 'queue.pid')
++
++
++def now():
++    return dt.datetime.now()
++
++
++# Guard on training CODE. rl5b_queue.PIPELINE names the directory 'Src', so any new tracked file under it --
++# e.g. the LICENSE moved to Src/LICENSE in commit 125cef0 -- tripped the guard and paused every launch
++# (2026-11-11 21:40-23:2x). The refined guard diffs the same paths but only the .py files under Src/; every
++# other guarded path is a single code/data file and is kept exactly.
++GUARD_PATHS = [':(glob)Src/**/*.py' if p == 'Src' else p for p in Q.PIPELINE]
++
++
++def guard(job):
++    br = Q.git('rev-parse', '--abbrev-ref', 'HEAD').stdout.strip()
++    if br != Q.BRANCH:
++        return 'branch is %s, not %s' % (br, Q.BRANCH)
++    r = Q.git('diff', '--quiet', job['commit'], '--', *GUARD_PATHS)
++    if r.returncode != 0:
++        return 'training code differs from campaign commit %s' % job['commit']
++    return None
++
++
++def say(m):
++    print('[%s] %s' % (time.strftime('%m-%d %H:%M:%S'), m), flush=True)
++
++
++# ---------------------------------------------------------------- footprint / duration estimates
++def foot(job):
++    if job['kind'] == 'external':
++        return FOOT_GB['external']
++    if job['kind'] == 'abc':
++        return FOOT_GB['abc_%s' % job['arch']]
++    return FOOT_GB['custom_%d' % job['iteration']]
++
++
++def dur(job):
++    if job['kind'] == 'external':
++        return DUR_H['external']
++    if job['kind'] == 'abc':
++        return DUR_H['abc_%s' % job['arch']]
++    return DUR_H['custom_2'] if job['iteration'] == 2 else DUR_H['custom_%s_1' % job['arch']]
++
++
++# ---------------------------------------------------------------- external (Caus) scripts
++def ext_events():
++    ev = []
++    if os.path.isfile(EXT_STATUS):
++        for line in open(EXT_STATUS):
++            p = line.rstrip('\n').split('\t')
++            if len(p) >= 3:
++                ev.append(p)
++    return ev
++
++
++def ext_write(*fields):
++    os.makedirs(EXT_DIR, exist_ok=True)
++    with open(EXT_STATUS, 'a') as fh:
++        fh.write('\t'.join(str(f) for f in fields) + '\n')
++
++
++def ext_state():
++    """script -> 'done' | 'refused' | 'started' (START without END: running or interrupted)."""
++    st = {}
++    for p in ext_events():
++        name, kind = p[0], p[1]
++        if kind == 'START':
++            st[name] = 'started'
++        elif kind in ('END',):
++            st[name] = 'done'
++        elif kind == 'REFUSED':
++            st[name] = 'refused'
++        elif kind == 'INTERRUPTED':
++            st[name] = 'interrupted'
++    return st
++
++
++def screen(path):
++    txt = open(path, errors='replace').read()
++    if not re.search(r'cd\s+["\']?%s' % re.escape(CAUS_WORKTREE), txt):
++        return 'does not cd into %s' % CAUS_WORKTREE
++    low = txt.lower()
++    for b in BANNED:
++        if b in low:
++            return 'contains banned command %r' % b.strip()
++    return None
++
++
++def ext_jobs():
++    if not os.path.isdir(EXT_DIR):
++        return []
++    st = ext_state()
++    names = sorted(f for f in os.listdir(EXT_DIR) if f.endswith('.sh'))
++    jobs, n_nonpilot = [], 0
++    for f in names:
++        pilot = f.startswith('00_')
++        if not pilot:
++            n_nonpilot += 1
++        s = st.get(f)
++        if s in ('done', 'refused'):
++            continue
++        if not pilot and n_nonpilot > EXT_MAX:
++            ext_write(f, 'REFUSED', now().isoformat(timespec='seconds'), 'more than %d non-pilot scripts' % EXT_MAX)
++            continue
++        jobs.append(dict(id='CAUS:' + f, kind='external', campaign='caus', script=f,
++                         priority=EXT_PRIO_PILOT if pilot else EXT_PRIO, state=s))
++    return jobs
++
++
++def start_external(job, gpu):
++    path = os.path.join(EXT_DIR, job['script'])
++    why = screen(path)
++    if why:
++        ext_write(job['script'], 'REFUSED', now().isoformat(timespec='seconds'), why)
++        say('REFUSE %s: %s' % (job['script'], why))
++        return None, None
++    sha = hashlib.sha256(open(path, 'rb').read()).hexdigest()[:16]
++    env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu), RL5B_ASSIGNED_GPU=str(gpu))
++    os.makedirs(EXT_LOGS, exist_ok=True)
++    lg = open(os.path.join(EXT_LOGS, job['script'] + '.log'), 'a')
++    lg.write('# %s START %s gpu %d sha256 %s\n' % (job['script'], now().isoformat(timespec='seconds'), gpu, sha))
++    lg.flush()
++    p = subprocess.Popen(['/bin/bash', path], cwd=EXT_DIR, env=env, stdout=lg, stderr=subprocess.STDOUT)
++    ext_write(job['script'], 'START', now().isoformat(timespec='seconds'), 'gpu=%d' % gpu, 'sha256=%s' % sha, 'pid=%d' % p.pid)
++    return p, lg
++
++
++# ---------------------------------------------------------------- adoption
++class Adopted:
++    """A process this runner did not start (e.g. the child of a previous runner)."""
++    def __init__(self, pid):
++        self.pid = pid
++        self.returncode = None
++
++    def poll(self):
++        try:
++            with open('/proc/%d/stat' % self.pid) as fh:
++                if fh.read().split()[2] == 'Z':
++                    return 0
++            return None
++        except FileNotFoundError:
++            return 0
++
++
++class _NullLog:
++    def close(self):
++        pass
++
++
++def scan_processes():
++    out = []
++    for p in os.listdir('/proc'):
++        if not p.isdigit():
++            continue
++        try:
++            cmd = open('/proc/%s/cmdline' % p, 'rb').read().split(b'\0')
++            ppid = int(open('/proc/%s/stat' % p).read().split()[3])
++            pcmd = open('/proc/%d/cmdline' % ppid, 'rb').read() if ppid > 1 else b''
++        except (FileNotFoundError, ProcessLookupError, PermissionError, ValueError, IndexError):
++            continue
++        args = [c.decode(errors='replace') for c in cmd if c]
++        if not args:
++            continue
++        joined = ' '.join(args)
++        # the program itself must be `python MyTrain.py|MyTest.py ... --gpu N` (a shell whose command line merely
++        # mentions MyTrain.py -- e.g. a pgrep -- crashed the first v2 adoption on 11-12)
++        is_prog = (len(args) >= 2 and 'python' in os.path.basename(args[0]) and os.path.basename(args[1]) in ('MyTrain.py', 'MyTest.py')
++                   and '--gpu' in args)
++        if is_prog and b'MyTrain.py' not in pcmd and b'MyTest.py' not in pcmd:
++            out.append((int(p), args))
++        elif len(args) >= 2 and args[0].endswith('bash') and args[1].startswith(EXT_DIR) and args[1].endswith('.sh'):
++            out.append((int(p), args))
++    return out
++
++
++def argval(args, flag):
++    return args[args.index(flag) + 1] if flag in args else None
++
++
++def adopt(jobs):
++    """Map running processes to jobs. Returns {slot: running-entry}."""
++    running = {}
++    byid = {j['id']: j for j in jobs}
++    for pid, args in scan_processes():
++        gpu = None
++        j, phase, ep = None, None, None
++        if 'MyTrain.py' in ' '.join(args):
++            gpu = int(argval(args, '--gpu'))
++            snap = argval(args, '--save_model').strip('./').rstrip('/')
++            for jj in jobs:
++                s = (Q.A.snap_dir(Q.A.runid(jj['arch'], jj['arm'], jj['seed'])) if jj['kind'] == 'abc' else jj.get('snap', ''))
++                if s and s.rstrip('/') == snap:
++                    j = jj
++            phase = 'train'
++        elif 'MyTest.py' in ' '.join(args):
++            gpu = int(argval(args, '--gpu'))
++            mp = os.path.dirname(argval(args, '--model_path').strip('./'))
++            ep = argval(args, '--dataset')
++            for jj in jobs:
++                s = (Q.A.snap_dir(Q.A.runid(jj['arch'], jj['arm'], jj['seed'])) if jj['kind'] == 'abc' else jj.get('snap', ''))
++                if s and s.rstrip('/') == mp:
++                    j = jj
++            phase = 'infer'
++        else:
++            name = os.path.basename(args[1])
++            try:
++                env = open('/proc/%d/environ' % pid, 'rb').read().split(b'\0')
++                gpu = int([e for e in env if e.startswith(b'RL5B_ASSIGNED_GPU=')][0].split(b'=')[1])
++            except (IndexError, FileNotFoundError, ValueError):
++                gpu = None
++            j = byid.get('CAUS:' + name) or dict(id='CAUS:' + name, kind='external', campaign='caus', script=name, priority=EXT_PRIO)
++            phase = 'external'
++        if j is None or gpu is None:
++            say('ADOPT: unmatched process %d (%s) -- left alone' % (pid, ' '.join(args)[:120]))
++            continue
++        slot = (gpu, 0)
++        if slot in running:
++            say('ADOPT: second process %d on GPU %d for %s -- left alone' % (pid, gpu, j['id']))
++            continue
++        ep_left = list(Q.ENDPOINTS[Q.ENDPOINTS.index(ep):]) if phase == 'infer' else list(Q.ENDPOINTS)
++        running[slot] = dict(job=j, phase=phase, proc=Adopted(pid), lg=_NullLog(), ep_left=ep_left, adopted=True,
++                             t0=time.time())
++        say('ADOPT %-26s gpu %d pid %d phase %s%s' % (j['id'], gpu, pid, phase, (' ' + ep) if ep else ''))
++        Q.event(kind='adopt', job=j['id'], gpu=gpu, pid=pid, phase=phase, endpoint=ep)
++    return running
++
++
++# ---------------------------------------------------------------- accounting
++def gpu_hours():
++    """RL5B GPU-h from queue_events (train_start -> train_ok/discard/gave_up, infer included), external from status."""
++    rl5b = 0.0
++    starts = {}
++    if os.path.isfile(Q.EVENTS):
++        for line in open(Q.EVENTS):
++            try:
++                e = json.loads(line)
++            except ValueError:
++                continue
++            t = dt.datetime.fromisoformat(e['at'])
++            if e['kind'] in ('train_start',):
++                starts[e['job']] = t
++            elif e['kind'] in ('job_done', 'discard', 'gave_up', 'infer_failed') and e.get('job') in starts:
++                rl5b += (t - starts.pop(e['job'])).total_seconds() / 3600
++    caus = 0.0
++    for p in ext_events():
++        if p[1] == 'END':
++            for f in p[3:]:
++                if f.startswith('gpu_h='):
++                    caus += float(f.split('=')[1])
++    return dict(rl5b_completed_or_discarded=round(rl5b, 2), caus_completed=round(caus, 2))
++
++
++# ---------------------------------------------------------------- main loop
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--jobs', required=True)
++    ap.add_argument('--gpus', default='0,1')
++    ap.add_argument('--retries', type=int, default=1)
++    ap.add_argument('--min-gpu-free-gb', type=float, default=24.0)
++    ap.add_argument('--poll', type=int, default=30)
++    ap.add_argument('--dry-run', action='store_true')
++    args = ap.parse_args()
++    Q.T.EXTRA_TRAIN_FLAGS = list(Q.ABC_FLAGS)
++    assert Q.ABC_FLAGS == ['--save_ckpts', 'minimal', '--link_pool'], Q.ABC_FLAGS
++    gpus = [int(g) for g in args.gpus.split(',')]
++    slots = [(g, 0) for g in gpus]
++    attempts, gave_up, done = {}, set(), set()
++    jobs0 = [j for _, j in Q.load_jobs(args.jobs)] + ext_jobs()
++    if not args.dry_run:
++        with open(PIDF, 'w') as fh:
++            fh.write(str(os.getpid()))
++    running = adopt(jobs0) if not args.dry_run else {}
++    # external scripts with START but no END that are not running now were interrupted -> re-run from scratch
++    adopted_ext = {r['job']['script'] for r in running.values() if r['job']['kind'] == 'external'}
++    if not args.dry_run:
++        for name, s in ext_state().items():
++            if s == 'started' and name not in adopted_ext:
++                ext_write(name, 'INTERRUPTED', now().isoformat(timespec='seconds'), 're-run from scratch')
++                say('external %s was interrupted -> will re-run from scratch' % name)
++    say('runner v2 start: slots %s, cutoff %s, pipeline hash %s, adopted %d' % (slots, CUTOFF, Q.pipeline_hash(), len(running)))
++    if not args.dry_run:
++        Q.event(kind='runner_v2_start', slots=slots, pipeline_hash=Q.pipeline_hash(), adopted=len(running),
++                head=Q.git('rev-parse', 'HEAD').stdout.strip())
++    while True:
++        jobs = [j for _, j in Q.load_jobs(args.jobs)] + ext_jobs()
++        jobs.sort(key=lambda j: (j.get('priority', 100),))
++        busy = {s['job']['id'] for s in running.values()}
++        pending = []
++        for j in jobs:
++            if j['id'] in busy or j['id'] in gave_up or j['id'] in done:
++                continue
++            if j['kind'] == 'external':
++                pending.append((j, False))
++                continue
++            ok, _ = Q.trained_ok(j)
++            if ok and Q.infer_complete(j):
++                done.add(j['id'])
++                continue
++            pending.append((j, ok))
++        # gating: Caus non-pilot scripts and EQ only after every CDR SINet and anchor job has been launched
++        early = [j for j, _ in pending if j.get('campaign') in ('cdr', 'e3c', 'bridge')]
++        need_gb = sum(foot(j) for j, tr in pending if not tr) + sum(foot(s['job']) for s in running.values() if s['phase'] != 'infer')
++        free_gb = shutil.disk_usage(REPO).free / 1e9
++        hold = None
++        if now() >= CUTOFF:
++            hold = 'cutoff'
++        elif free_gb < need_gb + DISK_MARGIN_GB:
++            hold = 'disk: free %.0f GB < remaining %.0f GB + %.0f GB' % (free_gb, need_gb, DISK_MARGIN_GB)
++        state = dict(at=now().isoformat(timespec='seconds'), pid=os.getpid(), hold=hold, free_gb=round(free_gb, 1),
++                     need_gb=round(need_gb, 1), running={'gpu%d' % k[0]: dict(job=v['job']['id'], phase=v['phase'])
++                                                         for k, v in running.items()},
++                     pending_by_campaign={c: sum(1 for j, _ in pending if j.get('campaign') == c)
++                                          for c in sorted({j.get('campaign') for j, _ in pending})},
++                     done=len(done), gave_up=sorted(gave_up), gpu_hours=gpu_hours())
++        if args.dry_run:
++            print(json.dumps(state, indent=1))
++            for j, tr in pending[:12]:
++                say('PENDING %-28s %-7s prio %-4s %s' % (j['id'], j.get('campaign'), j.get('priority'),
++                                                         'trained, needs inference' if tr else 'needs start'))
++            say('done %d, pending %d' % (len(done), len(pending)))
++            return
++        tmp = STATE + '.tmp'
++        json.dump(state, open(tmp, 'w'), indent=1)
++        os.replace(tmp, STATE)
++        for slot in slots:
++            if slot in running or not pending:
++                continue
++            gpu = slot[0]
++            # inference to finish an already-trained run is allowed even under a hold (it starts no new job)
++            idx = next((i for i, (j, tr) in enumerate(pending) if tr), None)
++            if hold and idx is None:
++                break
++            if Q.gpu_free_gb(gpu) < args.min_gpu_free_gb:
++                continue
++            if idx is None:
++                cand = None
++                for i, (j, tr) in enumerate(pending):
++                    if j['kind'] == 'external' and j['priority'] > EXT_PRIO_PILOT and early:
++                        continue
++                    if j.get('campaign') == 'eq' and early:
++                        continue
++                    if j.get('campaign') == 'e3e' and now() + dt.timedelta(hours=dur(j)) > CUTOFF:
++                        continue
++                    cand = i
++                    break
++                if cand is None:
++                    break
++                idx = cand
++            j, trained = pending.pop(idx)
++            if j['kind'] != 'external':
++                why = guard(j)
++                if why:
++                    say('PAUSE %s: %s' % (j['id'], why))
++                    Q.event(kind='guard_pause', job=j['id'], why=why)
++                    pending.insert(idx, (j, trained))
++                    break
++            if trained:
++                p, lg = Q.start_infer(j, Q.ENDPOINTS[0], gpu)
++                running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=list(Q.ENDPOINTS), t0=time.time())
++                continue
++            if j['kind'] == 'external':
++                p, lg = start_external(j, gpu)
++                if p is None:
++                    continue
++                running[slot] = dict(job=j, phase='external', proc=p, lg=lg, ep_left=[], t0=time.time())
++                say('EXT   %-26s gpu %d pid %d' % (j['id'], gpu, p.pid))
++                continue
++            # 2026-11-12 fix: a run killed before its first checkpoint leaves only training_log.log, which
++            # assert_ready does not see; relaunching into it appends to the log and the finished run then fails
++            # verification ('rounds'). A fresh launch therefore always starts from an empty snapshot dir.
++            snapd = os.path.join(REPO, Q.A.snap_dir(Q.A.runid(j['arch'], j['arm'], j['seed'])) if j['kind'] == 'abc'
++                                 else j['snap'])
++            if os.path.isdir(snapd) and os.listdir(snapd):
++                Q.discard(j, 'pre-launch: leftover partial run in %s' % os.path.relpath(snapd, REPO))
++            ok, why = Q.ready(j)
++            if not ok:
++                Q.discard(j, 'pre-launch: ' + why)
++                ok, why = Q.ready(j)
++            if not ok:
++                say('SKIP %s -- %s' % (j['id'], why))
++                Q.event(kind='not_launchable', job=j['id'], why=why)
++                gave_up.add(j['id'])
++                continue
++            p, lg = Q.start_train(j, gpu)
++            say('TRAIN %-26s gpu %d pid %d' % (j['id'], gpu, p.pid))
++            Q.event(kind='train_start', job=j['id'], gpu=gpu, pid=p.pid, head=Q.git('rev-parse', 'HEAD').stdout.strip(),
++                    pipeline_hash=Q.pipeline_hash(), campaign=j.get('campaign'), commit=j['commit'])
++            running[slot] = dict(job=j, phase='train', proc=p, lg=lg, ep_left=list(Q.ENDPOINTS), t0=time.time())
++        time.sleep(args.poll)
++        for slot in list(running):
++            s = running[slot]
++            if s['proc'].poll() is None:
++                continue
++            s['lg'].close()
++            j, gpu = s['job'], slot[0]
++            rc = s['proc'].returncode
++            if s['phase'] == 'external':
++                gh = (time.time() - s['t0']) / 3600
++                ext_write(j['script'], 'END', now().isoformat(timespec='seconds'),
++                          'exit=%s' % ('unknown(adopted)' if s.get('adopted') else rc), 'gpu_h=%.3f' % gh)
++                say('EXT END %s exit %s (%.2f GPU-h)' % (j['script'], rc, gh))
++                del running[slot]
++                continue
++            if s['phase'] == 'train':
++                ok, d = Q.trained_ok(j)
++                n = attempts.get(j['id'], 0) + 1
++                attempts[j['id']] = n
++                if ok and (rc in (0, None)):
++                    say('OK    %-26s wall %.1fm n_appended %s best_epoch %s' % (j['id'], d['wall_min'], d['n_appended'], d['best_epoch']))
++                    Q.event(kind='train_ok', job=j['id'], verify=d)
++                    p, lg = Q.start_infer(j, s['ep_left'][0], gpu)
++                    running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=s['ep_left'], t0=time.time())
++                else:
++                    why = 'rc=%s failed=%s' % (rc, d.get('failed_checks') or d.get('fail'))
++                    Q.discard(j, why)
++                    del running[slot]
++                    if n > args.retries:
++                        gave_up.add(j['id'])
++                        say('GIVE UP %s after %d attempts (%s)' % (j['id'], n, why))
++                        Q.event(kind='gave_up', job=j['id'], attempts=n, why=why)
++                    else:
++                        say('RETRY %s same seed (attempt %d): %s' % (j['id'], n + 1, why))
++            else:
++                ep = s['ep_left'].pop(0)
++                out = os.path.join(REPO, Q.pred_dir(j, ep))
++                gtn = len(os.listdir(os.path.join(REPO, 'Dataset/Test/%s/GT' % ep)))
++                complete = os.path.isdir(out) and len(os.listdir(out)) == gtn
++                Q.event(kind='infer_done', job=j['id'], endpoint=ep, rc=rc, complete=complete)
++                if not complete:
++                    s['ep_left'].insert(0, ep)
++                    if s.get('adopted') or rc in (None, 0):
++                        p, lg = Q.start_infer(j, ep, gpu)
++                        running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=s['ep_left'], t0=time.time())
++                        continue
++                    say('INFER FAIL %s %s rc=%s' % (j['id'], ep, rc))
++                    del running[slot]
++                    gave_up.add(j['id'])
++                    Q.event(kind='infer_failed', job=j['id'], endpoint=ep)
++                elif s['ep_left']:
++                    p, lg = Q.start_infer(j, s['ep_left'][0], gpu)
++                    running[slot] = dict(job=j, phase='infer', proc=p, lg=lg, ep_left=s['ep_left'], t0=time.time())
++                else:
++                    say('DONE  %s (trained + inferred)' % j['id'])
++                    Q.event(kind='job_done', job=j['id'])
++                    done.add(j['id'])
++                    del running[slot]
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/rebuild/RL5B/start_queue.sh b/rebuild/RL5B/start_queue.sh
+new file mode 100755
+index 0000000..1a104c0
+--- /dev/null
++++ b/rebuild/RL5B/start_queue.sh
+@@ -0,0 +1,17 @@
++#!/usr/bin/env bash
++# Start the RL5B queue runner unless one is already running. Used by the @reboot cron entry and by
++# watchdog.sh. Idempotent: an existing runner (pidfile, or exact command-line match) is left alone.
++# The runner itself discards any run interrupted mid-training and re-runs it from scratch with the
++# same seed (logged as a 'discard' event in rebuild/RL5B/out/queue_events.jsonl).
++REPO=/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD
++cd "$REPO" || exit 1
++PIDF=rebuild/RL5B/out/queue.pid
++WLOG=rebuild/RL5B/watchdog.log
++is_runner() { [ -r "/proc/$1/cmdline" ] && { tr '\0' ' ' < "/proc/$1/cmdline"; } 2>/dev/null | grep -q '^\.venv/bin/python rebuild/RL5B/rl5b_runner\.py --jobs'; }
++if [ -f "$PIDF" ] && is_runner "$(cat "$PIDF")"; then exit 0; fi
++for p in $(ls /proc | grep -E '^[0-9]+$'); do
++  if is_runner "$p"; then echo "$p" > "$PIDF"; exit 0; fi
++done
++nohup .venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json >> rebuild/RL5B/queue.log 2>&1 < /dev/null 9>&- &   # 9>&-: never inherit the watchdog lock (11-12 fix)
++echo $! > "$PIDF"
++echo "[$(date '+%m-%d %H:%M:%S')] start_queue (${1:-manual}): started runner pid $(cat "$PIDF")" >> "$WLOG"
+diff --git a/rebuild/RL5B/watchdog.sh b/rebuild/RL5B/watchdog.sh
+new file mode 100755
+index 0000000..e5cbc5b
+--- /dev/null
++++ b/rebuild/RL5B/watchdog.sh
+@@ -0,0 +1,99 @@
++#!/usr/bin/env bash
++# RL5B watchdog -- run by cron every 10 minutes. Writes a heartbeat file and keeps both GPUs working.
++#
++#   heartbeat: rebuild/RL5B/out/heartbeat.txt   (overwritten each check; history in rebuild/RL5B/watchdog.log)
++#
++# Rules
++#   * runner dead and jobs pending                          -> start it (start_queue.sh)
++#   * runner alive, jobs pending, a GPU without any of our  -> after 2 consecutive checks (20 min), stop the
++#     MyTrain/MyTest processes, and the idle GPU is not        runner AND its children, then start a new runner;
++#     explained by the queue's own guards                      the interrupted runs are discarded and re-run from
++#                                                              scratch with the same seed (logged as discards)
++#   * an idle GPU is "explained" (no restart) if: fewer pending jobs than idle GPUs; the GPU has < 24 GB free
++#     (another user's job -- the runner is waiting by design); or the runner logged PAUSE in the last 20 minutes
++REPO=/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD
++cd "$REPO" || exit 1
++OUT=rebuild/RL5B/out
++mkdir -p "$OUT"
++exec 9>"$OUT/watchdog.lock"
++flock -n 9 || exit 0
++WLOG=rebuild/RL5B/watchdog.log
++HB="$OUT/heartbeat.txt"
++STATE="$OUT/watchdog_idle_count"
++NVS=/usr/bin/nvidia-smi
++now=$(date '+%Y-%m-%d %H:%M:%S')
++PIDF="$OUT/queue.pid"
++is_runner() { [ -r "/proc/$1/cmdline" ] && { tr '\0' ' ' < "/proc/$1/cmdline"; } 2>/dev/null | grep -q '^\.venv/bin/python rebuild/RL5B/rl5b_runner\.py --jobs'; }
++runner=""
++if [ -f "$PIDF" ] && is_runner "$(cat "$PIDF")"; then runner=$(cat "$PIDF"); fi
++pend_line=$(.venv/bin/python rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json --dry-run 2>/dev/null | tail -1)
++pending=$(echo "$pend_line" | sed -n 's/.*pending \([0-9]*\).*/\1/p'); pending=${pending:-0}
++done_n=$(echo "$pend_line" | sed -n 's/.*done \([0-9]*\),.*/\1/p'); done_n=${done_n:-0}
++ours() {  # our MyTrain/MyTest parent processes on GPU $1 (workers share the cmdline; count >0 means busy)
++  for p in $(ls /proc | grep -E '^[0-9]+$'); do
++    c=$( { tr '\0' ' ' < /proc/$p/cmdline; } 2>/dev/null ) || continue
++    # external (Caus) jobs run with CUDA_VISIBLE_DEVICES=<gpu> and --gpu 0, so their --gpu index is not the physical
++    # GPU; they are covered by the runner-state check below (11-13 display fix)
++    { tr '\0' '\n' < /proc/$p/environ; } 2>/dev/null | grep -q '^CUDA_VISIBLE_DEVICES=' && continue
++    case "$c" in *MyTrain.py*"--gpu $1"*|*MyTest.py*"--gpu $1"*) echo "$c" | grep -o -- '--save_model [^ ]*\|--model_path [^ ]*' | head -1 ;; esac
++  done | sort -u
++}
++idle=0; gpu_lines=""; explained=""
++for g in 0 1; do
++  # 2026-11-12 fix: a job the runner itself reports on this GPU (fresh state, < 180 s old) counts as busy,
++  # whatever program it runs -- the Caus pilot runs rebuild/CAUS/exp01_pilot.py, not MyTrain/MyTest, and was
++  # mistaken for an idle GPU at 02:00 on 11-12 (false restart).
++  state_job=$( { .venv/bin/python -c "
++import json,time,os
++p='$OUT/runner_state.json'; s=json.load(open(p))
++fresh=time.time()-os.path.getmtime(p)<180
++r=s.get('running',{}).get('gpu$g')
++print(r['job'] if (fresh and r) else '')"; } 2>/dev/null )
++  jobs_on=$(ours $g | sed 's#.*/\([^/]*\)/[^/]*$#\1#; s#.*/\([^/]*\)/$#\1#' | sort -u | tr '\n' ' ')
++  util=$($NVS --query-gpu=utilization.gpu,memory.used,memory.free --format=csv,noheader,nounits -i $g 2>/dev/null | tr -d ' ')
++  free_mb=$(echo "$util" | cut -d, -f3)
++  [ -z "$jobs_on" ] && [ -n "$state_job" ] && jobs_on="$state_job(runner-state)"
++  gpu_lines="$gpu_lines\n  GPU$g util%,used MiB,free MiB = $util | our job(s): ${jobs_on:-NONE}"
++  if [ -z "$jobs_on" ]; then
++    idle=$((idle+1))
++    if [ -n "$free_mb" ] && [ "$free_mb" -lt 24576 ]; then explained="$explained GPU$g-held-by-another-user"; fi
++  fi
++done
++recent_pause=$(tail -40 rebuild/RL5B/queue.log | grep -E 'PAUSE|TRAIN|DONE|OK |launched|ADOPT|EXT ' | tail -1 | grep PAUSE)   # paused only if the latest event is a PAUSE
++if [ -n "$recent_pause" ]; then
++  ts=$(echo "$recent_pause" | sed -n 's/^\[\([0-9-]* [0-9:]*\)\].*/\1/p')
++  if [ -n "$ts" ] && [ $(( $(date +%s) - $(date -d "$(date +%Y)-$ts" +%s 2>/dev/null || echo 0) )) -lt 1200 ]; then explained="$explained recent-PAUSE"; fi
++fi
++[ "$pending" -lt "$idle" ] && explained="$explained fewer-pending-than-idle"
++hold=$( { .venv/bin/python -c "import json;print(json.load(open('$OUT/runner_state.json')).get('hold') or '')"; } 2>/dev/null )
++[ -n "$hold" ] && explained="$explained runner-hold:$hold"
++alert=""
++if [ -n "$hold" ] || [ -n "$recent_pause" ]; then alert="ALERT: the runner is holding or paused (${hold:-$recent_pause}) -- jobs are NOT starting; see rebuild/RL5B/queue.log"; fi
++cnt=$(cat "$STATE" 2>/dev/null || echo 0)
++action="none"
++if [ -z "$runner" ] && [ "$pending" -gt 0 ]; then
++  bash rebuild/RL5B/start_queue.sh watchdog-runner-dead
++  action="runner was dead -> started"
++  echo 0 > "$STATE"
++elif [ -n "$runner" ] && [ "$pending" -gt 0 ] && [ "$idle" -gt 0 ] && [ -z "$explained" ]; then
++  cnt=$((cnt+1)); echo "$cnt" > "$STATE"
++  if [ "$cnt" -ge 2 ]; then
++    kids=$(ps -o pid= --ppid "$runner" | tr '\n' ' ')
++    kill "$runner" $kids 2>/dev/null; sleep 20
++    for k in $kids; do pkill -TERM -P "$k" 2>/dev/null; done; kill -9 "$runner" $kids 2>/dev/null
++    rm -f "$PIDF"
++    bash rebuild/RL5B/start_queue.sh watchdog-idle-gpu
++    action="GPU idle for 2 checks with $pending pending -> stopped runner $runner and children [$kids], restarted"
++    echo 0 > "$STATE"
++  else
++    action="GPU idle (check $cnt/2), watching"
++  fi
++else
++  echo 0 > "$STATE"
++fi
++last=$(tail -3 rebuild/RL5B/queue.log)
++disk=$(df -h "$REPO" | tail -1 | awk '{print $4" free of "$2}')
++printf "%bRL5B heartbeat %s\nrunner pid: %s\njobs: done %s, pending %s (active jobs file; EQ held: see queue_jobs_held.json)\n%b\nexplained idle: %s\naction: %s\ndisk: %s\nlast queue log lines:\n%s\n" \
++  "${alert:+$alert\n}" "$now" "${runner:-NONE}" "$done_n" "$pending" "$gpu_lines" "${explained:-n/a}" "$action" "$disk" "$last" > "$HB.tmp" && mv "$HB.tmp" "$HB"
++[ "$action" != "none" ] && echo "[$now] $action" >> "$WLOG"
++exit 0

@@ -153,7 +153,7 @@ def main():
            'target pool; the frozen DINOv2-ViT-L/14 features and retrieval are used only to generate those pseudo masks. '
            'The gap to RISE therefore isolates the *source of supervision on the target images* (RISE: pseudo masks on the '
            'real target images; ours: synthetic renders plus self-training) far more than a difference in detector or '
-           'representation. EXP-03 E3-e (our trainer on RISE\'s released pseudo masks) measures this directly. Our '
+           'representation. E3-e (our trainer on RISE\'s released pseudo masks) would separate the quality of those masks from the training recipe; it was optional and was not run (author, 11-12). Our '
            'clustering also uses frozen DINOv2 ViT-L/14 features, but only to allocate the synthetic budget.']
     open(os.path.join(R.TABLES, 'AN02_published_baselines.md'), 'w').write('\n'.join(md) + '\n')
     bad = [c for c in checks if not c['within_0p002']]

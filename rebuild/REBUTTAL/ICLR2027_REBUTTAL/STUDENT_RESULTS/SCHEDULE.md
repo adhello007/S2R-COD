@@ -1,3 +1,5 @@
+*Superseded on 2026-11-16: the outages of 11-12, 11-13 and 11-14 to 11-16 changed these projections. For the current state and the EQ projection, see `EXECUTION_STATUS.md` (section "Incidents, 2026-11-13 to 2026-11-16"). Kept as the record of the 11-11 plan.*
+
 # RL5B GPU schedule (runner v2, projected 2026-11-11 23:25 IST)
 
 **Cutoff:** 2026-11-17 06:00 IST. Nothing new starts after it.

@@ -1,0 +1,86 @@
+# Phase 6 audit: independent recomputation of the numbers quoted in FINAL_UPDATED_REBUTTAL.md
+
+## CW-01 (SE campaign, S_alpha; 128 rows)
+PASS primary Delta C10-B                                            recomputed +0.0024      quoted +0.0024     (in rebuttal)
+PASS primary 95% CI low                                             recomputed -0.0020      quoted -0.0020   
+PASS primary 95% CI high                                            recomputed +0.0067      quoted +0.0067     (in rebuttal)
+PASS primary TOST p                                                 recomputed 0.101        quoted 0.101       (in rebuttal)
+PASS sigma-hat pooled (4 arms, df 28)                               recomputed 0.00343      quoted 0.00343     (in rebuttal)
+PASS phrase present: five of 16 equivalent, none after Holm         recomputed Five of the 16 contrasts are equivalent at $\pm0.005$ before correction, and none after a Holm correction quoted Five of the 16 contrasts are equivalent at $\pm0.005$ before correction, and none after a Holm correction  (in rebuttal)
+     (recomputed count 5 of 16; Holm-equivalent 0)
+PASS 3-seed SINet C10 COD10K                                        recomputed 0.7185       quoted 0.7185      (in rebuttal)
+PASS 3-seed SINet C10 NC4K                                          recomputed 0.7690       quoted 0.7690      (in rebuttal)
+PASS P(rule fires | 0.005), full rule, simulated                    recomputed 0.20         quoted 0.20        (in rebuttal)
+PASS P(rule fires | 0.0142) > 0.99                                  recomputed probability above $0.99$ quoted probability above $0.99$  (in rebuttal)
+     (P at 0.0142 = 0.9989)
+PASS 80% detectable effect, full rule                               recomputed 0.0087       quoted 0.0087      (in rebuttal)
+
+## CW-02
+PASS AN-01 SINet COD10K BIoU@0.5 C10-B Delta                        recomputed +0.0046      quoted +0.0046     (in rebuttal)
+PASS AN-01 C10-B x bar                                              recomputed 0.30         quoted 0.30        (in rebuttal)
+PASS AN-01 SINet COD10K BIoU@0.5 CINV-B Delta                       recomputed +0.0098      quoted +0.0098     (in rebuttal)
+PASS AN-01 CINV-B x bar                                             recomputed 0.64         quoted 0.64        (in rebuttal)
+PASS CDR dispersed reference D                                      recomputed 0.331        quoted 0.331       (in rebuttal)
+PASS CDR sigma-hat df                                               recomputed 24           quoted 24        
+PASS CDR bar 2 sigma-hat                                            recomputed 0.0193       quoted 0.0193      (in rebuttal)
+PASS CDR L1 Delta                                                   recomputed -0.0005      quoted -0.0005     (in rebuttal)
+PASS CDR L1 x bar                                                   recomputed 0.03         quoted 0.03        (in rebuttal)
+PASS CDR L1 permutations agreeing                                   recomputed 2/5          quoted 2/5         (in rebuttal)
+PASS CDR LH Delta                                                   recomputed +0.0021      quoted +0.0021     (in rebuttal)
+PASS CDR LH x bar                                                   recomputed 0.11         quoted 0.11        (in rebuttal)
+PASS CDR LH permutations agreeing                                   recomputed 4/5          quoted 4/5         (in rebuttal)
+PASS CDR units Welch Delta (10 vs 9)                                recomputed +0.0024      quoted +0.0024     (in rebuttal)
+PASS CDR units Welch CI low                                         recomputed -0.0024      quoted -0.0024     (in rebuttal)
+PASS CDR units Welch CI high                                        recomputed +0.0072      quoted +0.0072     (in rebuttal)
+PASS induced N_eff LU                                               recomputed 50           quoted 50          (in rebuttal)
+PASS induced N_eff L1                                               recomputed 45           quoted 45          (in rebuttal)
+PASS induced N_eff LH                                               recomputed 41           quoted 41          (in rebuttal)
+PASS nominal N_eff LU                                               recomputed 75           quoted 75          (in rebuttal)
+PASS nominal N_eff L1                                               recomputed 30           quoted 30          (in rebuttal)
+PASS nominal N_eff LH                                               recomputed 15           quoted 15          (in rebuttal)
+PASS images shared with C10, min-max                                recomputed 440–518      quoted 440–518     (in rebuttal)
+PASS induced N_eff random B (mean 8 seeds)                          recomputed 43           quoted 43          (in rebuttal)
+PASS pseudo-label arm means, min-max                                recomputed 1991–2020    quoted 1991–2020   (in rebuttal)
+PASS pseudo-label runs, min-max (64 runs)                           recomputed 1782–2278    quoted 1782–2278   (in rebuttal)
+
+## CW-03
+PASS C10 8-seed SINet COD10K                                        recomputed 0.717        quoted 0.717       (in rebuttal)
+PASS C10 8-seed SINet NC4K                                          recomputed 0.768        quoted 0.768       (in rebuttal)
+PASS C10 8-seed SINetv2 COD10K                                      recomputed 0.695        quoted 0.695       (in rebuttal)
+PASS C10 8-seed SINetv2 NC4K                                        recomputed 0.749        quoted 0.749       (in rebuttal)
+PASS supervised anchor SINet COD10K (n=3)                           recomputed 0.805        quoted 0.805       (in rebuttal)
+PASS supervised anchor SINet NC4K (n=3)                             recomputed 0.840        quoted 0.840       (in rebuttal)
+PASS supervised anchor SINetv2 COD10K (n=3)                         recomputed 0.807        quoted 0.807       (in rebuttal)
+PASS supervised anchor SINetv2 NC4K (n=3)                           recomputed 0.839        quoted 0.839       (in rebuttal)
+PASS released SINet-V2 COD10K                                       recomputed 0.815        quoted 0.815       (in rebuttal)
+PASS released SINet-V2 NC4K                                         recomputed 0.847        quoted 0.847       (in rebuttal)
+PASS RISE COD10K                                                    recomputed 0.763        quoted 0.763       (in rebuttal)
+PASS RISE NC4K                                                      recomputed 0.805        quoted 0.805       (in rebuttal)
+PASS gap: supervised SINet-V2 - C10 SINet-V2, COD10K                recomputed 0.120        quoted 0.120       (in rebuttal)
+PASS gap: real labels, our recipe (SINet-V2, COD10K)                recomputed 0.112        quoted 0.112       (in rebuttal)
+PASS gap: official recipe on top                                    recomputed 0.008        quoted 0.008       (in rebuttal)
+PASS gap: RISE - C10 SINet-V2, COD10K                               recomputed +0.068       quoted +0.068      (in rebuttal)
+PASS gap: RISE - C10 SINet-V2, NC4K                                 recomputed +0.056       quoted +0.056      (in rebuttal)
+     (published-vs-re-scored agreement is checked in AN02_published_baselines.json: present)
+
+## CW-04
+PASS R2 between foregrounds (two renders)                           recomputed 0.86         quoted 0.86        (in rebuttal)
+PASS R2 random pairing                                              recomputed 0.50         quoted 0.50        (in rebuttal)
+PASS ICC                                                            recomputed 0.71         quoted 0.71        (in rebuttal)
+PASS cosine to own base render                                      recomputed 0.73         quoted 0.73        (in rebuttal)
+PASS cosine to random base render                                   recomputed 0.06         quoted 0.06        (in rebuttal)
+PASS clusters with nearest cut-out beyond median member             recomputed 52 of the 75 quoted 52 of the 75  (in rebuttal)
+
+## Spot re-score of saved CDR maps (Boundary-IoU at 0.5, COD10K) against EXP02_SINet_per_run.csv
+PASS SINet_CDRLHP3_s43                        re-scored 0.336384  table 0.336384
+PASS SINet_CDRL1P2_s45                        re-scored 0.334698  table 0.334698
+
+## Internal details in the rebuttal (must be none)
+PEND unresolved [EQ]/[AUTHOR]   5 (must be 0 with --final)
+PASS file path or extension     none
+PASS commit hash                none
+PASS hardware                   none
+PASS agent or tool              none
+PASS internal task code         none
+
+RESULT: PASS

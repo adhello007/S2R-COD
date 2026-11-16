@@ -36,20 +36,22 @@ null hypothesis"). The claims below are the ones that did overreach, plus the fa
 | 19 | Discussion | — | new **Scope** paragraph: every item of the posted scope list, the foreground-constraint numbers (ICC 0.71; 52 of 75 clusters, with the representation caveat), and "we make no claim about other generators" | CW-04, QA-04 |
 | 20 | Conclusion | "did not beat spending it at random" | "showed no detectable advantage … an advantage the size of the published method's own gain is excluded, and smaller ones are not"; result placeholders; scope sentence | CW-01, CW-04 |
 | 21 | §2, rule (D1) | "every seed agrees on its sign" | "every seed at three seeds; at least seven of eight in the eight-seed expansion, fixed before that campaign ran"; App. B gives the 7/8 rule's probability | audit |
-| 22 | App. G (D2) | pseudo-label means "across the seed expansion" | "over the 40 runs the seed expansion added (seeds 46–50) … over all eight seeds 1991, 2007, 2020, 2015 (range 1782–2278)" | audit |
+| 22 | App. H (D2) | pseudo-label means "across the seed expansion" | "over the 40 runs the seed expansion added (seeds 46–50) … over all eight seeds 1991, 2007, 2020, 2015 (range 1782–2278)" | audit |
 | 23 | App. B (D5) | "the E-measure E_φ" | "the mean E-measure over thresholds, the variant SINet-V2 and RISE report" | audit |
 | 24 | §1.1, App. A | RISE absent | RISE added (verified BibTeX), with what it shares with our pipeline (the SINet-V2 detector and the same 4,040 images) and what the gap therefore isolates | CW-03 |
 | 25 | §3.1 → App. C | "That is the plain form …" bar-arithmetic paragraph | moved to App. C ("Why the eight-seed bar is wider"), for the page budget | — |
+| 26 | §3.2, dose-response ¶ (11-16) | — | "The levels delivered to the training set are closer than their quotas: … 50, 45 and 41, against 75, 30 and 15 nominally (random selection: 43) …" (a design property fixed before any run) | CW-02 |
+| 27 | Discussion, Scope (11-16) | — | "Every arm trains without real labels, well below supervised accuracy (Appendix A); whether the null holds at a higher operating point … was not tested." (posted Part 3, item 4) | CW-03, CW-04 |
 
 ## Pending (outcome-dependent; filled from the pre-registered decision sentences)
 
 | Macro | Where | Filled when |
 |---|---|---|
-| `\cdrverdict`, `\cdrshort` | §3.2 end; abstract; conclusion | after the 35 dose-response SINet runs are scored and analysed (projected Fri 13 Nov) |
+| `\cdrverdict`, `\cdrshort` | §3.2 end; abstract; conclusion | **filled 11-16** from the pre-registered sentence ("not supported"; `revision/cdr_result.tex`) |
 | `\eqverdict`, `\eqshort` | §3.1 decisive ¶; abstract; conclusion | after all 81 confirmatory runs (17 Nov), or with the INCOMPLETE rule |
-| protocol table and gap paragraph (DOC-02) | App. A | after the supervised anchors are scored (projected Fri 13 Nov) |
+| protocol table and gap paragraph (DOC-02) | App. A | **filled 11-14** (`revision/table_protocol.tex`, `revision/gap_paragraph.tex`) |
 
-Each fill re-checks the page limit (main text ≤ 10 pages; currently 25 of 80 lines of page 10 are free).
+Each fill re-checks the page limit (main text ≤ 10 pages). After the 11-16 edits the conclusion still ends on page 10, and the AI-use statement starts on the same page, so about eight lines (≈ 90 pt) remain before the conclusion would cross onto page 11; the EQ sentences must fit in that, or be offset by cuts.
 
 ## Title (author decides; check the ICLR policy on title changes during the discussion period)
 

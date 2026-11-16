@@ -1,9 +1,70 @@
 # EXECUTION_STATUS: RL5B rebuttal
 
-*Living document. The final report to the corresponding author (§11 of the instructions) replaces this
-header block when the work is complete.*
+## Report to the corresponding author (§11), provisional at 2026-11-16 21:59 IST
 
-**Status at 2026-11-11 18:30 IST: campaigns running; nothing campaign-related has been scored.**
+*EQ is still training. This section is final except for the EQ items (marked **EQ**), which are filled on
+17 Nov after the committed analysis runs.*
+
+**Deadline.** The non-EQ deliverables were complete at 21:59 on 16 Nov, against the 22:00 deadline, with no
+margin.
+- The 35-hour outage (14 Nov 21:27 to 16 Nov 08:38) stopped all work.
+- The CDR result, the evidence ledger, the results summary, the final rebuttal, the audit and the path check
+  were therefore produced between 21:35 and 21:59. `analysis/audit_recompute.py` re-checks every number they
+  quote against the raw files (67 checks, all PASS).
+- The earlier deliverables (TH-01, TH-02, AN-01 to AN-03, EXP-03, DOC-01 to DOC-03) were finished by 14 Nov.
+
+1. **Tasks per status** (definitions from §7; details in `EXPERIMENTAL_EVIDENCE.md`).
+   - **VERIFIED:** TH-01, TH-02, AN-01 (exploratory), AN-02, AN-03, DOC-02, DOC-03.
+   - **PARTIALLY VERIFIED:**
+     - EXP-02: SINet complete; the SINet-v2 replication was not run.
+     - EXP-03: E3-a, E3-c, E3-d and E3-f done; E3-b and E3-e not run.
+     - DOC-01: EQ sentences pending; the title is the author's decision.
+   - **BLOCKED (compute):** EXP-04, dropped before launch.
+   - **Pending (EQ):** EXP-01. It is projected **INCOMPLETE**: about 15 of 27 seeds per arm will be complete
+     by the 06:00 cutoff.
+2. **GPU-hours** (at 21:38):
+   - RL5B campaigns: 333.7 (completed or discarded runs), plus the 0.9 h Stage 0 probe.
+   - Caus scripts: 22.0, counted separately.
+   - Lost to power outages: about 146 GPU-h in all, itemised in the incident sections below.
+3. **Verdicts.**
+   - **EXP-02 (CDR, SINet):** the pre-registered test did **not support** a downstream effect of concentration.
+     Against a bar of 0.0193 Boundary-IoU, the committed shape differs from the dispersed reference by −0.0005
+     and the twice-as-concentrated level by +0.0021. No secondary measure clears its bar.
+   - **EXP-01 (EQ):** **EQ** pending.
+4. **Corrections to the posted rebuttal** (all stated explicitly in `FINAL_UPDATED_REBUTTAL.md`):
+   - Rule sensitivity at Δ = +0.005: 0.14 under the normal approximation. Under the full rule (arm-specific
+     SDs, σ̂ re-estimated, ≥ 7/8 signs) it is **0.20**, and the effect detected 80% of the time is **0.0087**,
+     not 0.008. σ̂ = 0.003431, not ≈ 0.00345.
+   - Boundary result: 1.37× / 1.34× rest on 3 seeds. At 8 seeds they are **0.30× / 0.64×**, within noise.
+   - Pseudo-label means 1977–2025 cover seeds 46–50 only. Over all eight seeds they are 1991–2020 (runs
+     1782–2278).
+   - RISE's detector **is SINet-V2**, trained on pseudo masks for the same 4,040 images. It is not "a different
+     training pipeline".
+   - The "every seed" sign rule was ≥ 7/8 in the eight-seed campaign.
+5. **Concerns not FULLY ADDRESSED** (`FINAL_SCIENTIFIC_AUDIT.md`):
+   - CW-01: SUBSTANTIALLY, provisionally. The overclaim is removed and QA-01 is met. The confirmatory campaign
+     will be INCOMPLETE (**EQ**: re-assessed on 17 Nov).
+   - CW-02: SUBSTANTIALLY. The test ran on one architecture only. The delivered concentration levels are
+     closer than the nominal ones, and the test excludes only boundary effects above ≈ 0.007.
+   - CW-03: SUBSTANTIALLY. Supervision quality and recipe cannot be separated for RISE (E3-e not run), and the
+     higher operating point was not run.
+   - CW-04: SUBSTANTIALLY. The text and quantification are done. It becomes FULLY once the title carries the
+     scope, as posted.
+6. **Items needing the author's decision.**
+   - **Title:** recommend option (ii) in `RESULT_TABLES/DOC01_claims.md`, given the CDR outcome.
+   - **Appendix B** of the paper (instruction).
+   - **Push:** this session cannot push. Commits after `c87e052` need the author's push.
+   - **Cron entries** (`watchdog.sh`, `eq_autorun.sh`, `@reboot`): remove after the EQ analysis on 17 Nov.
+     They are left in place until the author agrees.
+   - **Two sentences added to the manuscript on 11-16:**
+     - §3.2: delivered concentration;
+     - Discussion: the untested higher operating point.
+
+     The main text still ends on page 10. Delete either sentence if you disagree (`RESULT_TABLES/DOC01_claims.md`
+     rows 26–27).
+
+**Status at 2026-11-16 21:59 IST:** EQ training (35/81 runs complete, 2 running); all other campaigns finished
+and scored.
 
 ## Author's binding rules for the revised manuscript and the final rebuttal (checked in the Phase 6 audit)
 
@@ -21,12 +82,35 @@ header block when the work is complete.*
    rule if the cutoff comes first. (11-11, 11-12)
 7. **Appendix B of the paper** goes under §11 item 6. (11-11)
 
+## Incidents, 2026-11-13 to 2026-11-16 (≈78 GPU-h lost; no committed data lost)
+
+Times are from `journalctl --list-boots` and `rebuild/RL5B/out/queue_events.jsonl`. Every loss was abrupt
+(the journal stops with no shutdown sequence). After each one, `@reboot` restarted the runner, which discarded
+the interrupted runs and re-ran them from scratch with the same seed (`discard` events).
+
+| Power lost | Back up | Interrupted runs (training time lost) | GPU-h lost (partial + idle) |
+|---|---|---|---|
+| 11-13 10:25 | 10:31 | CDR LU s47 (0.89 h) | ≈1.4 |
+| 11-13 10:32 | 10:39 | none running (the runner had not restarted yet) | ≈0.2 |
+| 11-13 11:36 | 12:32 | CDR LU s47 (0.95 h), E3 SINet-v2 SUPREAL s45 (0.39 h) | ≈3.3 |
+| **11-14 21:27** | **11-16 08:38** | EQ C10 s108 (1.48 h), EQ CSHUF s108 (0.30 h) | **≈72.2** (35.2 h × 2 GPUs idle) |
+| 11-16 10:32 | 10:40 | EQ B s109, C10 s109 (0.06 h each) | ≈0.5 |
+
+**Consequences.**
+- **EQ will not finish.** At 21:38 on 11-16, 35 of 81 EQ runs were complete, 2 were running and 44 were
+  pending. One run takes ≈108 min, so 9 more runs can start before the 06:00 cutoff. Completed by about
+  07:00 on 11-17: seeds 101–115 for all three arms, plus B s116, that is B 16, C10 15, CSHUF 15.
+- **INCOMPLETE rule.** Amendment 1 applies: every completed run is analysed as pre-registered, the result is
+  labelled INCOMPLETE, and the missing runs are named. `eq_autorun.sh` runs this once no EQ run is in flight
+  after the cutoff.
+- **Deadline.** The 16 Nov 22:00 deadline for the non-EQ deliverables was met with no margin (see the report above).
+
 ## Incidents on 2026-11-12 (≈11.9 GPU-h lost; no committed data lost)
 
 | When | What happened | GPU-h lost |
 |---|---|---|
 | 11-11 23:21 to 11-12 01:49 | CDR L1P3/L1P4 s42 took about 147 min instead of 106, because CPU scoring (AN-01, the bridge check) competed with the data loaders | 1.37 |
-| 01:50 to 02:00 | **Watchdog false restart.** The Caus pilot runs `exp01_pilot.py`, not MyTrain/MyTest, so GPU 0 looked idle for two checks. The watchdog killed the runner and its children: the pilot (re-run, then exit 0) and a healthy CDR L1P5 s42. The relaunch reused the killed run's log folder, failed verification (`rounds`) after a full run, and was retried successfully | 2.03 |
+| 01:50 to 02:00 | **Watchdog false restart.** The Caus pilot runs its own Python program, not MyTrain/MyTest, so GPU 0 looked idle for two checks. The watchdog killed the runner and its children: the pilot (re-run, then exit 0) and a healthy CDR L1P5 s42. The relaunch reused the killed run's log folder, failed verification (`rounds`) after a full run, and was retried successfully | 2.03 |
 | 07:55:44 | **Power loss** (abrupt; no shutdown sequence). CDR LHP5 s42 and LU s43 were lost in training; the machine was down until 10:16 | 0.74 + 4.77 idle |
 | 11:39:13 | **Power loss again.** The relaunched LHP5 s42 and LU s43 were lost after 80 min; the machine was down until 11:47 | 2.68 + 0.34 idle |
 
@@ -71,7 +155,7 @@ from scratch with the same seed (`discard` events). `git fsck` is clean; all com
 7. **The final schedule is shown to the author before EQ launches.** EQ's jobs are held in
    `rebuild/RL5B/queue_jobs_held.json` until then.
 
-**Blocked (input missing).** The Caus EXP-01 specification (the minimum set of different-shape oracle arms) and
+**Blocked at the time (resolved 11-11: the author supplied the Caus scripts and removed the new-foreground campaign).** The Caus EXP-01 specification (the minimum set of different-shape oracle arms) and
 the new-foreground campaign specification are not in the repository. The author has been asked for them.
 
 ## Compute budget (§6 of the instructions), filled at Stage 0 before launch
@@ -110,14 +194,18 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
 | Task | Status | Start | End | GPU-h | Notes |
 |---|---|---|---|---|---|
 | Stage 0 setup | done | 11-09 07:30 | 11-09 08:09 | probe ≈0.9 | reproduction gate PASS (anchor and 4 SE runs, all 9 metrics at 6 dp) |
-| TH-01 | done | 11-09 | 11-09 | 0 | reproduction PASS; posted sensitivity figure corrected (0.205 under the full rule, against 0.139 posted); n = 29 |
-| TH-02 | done | 11-09 | 11-09 | 0 | τ_H = 0.758; toy recovers α |
-| AN-01 | gate running | 11-09 | | 0 | |
-| EXP-02 CDR | running (queued behind bridge and E3-c) | 11-09 | | | allocations drawn by the committed rule; gates 6/6 |
-| EXP-01 EQ | queued | | | | pools being built and gated |
-| EXP-03 | E3-c running | 11-09 08:09 | | | E3-a, E3-d and E3-e need the external downloads |
-| EXP-04 | not run | | | 0 | dropped before launch (budget) |
-| AN-02, AN-03, DOC-01/02/03 | pending | | | | |
+| TH-01 | VERIFIED | 11-09 | 11-09 | 0 | reproduction PASS; posted sensitivity figure corrected (0.205 under the full rule, against 0.139 posted); n = 29 recommended, capped at 27 |
+| TH-02 | VERIFIED | 11-09 | 11-09 | 0 | τ_H = 0.758; toy recovers α |
+| AN-01 | VERIFIED (exploratory) | 11-09 | 11-12 | 0 | 3-seed table reproduced (2 dp); 8-seed: 0.30× / 0.64×, all contrasts within noise |
+| AN-02 | VERIFIED | 11-09 | 11-09 | 0 | 12/12 published values within 0.002 of our re-score; RISE correction (detector is SINet-V2); E3-e sentence corrected 11-16 (it was not run) |
+| AN-03 | VERIFIED | 11-11 | 11-11 | 0 | independent count check PASS (23 arms) |
+| EXP-02 CDR (SINet) | PARTIALLY VERIFIED | 11-09 (bridge) / 11-11 18:26 | runs 11-13 14:23; analysis 11-14 13:13; manuscript 11-16 21:35 | ≈64 incl. re-runs | verdict **not supported**; SINet-v2 replication not run (deviation 12) |
+| EXP-01 EQ | training; projected INCOMPLETE | 11-13 23:59 | (17 Nov ≈07:00) | ≈63 so far | 35/81 done at 21:38 on 11-16; 9 more fit before the cutoff |
+| EXP-03 | PARTIALLY VERIFIED | 11-09 08:09 | 11-14 13:24 | ≈7 (E3-c) | E3-a, E3-c, E3-d, E3-f done; E3-b and E3-e not run (deviations 13, 18) |
+| EXP-04 | BLOCKED (compute) | | | 0 | dropped before launch (budget; deviation 11) |
+| DOC-01 | PARTIALLY VERIFIED | 11-12 | 11-16 | 0 | 25 outcome-independent changes; CDR sentences filled 11-16; EQ sentences pending; title for the author |
+| DOC-02, DOC-03 | VERIFIED | 11-12 | 11-14 | 0 | RISE, protocol table and gap paragraph; scope paragraph and sentences |
+| Caus scripts (external) | 13/13 exit 0 | 11-12 | 11-14 01:13 | 22.0 (separate) | run only; not designed, read, scored or cited |
 
 ## Deviations from the instruction file (each with its reason)
 
@@ -218,9 +306,36 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     - the 8.8%/14.1% effective-contrast check and the CHAMELEON count. **Neither was computed in this
       session**; no file exists, and neither is used in any RL5B output.
 
+22. **Commit message corrected** (11-16).
+    - What happened: `c5c73fd` said the CDR mixed models had run, but the script had crashed on a singular
+      fit.
+    - Correction: `c32d547` records that the level-only model fitted (all level contrasts ≈ 0, CIs include
+      0) and that the exploratory covariate model could not be fit. Its covariates are constant within an
+      allocation, so they are collinear with the grouping.
+    - Both models are descriptive and decide nothing.
+23. **`EXP02_allocations.csv` is not a separate file.** The per-allocation record (ρ, Jaccard to C10, nominal
+    and induced N_eff, fill distances, set hashes) was written once, at the draw, to
+    `rebuild/ABC/out/cdr/cdr_allocations.csv` (committed in `49383c0`, before any CDR run). It is cited from
+    there rather than copied.
+24. **Delivered concentration is weaker than nominal** (a design property, fixed before any run; not a
+    deviation, recorded so that no one reads the CDR null without it).
+    - Nominal N_eff for LU, L1 and LH is 75, 29.9 and 14.9.
+    - Assigning each selected render to its nearest target centroid gives N_eff ≈ 50.3, 44.5 (40.4–48.4)
+      and 40.9 (37.3–46.1). Random B gives 42.5.
+    - The pre-registered test therefore varied concentration as this foreground pool can deliver it, which
+      the final rebuttal states.
+
+25. **A wording gap in the committed EQ sentence (i), noted before any EQ number exists.**
+    - What it does: `analysis/eq_analysis.py` writes "with 27 fresh seeds per arm" (`N_PER_ARM`) whatever the
+      number of completed runs.
+    - Plan: under the INCOMPLETE rule, the sentence inserted into the manuscript and the rebuttal states the
+      completed counts per arm, together with the pre-registered incomplete sentence.
+    - The committed script is not changed.
+
 ## Pushes
 
-- Confirmed on `origin/rebuttal/iclr27/wip2` (`git branch -r --contains`, 2026-11-11 21:14): `138ad30`,
-  `49383c0`, `2137849`, `de3746f`, `223fa14`, `e43a5e9`, `125cef0`.
-- This session still cannot push (no credentials). **`808988b` (EQ Amendment 1) and later commits need the
-  author's push.**
+- Confirmed on `origin/rebuttal/iclr27/wip2` at 2026-11-16 21:50 (`git branch -r --contains`): everything up
+  to `c87e052`, including `808988b` (EQ Amendment 1), `b6cb93f` and `cd5fc28`.
+- **Not yet pushed:** `c5c73fd`, `c32d547`, and the commits that follow (the author pushes manually).
+- Earlier record (2026-11-11 21:14): `138ad30`, `49383c0`, `2137849`, `de3746f`, `223fa14`, `e43a5e9` and
+  `125cef0` were on origin. This session has no credentials and never pushes.
