@@ -26,9 +26,14 @@ def cdr(path, out):
                                ('exploratory: + fill distance + pseudo-label count (post-treatment)',
                                 'boundary_iou ~ C(level) + fill_dist_mean + n_appended',
                                 df[df.level.isin(['LU', 'L1', 'LH'])].copy())):
-        with warnings.catch_warnings(record=True) as wl:
-            m = smf.mixedlm(formula, sub, groups=sub['allocation'], vc_formula={'seed': '0 + C(seed)'}).fit(reml=True)
-        lines += ['## %s' % name, '', '```', str(m.summary()), '```'] + (['warnings: %s' % '; '.join(str(w.message) for w in wl)] if wl else []) + ['']
+        try:
+            with warnings.catch_warnings(record=True) as wl:
+                m = smf.mixedlm(formula, sub, groups=sub['allocation'], vc_formula={'seed': '0 + C(seed)'}).fit(reml=True)
+            lines += ['## %s' % name, '', '```', str(m.summary()), '```'] + (['warnings: %s' % '; '.join(str(w.message) for w in wl)] if wl else []) + ['']
+        except Exception as e:   # recorded, never hidden (11-16)
+            lines += ['## %s' % name, '', '**Could not be fit: %s: %s.** Allocation-level covariates (fill distance) are '
+                      'constant within each allocation and collinear with the allocation grouping at 11 allocations.'
+                      % (type(e).__name__, e), '']
     open(out, 'w').write('\n'.join(lines) + '\n')
 
 
