@@ -1,0 +1,16 @@
+## Author decisions
+1. Central claim (state it the same way in the abstract, introduction, contributions and conclusion): within the tested pipeline (LAKE-RED fixed render pool, S2R-COD protocol, SINet/SINet-v2, N = 1000), uncertainty-guided allocation shows no detectable benefit over random allocation. A pre-registered confirmatory campaign establishes equivalence within ±0.005 S_α on the primary cell. Same-shape controls show that the direction of the signal adds nothing detectable. Concentration explains how the selected training sets differ, but a pre-registered dose-response test found no effect of concentration on accuracy. The CHAMELEON audit is a separate contribution.
+2. Title: unchanged in this revision (ICLR does not allow title changes during the discussion period). GENERAL_RESPONSE.md and the RL5B reply state that for the camera-ready version we will retitle to remove the downstream concentration claim, proposing: "Uncertainty-Guided Allocation of Synthetic Training Data Shows No Detectable Benefit for Camouflaged Object Detection".
+3. EQ (RL5B EXP-01): report it as pre-registered and INCOMPLETE. 46 of 81 planned runs finished before the cutoff (B 16 seeds, C10 15, CSHUF 15) because of repeated power outages. It was analysed under Amendment 1's rule, and no run was dropped.
+   - H1, C10−B: equivalent within ±0.005 (Δ = +0.0006, 90% CI [−0.0027, +0.0039]).
+   - H1b, C10−CSHUF: neither detected nor equivalent (Δ = −0.0009, 95% CI [−0.0060, +0.0043]).
+   - Give seed counts as 16/15/15, as in eq_result.tex, never "15 per arm".
+   - The CSHUF_s115 re-train check and the drop-one sensitivity analyses are exploratory and go in the appendix only. They don't replace the primary analysis.
+4. CDR (RL5B EXP-02): "not supported" (SINet, all 35 runs). Restrict every concentration claim to the training-set distribution, including Sec. 3.2 and its heading, using the pre-registered decision sentence with the committed numbers. The SINet-v2 replication was not run; say so, and don't claim consistency across architectures.
+5. Boundary-metric claim: withdraw "the strongest form of the result" and every statement resting on the three-seed boundary result.
+6. CHAMELEON: keep "at least 50/76" as the automated-detector count. Report animal-54 as one additional manually confirmed match (51 in total), and the COD10K-test re-encodes as a new finding. Reconcile the packages' counts explicitly.
+7. Reversed-signal arm (CINV vs B on SINet): one sentence in the main text, details in the appendix, labelled exploratory, with its multiple-comparison status.
+8. Pre-registration timing statement: correct it to what the git evidence in the packages shows. Don't argue it away.
+9. Every correction to a posted response is stated explicitly in that reviewer's reply ("In our initial response we stated X; the correct value is Y").
+10. Reply length: at most 5,000 characters per OpenReview comment, and at most 2 comments per reviewer.
+11. Deadline: finish by 18 Nov 06:00 IST. If time runs short, deliver in this order: (1) revised .tex and .bib compiling with main text ≤10 pages, (2) the three reviewer replies, (3) GENERAL_RESPONSE.md, (4) the remaining reports.
