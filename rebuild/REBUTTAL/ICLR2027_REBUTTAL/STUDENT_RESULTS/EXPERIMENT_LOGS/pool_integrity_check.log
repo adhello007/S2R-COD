@@ -1,0 +1,5 @@
+# Pool integrity (post hoc) for 81 pools of completed CDR/EQ runs
+  eq      46 pools, image+GT digests equal to the gated record: 46
+  cdr     33 pools, image+GT digests equal to the gated record: 33
+  cdr_lu  2 pools, image+GT digests equal to the gated record: 2
+RESULT: PASS

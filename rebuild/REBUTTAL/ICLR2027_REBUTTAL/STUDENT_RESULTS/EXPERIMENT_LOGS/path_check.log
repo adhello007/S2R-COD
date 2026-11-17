@@ -1,17 +1,20 @@
-# path_check (2026-11-17 10:33): 23 Markdown files under STUDENT_RESULTS/
+# path_check (2026-11-17 11:18): 27 Markdown files under STUDENT_RESULTS/
   EXECUTION_STATUS.md
   EXPERIMENTAL_EVIDENCE.md
   FINAL_SCIENTIFIC_AUDIT.md
   FINAL_UPDATED_REBUTTAL.md
+  INSTRUCTION_COMPLIANCE_AUDIT.md
   RESULTS_SUMMARY.md
   RESULT_TABLES/AN01_boundary_8seed.md
   RESULT_TABLES/AN01_regression.md
   RESULT_TABLES/AN02_published_baselines.md
   RESULT_TABLES/AN03_foreground_diversity.md
+  RESULT_TABLES/AN03_reproduced_cited.md
   RESULT_TABLES/DOC01_claims.md
   RESULT_TABLES/EXP01_EQ.md
   RESULT_TABLES/EXP02_SINet_mixed.md
   RESULT_TABLES/EXP02_SINet_results.md
+  RESULT_TABLES/EXP02_results.md
   RESULT_TABLES/EXP03_gap_decomposition.md
   RESULT_TABLES/EXP03_protocol_matched.md
   RESULT_TABLES/TH01_contrasts.md
@@ -22,15 +25,17 @@
   prereg/CDR.md
   prereg/E3.md
   prereg/EQ.md
-references resolved: 338
-resolved through git (ref, or the base commit): 4
-  EXECUTION_STATUS.md:213  rebuttal/iclr27/wip2  (git ref)
+  prereg/OP.md
+references resolved: 487
+resolved through git (ref, or the base commit): 5
   EXECUTION_STATUS.md:223  rebuttal/iclr27/wip2  (git ref)
-  EXECUTION_STATUS.md:249  AD-PCHG-250926_Final.tex  (exists at the base commit 8d1d079 (removed later by the author))
-  EXECUTION_STATUS.md:337  origin/rebuttal/iclr27/wip2  (git ref)
+  EXECUTION_STATUS.md:233  rebuttal/iclr27/wip2  (git ref)
+  EXECUTION_STATUS.md:259  AD-PCHG-250926_Final.tex  (exists at the base commit 8d1d079 (removed later by the author))
+  EXECUTION_STATUS.md:400  origin/rebuttal/iclr27/wip2  (git ref)
+  INSTRUCTION_COMPLIANCE_AUDIT.md:63  rebuttal/iclr27/wip2  (git ref)
 declared absent or superseded by the file itself: 3
-  EXECUTION_STATUS.md:247  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
-  EXECUTION_STATUS.md:316  EXP02_allocations.csv  (not a separate file; the record is rebuild/ABC/out/cdr/cdr_allocations.csv (deviation 23))
+  EXECUTION_STATUS.md:257  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
+  INSTRUCTION_COMPLIANCE_AUDIT.md:202  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
   prereg/BRIDGE.md:18  Snapshot/RL5B/bridge/SINet_C10_s42  (superseded by the file's own amendment: Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42)
 declared as produced later (not yet required): 0
 MISSING: 0

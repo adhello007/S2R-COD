@@ -171,7 +171,7 @@ We thank the reviewers and the AC. In response to Reviewer RL5B we recalibrated 
 - **Performance gap (CW-03).** Under one scorer, real labels account for most of the gap to supervised SINet-V2: $0.112$ of $0.120$ on COD10K. RISE's advantage comes from pseudo masks on the real target images. The higher-operating-point replication was not run, and the paper says so.
 - **Scope (CW-04).** Every conclusion is bounded to allocation over a fixed LAKE-RED pool that re-uses 4,447 foregrounds with new backgrounds, with the constraint quantified. We make no claim about other generators. **[AUTHOR: title.]**
 
-<!-- CHARACTER COUNTS (measured by analysis/count_rebuttal.py, 2026-11-17 10:33; Python len() on each post from its "## " heading to the next "---")
+<!-- CHARACTER COUNTS (measured by analysis/count_rebuttal.py, 2026-11-17 11:17; Python len() on each post from its "## " heading to the next "---")
   Response to Reviewer RL5B — Part 1/4 (follow-up: results)       4887 / 5000 OK
   Response to Reviewer RL5B — Part 2/4 (follow-up: results)       3802 / 5000 OK
   Response to Reviewer RL5B — Part 3/4 (follow-up: results)       2919 / 5000 OK

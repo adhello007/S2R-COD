@@ -110,25 +110,34 @@ def main():
           '(sources per row); "re-scored" values are our scorer on the officially released prediction maps '
           '(EXP-03 E3-a / E3-d). E_phi is the mean E-measure everywhere.*', '',
           '## Protocol table', '',
-          '| Method | Labels used | Training / target images | Detector backbone (pretraining) | Generator | COD10K S_a / E_phi / F_w | NC4K S_a / E_phi / F_w | Source |',
-          '|---|---|---|---|---|---|---|---|']
+          '| Method | Labels used | Training / target images | Detector backbone (pretraining) | Input size | Generator | COD10K S_a / E_phi / F_w | COD10K MAE | NC4K S_a / E_phi / F_w | Source |',
+          '|---|---|---|---|---|---|---|---|---|---|']
     for name, p in PUB.items():
         cod = ' / '.join(f3(p['COD10K'][k]) for k in ('Sm', 'meanEm', 'wFm'))
         nc = ' / '.join(f3(p['NC4K'][k]) for k in ('Sm', 'meanEm', 'wFm')) if p['NC4K'] else 'not reported'
-        md.append('| %s (published) | %s | %s | %s | %s | %s | %s | %s |' % (name, p['labels'], p['training_images'], p['backbone'],
-                                                                            p['generator'], cod, nc, p['source']))
+        md.append('| %s (published) | %s | %s | %s | %s | %s | %s | %.3f | %s | %s |' % (name, p['labels'], p['training_images'], p['backbone'],
+                  p['input'], p['generator'], cod, p['COD10K']['MAE'], nc, p['source']))
     for name, src in rescore.items():
         cod = ' / '.join(f3(float(ext[(src, 'COD10K')][k])) for k in ('Sm', 'meanEm', 'wFm'))
         nc = ' / '.join(f3(float(ext[(src, 'NC4K')][k])) for k in ('Sm', 'meanEm', 'wFm'))
-        md.append('| %s (released maps, re-scored by us) | as above | as above | as above | — | %s | %s | `EXP03_external_scores.csv` |'
-                  % (name, cod, nc))
+        md.append('| %s (released maps, re-scored by us) | as above | as above | as above | as released | — | %s | %.3f | %s | `EXP03_external_scores.csv` |'
+                  % (name, cod, float(ext[(src, 'COD10K')]['MAE']), nc))
     for tag in ('3-seed (ABC)', '8-seed (SE)'):
         for arch in ('SINet', 'SINetv2'):
             cod = ' / '.join(f3(c10[(tag, arch, 'COD10K')][k]) for k in ('Sm', 'meanEm', 'wFm'))
             nc = ' / '.join(f3(c10[(tag, arch, 'NC4K')][k]) for k in ('Sm', 'meanEm', 'wFm'))
             md.append('| Ours, C10 %s %s | synthetic (4447 LAKE-RED-era composites + 1000 injected renders); target unlabelled | '
-                      '4040 unlabelled target (3040 COD10K + 1000 CAMO) | %s | LAKE-RED (fixed, offline) | %s | %s | committed metrics CSV |'
-                      % (arch, tag, 'ResNet-50 (ImageNet)' if arch == 'SINet' else 'Res2Net-50 (ImageNet)', cod, nc))
+                      '4040 unlabelled target (3040 COD10K + 1000 CAMO) | %s | 352x352 | LAKE-RED (fixed, offline) | %s | %.3f | %s | committed metrics CSV |'
+                      % (arch, tag, 'ResNet-50 (ImageNet)' if arch == 'SINet' else 'Res2Net-50 (ImageNet)', cod,
+                         c10[(tag, arch, 'COD10K')]['MAE'], nc))
+    md += ['', '## LAKE-RED-based training: no published detector accuracy', '',
+           '- LAKE-RED (Zhao, Xu, Qin, Fan et al., "LAKE-RED: Camouflaged Images Generation by Latent Background '
+           'Knowledge Retrieval-Augmented Diffusion", CVPR 2024; PDF in the LAKE-RED repository, '
+           '`LAKE-RED/assets/CVPR2024_Pancheng_Zhao__Camouflage_Image_Generation.pdf`) evaluates generation quality only: '
+           'FID and KID against COD, salient-object and segmentation image sets (Table 1, and the ablation Table 2, both on PDF p.7). '
+           'It trains no detector on its images and so reports no S_a, E_phi, F_w or MAE on COD10K-test or NC4K: '
+           '**not reported**. In this protocol LAKE-RED is only the offline generator of the 4,447 renders; the detector '
+           'protocol trained on LAKE-RED renders is ours (rows above).']
     md += ['', '## Published vs re-scored (scorer agreement; tolerance 0.002)', '',
            '| Method | Endpoint | Metric | Published | Re-scored | abs diff | within 0.002 |', '|---|---|---|---|---|---|---|']
     for c in checks:

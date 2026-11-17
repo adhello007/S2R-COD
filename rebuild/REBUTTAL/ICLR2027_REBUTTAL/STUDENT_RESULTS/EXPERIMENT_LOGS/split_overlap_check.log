@@ -1,0 +1,21 @@
+# Split overlap check (exact content and file name)
+  train (target pool, 4040)           4040 files,  4038 distinct contents
+  CAMO-250 (checkpoint selection)      250 files,   250 distinct contents
+  COD10K-test                         2026 files,  2026 distinct contents
+  NC4K                                4121 files,  4121 distinct contents
+  CHAMELEON (excluded)                  76 files,    76 distinct contents
+  CAMO-250 (checkpoint selection)    vs train: 0 shared names, 0 identical files
+  COD10K-test                        vs train: 2 shared names, 7 identical files
+  NC4K                               vs train: 0 shared names, 0 identical files
+  CHAMELEON (excluded)               vs train: 0 shared names, 0 identical files  (not evaluated; see Sec. 3.4)
+  COD10K-test files identical to a training image (test name <- training name):
+    COD10K-CAM-1-Aquatic-3-Crab-32.jpg <- COD10K-CAM-1-Aquatic-3-Crab-32.jpg
+    COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg <- COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg
+    COD10K-CAM-2-Terrestrial-28-Deer-1762.jpg <- COD10K-CAM-2-Terrestrial-28-Deer-1796.jpg
+    COD10K-CAM-2-Terrestrial-31-Gecko-1892.jpg <- COD10K-CAM-2-Terrestrial-26-Chameleon-1694.jpg
+    COD10K-CAM-2-Terrestrial-31-Gecko-1895.jpg <- COD10K-CAM-2-Terrestrial-31-Gecko-1928.jpg
+    COD10K-CAM-2-Terrestrial-32-Giraffe-1932.jpg <- COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg
+    COD10K-CAM-3-Flying-65-Owl-4633.jpg <- COD10K-CAM-3-Flying-53-Bird-3205.jpg
+  these are exactly the 7 test names in rebuild/D2/out/d2_leaked_names.json: True
+  CAMO-250 and NC4K share no file with training. COD10K-test shares 7 of its 2026 images with the standard COD10K-train split (identical bytes, 2 of them under the same name); every arm and every baseline is scored on the same split, so no contrast is affected; the manuscript does not disclose it (author decision).
+RESULT: FINDING (COD10K-test: 7 known duplicates of training images; CAMO-250, NC4K: none)

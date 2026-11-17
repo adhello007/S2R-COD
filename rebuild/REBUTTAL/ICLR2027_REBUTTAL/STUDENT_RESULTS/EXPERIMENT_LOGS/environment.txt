@@ -202,3 +202,33 @@ yarl==1.24.5
 ## LaTeX
 pdfTeX 3.141592653-2.6-1.40.29 (TeX Live 2026)
 Latexmk, John Collins, 9 March 2026. Version 4.88
+
+## analysis env (rebuild/REBUTTAL/ICLR2027_REBUTTAL/.venv-analysis), appended 2026-11-17T11:03:35+05:30
+used by: analysis/mixed_models.py (statsmodels MixedLM)
+Python 3.12.13
+### uv pip freeze (.venv-analysis)
+contourpy==1.4.0
+cycler==0.12.1
+fonttools==4.68.0
+formulaic==1.2.2
+interface-meta==2.0.1
+kiwisolver==1.5.1
+matplotlib==3.11.2
+narwhals==2.28.0
+numpy==2.5.4
+packaging==26.3
+pandas==3.1.1
+patsy==1.0.3
+pillow==13.0.0
+pyparsing==3.3.3
+python-dateutil==4.0.0
+scipy==1.18.1
+statsmodels==0.15.0
+typing-extensions==4.16.0
+tzdata==2026.6
+wrapt==2.5.2
+
+## changes during the campaigns, appended 2026-11-17T11:03:35+05:30
+kernel: 7.0.0-42-generic up to the boot of 2026-11-13 10:31:15 IST; 7.0.0-43-generic from then on (system update on the shared machine; journalctl -k per boot)
+NVIDIA driver: 595.99.02 (unchanged from the Stage 0 record)
+affected runs: CDR runs started after 2026-11-13 10:31 and all EQ runs

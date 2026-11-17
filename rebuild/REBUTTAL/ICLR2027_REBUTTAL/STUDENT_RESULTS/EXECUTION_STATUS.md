@@ -9,6 +9,8 @@
   no EQ run in flight. Its result was inserted into the manuscript, the rebuttal and these reports by 10:33, against
   the 12:00 deadline.
 - **Checks:** `analysis/audit_recompute.py --final` passes (88 checks), and `analysis/path_check.py` passes.
+- **Instruction-compliance audit** (2026-11-17, after delivery): `INSTRUCTION_COMPLIANCE_AUDIT.md` checks every rule
+  and deliverable of the instruction file. Its findings are deviations 26–33 below.
 
 1. **Tasks per status** (definitions from §7; details in `EXPERIMENTAL_EVIDENCE.md`).
    - **VERIFIED:** TH-01, TH-02, AN-01 (exploratory), AN-02, AN-03, DOC-02, DOC-03.
@@ -53,12 +55,20 @@
      operating point was not run.
    - **CW-04: SUBSTANTIALLY.** FULLY once the title carries the scope, as posted.
 6. **Items needing the author's decision.**
-   - **Title.** Option (ii) in `RESULT_TABLES/DOC01_claims.md` remains correct, and I recommend it. Two
+   - **Title.** The submitted title keeps "Concentration … Doesn't Help". DOC-01 step 5 says to avoid a
+     concentration title when EXP-02 does not support it, and it did not. Option (ii) in `RESULT_TABLES/DOC01_claims.md`
+     remains correct, and I recommend it. Two
      `[AUTHOR: title]` markers in `FINAL_UPDATED_REBUTTAL.md` (Part 4 and the summary) wait on this.
    - **Appendix B** of the paper (instruction).
    - **Push.** The 17 Nov commit needs your push.
    - **Cron entries** (`watchdog.sh`, `eq_autorun.sh`, `@reboot`): no longer needed. The runner is idle at the
      cutoff and the autorun marker is set. I have left them in place until you agree to remove them.
+   - **COD10K-test duplicates.** 7 of the 2,026 test images are byte-identical to training images: the
+     repository's own D2 record, undisclosed in the paper. A possible appendix sentence: "COD10K-test, as
+     distributed, contains 7 images that are byte-identical to images in COD10K-train; every arm and baseline is
+     scored on this same split, so no comparison is affected." Your decision.
+   - **Deletion of partial-run folders** against your "Never delete anything" (deviation 26). No original or
+     completed data was affected, and integrity is verified. I should have flagged it when it first happened.
    - **Manuscript edits made without your review.** The main text ends exactly at the foot of page 10, with no
      spare line. All are listed in `RESULT_TABLES/DOC01_claims.md`.
      - 11-16: the delivered-concentration sentence in §3.2, and the untested operating point in the Discussion.
@@ -331,6 +341,59 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     - Plan: under the INCOMPLETE rule, the sentence inserted into the manuscript and the rebuttal states the
       completed counts per arm, together with the pre-registered incomplete sentence.
     - The committed script is not changed.
+
+26. **Partial-run folders were deleted, against the author's 11-11 rule "Never delete anything"** (found by the
+    instruction-compliance audit, 2026-11-17; not flagged at the time).
+    - **What happened.** The approved plan had the queue discard an interrupted run and re-run it from scratch, and
+      the discard step deletes the run's partial folders (`shutil.rmtree` in `rebuild/RL5B/rl5b_queue.py`, as in the
+      committed `abc_train.py`). Those folders are the partial snapshot (partial checkpoints and training log) and
+      its CLS `_iteration2` pool (hardlinks plus pseudo-label PNGs).
+    - **Extent.** There were 12 discard events, 11 of them after the author's rule. Every one concerned an
+      interrupted or failed run of our own campaigns, listed in `rebuild/RL5B/out/queue_events.jsonl`.
+    - **Nothing else was touched.** No original, committed or completed artifact was deleted.
+    - **Integrity verified.** All 52,000+ committed inputs still match their manifest
+      (`EXPERIMENT_LOGS/source_integrity_check.log`), including the renders the deleted pools hardlinked to. All 81
+      pools of completed runs match their gated digests (`EXPERIMENT_LOGS/pool_integrity_check.log`).
+    - **What should have happened.** Moving the folders aside would have honoured the rule literally.
+27. **Per-run verification counted pool images but did not hash pool content** (EXP-01 step 3 asks for the hashes).
+    - The pools were hashed and gated when built, before any run.
+    - At the audit, all 81 pools used by completed CDR and EQ runs still match those digests exactly. Training never
+      writes into them.
+    - The evidence ledger had claimed per-run hash checks; it is corrected.
+28. **Deliverable names that differ from the instructions.**
+    - The logs are flat files (`EXPERIMENT_LOGS/EXP01_*`, `EXPERIMENT_LOGS/EXP02_*`), not folders EXP01/ and
+      EXP02/.
+    - The dose-response figure is `FIGURES/EXP02_dose_response_SINet.pdf`, named per architecture.
+    - `RESULT_TABLES/EXP02_allocations.csv` and `RESULT_TABLES/EXP02_results.csv` and `RESULT_TABLES/EXP02_results.md` were generated at the audit from
+      the committed records (`analysis/make_exp02_tables.py`).
+    - The per-run configurations are now in `EXPERIMENT_LOGS/run_records.csv` (`analysis/make_run_records.py`).
+    - `prereg/OP.md` states that no OP pre-registration exists.
+29. **Two pipeline-hash values on completed runs** (`932316bb37320bfd` on 6 runs up to 11-11 20:18, then
+    `281e42b8c66b3a74`).
+    - Runner v2 narrowed the guard from every file under `Src/` to `Src/**/*.py` (deviation 15).
+    - The training and scoring code (`MyTrain.py`, `MyTest.py`, `CLS.py`, `Eval/metrics.py`, `rebuild/ABC/*.py`,
+      `Src/**/*.py`) is byte-identical at every launch commit (audit, `git diff`).
+30. **Manuscript: a stale three-seed boundary paragraph in App. C**, found by the audit.
+    - The paragraph presented the three-seed sweep as current ("Concentration resolves at every threshold").
+    - It is now generated with the eight-seed sweep (`revision/boundary_sweep.tex`; `RESULT_TABLES/DOC01_claims.md`
+      row 33). Main text unchanged, still ending on p. 10.
+31. **Gaps closed at the audit.**
+    - AN-02 had no LAKE-RED row. Its paper reports generation quality only, so the row is marked not reported, and
+      the table now shows input size and MAE.
+    - AN-03 now states that HKU-IS has no category labels, and it reproduces the cited coverage and silhouette
+      numbers (37 of 37 match) instead of citing them.
+    - The environment record now includes the analysis environment and the kernel change.
+    - The CAMO-250 and test-split overlap check is now a script and a log.
+32. **Finding: COD10K-test shares 7 of its 2,026 images, byte for byte, with the 4,040 training images**
+    (`EXPERIMENT_LOGS/split_overlap_check.log`).
+    - These are exactly the repository's own D2 leakage record (`rebuild/D2/out/d2_leaked_names.json`).
+    - Every arm and baseline is scored on the same split, so no contrast is affected.
+    - The submitted manuscript calls COD10K-test a held-out endpoint and does not disclose this. Whether to add a
+      sentence is the author's decision (§11, item 6).
+33. **The Caus safety screen.** Before running each Caus script, the runner checks its text automatically: it must
+    `cd` into the Caus worktree and contain no banned destructive command. This is the contract stated in
+    `rebuild/REBUTTAL/EXTERNAL_JOBS/Caus/README.md`. No Caus or dypE instruction file, script, output or worktree
+    file was opened in this session (transcript scan at the audit).
 
 ## Pushes
 

@@ -1,0 +1,38 @@
+quantity,embedder,k,set,reproduced,committed,match
+k-NN recall of the real target,clipL224,3,authors' pool,0.0639,0.0639,True
+k-NN recall of the real target,clipL224,3,local renders,0.0693,0.0693,True
+k-NN recall of the real target,clipL224,3,raw HKU-IS (pre-LAKE-RED),0.5953,0.5953,True
+k-NN recall of the real target,clipL224,5,authors' pool,0.1277,0.1277,True
+k-NN recall of the real target,clipL224,5,local renders,0.1349,0.1349,True
+k-NN recall of the real target,clipL224,5,raw HKU-IS (pre-LAKE-RED),0.7470,0.7470,True
+k-NN recall of the real target,clipL224,10,authors' pool,0.2005,0.2005,True
+k-NN recall of the real target,clipL224,10,local renders,0.2498,0.2498,True
+k-NN recall of the real target,clipL224,10,raw HKU-IS (pre-LAKE-RED),0.8804,0.8804,True
+k-NN recall of the real target,clipL224,20,authors' pool,0.3007,0.3007,True
+k-NN recall of the real target,clipL224,20,local renders,0.3785,0.3785,True
+k-NN recall of the real target,clipL224,20,raw HKU-IS (pre-LAKE-RED),0.9611,0.9611,True
+k-NN recall of the real target,dinoL224,3,authors' pool,0.4124,0.4124,True
+k-NN recall of the real target,dinoL224,3,local renders,0.3908,0.3908,True
+k-NN recall of the real target,dinoL224,3,raw HKU-IS (pre-LAKE-RED),0.6391,0.6391,True
+k-NN recall of the real target,dinoL224,5,authors' pool,0.4829,0.4829,True
+k-NN recall of the real target,dinoL224,5,local renders,0.4668,0.4668,True
+k-NN recall of the real target,dinoL224,5,raw HKU-IS (pre-LAKE-RED),0.7473,0.7473,True
+k-NN recall of the real target,dinoL224,10,authors' pool,0.5703,0.5703,True
+k-NN recall of the real target,dinoL224,10,local renders,0.5696,0.5696,True
+k-NN recall of the real target,dinoL224,10,raw HKU-IS (pre-LAKE-RED),0.8666,0.8666,True
+k-NN recall of the real target,dinoL224,20,authors' pool,0.6785,0.6785,True
+k-NN recall of the real target,dinoL224,20,local renders,0.7270,0.7270,True
+k-NN recall of the real target,dinoL224,20,raw HKU-IS (pre-LAKE-RED),0.9715,0.9715,True
+k-NN recall of the real target,dinoL518,3,authors' pool,0.4277,0.4277,True
+k-NN recall of the real target,dinoL518,3,local renders,0.4770,0.4770,True
+k-NN recall of the real target,dinoL518,3,raw HKU-IS (pre-LAKE-RED),0.5988,0.5988,True
+k-NN recall of the real target,dinoL518,5,authors' pool,0.4834,0.4834,True
+k-NN recall of the real target,dinoL518,5,local renders,0.5421,0.5421,True
+k-NN recall of the real target,dinoL518,5,raw HKU-IS (pre-LAKE-RED),0.7097,0.7097,True
+k-NN recall of the real target,dinoL518,10,authors' pool,0.5683,0.5683,True
+k-NN recall of the real target,dinoL518,10,local renders,0.6349,0.6349,True
+k-NN recall of the real target,dinoL518,10,raw HKU-IS (pre-LAKE-RED),0.8418,0.8418,True
+k-NN recall of the real target,dinoL518,20,authors' pool,0.6822,0.6822,True
+k-NN recall of the real target,dinoL518,20,local renders,0.7478,0.7478,True
+k-NN recall of the real target,dinoL518,20,raw HKU-IS (pre-LAKE-RED),0.9550,0.9550,True
+silhouette (mean of 10 k-means seeds),dinoL518,75,target (leaked dropped),0.1600,0.1600,True

@@ -167,6 +167,9 @@ def main():
              src['raw_equal_base_stems'], src['d1_is_bijection_local'], src['d1_is_bijection_auth'], src['raw_photographs'], src['raw_unique_images']),
           '- Source dataset: HKU-IS (the raw folder carries the HKU-IS split files %s).' % ', '.join(hkuis_split_files), '',
           '## 2. Distinct foregrounds and reuse per arm', '',
+          '- Semantic / category diversity: **not reported**. HKU-IS ships image-mask pairs and split lists of image names '
+          '(trainImgSet 2,500, valImgSet 500, testImgSet 1,447) but no category labels, so category diversity per arm '
+          'cannot be measured from labels; the embedding measures in Section 3 stand in for it.', '',
           '| Arm | injected | distinct foregrounds | already in base pool | distinct foregrounds in training pool | images in pool | share of pool images whose foreground appears twice |',
           '|---|---|---|---|---|---|---|']
     for r in rows:

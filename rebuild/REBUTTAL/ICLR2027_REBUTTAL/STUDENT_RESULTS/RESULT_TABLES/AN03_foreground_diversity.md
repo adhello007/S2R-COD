@@ -9,6 +9,8 @@
 
 ## 2. Distinct foregrounds and reuse per arm
 
+- Semantic / category diversity: **not reported**. HKU-IS ships image-mask pairs and split lists of image names (trainImgSet 2,500, valImgSet 500, testImgSet 1,447) but no category labels, so category diversity per arm cannot be measured from labels; the embedding measures in Section 3 stand in for it.
+
 | Arm | injected | distinct foregrounds | already in base pool | distinct foregrounds in training pool | images in pool | share of pool images whose foreground appears twice |
 |---|---|---|---|---|---|---|
 | B_s42 | 1000 | 1000 | 1000 (100.0%) | 4447 | 5447 | 0.367 |

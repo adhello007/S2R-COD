@@ -883,13 +883,7 @@ reported in Section~\ref{sec:null} and is recorded here only for continuity with
 account: at roughly $2.8$ degrees of freedom, its exclusion held by a margin too thin to lean on,
 which is exactly the weakness the seed expansion removes.
 
-\paragraph{Boundary metrics: the binarisation sweep in full.} Boundary metrics binarise a
-prediction where $S_\alpha$ does not, so the result in Section~\ref{sec:concentration} could in principle be an artifact of where the threshold sits. It is not. Swept over thresholds
-$0.4 / 0.5 / 0.6$ on SINet Boundary-IoU~\citep{cheng2021boundary}, $\Delta(\mathrm{C10}-\mathrm{B})$ holds at
-$1.39 / 1.37 / 1.23 \times$ its bar and $\Delta(\mathrm{CINV}-\mathrm{B})$ at
-$1.25 / 1.34 / 1.26 \times$, both $3/3$ sign-consistent at every threshold, while the two direction
-contrasts never exceed $0.52\times$ and $0.14\times$ anywhere in the sweep. Concentration resolves
-at every threshold; direction resolves at none.
+\input{boundary_sweep.tex}
 
 \paragraph{How much the trained comparison is attenuated.} The trained half of the concentration
 result is diluted three times over, and we disclose it because the attenuation biases toward the

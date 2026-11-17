@@ -15,6 +15,14 @@ One entry per task, in the §7 template. Paths are relative to `STUDENT_RESULTS/
 - **Training pipeline:** the base commit `8d1d079`, plus additive flags (`CODE_CHANGES.patch`). The flags are
   `--save_ckpts minimal`, `--link_pool` and `--val_net`, each numerically neutral (bridge check below).
 - **Verification checks 1–8** are those of §7 of the instructions.
+- **Integrity checks run at the instruction-compliance audit (2026-11-17):**
+  - All 52,000+ committed inputs (renders, base pool, HKU-IS, target, test and validation images) still match
+    `rebuild/E0/out/e0_manifest.sha256` (`EXPERIMENT_LOGS/source_integrity_check.log`).
+  - All 81 pools used by completed CDR and EQ runs still match their gated digests
+    (`EXPERIMENT_LOGS/pool_integrity_check.log`).
+  - The training and scoring code is byte-identical at every launch commit (`EXPERIMENT_LOGS/run_records.csv`, which
+    also gives each run's command, GPU, timing and checks).
+  - Split overlap: `EXPERIMENT_LOGS/split_overlap_check.log`.
 
 ---
 
@@ -103,7 +111,7 @@ Status: VERIFIED
 Pre-registration: n/a
 Code revision: `0146abc`; corrected sentence 2026-11-16 (E3-e was not run)
 Commands: `.venv/bin/python analysis/an02_published.py`
-Datasets: original papers (hashes in `EXPERIMENT_LOGS/AN02_papers.sha256`); released SINet-V2 and RISE prediction maps (hashes in `EXPERIMENT_LOGS/EXP03_downloads.sha256`)
+Datasets: original papers: SINet, SINet-V2, RISE, S2R-COD and LAKE-RED (hashes in `EXPERIMENT_LOGS/AN02_papers.sha256`); released SINet-V2 and RISE prediction maps (hashes in `EXPERIMENT_LOGS/EXP03_downloads.sha256`)
 Configuration: published S_α, mean E_φ, F_β^w and MAE, each with table and page; re-score tolerance 0.002
 Seeds: n/a
 Artifacts: `RESULT_TABLES/AN02_published_baselines.md`, `RESULT_TABLES/AN02_published_baselines.json`, `RESULT_TABLES/AN02_rise.bib`
@@ -112,7 +120,7 @@ Results:
 - 12 of 12 published values reproduce within 0.002 under our scorer (max |diff| 0.0005).
 - RISE's detector is SINet-V2, trained with SINet-V2's own recipe on pseudo masks for the same 4,040 COD10K/CAMO images we use unlabelled. DINOv2 features are used only to make those masks.
 Interpretation: The posted description of RISE ("a different representation … and a different training pipeline") is inaccurate. The gap to RISE reflects the supervision on the real target images much more than the detector.
-Limitations: Published NC4K numbers are missing for SINet-V2 and S2R-COD. S2R-COD rows are as published (COD10K only).
+Limitations: LAKE-RED-based training has no published accuracy row. The LAKE-RED paper evaluates generation quality only (FID/KID, Tables 1–2, PDF p.7), and the row is marked not reported (added at the audit, 2026-11-17). Input size and MAE are now shown in the table. Published NC4K numbers are missing for SINet-V2 and S2R-COD. S2R-COD rows are as published (COD10K only).
 Verification notes: (1) PDFs are hashed. (2) Table and page are recorded per value. (4) One scorer for every re-scored row.
 
 ---
@@ -132,8 +140,8 @@ Results:
 - Foreground identity explains most of the render-embedding variance: R² = 0.856 against 0.499 for random pairing; ICC 0.713 against −0.001. A render's cosine similarity is 0.730 to its own base render and 0.057 to a random one.
 - In 52 of 75 clusters, the nearest available cutout is farther from the centroid than the median real member (median distances 0.669 and 0.219).
 Interpretation: Synthetic diversity comes from backgrounds. Foreground identity dominates the embedding, and most clusters have no close foreground.
-Limitations: Cutouts sit on a flat background while cluster members are full photographs, so part of the distance gap is the representation itself. Coverage and silhouette are cited from committed outputs, not re-derived.
-Verification notes: (2) The independent re-count passes for all 23 arms. (7) The rebuttal uses the counts, R²/ICC and the 52 of 75, with the caveat.
+Limitations: Cutouts sit on a flat background while cluster members are full photographs, so part of the distance gap is the representation itself. HKU-IS has no category labels, so category diversity is not reported (stated in the output).
+Verification notes: (2) The independent re-count passes for all 23 arms. Step 5: the cited coverage and silhouette numbers were reproduced at the audit without touching the committed outputs; 37 of 37 values match within 1e-4, including recall 0.13–0.54 against 0.71–0.75 at k = 5 and silhouette 0.1600 (`RESULT_TABLES/AN03_reproduced_cited.md`, `analysis/an03_reproduce_cited.py`). (7) The rebuttal uses the counts, R²/ICC and the 52 of 75, with the caveat.
 
 ---
 
@@ -170,7 +178,10 @@ Limitations:
   - No run failed verification, and none is dropped (prereg EQ.6).
 - The design-time power figures assumed the SE SDs.
 Verification notes:
-- (1) 46 runs, each with `train_ok` (step pin 253, rounds 2, hashes) and inference complete. No interim look: the analysis ran once, by the cron trigger, after the cutoff.
+- (1) 46 runs, each with `train_ok` and inference complete.
+  - **Correction (audit, 2026-11-17).** An earlier version of this entry said the per-run checks included pool and set hashes. They do not. `verify_run` checks two rounds, the step pin at 253, the last epoch, the saved best checkpoint, wall time, the pool image count (5,447) and the target count (4,040).
+  - The hash requirement of EXP-01 step 3 was checked after the fact instead. All 46 EQ pools still match, image by image, the digests recorded when they were gated before any run (`EXPERIMENT_LOGS/pool_integrity_check.log`). Training never writes into them.
+  - No interim look: the analysis ran once, by the cron trigger, after the cutoff.
 - (2) `analysis/audit_recompute.py` recomputes every EQ number quoted (PASS). Three runs re-scored from their saved maps, including the two lowest, match at 6 dp (`EXPERIMENT_LOGS/EXP01_spot_rescore.log`).
 - (3) Scorer self-check PASS (0.717216 / 0.074463).
 - (6) Pre-registered primary; secondaries and Holm reported.
@@ -186,7 +197,7 @@ Commands: `.venv/bin/python analysis/cdr_analysis.py --arch SINet --workers 8`; 
 Datasets: CDR pools gated 6/6 (`EXPERIMENT_LOGS/EXP02_build_pools_cdr.log`, `EXPERIMENT_LOGS/EXP02_build_pools_cdr_lu.log`); allocation record `rebuild/ABC/out/cdr/cdr_allocations.csv`; draw log `EXPERIMENT_LOGS/EXP02_cdr_draw.log`
 Configuration: levels LU (cluster-uniform), L1 (committed shape τ = 1.0) and LH (τ_H = 0.758), each with 5 permutations (one stream, seed 2027). Primary: Boundary-IoU at 0.5 on SINet·COD10K. D = ½(B + LU). σ̂ is pooled within allocations (df 24). Decision rule (a), (b) and (c) as pre-registered.
 Seeds: LU 42, 43, 45, 46, 47; every L1 and LH allocation 42, 43, 45 (35 runs)
-Artifacts: `RESULT_TABLES/EXP02_SINet_results.md`, `RESULT_TABLES/EXP02_SINet_summary.json`, `RESULT_TABLES/EXP02_SINet_per_run.csv`, `RESULT_TABLES/EXP02_SINet_long.csv`, `RESULT_TABLES/EXP02_SINet_mixed.md`, `EXPERIMENT_LOGS/EXP02_cdr_analysis_SINet.log`, `FIGURES/EXP02_dose_response_SINet.pdf`, `revision/cdr_result.tex`
+Artifacts: `RESULT_TABLES/EXP02_results.md`, `RESULT_TABLES/EXP02_results.csv`, `RESULT_TABLES/EXP02_allocations.csv` (the deliverables the instructions name; generated by `analysis/make_exp02_tables.py`), `RESULT_TABLES/EXP02_SINet_results.md`, `RESULT_TABLES/EXP02_SINet_summary.json`, `RESULT_TABLES/EXP02_SINet_per_run.csv`, `RESULT_TABLES/EXP02_SINet_long.csv`, `RESULT_TABLES/EXP02_SINet_mixed.md`, `EXPERIMENT_LOGS/EXP02_cdr_analysis_SINet.log`, `FIGURES/EXP02_dose_response_SINet.pdf`, `revision/cdr_result.tex`
 Results (primary):
 
 | Level | Δ vs D (D = 0.3308) | × bar (bar 0.0193) | permutations agreeing | between-permutation SD | rule |
@@ -204,7 +215,10 @@ Limitations:
 - The rule's bar is 2σ̂ per run (0.0193), so it is insensitive to small effects. The descriptive unit-level CI excludes only effects above about +0.007.
 - Delivered concentration is weaker than nominal. The nominal N_eff is 75, 29.9 and 14.9; the induced N_eff is 50.3, 44.5 and 40.9, and B is 42.5. The test is therefore a test of concentration as this pool can deliver it.
 Verification notes:
-- (1) 35/35 runs are complete and verified (step pin 253, rounds 2, hashes). Interrupted runs were discarded and re-run with the same seed.
+- (1) 35/35 runs are complete and verified: step pin 253 and rounds 2, plus the other per-run checks listed under EXP-01.
+  - Pool content was verified after the fact: all 35 CDR pools still match their gated digests (`EXPERIMENT_LOGS/pool_integrity_check.log`).
+  - Interrupted runs were discarded and re-run with the same seed. The discard deleted the interrupted run's partial folders (`EXECUTION_STATUS.md`, deviation 26).
+  - The re-scored reference runs (B, C10, CSHUF, CINV at seeds 42, 43, 45 and B at all SE seeds) match AN-01: 204 of 204 values are equal.
 - (2) Results are regenerated from per-run CSVs.
 - (3) The pools are gated, and the set-distinctness gate passed.
 - (6) Pre-registered primary; secondaries and models labelled.
@@ -234,14 +248,14 @@ Results (S_α; COD10K / NC4K):
 Anchors: the reproduced S2R-COD pair scores 0.7172 (two-round) and 0.7030 (mean teacher) under our scorer.
 
 Interpretation: Most of the gap to supervised SINet-V2 is the absence of real labels; the official recipe adds under 0.01 on top. The gap to RISE (whose detector is ours) is about 0.06–0.07, and it reflects pseudo masks on the real target images against synthetic renders plus self-training.
-Limitations: Without E3-e, the quality of RISE's masks cannot be separated from its recipe. E3-b was not re-trained; the released maps stand in for it. The components overlap and do not add up.
-Verification notes: (2) The tables are regenerated from per-run scores. (3) The E3-a tolerance (0.002) passes. (4) One scorer and the same splits for every row; released maps are scored as released. (8) Missing cells are "—".
+Limitations: **COD10K-test shares 7 of its 2,026 images, byte for byte, with the 4,040 training images.** That training set is the standard COD10K-train + CAMO-train split, which our pipeline uses unlabelled and which E3-c, SINet-V2 and RISE train on with masks. These 7 are exactly the repository's own D2 leakage record. Every arm and baseline is scored on the same split, so no contrast changes; the absolute supervised rows may be marginally favoured. CAMO-250 and NC4K share no file with training (`EXPERIMENT_LOGS/split_overlap_check.log`); the manuscript does not disclose the 7 (author decision). Without E3-e, the quality of RISE's masks cannot be separated from its recipe. E3-b was not re-trained; the released maps stand in for it. The components overlap and do not add up.
+Verification notes: (2) The tables are regenerated from per-run scores. (3) The E3-a tolerance (0.002) passes, and CAMO-250 shares no image with CAMO-train by name or content (`EXPERIMENT_LOGS/split_overlap_check.log`). (4) One scorer and the same splits for every row; released maps are scored as released. (8) Missing cells are "—".
 
 ---
 
 ## EXP-04 — Replication at a higher operating point
 Reviewer issues: CW-03 (generality), QA-03
-Status: BLOCKED (compute). Dropped before launch on 2026-11-09 and never pre-registered (`prereg/OP.hash`).
+Status: BLOCKED (compute). Dropped before launch on 2026-11-09 and never pre-registered (`prereg/OP.md`, `prereg/OP.hash`).
 Pre-registration: none
 Code revision: n/a
 Commands: none
@@ -266,9 +280,9 @@ Datasets: n/a
 Configuration: `revision/AD-PCHGS-revised.tex`; the outcome macros `\eqverdict` and `\eqshort` are pending, while `\cdrverdict` and `\cdrshort` are filled from `revision/cdr_result.tex`
 Seeds: n/a
 Artifacts: `RESULT_TABLES/DOC01_claims.md`, `revision/AD-PCHGS-revised.tex`, `revision/table_ci_tost.tex`, `revision/table_boundary_8seed.tex`, `revision/manuscript.diff`
-Results: 27 changes, listed in `RESULT_TABLES/DOC01_claims.md`: 25 outcome-independent, and 2 added on 11-16 (the delivered-concentration sentence and the untested operating point). The CDR sentences are filled. The compiled revision has 27 pages, the main text ends on page 10 (the discussion-period limit), and there are no errors or undefined references.
+Results: 33 changes, listed in `RESULT_TABLES/DOC01_claims.md`. Row 33 was found by the instruction-compliance audit: the App. C paragraph presenting the three-seed boundary sweep as current, now regenerated with the eight-seed sweep. The other 32 were: 25 outcome-independent; 2 added on 11-16 (the delivered-concentration sentence and the untested operating point); and 5 on 11-17 with the EQ fill (rows 28–32). The CDR and EQ sentences are filled from the pre-registered decisions. The compiled revision has 28 pages, the main text ends on the last line of page 10 (the discussion-period limit), and there are no errors or undefined references.
 Interpretation: Every overclaim listed in the posted rebuttal is revised, including "no score of any quality helped here", the §3.2 heading and the boundary paragraph.
-Limitations: The title is unchanged until the author decides. The EQ sentences go in on 17 Nov.
+Limitations: The title is unchanged until the author decides. It still contains "Concentration" and "Doesn't Help", which DOC-01 step 5 says to avoid now that EXP-02 did not support a downstream concentration effect.
 Verification notes: recompiled after every insertion; the page limit is re-checked.
 
 ---

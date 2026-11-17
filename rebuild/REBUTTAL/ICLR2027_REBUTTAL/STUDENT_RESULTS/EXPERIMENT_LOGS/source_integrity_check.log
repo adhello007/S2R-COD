@@ -1,0 +1,17 @@
+# Source integrity re-check against rebuild/E0/out/e0_manifest.sha256 (48365 files)
+  auth         OK 4447
+  auth_gt      OK 4447
+  cham         OK 76
+  local        OK 4447
+  local_msk    OK 4447
+  lr_in_img    OK 4447
+  lr_in_mask   OK 4447
+  nc4k         OK 4121
+  raw          OK 4447
+  raw_gt       OK 4447
+  test         OK 2026
+  test_gt      OK 2026
+  tgt          OK 4040
+  val          OK 250
+  val_gt       OK 250
+RESULT: PASS

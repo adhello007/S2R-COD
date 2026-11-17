@@ -5,6 +5,9 @@ committed EQ analysis ran (07:40–08:16).*
 
 ## How the audit was done
 
+*A separate, section-by-section check of the instruction file and of the author's session instructions is in
+`INSTRUCTION_COMPLIANCE_AUDIT.md` (2026-11-17). Its findings are deviations 26–33 in `EXECUTION_STATUS.md`.*
+
 - **The numbers were recomputed independently.** `analysis/audit_recompute.py` re-opens the raw per-run files:
   - `rebuild/ABC/out/se/abc_metrics.csv` and `rebuild/ABC/out/se/abc_runs.csv`;
   - `RESULT_TABLES/AN01_boundary_8seed_per_run.csv` and `RESULT_TABLES/EXP02_SINet_per_run.csv`;
@@ -20,17 +23,18 @@ committed EQ analysis ran (07:40–08:16).*
   number. Two [AUTHOR] markers (the title) remain for the author.
 - **EQ spot check:** three EQ runs re-scored from their saved maps with the committed scorer match at 6 dp
   (`EXPERIMENT_LOGS/EXP01_spot_rescore.log`). They include the two lowest-scoring runs.
-- **Manuscript references** were checked against the compiled revision
-  (`revision/build_rev/AD-PCHGS-revised.pdf`, 27 pages, main text ends on page 10) through its `.aux` labels:
+- **Manuscript references** were re-checked on 2026-11-17 against the compiled revision after the EQ fill
+  (`revision/build_rev/AD-PCHGS-revised.pdf`, 28 pages, main text ends on the last line of page 10) through its `.aux`
+  labels and the PDF text:
 
 | Reference in the final rebuttal | Label | Compiled number and page | Correct |
 |---|---|---|---|
-| Table 3, Sec. 3.1 (16 contrasts, CIs, TOST) | `tab:ci_tost` in `sec:null` | Table 3, p. 6, §3.1 | yes |
+| Table 3, Sec. 3.1 (16 contrasts, CIs, TOST) | `tab:ci_tost`, introduced in `sec:null` | Table 3; §3.1 starts p. 5, and the float sits at the top of p. 7 | yes |
 | Sec. 3.2, new heading | `sec:concentration` | §3.2, p. 6, "Concentration, Not Targeting, Shapes the Training Set" | yes |
 | Sec. 2, sign rule corrected | Methods | §2 now says "at least seven of eight in the eight-seed expansion" | yes |
 | Table 7 (App. C), eight-seed boundary table | `tab:boundary` in `app:diag` | Table 7, p. 19, App. C | yes |
 | Appendix A, protocol table (Table 4) and gap paragraph | `tab:protocol` in `app:related` | Table 4, p. 15, App. A | yes |
-| "The appendix is corrected" (pseudo-label counts) | `app:controls` | App. H now gives 1991, 2007, 2020, 2015 (1782–2278) | yes |
+| "The appendix is corrected" (pseudo-label counts) | `app:controls` | App. H (starts p. 27); p. 28 now gives 1991, 2007, 2020, 2015 (1782–2278) | yes |
 | "Sec. 3.2 says so" (delivered concentration) | §3.2 dose-response paragraph | sentence present | yes |
 | "The Discussion now says so" (operating point) | `sec:discussion`, Scope | sentence present | yes |
 | New Scope paragraph in the Discussion | `sec:discussion` | present, p. 10 | yes |
