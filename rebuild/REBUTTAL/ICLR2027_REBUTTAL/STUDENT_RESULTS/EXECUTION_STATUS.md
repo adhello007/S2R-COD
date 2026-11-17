@@ -11,6 +11,8 @@
 - **Checks:** `analysis/audit_recompute.py --final` passes (88 checks), and `analysis/path_check.py` passes.
 - **Instruction-compliance audit** (2026-11-17, after delivery): `INSTRUCTION_COMPLIANCE_AUDIT.md` checks every rule
   and deliverable of the instruction file. Its findings are deviations 26–33 below.
+- **Same-seed re-training check** (RECHECK, 17 Nov 11:29–13:28, after delivery, chosen by the author): two
+  re-trains, deviation 34. They change no verdict.
 
 1. **Tasks per status** (definitions from §7; details in `EXPERIMENTAL_EVIDENCE.md`).
    - **VERIFIED:** TH-01, TH-02, AN-01 (exploratory), AN-02, AN-03, DOC-02, DOC-03.
@@ -235,7 +237,8 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
 4. **Disk footprint.** New runs use `--save_ckpts minimal --link_pool`. This is opt-in and the defaults are
    unchanged.
    - **Bridge check (2026-11-11):** COD10K |ΔS_α| = 0.00006, within the declared band, so the campaigns
-     continue. All 21,828 linked source files are unchanged.
+     continue. All 21,828 linked source files are unchanged. That close agreement was chance, not
+     determinism (deviation 34).
    - **Measured footprint** (correcting the planning estimate of 0.6 GB): about **3.1 GB per two-round SINet
      run**, against about 5.5 GB by default. The unavoidable part is CLS's committed choice to save the
      about 2,000 pseudo-labelled target images as full-resolution PNG (≈2.35 GB). Single-round anchors take
@@ -394,6 +397,23 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
     `cd` into the Caus worktree and contain no banned destructive command. This is the contract stated in
     `rebuild/REBUTTAL/EXTERNAL_JOBS/Caus/README.md`. No Caus or dypE instruction file, script, output or worktree
     file was opened in this session (transcript scan at the audit).
+34. **Same-seed re-training check (RECHECK)** (`prereg/RECHECK.md` and `rebuild/RL5B/recheck.py`, committed
+    `4147ada` before launch). The author chose it on 17 Nov to test the kernel update of 11-13. It uses 2 runs and
+    about 3.7 GPU-h including inference, outside every campaign's count. Results are in `EXPERIMENT_LOGS/RECHECK.{log,json}` and in
+    the RECHECK entry of `EXPERIMENTAL_EVIDENCE.md`.
+    - **R1, C10 s42:** 0.7118 against 0.7171 at the bridge, |Δ| 0.0053. This is within the declared band, so the
+      kernel update shows no effect beyond run-to-run noise.
+    - **R2, CSHUF s115:** 0.7214 against 0.6933 in EQ, |Δ| 0.0282, outside the band.
+      - Both of R2's trainings ran on the current kernel, so the low campaign score is simply not reproduced from
+        its seed.
+      - Training is not reproducible run to run. Re-trains match their original at step 0 and diverge by step 10.
+    - **Correction.** The bridge's 0.00006 agreement was chance, and the BRIDGE entry's "near-deterministic" is
+      corrected.
+    - **Effect on EQ.** Its contrasts remain valid, because this noise affects every arm alike. Leaving out either
+      of the two lowest-count runs (CSHUF s115, B s116) changes neither verdict. This is exploratory, in
+      `EXPERIMENT_LOGS/RECHECK_sensitivity.log`.
+    - **Not in the rebuttal.** The rebuttal and manuscript make no claim of determinism: the manuscript says cuDNN
+      determinism "reduces, and is not claimed to eliminate" nondeterminism. They are unchanged.
 
 ## Pushes
 

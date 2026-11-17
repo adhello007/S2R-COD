@@ -1,0 +1,6 @@
+# RECHECK sensitivity (EXPLORATORY; decides nothing). COD10K S_alpha, Welch, TOST margin +/-0.005
+lowest pseudo-label counts in EQ: SINet_B_s116 1346, SINet_CSHUF_s115 1359, SINet_C10_s111 1501
+C10-B     as delivered               n 15/16  delta +0.0006  90% CI [-0.0027, +0.0039]  TOST p 0.0149  -> equivalent
+C10-B     without SINet_B_s116       n 15/15  delta -0.0005  90% CI [-0.0033, +0.0023]  TOST p 0.0051  -> equivalent
+C10-CSHUF as delivered               n 15/15  delta -0.0009  90% CI [-0.0051, +0.0034]  TOST p 0.0555  -> not equivalent
+C10-CSHUF without SINet_CSHUF_s115   n 15/14  delta -0.0024  90% CI [-0.0059, +0.0010]  TOST p 0.1075  -> not equivalent

@@ -1,4 +1,4 @@
-# path_check (2026-11-17 11:18): 27 Markdown files under STUDENT_RESULTS/
+# path_check (2026-11-17 13:34): 28 Markdown files under STUDENT_RESULTS/
   EXECUTION_STATUS.md
   EXPERIMENTAL_EVIDENCE.md
   FINAL_SCIENTIFIC_AUDIT.md
@@ -26,15 +26,16 @@
   prereg/E3.md
   prereg/EQ.md
   prereg/OP.md
-references resolved: 487
+  prereg/RECHECK.md
+references resolved: 504
 resolved through git (ref, or the base commit): 5
-  EXECUTION_STATUS.md:223  rebuttal/iclr27/wip2  (git ref)
-  EXECUTION_STATUS.md:233  rebuttal/iclr27/wip2  (git ref)
-  EXECUTION_STATUS.md:259  AD-PCHG-250926_Final.tex  (exists at the base commit 8d1d079 (removed later by the author))
-  EXECUTION_STATUS.md:400  origin/rebuttal/iclr27/wip2  (git ref)
+  EXECUTION_STATUS.md:225  rebuttal/iclr27/wip2  (git ref)
+  EXECUTION_STATUS.md:235  rebuttal/iclr27/wip2  (git ref)
+  EXECUTION_STATUS.md:262  AD-PCHG-250926_Final.tex  (exists at the base commit 8d1d079 (removed later by the author))
+  EXECUTION_STATUS.md:420  origin/rebuttal/iclr27/wip2  (git ref)
   INSTRUCTION_COMPLIANCE_AUDIT.md:63  rebuttal/iclr27/wip2  (git ref)
 declared absent or superseded by the file itself: 3
-  EXECUTION_STATUS.md:257  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
+  EXECUTION_STATUS.md:260  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
   INSTRUCTION_COMPLIANCE_AUDIT.md:202  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
   prereg/BRIDGE.md:18  Snapshot/RL5B/bridge/SINet_C10_s42  (superseded by the file's own amendment: Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42)
 declared as produced later (not yet required): 0

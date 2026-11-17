@@ -73,7 +73,7 @@ Those three numbers are derived, and check out:
 | Separate working copy, branch `rebuttal-RL5B`, base hash | **Deviation (approved)** | wip2 in place, base `8d1d079` (deviation 1) |
 | Output tree | **Met** | §10 check below |
 | `environment.txt` | **Met (fixed at audit)** | The original record; the analysis environment and the kernel change appended today |
-| Deterministic cuDNN | **Met** | `MyTrain.py:311-312` |
+| Deterministic cuDNN | **Met** | `MyTrain.py:311-312`. The setting does not make runs reproducible: same-seed re-trains diverge by step 10, and one moved S_α by 0.028 (RECHECK, added 17 Nov after this audit; `EXECUTION_STATUS.md` deviation 34) |
 | Reproduction gate: ≥ 4 SE runs, 2 per architecture, 6 dp | **Met** | `EXPERIMENT_LOGS/stage0_repro_gate.log` |
 | GPU-h measured before launch; budget table | **Met** | `EXECUTION_STATUS.md`, compute budget |
 

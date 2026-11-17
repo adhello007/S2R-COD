@@ -1,0 +1,121 @@
+{
+  "kernel": "7.0.0-43-generic",
+  "commit": "4147ada (dirty)",
+  "pipeline_hash": "281e42b8c66b3a74",
+  "runs": {
+    "SINet_C10_s42": {
+      "rc": 0,
+      "verify_ok": true,
+      "verify": {
+        "runid": "RECHECK_SINet_C10_s42",
+        "rounds": 2,
+        "total_step_set": "0253",
+        "last_epoch": "039/040",
+        "wall_min": 105.6,
+        "pool_r1": 5447,
+        "pool_r2": 7394,
+        "n_appended": 1947,
+        "best_epoch": 24,
+        "checks": {
+          "rounds": true,
+          "total_step": true,
+          "last_epoch": true,
+          "ckpt": true,
+          "pool_r1": true
+        },
+        "failed_checks": []
+      },
+      "reference_Sm_COD10K": 0.717103,
+      "reference": "bridge 2026-11-11, old kernel",
+      "metrics": {
+        "COD10K": {
+          "n": 2026,
+          "shape_mismatch": 0,
+          "Sm": 0.7117967579082329,
+          "wFm": 0.4681269650150854,
+          "MAE": 0.07862572636607269,
+          "adpEm": 0.7490756838783046,
+          "meanEm": 0.7399178684640744,
+          "maxEm": 0.7833554293282003,
+          "adpFm": 0.5341153009998347,
+          "meanFm": 0.5470301705761718,
+          "maxFm": 0.5807352270543512,
+          "infer_rc": 0
+        },
+        "NC4K": {
+          "n": 4121,
+          "shape_mismatch": 0,
+          "Sm": 0.7679545400058022,
+          "wFm": 0.6020199227880232,
+          "MAE": 0.08743133695655476,
+          "adpEm": 0.8211740902307524,
+          "meanEm": 0.7921670557337366,
+          "maxEm": 0.8304932224130579,
+          "adpFm": 0.6829582988706666,
+          "meanFm": 0.6738037215221481,
+          "maxFm": 0.7048568612562237,
+          "infer_rc": 0
+        }
+      },
+      "abs_delta_Sm_COD10K": 0.0053062420917671105,
+      "reading": "within the bridge band, not reproduced exactly"
+    },
+    "SINet_CSHUF_s115": {
+      "rc": 0,
+      "verify_ok": true,
+      "verify": {
+        "runid": "RECHECK_SINet_CSHUF_s115",
+        "rounds": 2,
+        "total_step_set": "0253",
+        "last_epoch": "039/040",
+        "wall_min": 110.6,
+        "pool_r1": 5447,
+        "pool_r2": 7394,
+        "n_appended": 1947,
+        "best_epoch": 27,
+        "checks": {
+          "rounds": true,
+          "total_step": true,
+          "last_epoch": true,
+          "ckpt": true,
+          "pool_r1": true
+        },
+        "failed_checks": []
+      },
+      "reference_Sm_COD10K": 0.693264,
+      "reference": "EQ run, new kernel",
+      "metrics": {
+        "COD10K": {
+          "n": 2026,
+          "shape_mismatch": 0,
+          "Sm": 0.7214422404593775,
+          "wFm": 0.4827851851367888,
+          "MAE": 0.07321072766916813,
+          "adpEm": 0.7559017915809739,
+          "meanEm": 0.7490819915296043,
+          "maxEm": 0.7966078312728121,
+          "adpFm": 0.5438331132863172,
+          "meanFm": 0.560817767348843,
+          "maxFm": 0.6003080634424143,
+          "infer_rc": 0
+        },
+        "NC4K": {
+          "n": 4121,
+          "shape_mismatch": 0,
+          "Sm": 0.7717102253052718,
+          "wFm": 0.6038619660927576,
+          "MAE": 0.0868302837241072,
+          "adpEm": 0.823486382146866,
+          "meanEm": 0.7915531254739545,
+          "maxEm": 0.8343006767890077,
+          "adpFm": 0.6865436802530026,
+          "meanFm": 0.676105076070534,
+          "maxFm": 0.7125047986961646,
+          "infer_rc": 0
+        }
+      },
+      "abs_delta_Sm_COD10K": 0.028178240459377557,
+      "reading": "outside the band"
+    }
+  }
+}

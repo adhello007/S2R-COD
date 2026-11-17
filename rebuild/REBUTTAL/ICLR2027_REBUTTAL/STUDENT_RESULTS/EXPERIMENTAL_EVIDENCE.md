@@ -13,7 +13,8 @@ One entry per task, in the §7 template. Paths are relative to `STUDENT_RESULTS/
   `EXPERIMENT_LOGS/stage0_repro_gate.log`); boundary metrics through `rebuild/DIAG/diag_boundary.py`.
 - **Test splits:** COD10K-test (2,026 images) and NC4K (4,121 images), as in the submission.
 - **Training pipeline:** the base commit `8d1d079`, plus additive flags (`CODE_CHANGES.patch`). The flags are
-  `--save_ckpts minimal`, `--link_pool` and `--val_net`, each numerically neutral (bridge check below).
+  `--save_ckpts minimal`, `--link_pool` and `--val_net`. None touches the weights or the random number
+  generators, and the bridge result lies within run-to-run noise (below).
 - **Verification checks 1–8** are those of §7 of the instructions.
 - **Integrity checks run at the instruction-compliance audit (2026-11-17):**
   - All 52,000+ committed inputs (renders, base pool, HKU-IS, target, test and validation images) still match
@@ -176,6 +177,10 @@ Limitations:
   - Counts are more spread than in SE (SD 164 against 89).
   - Low counts occurred before the 11-13 kernel update too (CDR minimum 1487).
   - No run failed verification, and none is dropped (prereg EQ.6).
+- **Re-training check (RECHECK, 2026-11-17, below).**
+  - Re-training CSHUF s115 with the same seed gave 0.7214 (1,947 pseudo-labels), against 0.6933 (1,359) in the campaign. Its low score is therefore not a property of its seed.
+  - Re-training C10 s42 on the current kernel landed within the noise band, so the kernel update shows no effect.
+  - Leaving out either of the two lowest-count runs changes neither verdict: H1 TOST p = 0.005; C10 − CSHUF on COD10K p = 0.11, still not equivalent. This check is exploratory.
 - The design-time power figures assumed the SE SDs.
 Verification notes:
 - (1) 46 runs, each with `train_ok` and inference complete.
@@ -333,5 +338,35 @@ Seeds: 42
 Artifacts: `EXPERIMENT_LOGS/BRIDGE_check.log`, `EXPERIMENT_LOGS/BRIDGE_check.json`
 Results: COD10K |ΔS_α| = 0.00006, within the band. All 21,828 linked source files are unchanged.
 Interpretation: The flags do not change results beyond run-to-run nondeterminism, and no source render was written to.
-Limitations: The difference is not exactly 0 at 6 dp, so runs are near-deterministic, not bit-identical.
+Limitations: **Correction (RECHECK, 2026-11-17).** An earlier version of this entry said runs are near-deterministic. They are not.
+- A same-seed re-train on the current kernel moved S_α by 0.028 (RECHECK).
+- The committed September run and the bridge also diverge in training loss by step 10.
+- Their pseudo-label counts differ (1,852 and 1,939), and so do their best epochs (32 and 24).
+- Their 0.00006 agreement in S_α was chance.
+A single re-train can show only that the flags' effect lies within run-to-run noise.
 Verification notes: hashes recomputed after the run.
+
+---
+
+## RECHECK — Same-seed re-training on the current kernel (diagnostic; decides nothing)
+Reviewer issues: supports EXP-01
+Status: VERIFIED
+Pre-registration: `prereg/RECHECK.md` with `rebuild/RL5B/recheck.py` (`4147ada`, committed before launch)
+Commands: `nohup .venv/bin/python rebuild/RL5B/recheck.py > rebuild/RL5B/recheck.log 2>&1 &`; exploratory follow-up `.venv/bin/python analysis/recheck_sensitivity.py`
+Datasets: fresh hardlinked pools whose digests matched the committed records before launch; COD10K-test and NC4K
+Configuration: the queue's own command, verification and inference (pipeline hash `281e42b8c66b3a74`, as in EQ); kernel 7.0.0-43; one run per GPU, 2026-11-17 11:29–13:28
+Seeds: R1 `SINet_C10_s42`, R2 `SINet_CSHUF_s115`
+Artifacts: `EXPERIMENT_LOGS/RECHECK.{log,json}`, `EXPERIMENT_LOGS/RECHECK_sensitivity.log`
+Results (COD10K S_α, against the declared bands):
+- **R1:** 0.711797 against the bridge's 0.717103. |Δ| = 0.0053, so **within the band, not reproduced exactly**. 1,947 pseudo-labels; best epoch 24.
+- **R2:** 0.721442 against the campaign's 0.693264. |Δ| = 0.0282, so **outside the band**. 1,947 pseudo-labels against the campaign's 1,359; best epoch 27 against 38.
+- **Both:** pass verification. Each re-train matches its original at training step 0 and differs by the next logged step (10). The equal pseudo-label counts are a coincidence: the two sets share 1,484 of 1,947 names.
+Interpretation:
+- **R2 shows directly** that training is not reproducible run to run on the current kernel.
+- **Three trainings of C10 s42** gave 0.717165 (September, an earlier kernel), 0.717103 (bridge, 7.0.0-42) and 0.711797 (R1, 7.0.0-43).
+- **R1** shows no kernel effect beyond that noise.
+- **R2:** both of its trainings ran on the current kernel, so the declared gloss "the system change affects training" does not apply. What R2 shows is that the campaign's lowest score is not reproduced from its seed.
+- **Cause of the low campaign run:** not identified. Its log has no error beyond those in normal runs, and the kernel log has no GPU entry in that window.
+- **EQ:** its within-campaign contrasts stay valid, because this noise affects every arm alike. Leaving out the run changes no verdict (EXP-01 limitations).
+Limitations: One re-train per run.
+Verification notes: the training step counts match (253). Inference covered all 2,026 / 4,121 images, with no shape mismatches.

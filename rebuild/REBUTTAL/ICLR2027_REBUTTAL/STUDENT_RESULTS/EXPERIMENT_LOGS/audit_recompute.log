@@ -93,10 +93,6 @@ PASS cosine to own base render                                      recomputed 0
 PASS cosine to random base render                                   recomputed 0.06         quoted 0.06        (in rebuttal)
 PASS clusters with nearest cut-out beyond median member             recomputed 52 of the 75 quoted 52 of the 75  (in rebuttal)
 
-## Spot re-score of saved CDR maps (Boundary-IoU at 0.5, COD10K) against EXP02_SINet_per_run.csv
-PASS SINet_CDRLHP3_s43                        re-scored 0.336384  table 0.336384
-PASS SINet_CDRL1P2_s45                        re-scored 0.334698  table 0.334698
-
 ## Internal details in the rebuttal (must be none)
 PASS unresolved [EQ]            0 (none)
 NOTE open [AUTHOR] markers      2 (the author's decision, e.g. the title; never a failure)
