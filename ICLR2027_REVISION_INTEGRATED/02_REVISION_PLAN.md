@@ -60,7 +60,7 @@ The 16-row 8-seed TOST table (`tab:ci_tost`) moves to the appendix, which also p
 | Foreground provenance, reuse, ICC, cluster distances | RL5B, Caus, dypE | Scope paragraph (existing) | coverage appendix |
 | Realised contrast 77% / 14.1% (not 8.8%); exposure; pseudo-label Jaccard | dypE | — | App. C, "How much the trained comparison is attenuated" |
 | Larger-budget preflight (1.22×, fails) | dypE | Discussion, one sentence | App. C |
-| CHAMELEON: 51st match, 32 COD10K-test re-encodes, 4 in CAMO-250, protocol exposure | dypE | §3.4, two to three sentences | CHAMELEON appendix: reconciliation and protocol table |
+| CHAMELEON: 51st match (withdrawn 17 Nov evening; report 03 §3), 32 COD10K-test re-encodes, 4 in CAMO-250, protocol exposure | dypE | §3.4, two to three sentences | CHAMELEON appendix: reconciliation and protocol table |
 | COD10K-test: 7 byte-identical training images (author decision Q2) | dypE | — | CHAMELEON appendix, one sentence |
 | Pre-registration timing (OR 62 min; SE at `a79886a`; tags) | Caus | — | App. B commit list; AI-use and reproducibility statements |
 | Sign rule ≥ 7/8; power figures 0.20 / 0.0087 | RL5B (rule); RL5B and dypE (power) | §2, §3.1 (existing) | App. B (existing) |

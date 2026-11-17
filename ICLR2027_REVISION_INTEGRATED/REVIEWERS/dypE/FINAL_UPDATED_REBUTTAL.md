@@ -6,7 +6,9 @@ Our initial response (8 Nov 2026) is already posted; this is a follow-up.
 Long-form evidence: rebuild/REBUTTAL/ICLR2027_REBUTTAL_dypE/STUDENT_RESULTS/ (FINAL_UPDATED_REBUTTAL.md Part A, EXPERIMENTAL_EVIDENCE.md).
 Superseded in the package draft: "equivalence at ±0.005 is not established / smaller gains are not excluded" (true of the
 eight-seed campaign; the pre-registered confirmatory campaign, run for reviewer RL5B, now establishes equivalence on the
-primary cell), and "50/76 ... 16 unchecked" (now 51 with animal-54, author decision 2026-11-17; the 16 are COD10K-test re-encodes).
+primary cell), and "50/76 ... 16 unchecked" (50 stands; the 16 are COD10K-test re-encodes).
+CHAMELEON counts are the released detectors' only. animal-54, flagged by the Caus package's independent detector
+(5e7a2f9), was withdrawn by the author (73c18d6) and is not claimed.
 -->
 
 <!-- BEGIN COMMENT 1 -->
@@ -83,15 +85,15 @@ Both detectors reproduce the submitted counts exactly. **Corrections and additio
 
 | Count (of 76) | Value |
 |---|---|
-| training-pool copies found by the released detectors (the floor) | 50 |
-| plus one rescaled copy, found by an independent detector and confirmed by eye | 51 total |
+| training-pool copies found by the released detectors (a floor) | 50 |
 | re-encodes of COD10K-test images (including all 16 we called unchecked) | 32 |
 | in CAMO-250 (we said three: 3 byte-identical, plus 1 re-encode) | 4 |
-| no duplicate found anywhere | 1 |
+| duplicated somewhere in COD10K or CAMO | 74 |
+| no duplicate found anywhere | 2 |
 
 → **§3.4; Table 17 and "What the overlap means for each protocol" (App. F).**
 
-- **Supervised training** sees 51 of these photographs with their COD10K or CAMO masks, which breaks independent evaluation whether or not scores move.
+- **Supervised training** sees 50 of these photographs with their COD10K or CAMO masks, which breaks independent evaluation whether or not scores move.
 - **Unlabelled adaptation (ours)** exposes the model to the images but not to their labels. 14–32 matches per run (mean 24.7) were re-used with the model's own pseudo-label.
 - **Checkpoint selection** on CAMO-250 opens a label-based selection path through 4 photographs.
 - **Evaluation:** with 32 shared re-encodes, CHAMELEON and COD10K-test are not independent benchmarks.

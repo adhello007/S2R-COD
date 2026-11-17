@@ -1,5 +1,5 @@
 --- AD-PCHGS-250926.tex	2026-11-17 19:42:52.988498000 +0530
-+++ ICLR2027_REVISION_INTEGRATED/paper/REVISED_PAPER.tex	2026-11-17 21:01:11.716032434 +0530
++++ ICLR2027_REVISION_INTEGRATED/paper/REVISED_PAPER.tex	2026-11-17 22:49:09.477983192 +0530
 @@ -7,9 +7,36 @@
  \usepackage{amsmath}
  \usepackage{booktabs}
@@ -138,7 +138,7 @@
  exceed its own campaign's bar \emph{and} agree in sign across seeds to count. Four campaigns attack
  the decisive gap from different directions and none of them moves it; the positive control, which
  compares against a method we expected to be clearly worse, clears its bar more than threefold.
-+\revB{ORS (oracle allocations of other shapes) was run after review and reads endpoint labels to choose training data (Appendix~\ref{app:shapeoracle}).} \revShared{The confirmatory campaign is in Table~\ref{tab:equiv}.}
++\revB{ORS (oracle allocations of other shapes) was run after review and reads endpoint labels to choose training data (Appendix~\ref{app:shapeoracle}).}
  Per-cell tables for both architectures and both endpoints are in Appendix~\ref{app:diag}.
  \emph{Sources:} \texttt{abc\_verdict.json} and its \texttt{or/}, \texttt{fx/}, \texttt{se/}
  variants; \texttt{pc\_verdict.json}.}
@@ -308,8 +308,8 @@
 -These metrics were not pre-registered and re-decide no verdict; Table~\ref{tab:trained} stands. They binarise predictions
 -where $S_\alpha$ does not, though the pattern survives every binarisation threshold we swept. Moreover, \textit{SINet-v2 resolves none of it}, which we report rather than leading with the architecture
 -that cooperates.
-+\revShared{These metrics were not pre-registered and re-decide no verdict; Table~\ref{tab:trained} stands. The question they could not settle, whether concentration changes accuracy, is
-+the one our dose-response experiment was designed for. It holds the budget at 1,000 images and sets three levels of
++\revShared{These metrics were not pre-registered and re-decide no verdict. Whether concentration changes accuracy is what our
++dose-response experiment was designed to test. It holds the budget at 1,000 images and sets three levels of
 +concentration: cluster-uniform, the committed shape, and one twice as concentrated. Each concentrated level is
 +realised with five independent random directions, so direction averages out, and the experiment was pre-registered
 +with Boundary-IoU on SINet as its primary measure (Table~\ref{tab:cdr}). \cdrverdict{} As delivered, the levels are closer than their quotas (effective numbers of clusters 50, 45 and 41, against 75, 30 and 15; random selection 43), because few foregrounds lie close to most clusters (Section~\ref{sec:discussion}). The planned replication on SINet-v2 was not run, for
@@ -339,28 +339,24 @@
 -format, so not one byte matches while every pixel does. Sixteen images resolve neither way and are
 -reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate.
 +format, so not one byte matches while every pixel does. Sixteen images resolve neither way \revC{against the training pools} and are
-+reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate\revC{; an independent detector found a
-+fifty-first, a rescaled copy we confirmed by eye (Appendix~\ref{app:chamext}). The sixteen are re-encodes of COD10K-test
-+photographs, as are $32$ of the $76$, so CHAMELEON and COD10K-test are not independent benchmarks}.
++reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate\revC{. The sixteen are re-encodes
++of COD10K-test photographs, as are $32$ of the $76$, so CHAMELEON and COD10K-test are not independent benchmarks
++(Appendix~\ref{app:chamext})}.
  
  The count is measured in two tiers (Figure~\ref{fig:cham}). The floor is what a released
  same-dimension detector reproduces on any machine: $41$ images whose partner shares their exact
-@@ -443,12 +481,11 @@
+@@ -443,9 +481,8 @@
  byte-identical author-sourced release, and the same detector pointed at NC4K flags $0$ of $120$ (Appendix~\ref{app:chamext}).
  
  We expected the contamination to flatter CHAMELEON scores, measured it, and did not find it: all eight difficulty percentiles for the leaked subset fall between $0.448$ and $0.559$. A protocol violation does not need a score advantage to
 -disqualify a benchmark. Nor do we recommend reporting CHAMELEON on its uncontaminated subset,
 -because that subset is now $10$ images, one of which is byte-identical to an
 -image in the split we select checkpoints on. \textit{A ten-image endpoint is not an endpoint:
-+disqualify a benchmark. Nor do we recommend reporting CHAMELEON on its uncontaminated subset\revC{: of the $25$ images without a training-pool partner,
-+$24$ are re-encodes of COD10K-test photographs, and we found no duplicate anywhere for only one.} \textit{\revC{A one-image endpoint is not an endpoint}:
++disqualify a benchmark. Nor do we recommend reporting CHAMELEON on its uncontaminated subset\revC{: of the $26$ images without a training-pool partner,
++$24$ are re-encodes of COD10K-test photographs, and we found no duplicate anywhere for only two.} \textit{\revC{A two-image endpoint is not an endpoint}:
  report COD10K-test and NC4K instead, and disclose the unchecked share.}\footnote{This is not
  hypothetical for the protocol we build on, which designates the real unlabelled COD10K training set
--as its target domain. Testing on CHAMELEON, it removes those images from the \emph{source} domain, closing that path but not the target pool, which holds the same $44$. We attribute no intent: the source-side removal shows the authors were alert to leakage, and the target-side path is invisible without a re-encode-tolerant check.} The detector, the pair list, and the clean protocol
-+as its target domain. Testing on CHAMELEON, it removes those images from the \emph{source} domain, closing that path but not the target pool, which holds the same $44$ \revC{($45$ with the fifty-first)}. We attribute no intent: the source-side removal shows the authors were alert to leakage, and the target-side path is invisible without a re-encode-tolerant check.} The detector, the pair list, and the clean protocol
- are released and run without any of our data.
- 
- \begin{figure}[t]
+ as its target domain. Testing on CHAMELEON, it removes those images from the \emph{source} domain, closing that path but not the target pool, which holds the same $44$. We attribute no intent: the source-side removal shows the authors were alert to leakage, and the target-side path is invisible without a re-encode-tolerant check.} The detector, the pair list, and the clean protocol
 @@ -468,32 +505,45 @@
  \section{Discussion}
  \label{sec:discussion}
@@ -391,7 +387,7 @@
 +before any training; it never sees the score. Its pool re-uses each of 4,447 HKU-IS foregrounds, already in the base pool, with a new background. Two renders of
 +the same foreground on different backgrounds share most of their embedding variance (intraclass correlation $0.71$ in
 +frozen DINOv2 features). In 52 of the 75 target clusters, the nearest available cut-out lies farther from the cluster's
-+centre than the cluster's median real image. The allocation acts on $k = 75$ $k$-means clusters of frozen self-supervised features,
++centre than the cluster's median real image, partly a cut-out-versus-photograph difference. The allocation acts on $k = 75$ $k$-means clusters of frozen self-supervised features,
 +with a budget of $N = 1000$ images, for SINet and SINet-v2 with two-round self-training at a pinned number of
 +steps, and is read on COD10K-test and NC4K. Whether the null holds at a higher operating point, with some real labels in the pool, was not tested. We tested allocation, not generation: a generator that synthesises new
 +foregrounds for the hardest clusters, or one steered by the score while it generates, is outside this experiment, and
@@ -637,7 +633,7 @@
  
  \section{Supplementary Tables}
  \label{app:tables}
-@@ -927,11 +1054,42 @@
+@@ -927,11 +1054,33 @@
  
  \paragraph{Scope of the exact-hash zero.} The $0$ we report is measured against the training pool.
  Across benchmarks it is not zero: \texttt{animal-17}, \texttt{animal-25} and \texttt{animal-60} are
@@ -645,25 +641,16 @@
 +byte-identical to CAMO-250 images\revC{, and \texttt{animal-28} is a re-encoded copy of a fourth}. Those files are absent from the training pool and so do not enter
  the contamination count, but CAMO-250 is the split that this repository selects checkpoints on.
 +\revC{Pointed at COD10K-test, the released same-dimension detector, unchanged and at its published tolerance, finds
-+$32$ re-encoded duplicates, including all sixteen images that are unchecked against the training pools.}
-+
-+\begin{revblock}{RevC}
-+\paragraph{The fifty-first match, and how the counts fit together.} An independent difference-hash detector, run after
-+review, recovers all $41$ Tier-A pairs and flags one image the committed audit had listed as clean: \texttt{animal-54}
-+is a rescaled copy ($880\times660$ against $900\times675$; hash distance $2$, mean absolute difference $0.92/255$ after
-+resizing) of the COD10K-train image \texttt{Spider-2513}, which we confirmed by visual inspection. Neither committed tier
-+could find it: Tier A requires equal dimensions, and Tier B scores only the images Tier A leaves unchecked. We therefore
-+report $50$ as the floor the released detectors reproduce and $51$ in total. Table~\ref{tab:chamcount} reconciles every
-+count.
-+\end{revblock}
++$32$ re-encoded duplicates, including all sixteen images that are unchecked against the training pools.
++Table~\ref{tab:chamcount} reconciles every count.}
 +
 +\input{table_cham_counts.tex}
 +
 +\begin{revblock}{RevC}
 +\paragraph{What the overlap means for each protocol.} \emph{Supervised training} on COD10K-train and CAMO-train trains on
-+$51$ of the $76$ photographs with their own COD10K or CAMO masks, which breaks independent evaluation whether or not a
++$50$ of the $76$ photographs with their own COD10K or CAMO masks, which breaks independent evaluation whether or not a
 +score moves. \emph{Unlabelled target adaptation}, our protocol, puts the same photographs in the unlabelled target pool;
-+between rounds $14$--$32$ of the $50$ automated matches per run (mean $24.7$) were re-used with the model's own predicted
++between rounds $14$--$32$ of the $50$ matches per run (mean $24.7$) were re-used with the model's own predicted
 +mask as a pseudo-label, and no CHAMELEON annotation is used anywhere, so this is exposure to the image, not label
 +leakage, and its effect would depend on the method. \emph{Checkpoint selection} on CAMO-250 gives any protocol that also
 +reports CHAMELEON a label-based selection path through four photographs. \emph{Evaluation} on COD10K-test as well is
@@ -676,13 +663,13 @@
  
  \paragraph{What remains uncounted.} Sixteen images have no partner at either tier and are reported
 -\textsc{unchecked}, not clean. Different photographs of one specimen, montages, and heavy color edits
-+\textsc{unchecked} \revC{against the training pools; each is a re-encode of a COD10K-test photograph. Nine more have no
++\textsc{unchecked} \revC{against the training pools; each is a re-encode of a COD10K-test photograph. Ten more have no
 +training-pool partner after Tier A checked their dimension group; eight of them are COD10K-test photographs, and for
-+the ninth (\texttt{animal-38}) we found no duplicate anywhere. We call these \emph{no duplicate found}}, not clean. Different photographs of one specimen, montages, and heavy color edits
++the other two we found no duplicate anywhere. We call these \emph{no duplicate found}}, not clean. Different photographs of one specimen, montages, and heavy color edits
  are not detected and are not claimed. Every figure here is a lower bound.
  
  
-@@ -956,8 +1114,8 @@
+@@ -956,8 +1105,8 @@
  
  \paragraph{The oracle campaign uses test labels, deliberately.} CORACLE takes the committed
  allocation's shape and re-assigns it across clusters by the rank of each cluster's \emph{true} error
@@ -693,7 +680,7 @@
  would forbid this for any real arm is passed on a technicality, which we disclose rather than claim
  as cleanliness. One further limitation: the oracle is derived from one architecture's errors and
  applied to both. The two architectures' per-cluster errors agree at a rank correlation of $0.9211$,
-@@ -990,9 +1148,60 @@
+@@ -990,9 +1139,60 @@
  
  \paragraph{What differs between arms beyond the injected images.} The pseudo-labeling step between
  rounds selects target images using each arm's \emph{own} first-round model, so each arm appends a

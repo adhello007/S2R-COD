@@ -16,8 +16,8 @@ The posted initial responses (8 Nov 2026) are reproduced at the end of each `<ID
 
 1. **Overlap rule.** A change made to address concerns of two or more reviewers is orange, whichever package
    produced the evidence. Orange overrides the individual colours.
-2. **Attribution is by the concern addressed, not by the package of origin.** For example, the 51st CHAMELEON match
-   (animal-54) was found in the Caus package but answers dypE QA-03, so it is purple.
+2. **Attribution is by the concern addressed, not by the package of origin.** For example, the confirmatory
+   equivalence campaign was run in the RL5B package but answers both RL5B CW-01 and dypE CW-01, so Table 3 is orange.
 3. **Smallest coherent span.** Mixed-origin paragraphs are tagged sentence by sentence. A float created for an
    overlapping concern is coloured as a whole.
 4. **Unchanged text is never coloured.** Changes that serve no reviewer (grammar fixes) are left uncoloured and listed

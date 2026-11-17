@@ -113,8 +113,8 @@ inputs) shows only `du2025rise` as new.
 |---|---|---|
 | RL5B | 4711 | 3609 |
 | Caus | 4161 | 3548 |
-| dypE | 3376 | 3861 |
-| general | 4502 | — |
+| dypE | 3376 | 3814 |
+| general | 4527 | — |
 
   All are ≤ 5,000, with ≤ 2 comments per reviewer. UTF-8 byte counts are also ≤ 5,000.
 
@@ -139,6 +139,6 @@ Each phrase below now appears only as a stated correction:
 - "detecting the concentration the whole time";
 - "only destroying concentration".
 
-Never present: "15 per arm" and "15--16 of 27" (in the main paper). "1.37/1.34" appears only as superseded three-seed
+Never present: "15 per arm" and "15--16 of 27" (in the main paper), and any 51st CHAMELEON match (animal-54, "fifty-first", 75/76), checked by `verify_numbers.py`. "1.37/1.34" appears only as superseded three-seed
 history. No remaining "deterministic" claim concerns the runs; the one hit describes the cuDNN setting, "not claimed to
 eliminate" nondeterminism.

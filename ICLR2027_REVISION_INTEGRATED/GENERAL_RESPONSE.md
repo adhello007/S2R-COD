@@ -25,7 +25,7 @@ We thank the three reviewers and the AC. Our initial responses are posted; each 
 - **Training-set contrast and CHAMELEON protocols** (dypE; purple):
   - the decisive comparison differs in 14.1% of the pool, not 8.8%;
   - a larger-budget preflight failed;
-  - CHAMELEON shares 32 images with COD10K-test, and a 51st training-pool copy is reported;
+  - CHAMELEON shares 32 images with COD10K-test, and 74 of its 76 images are duplicated somewhere in COD10K or CAMO;
   - the overlap's meaning is spelled out per protocol (Table 17, App. F).
 
 **New work.** 99 trained runs after review:

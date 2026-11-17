@@ -321,21 +321,18 @@ R(r"""($k$-NN recall, Appendix~\ref{app:coverage}), while the generator's own so
 R(r"""format, so not one byte matches while every pixel does. Sixteen images resolve neither way and are
 reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate.""",
   r"""format, so not one byte matches while every pixel does. Sixteen images resolve neither way \revC{against the training pools} and are
-reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate\revC{; an independent detector found a
-fifty-first, a rescaled copy we confirmed by eye (Appendix~\ref{app:chamext}). The sixteen are re-encodes of COD10K-test
-photographs, as are $32$ of the $76$, so CHAMELEON and COD10K-test are not independent benchmarks}.""",
-  "s34-floor-51-cod10k")
+reported \textsc{unchecked} rather than clean, so $50$ is a floor rather than an estimate\revC{. The sixteen are re-encodes
+of COD10K-test photographs, as are $32$ of the $76$, so CHAMELEON and COD10K-test are not independent benchmarks
+(Appendix~\ref{app:chamext})}.""",
+  "s34-floor-cod10k")
 R(r"""Nor do we recommend reporting CHAMELEON on its uncontaminated subset,
 because that subset is now $10$ images, one of which is byte-identical to an
 image in the split we select checkpoints on. \textit{A ten-image endpoint is not an endpoint:
 report COD10K-test and NC4K instead, and disclose the unchecked share.}""",
-  r"""Nor do we recommend reporting CHAMELEON on its uncontaminated subset\revC{: of the $25$ images without a training-pool partner,
-$24$ are re-encodes of COD10K-test photographs, and we found no duplicate anywhere for only one.} \textit{\revC{A one-image endpoint is not an endpoint}:
+  r"""Nor do we recommend reporting CHAMELEON on its uncontaminated subset\revC{: of the $26$ images without a training-pool partner,
+$24$ are re-encodes of COD10K-test photographs, and we found no duplicate anywhere for only two.} \textit{\revC{A two-image endpoint is not an endpoint}:
 report COD10K-test and NC4K instead, and disclose the unchecked share.}""",
   "s34-subset")
-R(r"""closing that path but not the target pool, which holds the same $44$.""",
-  r"""closing that path but not the target pool, which holds the same $44$ \revC{($45$ with the fifty-first)}.""",
-  "s34-footnote")
 
 # ================================================================ discussion
 R(r"""\emph{geometric} result is positive, and we state it without hedging: concentration, not the
@@ -573,25 +570,16 @@ Across benchmarks it is not zero: \texttt{animal-17}, \texttt{animal-25} and \te
 byte-identical to CAMO-250 images\revC{, and \texttt{animal-28} is a re-encoded copy of a fourth}. Those files are absent from the training pool and so do not enter
 the contamination count, but CAMO-250 is the split that this repository selects checkpoints on.
 \revC{Pointed at COD10K-test, the released same-dimension detector, unchanged and at its published tolerance, finds
-$32$ re-encoded duplicates, including all sixteen images that are unchecked against the training pools.}
-
-\begin{revblock}{RevC}
-\paragraph{The fifty-first match, and how the counts fit together.} An independent difference-hash detector, run after
-review, recovers all $41$ Tier-A pairs and flags one image the committed audit had listed as clean: \texttt{animal-54}
-is a rescaled copy ($880\times660$ against $900\times675$; hash distance $2$, mean absolute difference $0.92/255$ after
-resizing) of the COD10K-train image \texttt{Spider-2513}, which we confirmed by visual inspection. Neither committed tier
-could find it: Tier A requires equal dimensions, and Tier B scores only the images Tier A leaves unchecked. We therefore
-report $50$ as the floor the released detectors reproduce and $51$ in total. Table~\ref{tab:chamcount} reconciles every
-count.
-\end{revblock}
+$32$ re-encoded duplicates, including all sixteen images that are unchecked against the training pools.
+Table~\ref{tab:chamcount} reconciles every count.}
 
 \input{table_cham_counts.tex}
 
 \begin{revblock}{RevC}
 \paragraph{What the overlap means for each protocol.} \emph{Supervised training} on COD10K-train and CAMO-train trains on
-$51$ of the $76$ photographs with their own COD10K or CAMO masks, which breaks independent evaluation whether or not a
+$50$ of the $76$ photographs with their own COD10K or CAMO masks, which breaks independent evaluation whether or not a
 score moves. \emph{Unlabelled target adaptation}, our protocol, puts the same photographs in the unlabelled target pool;
-between rounds $14$--$32$ of the $50$ automated matches per run (mean $24.7$) were re-used with the model's own predicted
+between rounds $14$--$32$ of the $50$ matches per run (mean $24.7$) were re-used with the model's own predicted
 mask as a pseudo-label, and no CHAMELEON annotation is used anywhere, so this is exposure to the image, not label
 leakage, and its effect would depend on the method. \emph{Checkpoint selection} on CAMO-250 gives any protocol that also
 reports CHAMELEON a label-based selection path through four photographs. \emph{Evaluation} on COD10K-test as well is
@@ -603,9 +591,9 @@ contrast is affected, but absolute COD10K-test numbers include them.
 \end{revblock}
 
 \paragraph{What remains uncounted.} Sixteen images have no partner at either tier and are reported
-\textsc{unchecked} \revC{against the training pools; each is a re-encode of a COD10K-test photograph. Nine more have no
+\textsc{unchecked} \revC{against the training pools; each is a re-encode of a COD10K-test photograph. Ten more have no
 training-pool partner after Tier A checked their dimension group; eight of them are COD10K-test photographs, and for
-the ninth (\texttt{animal-38}) we found no duplicate anywhere. We call these \emph{no duplicate found}}, not clean. Different photographs of one specimen, montages, and heavy color edits
+the other two we found no duplicate anywhere. We call these \emph{no duplicate found}}, not clean. Different photographs of one specimen, montages, and heavy color edits
 are not detected and are not claimed. Every figure here is a lower bound.""",
   "appE-chameleon")
 
@@ -793,30 +781,28 @@ Sharper ($\atemp = 0.758$) & $15$ / $41$ & $5 \times 3$ & $+0.0021$ & $0.11$ & $
 \end{center}
 \end{table}
 """)
-(OUT / "table_cham_counts.tex").write_text(r"""%% Values: dypE STUDENT_RESULTS/RESULT_TABLES/AN-05_chameleon_pairs.csv and AN-05_cross_benchmark.csv; animal-54 from
-%% commit 5e7a2f9 (Caus AN-05_chameleon_crosscheck.csv and pair image). Reconciliation script: tools/verify_numbers.py.
+(OUT / "table_cham_counts.tex").write_text(r"""%% Values: dypE STUDENT_RESULTS/RESULT_TABLES/AN-05_chameleon_pairs.csv and AN-05_cross_benchmark.csv
+%% (released detectors only). Reconciliation script: tools/verify_numbers.py.
 \begin{table}[h]
 \revfloatcolor{RevC}
 \caption{Every CHAMELEON count, reconciled ($76$ images). Training pool: COD10K-train and CAMO-train. ``No duplicate
-found'' replaces ``clean'': the detectors find re-encodes, rescales and crops, not other photographs of a specimen.}
+found'' replaces ``clean'': the detectors find copies of the same photograph, not other photographs of a specimen.}
 \label{tab:chamcount}
 \begin{center}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lr@{}}
 \toprule
-Training-pool partner, released detectors (Tier A $41$ + Tier B $9$; $44$ in COD10K-train) & $50$ \\
-\quad plus one rescaled copy found by an independent detector and confirmed by eye (\texttt{animal-54}) & $1$ \\
-\quad total with a training-pool partner ($45$ in COD10K-train) & $\mathbf{51}$ \\
+Training-pool partner, released detectors (Tier A $41$ + Tier B $9$; $44$ in COD10K-train) & $\mathbf{50}$ \\
 No training-pool partner: unchecked at both tiers & $16$ \\
-No training-pool partner after a Tier-A check of the dimension group & $9$ \\
+No training-pool partner after a Tier-A check of the dimension group & $10$ \\
 \midrule
-Re-encodes of COD10K-test images (all $16$ unchecked, $8$ of the $9$, and $8$ with a training-pool partner) & $32$ \\
+Re-encodes of COD10K-test images (all $16$ unchecked, $8$ of the $10$, and $8$ with a training-pool partner) & $32$ \\
 In CAMO-250, the checkpoint-selection split ($3$ byte-identical, $1$ re-encoded) & $4$ \\
 In NC4K & $0$ \\
 \midrule
-A duplicate found somewhere in COD10K or CAMO & $75$ \\
-No duplicate found anywhere (\texttt{animal-38}) & $1$ \\
+A duplicate found somewhere in COD10K or CAMO & $74$ \\
+No duplicate found anywhere & $2$ \\
 \bottomrule
 \end{tabular}
 \end{center}

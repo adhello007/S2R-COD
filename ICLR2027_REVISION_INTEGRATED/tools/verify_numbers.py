@@ -159,36 +159,41 @@ for emb, want in (("dinoL518", (0.62, 0.64, 0.35, 0.43)), ("dinoL224", (0.50, 0.
     check(f"selection coverage {emb}", (round(min(cov[(emb, 'conc')]), 2), round(max(cov[(emb, 'conc')]), 2), round(min(cov[(emb, 'rand')]), 2), round(max(cov[(emb, 'rand')]), 2)), want, src)
 check("clipL224 ranges overlap", max(cov[("clipL224", "rand")]) > min(cov[("clipL224", "conc")]), True, src)
 
-# ------------------------------------------------------------ CHAMELEON reconciliation (dypE AN-05 + Caus 5e7a2f9)
+# ------------------------------------------------------------ CHAMELEON reconciliation (dypE AN-05; released detectors only)
 src = "dypE/RESULT_TABLES/AN-05_chameleon_pairs.csv, AN-05_cross_benchmark.csv"
 T = lambda v: v.strip().lower() == "true"
 cp = {r["chameleon"]: r for r in rows(DY / "AN-05_chameleon_pairs.csv")}
 xb = {r["chameleon"]: r for r in rows(DY / "AN-05_cross_benchmark.csv")}
 st = {k: r["status"] for k, r in cp.items()}
 conf = {k for k, v in st.items() if v == "confirmed"}
-check("automated training-pool matches", len(conf), 50, src)
-check("automated in COD10K-train", sum(T(cp[k]["in_cod10k_train"]) for k in conf), 44, src)
+check("training-pool matches (released detectors)", len(conf), 50, src)
+check("of which in COD10K-train", sum(T(cp[k]["in_cod10k_train"]) for k in conf), 44, src)
 check("Tier A / Tier B", (sum(cp[k]["tier"].upper().startswith("A") for k in conf), sum(cp[k]["tier"].upper().startswith("B") for k in conf)), (41, 9), src)
-crossrow = subprocess.run(["git", "-C", str(ROOT), "show", "5e7a2f9:rebuild/REBUTTAL/ICLR2027_REBUTTAL_Caus/STUDENT_RESULTS/RESULT_TABLES/AN-05_chameleon_crosscheck.csv"],
-                          capture_output=True, text=True).stdout
-a54 = [l for l in crossrow.splitlines() if l.startswith("animal-54.jpg")]
-check("animal-54 recorded at 5e7a2f9 as visually confirmed copy of COD10K-train Spider-2513",
-      bool(a54) and "visually confirmed" in a54[0] and "Spider-2513" in a54[0], True, "git show 5e7a2f9:.../AN-05_chameleon_crosscheck.csv")
-check("animal-54 not among automated matches", st.get("animal-54"), "tierA_checked_no_match", src)
-total = conf | {"animal-54"}
-check("training-pool total", len(total), 51, src + " + 5e7a2f9")
 unch = {k for k, v in st.items() if v == "unchecked"}
-nm = {k for k, v in st.items() if v == "tierA_checked_no_match"} - {"animal-54"}
-check("unchecked / no-match after animal-54", (len(unch), len(nm)), (16, 9), src)
+nm = {k for k, v in st.items() if v == "tierA_checked_no_match"}
+check("unchecked / Tier-A-checked no-match", (len(unch), len(nm)), (16, 10), src)
 c10t = {k for k, r in xb.items() if T(r["in_cod10k_test"])}
 check("COD10K-test re-encodes", len(c10t), 32, src)
-check("COD10K-test covers all unchecked; 8 of 9 no-match; 8 confirmed", (unch <= c10t, len(nm & c10t), len(conf & c10t)), (True, 8, 8), src)
+check("COD10K-test covers all unchecked; 8 of 10 no-match; 8 confirmed", (unch <= c10t, len(nm & c10t), len(conf & c10t)), (True, 8, 8), src)
 c250 = {k for k, r in xb.items() if T(r["in_camo250"])}
 check("CAMO-250 (4; 3 byte-identical)", (len(c250), sum(T(xb[k]["camo250_byte_identical"]) for k in c250)), (4, 3), src)
 check("animal-28 is the re-encoded CAMO-250 copy", sorted(k for k in c250 if not T(xb[k]["camo250_byte_identical"])), ["animal-28"], src)
-anyw = {k for k, r in xb.items() if T(r["duplicated_anywhere_checked"])} | {"animal-54"}
-check("duplicate anywhere (with animal-54)", (len(anyw), sorted(set(xb) - anyw)), (75, ["animal-38"]), src)
-check("no training-pool partner, in COD10K-test", (76 - len(total), len((unch | nm) & c10t)), (25, 24), src)
+anyw = {k for k, r in xb.items() if T(r["duplicated_anywhere_checked"])}
+check("duplicate anywhere / none found", (len(anyw), len(set(xb) - anyw)), (74, 2), src)
+check("no training-pool partner, in COD10K-test", (76 - len(conf), len((unch | nm) & c10t)), (26, 24), src)
+# animal-54: flagged by the Caus independent detector (5e7a2f9), withdrawn by the author (73c18d6), not claimed here
+crossrow = subprocess.run(["git", "-C", str(ROOT), "show", "73c18d6:rebuild/REBUTTAL/ICLR2027_REBUTTAL_Caus/STUDENT_RESULTS/RESULT_TABLES/AN-05_chameleon_crosscheck.csv"],
+                          capture_output=True, text=True).stdout
+a54 = [l for l in crossrow.splitlines() if l.startswith("animal-54.jpg")]
+check("animal-54 withdrawn at 73c18d6 (not adjudicated, not claimed)", bool(a54) and "not adjudicated and not claimed" in a54[0], True, "git show 73c18d6:.../AN-05_chameleon_crosscheck.csv")
+check("animal-54 has no partner under the released detectors", (st.get("animal-54"), "animal-54" in anyw), ("tierA_checked_no_match", False), src)
+HERE = pathlib.Path(__file__).resolve().parents[1]
+texts = {f: (HERE / f).read_text() for f in ("paper/REVISED_PAPER.tex", "paper/table_cham_counts.tex", "GENERAL_RESPONSE.md",
+         "REVIEWERS/RL5B/FINAL_UPDATED_REBUTTAL.md", "REVIEWERS/Caus/FINAL_UPDATED_REBUTTAL.md", "REVIEWERS/dypE/FINAL_UPDATED_REBUTTAL.md")}
+pat = re.compile(r"animal-54|fifty-first|51st|\b51 (of|total|training)|\$51\$ of|75/76|75 of (the )?76|\$75\$ of")
+strip = lambda t: "\n".join(l for l in re.sub(r"<!--.*?-->", "", t, flags=re.S).splitlines() if not l.lstrip().startswith("%"))
+hits = sorted({f for f, t in texts.items() for line in strip(t).splitlines() if pat.search(line)})
+check("no 51st-match claim in the paper or any reply", hits, [], "grep over paper + replies")
 pe = rows(DY / "AN-05_pseudolabel_exposure.csv")
 v = [int(r["n_cham_partners_appended"]) for r in pe]
 check("pseudo-labelled CHAMELEON matches per run (min, max, mean)", (min(v), max(v), round(sum(v) / len(v), 1)), (14, 32, 24.7), "dypE/RESULT_TABLES/AN-05_pseudolabel_exposure.csv")

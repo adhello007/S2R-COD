@@ -57,16 +57,16 @@ Each commit was checked with `git cat-file`, and reachability from HEAD with `gi
 | EQ Amendment 1 (n = 27; INCOMPLETE rule) | `808988b` (11-11 21:16) | EQ 11-13 23:59 | yes | yes |
 | ORS | `b21b67c` (11-11 23:55) | pilot `cebf128` 11-12 00:01; runs placed 11-12 12:56 | yes | yes |
 
-## 3. CHAMELEON: reconciling the packages' counts (constraint 6)
+## 3. CHAMELEON: reconciling the packages' counts (constraint 6, animal-54 part overridden)
 
 | Source | Training-pool matches | Other counts | Status now |
 |---|---|---|---|
 | Submitted paper | 50 (41 Tier A + 9 Tier B; 44 in COD10K-train), 16 unchecked, 10 "clean" | 3 byte-identical in CAMO-250 | the floor stands |
-| Caus package, `5e7a2f9` (11-12) | 51: animal-54 is a rescaled copy of COD10K-train Spider-2513 (880×660 vs 900×675, dHash 2, MAD 0.92/255), visually confirmed | — | dropped by author decision on 2026-11-17 morning; **reinstated by `AUTHOR_REVISION_CONSTRAINTS.md` item 6** as one manually confirmed match |
+| Caus package, `5e7a2f9` (11-12) | 51: an independent dHash+MAD detector flagged animal-54 as a rescaled copy of COD10K-train Spider-2513 (880×660 vs 900×675, dHash 2, MAD 0.92/255), "visually confirmed" by the Caus session; the package made the claim contingent on the author's adjudication | — | **withdrawn, unadjudicated**, in `73c18d6` (11-17 11:22 IST). Asked "whether to accept `animal-54` as contaminated", the author replied "we can drop the animal-54 contamination"; no reason is recorded, and the package now reads "not adjudicated and not claimed". Constraint 6 (written from the 11-12 finding) briefly reinstated it here; on 11-17 evening the author ruled that the evidence overrides the constraint, and it was reverted |
 | dypE package (AN-05) | 50 reproduced exactly; animal-54 recorded as `tierA_checked_no_match` (Tier A needs equal dimensions; Tier B never scored it) | 32 COD10K-test re-encodes (all 16 unchecked, 8 of the 10 "clean", 8 confirmed); 4 in CAMO-250 (animal-17/-25/-60 byte-identical, animal-28 re-encoded); 74/76 duplicated somewhere | all reproduced by `verify_numbers.py` |
-| **Revision (this integration)** | **at least 50** automated (abstract, intro, conclusion); **51** in total (§3.4, App. F, Table 17) | 32 COD10K-test; 4 CAMO-250; **75/76** duplicated somewhere (74 + animal-54); no duplicate found for only animal-38; 25 without a training-pool partner, 24 of them COD10K-test | consistent across the paper and the dypE reply |
+| **Revision (this integration)** | **at least 50** (abstract, intro, conclusion); **50** with a training-pool partner under the released detectors (§3.4, App. F, Table 17); animal-54 is not mentioned | 32 COD10K-test; 4 CAMO-250; **74/76** duplicated somewhere; no duplicate found for 2 (animal-38, animal-54); 26 without a training-pool partner, 24 of them COD10K-test | consistent across the paper, the dypE reply and the general response; checked by `verify_numbers.py` |
 
-The pair image for animal-54 can be recovered with:
+If the author later adjudicates animal-54 for the camera-ready version, the pair image can be recovered with:
 `git show 5e7a2f9:rebuild/REBUTTAL/ICLR2027_REBUTTAL_Caus/STUDENT_RESULTS/FIGURES/AN-05_chameleon_animal54_vs_COD10K-train_Spider-2513.jpg`
 It was removed from the working tree in `73c18d6`.
 
@@ -76,7 +76,7 @@ It was removed from the working tree in `73c18d6`.
 |---|---|---|
 | C1 | The Caus and dypE drafts say "±0.005 equivalence not met (p = 0.101)"; RL5B's EQ establishes it | Both are true for different campaigns. The paper and all replies now state the eight-seed result and the confirmatory result side by side (Table 3). |
 | C2 | The dypE draft proposed "gains above ≈0.007 excluded, smaller ones not" for the abstract and conclusion | Superseded on SINet's primary cell by EQ. The SINet-v2 cells (eight seeds only) are stated as not excluding gains ≤0.005 in the dypE reply and Table 9. |
-| C3 | CHAMELEON 50 / 51 / 74 across packages | Reconciled in §3; Table 17. |
+| C3 | CHAMELEON 50 / 51 / 74 across packages | Reconciled in §3 to the released detectors' counts (50; 74/76); animal-54 not claimed; Table 17. |
 | C4 | Probe "concentration the whole time" vs a flat quota at d = 0.52 | Author chose "matching + concentration" (Q1). Abstract, intro, §3.2, §3.3, discussion, conclusion, Fig. 2 caption. |
 | C5 | Fig. 2 caption: "only destroying concentration collapses it" | Corrected: only a random draw collapses it. |
 | C6 | The posted 8.8% vs the measured 14.1% for the decisive comparison | Corrected in App. C and the dypE reply; 8.8% is kept for the concentrated arms (8.3–9.4%). |

@@ -58,7 +58,7 @@ Secondary main-text results:
 | Paired analysis, four cells | App. C, Table 10 |
 | Realised contrast 77% / 14.1%, exposure, pseudo-label overlap, preflight | App. C, "How much the trained comparison is attenuated" |
 | Coverage at every k; coverage of the selected sets | App. E |
-| CHAMELEON: fourth CAMO-250 copy, 32 COD10K-test, the fifty-first match, count reconciliation, protocol exposure, 7 COD10K-test duplicates | App. F, Table 17 |
+| CHAMELEON: fourth CAMO-250 copy, 32 COD10K-test, count reconciliation, protocol exposure, 7 COD10K-test duplicates | App. F, Table 17 |
 | Oracle-timing wording; pseudo-label means | App. H |
 | Oracle shapes: design, 4 contrasts, separability without concentration | App. I (new) |
 

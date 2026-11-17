@@ -30,9 +30,8 @@ fig3-caption
 s32-cdr
 s33-opening
 s33-coverage-k
-s34-floor-51-cod10k
+s34-floor-cod10k
 s34-subset
-s34-footnote
 discussion-geometric
 discussion-preflight
 cutK-scope-compress (inside orange span; caveat kept)
