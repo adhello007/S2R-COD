@@ -1,0 +1,157 @@
+split_a,file_a,split_b,file_b,tier,hamming,mad_256
+tgt,COD10K-CAM-1-Aquatic-3-Crab-32.jpg,test,COD10K-CAM-1-Aquatic-3-Crab-32.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg,test,COD10K-CAM-2-Terrestrial-23-Cat-1506.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-28-Deer-1796.jpg,test,COD10K-CAM-2-Terrestrial-28-Deer-1762.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-26-Chameleon-1694.jpg,test,COD10K-CAM-2-Terrestrial-31-Gecko-1892.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1928.jpg,test,COD10K-CAM-2-Terrestrial-31-Gecko-1895.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-32-Giraffe-1930.jpg,test,COD10K-CAM-2-Terrestrial-32-Giraffe-1932.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-3-Flying-53-Bird-3205.jpg,test,COD10K-CAM-3-Flying-65-Owl-4633.jpg,exact sha256,0,0.0
+val,camourflage_00090.jpg,cham,animal-17.jpg,exact sha256,0,0.0
+val,camourflage_00890.jpg,cham,animal-25.jpg,exact sha256,0,0.0
+val,camourflage_00998.jpg,cham,animal-60.jpg,exact sha256,0,0.0
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,test,COD10K-CAM-2-Terrestrial-37-Lion-2109.jpg,"dhash candidate, rejected by MAD",4,75.743
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,test,COD10K-CAM-3-Flying-54-Bittern-3288.jpg,"dhash candidate, rejected by MAD",6,69.68
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,test,COD10K-CAM-3-Flying-55-Butterfly-3428.jpg,"dhash candidate, rejected by MAD",6,57.032
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1891.jpg,test,COD10K-CAM-2-Terrestrial-31-Gecko-1890.jpg,"dhash candidate, rejected by MAD",4,42.175
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1912.jpg,test,COD10K-CAM-2-Terrestrial-31-Gecko-1901.jpg,"dhash candidate, rejected by MAD",0,18.087
+tgt,COD10K-CAM-2-Terrestrial-32-Giraffe-1931.jpg,test,COD10K-CAM-2-Terrestrial-32-Giraffe-1934.jpg,"dhash candidate, rejected by MAD",6,33.093
+tgt,COD10K-CAM-2-Terrestrial-34-Human-1972.jpg,test,COD10K-CAM-3-Flying-54-Bittern-3288.jpg,"dhash candidate, rejected by MAD",5,40.804
+tgt,COD10K-CAM-2-Terrestrial-36-Leopard-2075.jpg,test,COD10K-CAM-2-Terrestrial-37-Lion-2109.jpg,"dhash candidate, rejected by MAD",5,52.295
+tgt,COD10K-CAM-2-Terrestrial-38-Lizard-2287.jpg,test,COD10K-CAM-2-Terrestrial-38-Lizard-2288.jpg,"dhash candidate, rejected by MAD",2,30.206
+tgt,COD10K-CAM-2-Terrestrial-44-Snake-2462.jpg,test,COD10K-CAM-2-Terrestrial-44-Snake-2481.jpg,"dhash candidate, rejected by MAD",1,21.531
+tgt,COD10K-CAM-2-Terrestrial-45-Spider-2664.jpg,test,COD10K-CAM-2-Terrestrial-45-Spider-2540.jpg,"dhash candidate, rejected by MAD",2,16.819
+tgt,COD10K-CAM-2-Terrestrial-46-StickInsect-2860.jpg,test,COD10K-CAM-3-Flying-61-Katydid-4153.jpg,near-duplicate (confirmed),0,2.655
+tgt,COD10K-CAM-3-Flying-57-Dragonfly-3567.jpg,test,COD10K-CAM-3-Flying-57-Dragonfly-3566.jpg,near-duplicate (confirmed),0,0.165
+tgt,COD10K-CAM-3-Flying-61-Katydid-3969.jpg,test,COD10K-CAM-3-Flying-61-Katydid-4220.jpg,"dhash candidate, rejected by MAD",5,25.139
+tgt,COD10K-CAM-4-Amphibian-68-Toad-4823.jpg,test,COD10K-CAM-4-Amphibian-68-Toad-4861.jpg,near-duplicate (confirmed),0,0.862
+tgt,camourflage_00065.jpg,test,COD10K-CAM-2-Terrestrial-42-Sciuridae-2379.jpg,"dhash candidate, rejected by MAD",3,43.0
+tgt,camourflage_00194.jpg,test,COD10K-CAM-2-Terrestrial-32-Giraffe-1932.jpg,near-duplicate (confirmed),0,0.972
+tgt,camourflage_00223.jpg,test,COD10K-CAM-2-Terrestrial-23-Cat-1337.jpg,near-duplicate (confirmed),0,0.367
+tgt,camourflage_00419.jpg,test,COD10K-CAM-3-Flying-64-Moth-4448.jpg,"dhash candidate, rejected by MAD",4,29.007
+tgt,camourflage_00549.jpg,test,COD10K-CAM-2-Terrestrial-45-Spider-2498.jpg,"dhash candidate, rejected by MAD",4,17.336
+tgt,camourflage_00735.jpg,test,COD10K-CAM-3-Flying-53-Bird-3096.jpg,near-duplicate (confirmed),0,0.508
+tgt,camourflage_00836.jpg,test,COD10K-CAM-4-Amphibian-68-Toad-4808.jpg,near-duplicate (confirmed),0,0.284
+tgt,camourflage_00876.jpg,test,COD10K-CAM-1-Aquatic-7-Flounder-289.jpg,"dhash candidate, rejected by MAD",6,27.655
+tgt,camourflage_00930.jpg,test,COD10K-CAM-3-Flying-61-Katydid-4154.jpg,"dhash candidate, rejected by MAD",6,16.144
+tgt,camourflage_01224.jpg,test,COD10K-CAM-3-Flying-64-Moth-4431.jpg,near-duplicate (confirmed),0,4.637
+tgt,camourflage_01237.jpg,test,COD10K-CAM-3-Flying-53-Bird-3185.jpg,near-duplicate (confirmed),0,0.725
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,nc4k,1731.jpg,"dhash candidate, rejected by MAD",5,41.116
+tgt,COD10K-CAM-2-Terrestrial-26-Chameleon-1691.jpg,nc4k,4275.jpg,near-duplicate (confirmed),0,1.37
+tgt,COD10K-CAM-2-Terrestrial-28-Deer-1759.jpg,nc4k,4980.jpg,"dhash candidate, rejected by MAD",6,28.802
+tgt,COD10K-CAM-2-Terrestrial-29-Dog-1845.jpg,nc4k,1420.jpg,"dhash candidate, rejected by MAD",6,127.52
+tgt,COD10K-CAM-2-Terrestrial-29-Dog-1845.jpg,nc4k,23.jpg,"dhash candidate, rejected by MAD",5,147.288
+tgt,COD10K-CAM-2-Terrestrial-29-Dog-1845.jpg,nc4k,3649.jpg,"dhash candidate, rejected by MAD",5,104.299
+tgt,COD10K-CAM-2-Terrestrial-32-Giraffe-1931.jpg,nc4k,2985.jpg,near-duplicate (confirmed),1,3.126
+tgt,COD10K-CAM-2-Terrestrial-36-Leopard-2075.jpg,nc4k,1731.jpg,"dhash candidate, rejected by MAD",6,47.533
+tgt,COD10K-CAM-3-Flying-65-Owl-4509.jpg,nc4k,1751.jpg,"dhash candidate, rejected by MAD",3,34.465
+tgt,COD10K-CAM-3-Flying-65-Owl-4512.jpg,nc4k,1716.jpg,"dhash candidate, rejected by MAD",2,14.404
+tgt,COD10K-CAM-3-Flying-65-Owl-4576.jpg,nc4k,608.jpg,"dhash candidate, rejected by MAD",6,41.175
+tgt,camourflage_00063.jpg,nc4k,468.jpg,"dhash candidate, rejected by MAD",1,32.192
+tgt,camourflage_00146.jpg,nc4k,2752.jpg,near-duplicate (confirmed),0,4.613
+tgt,camourflage_00149.jpg,nc4k,4029.jpg,"dhash candidate, rejected by MAD",2,12.763
+tgt,camourflage_00191.jpg,nc4k,2811.jpg,"dhash candidate, rejected by MAD",3,17.427
+tgt,camourflage_00203.jpg,nc4k,4602.jpg,near-duplicate (confirmed),0,4.171
+tgt,camourflage_00255.jpg,nc4k,562.jpg,near-duplicate (confirmed),0,6.082
+tgt,camourflage_00292.jpg,nc4k,3868.jpg,near-duplicate (confirmed),2,3.979
+tgt,camourflage_00325.jpg,nc4k,520.jpg,near-duplicate (confirmed),1,4.947
+tgt,camourflage_00345.jpg,nc4k,4827.jpg,near-duplicate (confirmed),0,3.93
+tgt,camourflage_00386.jpg,nc4k,413.jpg,near-duplicate (confirmed),0,1.513
+tgt,camourflage_00427.jpg,nc4k,2903.jpg,near-duplicate (confirmed),1,4.609
+tgt,camourflage_00439.jpg,nc4k,514.jpg,near-duplicate (confirmed),1,5.67
+tgt,camourflage_00465.jpg,nc4k,3089.jpg,near-duplicate (confirmed),2,3.717
+tgt,camourflage_00481.jpg,nc4k,424.jpg,near-duplicate (confirmed),0,3.83
+tgt,camourflage_00497.jpg,nc4k,5781.jpg,"dhash candidate, rejected by MAD",0,9.831
+tgt,camourflage_00524.jpg,nc4k,2414.jpg,"dhash candidate, rejected by MAD",6,22.159
+tgt,camourflage_00567.jpg,nc4k,4993.jpg,"dhash candidate, rejected by MAD",6,32.446
+tgt,camourflage_00603.jpg,nc4k,2411.jpg,near-duplicate (confirmed),0,2.744
+tgt,camourflage_00608.jpg,nc4k,3103.jpg,"dhash candidate, rejected by MAD",3,22.319
+tgt,camourflage_00609.jpg,nc4k,2720.jpg,near-duplicate (confirmed),1,2.682
+tgt,camourflage_00618.jpg,nc4k,2910.jpg,near-duplicate (confirmed),1,4.193
+tgt,camourflage_00633.jpg,nc4k,689.jpg,near-duplicate (confirmed),0,3.993
+tgt,camourflage_00645.jpg,nc4k,2876.jpg,near-duplicate (confirmed),1,7.411
+tgt,camourflage_00655.jpg,nc4k,4983.jpg,near-duplicate (confirmed),0,6.3
+tgt,camourflage_00703.jpg,nc4k,3302.jpg,near-duplicate (confirmed),0,3.423
+tgt,camourflage_00704.jpg,nc4k,887.jpg,near-duplicate (confirmed),1,1.984
+tgt,camourflage_00749.jpg,nc4k,896.jpg,"dhash candidate, rejected by MAD",2,19.688
+tgt,camourflage_00761.jpg,nc4k,5108.jpg,near-duplicate (confirmed),0,0.727
+tgt,camourflage_00810.jpg,nc4k,2146.jpg,near-duplicate (confirmed),0,4.047
+tgt,camourflage_00814.jpg,nc4k,1405.jpg,near-duplicate (confirmed),0,3.992
+tgt,camourflage_00817.jpg,nc4k,1327.jpg,near-duplicate (confirmed),1,5.271
+tgt,camourflage_00839.jpg,nc4k,3843.jpg,near-duplicate (confirmed),0,0.479
+tgt,camourflage_00852.jpg,nc4k,1960.jpg,near-duplicate (confirmed),0,5.013
+tgt,camourflage_00897.jpg,nc4k,512.jpg,near-duplicate (confirmed),1,4.177
+tgt,camourflage_00927.jpg,nc4k,2918.jpg,"dhash candidate, rejected by MAD",2,19.181
+tgt,camourflage_00948.jpg,nc4k,1244.jpg,near-duplicate (confirmed),1,0.607
+tgt,camourflage_00973.jpg,nc4k,515.jpg,near-duplicate (confirmed),0,0.781
+tgt,camourflage_00999.jpg,nc4k,1253.jpg,near-duplicate (confirmed),1,7.526
+tgt,camourflage_01012.jpg,nc4k,2011.jpg,near-duplicate (confirmed),2,5.214
+tgt,camourflage_01237.jpg,nc4k,5061.jpg,"dhash candidate, rejected by MAD",2,11.771
+tgt,COD10K-CAM-1-Aquatic-3-Crab-72.jpg,val,camourflage_00156.jpg,near-duplicate (confirmed),0,2.834
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,val,camourflage_00145.jpg,"dhash candidate, rejected by MAD",4,82.963
+tgt,COD10K-CAM-2-Terrestrial-23-Cat-1519.jpg,val,camourflage_00783.jpg,"dhash candidate, rejected by MAD",4,75.691
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1879.jpg,val,camourflage_00273.jpg,"dhash candidate, rejected by MAD",3,23.614
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1886.jpg,val,camourflage_00169.jpg,near-duplicate (confirmed),1,2.328
+tgt,COD10K-CAM-2-Terrestrial-31-Gecko-1926.jpg,val,camourflage_00420.jpg,near-duplicate (confirmed),1,0.707
+tgt,COD10K-CAM-2-Terrestrial-34-Human-1972.jpg,val,camourflage_00145.jpg,"dhash candidate, rejected by MAD",5,44.279
+tgt,COD10K-CAM-2-Terrestrial-36-Leopard-2075.jpg,val,camourflage_00145.jpg,"dhash candidate, rejected by MAD",3,60.471
+tgt,COD10K-CAM-2-Terrestrial-36-Leopard-2075.jpg,val,camourflage_00783.jpg,"dhash candidate, rejected by MAD",5,52.255
+tgt,COD10K-CAM-2-Terrestrial-45-Spider-2513.jpg,val,camourflage_00463.jpg,"dhash candidate, rejected by MAD",4,27.122
+tgt,COD10K-CAM-3-Flying-50-Bat-2958.jpg,val,camourflage_00224.jpg,near-duplicate (confirmed),0,0.368
+tgt,COD10K-CAM-3-Flying-55-Butterfly-3291.jpg,val,camourflage_00160.jpg,near-duplicate (confirmed),1,1.652
+tgt,COD10K-CAM-3-Flying-65-Owl-4513.jpg,val,camourflage_00998.jpg,near-duplicate (confirmed),1,0.32
+tgt,COD10K-CAM-3-Flying-65-Owl-4664.jpg,val,camourflage_00061.jpg,near-duplicate (confirmed),0,0.929
+tgt,COD10K-CAM-4-Amphibian-68-Toad-4805.jpg,val,camourflage_00857.jpg,near-duplicate (confirmed),1,0.613
+tgt,COD10K-CAM-4-Amphibian-68-Toad-4806.jpg,val,camourflage_00090.jpg,near-duplicate (confirmed),0,0.135
+tgt,camourflage_00419.jpg,val,camourflage_00120.jpg,"dhash candidate, rejected by MAD",4,29.063
+test,COD10K-CAM-1-Aquatic-13-Pipefish-563.jpg,nc4k,5371.jpg,near-duplicate (confirmed),0,0.675
+test,COD10K-CAM-1-Aquatic-13-Pipefish-602.jpg,nc4k,5469.jpg,near-duplicate (confirmed),1,4.265
+test,COD10K-CAM-1-Aquatic-13-Pipefish-788.jpg,nc4k,1420.jpg,"dhash candidate, rejected by MAD",6,71.375
+test,COD10K-CAM-1-Aquatic-7-Flounder-248.jpg,nc4k,5864.jpg,"dhash candidate, rejected by MAD",3,27.781
+test,COD10K-CAM-1-Aquatic-7-Flounder-272.jpg,nc4k,839.jpg,"dhash candidate, rejected by MAD",6,19.1
+test,COD10K-CAM-2-Terrestrial-32-Giraffe-1934.jpg,nc4k,2985.jpg,"dhash candidate, rejected by MAD",5,32.242
+test,COD10K-CAM-2-Terrestrial-45-Spider-2494.jpg,nc4k,3092.jpg,"dhash candidate, rejected by MAD",2,30.017
+test,COD10K-CAM-2-Terrestrial-45-Spider-2508.jpg,nc4k,3522.jpg,near-duplicate (confirmed),0,0.541
+test,COD10K-CAM-2-Terrestrial-48-Wolf-2914.jpg,nc4k,521.jpg,"dhash candidate, rejected by MAD",6,31.987
+test,COD10K-CAM-3-Flying-53-Bird-3185.jpg,nc4k,5061.jpg,"dhash candidate, rejected by MAD",2,11.654
+test,COD10K-CAM-3-Flying-54-Bittern-3288.jpg,nc4k,1731.jpg,"dhash candidate, rejected by MAD",5,65.984
+test,COD10K-CAM-3-Flying-55-Butterfly-3393.jpg,nc4k,2909.jpg,"dhash candidate, rejected by MAD",5,15.61
+test,COD10K-CAM-3-Flying-56-Cicada-3453.jpg,nc4k,3886.jpg,"dhash candidate, rejected by MAD",6,49.044
+test,COD10K-CAM-3-Flying-59-Grasshopper-3695.jpg,nc4k,5947.jpg,near-duplicate (confirmed),0,1.465
+test,COD10K-CAM-3-Flying-61-Katydid-4154.jpg,nc4k,3040.jpg,"dhash candidate, rejected by MAD",6,25.877
+test,COD10K-CAM-3-Flying-65-Owl-4514.jpg,nc4k,1757.jpg,"dhash candidate, rejected by MAD",3,28.953
+test,COD10K-CAM-3-Flying-65-Owl-4530.jpg,nc4k,1794.jpg,"dhash candidate, rejected by MAD",3,36.779
+test,COD10K-CAM-1-Aquatic-7-Flounder-291.jpg,val,camourflage_00232.jpg,near-duplicate (confirmed),0,2.737
+test,COD10K-CAM-2-Terrestrial-24-Caterpillar-1541.jpg,val,camourflage_00519.jpg,near-duplicate (confirmed),4,5.818
+test,COD10K-CAM-2-Terrestrial-32-Giraffe-1934.jpg,val,camourflage_00641.jpg,"dhash candidate, rejected by MAD",2,19.931
+test,COD10K-CAM-2-Terrestrial-37-Lion-2109.jpg,val,camourflage_00145.jpg,"dhash candidate, rejected by MAD",6,24.949
+test,COD10K-CAM-2-Terrestrial-37-Lion-2109.jpg,val,camourflage_00783.jpg,near-duplicate (confirmed),0,0.474
+test,COD10K-CAM-2-Terrestrial-45-Spider-2494.jpg,val,camourflage_00890.jpg,near-duplicate (confirmed),0,0.181
+test,COD10K-CAM-3-Flying-50-Bat-2959.jpg,val,camourflage_00563.jpg,near-duplicate (confirmed),1,0.47
+test,COD10K-CAM-3-Flying-64-Moth-4448.jpg,val,camourflage_00120.jpg,near-duplicate (confirmed),0,3.147
+test,COD10K-CAM-3-Flying-65-Owl-4510.jpg,val,camourflage_00348.jpg,"dhash candidate, rejected by MAD",0,13.997
+test,COD10K-CAM-4-Amphibian-67-Frog-4679.jpg,val,camourflage_00235.jpg,near-duplicate (confirmed),0,0.316
+nc4k,1585.jpg,val,camourflage_01064.jpg,near-duplicate (confirmed),0,4.421
+nc4k,1614.jpg,val,camourflage_01053.jpg,near-duplicate (confirmed),0,0.143
+nc4k,2417.jpg,val,camourflage_00723.jpg,near-duplicate (confirmed),0,2.208
+nc4k,261.jpg,val,camourflage_00699.jpg,near-duplicate (confirmed),1,1.203
+nc4k,2744.jpg,val,camourflage_00860.jpg,near-duplicate (confirmed),0,1.633
+nc4k,3092.jpg,val,camourflage_00890.jpg,"dhash candidate, rejected by MAD",2,30.014
+nc4k,3150.jpg,val,camourflage_00285.jpg,near-duplicate (confirmed),0,1.175
+nc4k,4625.jpg,val,camourflage_01082.jpg,"dhash candidate, rejected by MAD",4,48.965
+nc4k,5412.jpg,val,camourflage_00539.jpg,"dhash candidate, rejected by MAD",1,22.594
+nc4k,669.jpg,val,camourflage_00310.jpg,near-duplicate (confirmed),3,5.467
+raw,7001.png,nc4k,3003.jpg,near-duplicate (confirmed),0,2.267
+raw,5189.png,val,camourflage_00991.jpg,near-duplicate (confirmed),0,1.948
+raw,6051.png,val,camourflage_00991.jpg,near-duplicate (confirmed),0,1.948
+raw,6474.png,val,camourflage_00594.jpg,near-duplicate (confirmed),0,1.802
+cham,animal-12.jpg,val,camourflage_00857.jpg,near-duplicate (confirmed),0,0.609
+cham,animal-13.jpg,val,camourflage_00273.jpg,"dhash candidate, rejected by MAD",3,23.614
+cham,animal-17.jpg,val,camourflage_00090.jpg,near-duplicate (confirmed),0,0.0
+cham,animal-18.jpg,val,camourflage_00348.jpg,"dhash candidate, rejected by MAD",0,13.993
+cham,animal-25.jpg,val,camourflage_00890.jpg,near-duplicate (confirmed),0,0.0
+cham,animal-28.jpg,val,camourflage_00235.jpg,near-duplicate (confirmed),0,0.18
+cham,animal-38.jpg,val,camourflage_00232.jpg,near-duplicate (confirmed),0,3.346
+cham,animal-40.jpg,val,camourflage_00169.jpg,near-duplicate (confirmed),0,2.375
+cham,animal-54.jpg,val,camourflage_00463.jpg,"dhash candidate, rejected by MAD",4,27.479
+cham,animal-60.jpg,val,camourflage_00998.jpg,near-duplicate (confirmed),0,0.0
+cham,animal-71.jpg,val,camourflage_00160.jpg,near-duplicate (confirmed),0,1.627

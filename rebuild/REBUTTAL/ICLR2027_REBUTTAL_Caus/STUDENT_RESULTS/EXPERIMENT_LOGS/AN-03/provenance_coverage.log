@@ -1,0 +1,46 @@
+{'pool': 'local renders (LAKE-RED, this campaign)', 'n_files': 4447, 'traced_ok': 4447, 'interior_scored': 4443, 'regenerated_interior_gt40': 0, 'max_interior_mean': 17.546, 'mean_interior': 5.602, 'mean_background': 70.802, 'interior_3x_closer': 4442, 'vs_D1_interior_mean_absdiff_median': 0.0, 'vs_D1_interior_mean_absdiff_max': 0.3032}
+{'pool': "authors' pool", 'n_files': 4447, 'traced_ok': 4447, 'interior_scored': 4442, 'regenerated_interior_gt40': 0, 'max_interior_mean': 31.36, 'mean_interior': 9.634, 'mean_background': 70.555, 'interior_3x_closer': 4361, 'vs_D1_interior_mean_absdiff_median': 0.0, 'vs_D1_interior_mean_absdiff_max': 0.9543}
+{'pool': 'foreground identities (raw HKU-IS photographs)', 'n_files': 4447, 'traced_ok': 4443, 'interior_scored': '', 'regenerated_interior_gt40': '', 'max_interior_mean': '', 'mean_interior': '', 'mean_background': '', 'interior_3x_closer': '', 'vs_D1_interior_mean_absdiff_median': 'unique sha256 count in traced_ok', 'vs_D1_interior_mean_absdiff_max': ''}
+dinoL224  local renders                k= 3 recall 0.3908 (A3 0.39084160327911377)
+dinoL224  local renders                k= 5 recall 0.4668 (A3 0.46683168411254883)
+dinoL224  local renders                k=10 recall 0.5696 (A3 0.5695544481277466)
+dinoL224  local renders                k=20 recall 0.7270 (A3 0.7269802093505859)
+dinoL224  authors' pool                k= 3 recall 0.4124 (A3 0.4123762547969818)
+dinoL224  authors' pool                k= 5 recall 0.4829 (A3 0.4829207956790924)
+dinoL224  authors' pool                k=10 recall 0.5703 (A3 0.5702970623970032)
+dinoL224  authors' pool                k=20 recall 0.6785 (A3 0.6784653663635254)
+dinoL224  raw HKU-IS (pre-LAKE-RED)    k= 3 recall 0.6391 (A3 0.6391089558601379)
+dinoL224  raw HKU-IS (pre-LAKE-RED)    k= 5 recall 0.7473 (A3 0.7472772598266602)
+dinoL224  raw HKU-IS (pre-LAKE-RED)    k=10 recall 0.8666 (A3 0.8665841817855835)
+dinoL224  raw HKU-IS (pre-LAKE-RED)    k=20 recall 0.9715 (A3 0.9715346693992615)
+dinoL518  local renders                k= 3 recall 0.4770 (A3 0.47698020935058594)
+dinoL518  local renders                k= 5 recall 0.5421 (A3 0.5420792102813721)
+dinoL518  local renders                k=10 recall 0.6349 (A3 0.6349009871482849)
+dinoL518  local renders                k=20 recall 0.7478 (A3 0.7477722764015198)
+dinoL518  authors' pool                k= 3 recall 0.4277 (A3 0.4277227818965912)
+dinoL518  authors' pool                k= 5 recall 0.4834 (A3 0.4834158420562744)
+dinoL518  authors' pool                k=10 recall 0.5683 (A3 0.5683168768882751)
+dinoL518  authors' pool                k=20 recall 0.6822 (A3 0.682178258895874)
+dinoL518  raw HKU-IS (pre-LAKE-RED)    k= 3 recall 0.5988 (A3 0.5987623929977417)
+dinoL518  raw HKU-IS (pre-LAKE-RED)    k= 5 recall 0.7097 (A3 0.7096534967422485)
+dinoL518  raw HKU-IS (pre-LAKE-RED)    k=10 recall 0.8418 (A3 0.8418316841125488)
+dinoL518  raw HKU-IS (pre-LAKE-RED)    k=20 recall 0.9550 (A3 0.9549505114555359)
+clipL224  local renders                k= 3 recall 0.0693 (A3 0.06930693238973618)
+clipL224  local renders                k= 5 recall 0.1349 (A3 0.1349009871482849)
+clipL224  local renders                k=10 recall 0.2498 (A3 0.249752476811409)
+clipL224  local renders                k=20 recall 0.3785 (A3 0.37846535444259644)
+clipL224  authors' pool                k= 3 recall 0.0639 (A3 0.06386138498783112)
+clipL224  authors' pool                k= 5 recall 0.1277 (A3 0.12772276997566223)
+clipL224  authors' pool                k=10 recall 0.2005 (A3 0.20049504935741425)
+clipL224  authors' pool                k=20 recall 0.3007 (A3 0.30074259638786316)
+clipL224  raw HKU-IS (pre-LAKE-RED)    k= 3 recall 0.5953 (A3 0.5952970385551453)
+clipL224  raw HKU-IS (pre-LAKE-RED)    k= 5 recall 0.7470 (A3 0.747029721736908)
+clipL224  raw HKU-IS (pre-LAKE-RED)    k=10 recall 0.8804 (A3 0.8804455995559692)
+clipL224  raw HKU-IS (pre-LAKE-RED)    k=20 recall 0.9611 (A3 0.9611386656761169)
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'empty masks (fg fraction = 0)', 'value': 0}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'full masks (fg fraction = 1)', 'value': 0}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'fg fraction median', 'value': 0.1778}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'fg fraction 5th-95th pct', 'value': '0.0400-0.3938'}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'masks with >1 connected component', 'value': 2105}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'masks with >=1 hole', 'value': 1114}
+{'block': 'mask QC (4447 render masks, shared by every arm)', 'item': 'mean share of non-binary pixels (10<v<245)', 'value': 0.0}

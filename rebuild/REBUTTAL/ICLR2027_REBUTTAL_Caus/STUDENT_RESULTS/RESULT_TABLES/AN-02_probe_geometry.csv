@@ -1,0 +1,17 @@
+source,quantity,value,detail,label
+reproduced,mean d(targeted) - d(shuffled_es),0.00726,targeted larger in 13/20 cells,original analysis
+reproduced,mean d(targeted) - d(random_centroid),-0.06489,targeted larger in 4/20 cells,original analysis
+reproduced,mean d(targeted) - d(random_direction),0.04792,targeted larger in 18/20 cells,original analysis
+reproduced,mean d(targeted) - d(random_vs_random),0.80773,targeted larger in 20/20 cells,original analysis
+reproduced,effective-rank ratio C/random (participation ratio),0.63366,below 1 in 20/20 cells; range 0.266-0.955,original analysis
+committed,mean d(targeted) - d(shuffled_es),0.00726,targeted larger in 13/20 cells,original analysis
+committed,mean d(targeted) - d(random_centroid),-0.06489,targeted larger in 4/20 cells,original analysis
+committed,mean d(targeted) - d(random_direction),0.04792,targeted larger in 18/20 cells,original analysis
+committed,mean d(targeted) - d(random_vs_random),0.80773,targeted larger in 20/20 cells,original analysis
+committed,effective-rank ratio C/random (participation ratio),0.63366,below 1 in 20/20 cells; range 0.266-0.955,original analysis
+reproduced,"effective-rank ratio, participation ratio (recomputed here)",0.63366,below 1 in 20/20,original definition
+reproduced,"effective-rank ratio, entropy erank",0.79595,below 1 in 20/20,EXPLORATORY alternative definition
+reproduced,label-shuffle check R2_cut B=250,-0.02258,targeted vs random d=1.1135; shuffled-label d sd 0.1131,leakage control
+reproduced,label-shuffle check R2_cut B=1000,-0.02234,targeted vs random d=0.7772; shuffled-label d sd 0.0475,leakage control
+reproduced,label-shuffle check R3_render B=250,0.01932,targeted vs random d=1.0028; shuffled-label d sd 0.1161,leakage control
+reproduced,label-shuffle check R3_render B=1000,0.009,targeted vs random d=0.6535; shuffled-label d sd 0.0598,leakage control

@@ -1,0 +1,23 @@
+{
+  "rounds": 2,
+  "total_step_set": "0253",
+  "last_epoch": "039/040",
+  "wall_min": 105.7,
+  "tea_best": true,
+  "pool_r1": 5447,
+  "pool_r2": 7427,
+  "n_appended": 1980,
+  "target_loaded_4040": 2,
+  "best_epoch": 21,
+  "wall_within_2x_reference": true,
+  "checks": {
+    "rounds": true,
+    "total_step": true,
+    "last_epoch": true,
+    "tea_best": true,
+    "pool_r1": true,
+    "target": true
+  },
+  "failed_checks": [],
+  "returncode": 0
+}

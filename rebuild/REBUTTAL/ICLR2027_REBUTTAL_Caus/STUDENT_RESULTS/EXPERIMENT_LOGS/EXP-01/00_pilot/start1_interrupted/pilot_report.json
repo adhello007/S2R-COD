@@ -1,0 +1,233 @@
+{
+  "started": "2026-11-12T01:52:21+0530",
+  "git": "cebf128f75fdf932c4b8de77d4bebd55b3559fcb",
+  "run_dir": "Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726",
+  "budget_min": 27.0,
+  "steps": {
+    "1_env": {
+      "passed": true,
+      "host_time": "2026-11-12T01:52:22+0530",
+      "git": "cebf128f75fdf932c4b8de77d4bebd55b3559fcb",
+      "python": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "cudnn": 91900,
+      "cuda_visible_devices": "0",
+      "runner_assigned_gpu": "0",
+      "disk_free_gb": 737.4,
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "gpu_free_gb": 94.4,
+      "gpu_total_gb": 95.0,
+      "nvidia_smi": [
+        "0, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 574 MiB, 97887 MiB, 0 %",
+        "1, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 1893 MiB, 97887 MiB, 21 %"
+      ],
+      "elapsed_min_at_end": 0.02
+    },
+    "2_pool_ORTOP10": {
+      "pool": "Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool",
+      "arm": "ORTOP10",
+      "seed": 42,
+      "n_image": 5447,
+      "n_gt": 5447,
+      "a1_counts": true,
+      "a2_stem_sets": true,
+      "a4_parity_all_i": true,
+      "a4_mismatches": 0,
+      "a5_spotcheck": true,
+      "a6_round2_parity": true,
+      "bytes_mismatched_vs_E0": 0,
+      "render_mask_ne_raw_gt": 0,
+      "stems_equal_frozen": true,
+      "stems_sha256": "84d38af6f5a4595e123c0adc8b0043781940dff4e8bce96781588621578bb4a4",
+      "image_list_sha256": "af53e8195343743825d56483fffacb35573481a4ec327b34a174ff6fc311e7fc",
+      "passed": true,
+      "elapsed_min_at_end": 0.06
+    },
+    "2_pool_CORACLE": {
+      "pool": "Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/CORACLE_s42/pool",
+      "arm": "CORACLE",
+      "seed": 42,
+      "n_image": 5447,
+      "n_gt": 5447,
+      "a1_counts": true,
+      "a2_stem_sets": true,
+      "a4_parity_all_i": true,
+      "a4_mismatches": 0,
+      "a5_spotcheck": true,
+      "a6_round2_parity": true,
+      "bytes_mismatched_vs_E0": 0,
+      "render_mask_ne_raw_gt": 0,
+      "stems_equal_frozen": true,
+      "stems_sha256": "d07054377fc667cf3f805601cf80aac6b64528fcffc74fa0bc1aab58e354a065",
+      "image_list_sha256": "7db1adaf40e672468f46e28718cf448d66be67e20e1f3c0120d1667aa5a5169a",
+      "passed": true,
+      "elapsed_min_at_end": 0.08
+    },
+    "2_trainer_gates": {
+      "one_trainer": {
+        "passed": true,
+        "mytrain": [
+          "./MyTrain.py"
+        ],
+        "mytest": [
+          "./MyTest.py"
+        ],
+        "patches_missing": {}
+      },
+      "endpoints": {
+        "passed": true,
+        "mytest_excludes_chameleon": true,
+        "mytest_excludes_camo": true,
+        "myeval_excludes_chameleon": true,
+        "endpoints": [
+          "COD10K",
+          "NC4K"
+        ],
+        "val_root_is_camo": true,
+        "camo_n": 250,
+        "camo_gt_n": 250,
+        "COD10K_imgs": 2026,
+        "COD10K_gt": 2026,
+        "NC4K_imgs": 4121,
+        "NC4K_gt": 4121
+      },
+      "determinism": {
+        "passed": true,
+        "deterministic_true": true,
+        "benchmark_false": true,
+        "seed_from_opt": true,
+        "hardcoded_42_gone": true
+      },
+      "passed": true,
+      "elapsed_min_at_end": 0.09
+    },
+    "3_smoke": {
+      "rc": 0,
+      "passed": true,
+      "steps": [
+        {
+          "step": 0,
+          "loss_sup": 1.4350162744522095,
+          "loss_con": 0.2568507790565491,
+          "grad_norm": 13.537218922883643,
+          "batch": [
+            16,
+            3,
+            352,
+            352
+          ],
+          "gt_range": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "step": 1,
+          "loss_sup": 1.3947255611419678,
+          "loss_con": 0.258664608001709,
+          "grad_norm": 2.965294480690158,
+          "batch": [
+            16,
+            3,
+            352,
+            352
+          ],
+          "gt_range": [
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "peak_gpu_gb": 11.68,
+      "n_source": 5447,
+      "n_target": 4040,
+      "elapsed_min_at_end": 0.2
+    },
+    "4_epoch1_ORTOP10": {
+      "rc": 0,
+      "n_logged_steps": 26,
+      "last_step": 250,
+      "total_step": [
+        "0253"
+      ],
+      "finite": true,
+      "step0": [
+        "1.7113",
+        "1.4512",
+        "0.2600",
+        "0253"
+      ],
+      "cmd": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 1 --epoch 2 --seed 42 --save_model ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/snap_a/ --source_root ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu 0",
+      "passed": true,
+      "elapsed_min_at_end": 1.5
+    },
+    "5_R6_replay_CORACLE_s42": {
+      "rc": 0,
+      "n_logged_steps": 26,
+      "last_step": 250,
+      "total_step": [
+        "0253"
+      ],
+      "finite": true,
+      "step0": [
+        "1.7062",
+        "1.4462",
+        "0.2600",
+        "0253"
+      ],
+      "cmd": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 1 --epoch 2 --seed 42 --save_model ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/CORACLE_s42/snap/ --source_root ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/CORACLE_s42/pool/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu 0",
+      "hist_step0": [
+        "1.7062",
+        "1.4462",
+        "0.2600",
+        "0253"
+      ],
+      "step0_equal_4dp": true,
+      "n_steps_compared": 26,
+      "n_steps_identical": 1,
+      "max_abs_loss_diff": 0.2489999999999999,
+      "first_divergent_step": 10,
+      "passed": true,
+      "elapsed_min_at_end": 2.81
+    },
+    "6_infer_parity": {
+      "rc": 0,
+      "n": 2026,
+      "n_gt": 2026,
+      "png_byte_identical": 2026,
+      "passed": true,
+      "note": "Sa re-scored on CPU after the pilot against committed 0.712710",
+      "elapsed_min_at_end": 3.84
+    },
+    "7_cls_smoke": {
+      "rc": "timeout",
+      "passed": false,
+      "elapsed_min_at_end": 11.84
+    },
+    "8_determinism_repeat": {
+      "rc": 0,
+      "n_logged_steps": 26,
+      "last_step": 250,
+      "total_step": [
+        "0253"
+      ],
+      "finite": true,
+      "step0": [
+        "1.7113",
+        "1.4512",
+        "0.2600",
+        "0253"
+      ],
+      "cmd": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 1 --epoch 2 --seed 42 --save_model ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/snap_b/ --source_root ./Result/CAUS_RUNS/00_pilot/20261111T202221Z_1168726/ORTOP10_s42/pool/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu 0",
+      "n_steps_compared": 26,
+      "n_steps_identical": 1,
+      "first_divergent_step": 10,
+      "passed": true,
+      "elapsed_min_at_end": 13.52
+    }
+  },
+  "gate_critical_passed": true,
+  "ended": "2026-11-12T02:05:52+0530",
+  "elapsed_min": 13.52
+}

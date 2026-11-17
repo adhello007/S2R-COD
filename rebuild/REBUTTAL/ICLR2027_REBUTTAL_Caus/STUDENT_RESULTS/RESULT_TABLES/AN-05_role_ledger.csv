@@ -1,0 +1,9 @@
+image_set,labels_used_for,arms,endpoint_disjoint,risk
+HKU-IS (authors' 4447 pairs),"supervised source loss, every arm",all,"yes (0 exact, see near-duplicate table)",none identified
+LAKE-RED renders of HKU-IS (4447) + render masks,1000 appended pairs per arm,"B, C10, CSHUF, CINV, CORACLE, EXP-01 arms",yes,foreground identity fixed (AN-03)
+"Target pool 4040 (COD10K-train 3040 + CAMO-train 1000), NO labels on disk",none; images enter training unlabelled (consistency loss) and via round-2 pseudo-labels,all,NO: 7 images byte-identical to COD10K-test (committed D2; re-measured here),"transductive exposure of 7/2026 endpoint images, identical for every arm; their test masks are never read"
+CAMO-250 (Val/CAMO) images + GT,checkpoint selection (CAMO MAE) in every arm,all,yes for COD10K/NC4K; 3 byte-identical to CHAMELEON (not an endpoint),"selection split, never an endpoint"
+COD10K-test GT (2026),(a) primary endpoint for all arms; (b) the oracle error vector that sets quotas for CORACLE and every EXP-01 oracle arm,"CORACLE, OR-PROP, OR-TOP10, OR-TOP5 (direction+shape); OR-TOP10-SHUF (shape only)",NO for the oracle arms,endpoint-label-leaky: COD10K-test is not an unbiased endpoint for any oracle arm
+"COD10K-test GT (2026), standard arms",endpoint scoring only,"B, C10, CSHUF, CINV",n/a,none: allocation reads target ES only (gate G1)
+NC4K GT (4121),secondary endpoint only; read by no allocation and no selection,all,1 near-duplicate vs training in committed D2,"domain-coupled to COD10K, not label-coupled"
+CHAMELEON (76),nothing (withdrawn as an endpoint),none,NO: >=50/76 are training photographs,never used as a clean endpoint

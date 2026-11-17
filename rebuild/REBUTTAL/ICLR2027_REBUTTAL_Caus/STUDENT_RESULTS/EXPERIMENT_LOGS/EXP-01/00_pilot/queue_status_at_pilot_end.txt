@@ -1,0 +1,4 @@
+00_pilot.sh	START	2026-11-12T01:52:21	gpu=0	sha256=3cd5209bc0a95bae	pid=1168721
+00_pilot.sh	INTERRUPTED	2026-11-12T02:00:24	re-run from scratch
+00_pilot.sh	START	2026-11-12T02:00:24	gpu=0	sha256=3cd5209bc0a95bae	pid=1180149
+00_pilot.sh	END	2026-11-12T02:14:24	exit=0	gpu_h=0.233

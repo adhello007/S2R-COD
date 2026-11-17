@@ -1,0 +1,15 @@
+contrast,campaign,varies,held_fixed,uncontrolled_or_mediating,label_source_of_quota,estimand,decision_rule,status_of_inference
+C10-B,ABC/SE (historical),shape h + alignment d together,a g N o,pseudo-label feedback p; B draw varies per seed,none (target ES),targeted vs random at fixed budget,frozen 2*sigma_hat + sign (SE: df 28),pre-registered
+C10-CSHUF,T2/SE (historical),alignment d only,a g N o h,p,none,direction at C10 shape,frozen 2*sigma_hat + sign,pre-registered
+C10-CINV,T2/SE (historical),alignment d only (reversed),a g N o h,p,none,reversed direction at C10 shape,frozen 2*sigma_hat + sign,pre-registered
+CORACLE-B,OR (historical),shape h + alignment d (true-error rank),a g N o,p; B draw per seed,endpoint-label-leaky (COD10K-test),perfect-rank oracle at C10 shape vs random,frozen 2*sigma_hat + sign (df 6),pre-registered (commit timing caveat: AN-01 R-07)
+CORACLE-C10,OR (historical),alignment d only (true-error rank vs ES),a g N o h,p,endpoint-label-leaky,oracle direction vs score direction at C10 shape,frozen 2*sigma_hat + sign,pre-registered (commit timing caveat)
+C10FX-BFX,FX (historical),h + d under unpinned schedule o',a g N,p; total optimisation changes with o',none,targeting vs random under a different schedule,frozen 2*sigma_hat + sign,pre-registered
+P1: OR-TOP10 - CORACLE,EXP-01 (new),shape h (C10 multiset -> top-10 equal) with alignment = true error in both,a g N o,p; selection overlap J=0.4695,endpoint-label-leaky,shape effect at true-error direction,2*sigma_hat (7-arm pool; df 14) + 3/3 sign,pre-registered post-review (PREREGISTRATION_EXP01.md)
+P2: OR-TOP10 - OR-TOP10-SHUF,EXP-01 (new),alignment d only,a g N o h,p; J=0.2158,endpoint-label-leaky (shape only for SHUF),direction at the top-10 shape,2*sigma_hat + 3/3 sign,pre-registered post-review
+P3: OR-PROP - CORACLE,EXP-01 (new),shape h (C10 multiset -> near-flat proportional),a g N o,p; J=0.5232 (mechanically overlapping),endpoint-label-leaky,shape effect at true-error direction (flat vs C10 shape),2*sigma_hat + 3/3 sign,pre-registered post-review; flagged
+P4: OR-TOP5 - CORACLE,EXP-01 (new),shape h AND alignment pattern (no same-shape shuffle trained),a g N o,p; J=0.4276,endpoint-label-leaky,shape-plus-direction; never direction-isolated,2*sigma_hat + 3/3 sign,pre-registered post-review
+oracle arm - B (each),EXP-01 (new),h + d,a g N o,p; B draw per seed,endpoint-label-leaky,oracle allocation vs random,2*sigma_hat + 3/3 sign (secondary),pre-registered post-review
+oracle arm - C10 (each),EXP-01 (new),h + d (true error vs ES),a g N o,p,endpoint-label-leaky,oracle allocation vs the method,2*sigma_hat + 3/3 sign (secondary),pre-registered post-review
+(C10-CSHUF)_new - (C10-CSHUF)_LAKE-RED,EXP-03/04 (not run),generator support g,a N o h d,p,none,architecture- or generator-by-direction interaction,difference of within-cell contrasts with SE from per-cell seed variance,BLOCKED (no compute; no foreground-varying generator available)
+(C10-CSHUF)_modern - (C10-CSHUF)_SINet,EXP-02/04 (not run),architecture a,g N o h d,p,none,architecture-by-direction interaction,difference of within-cell contrasts,BLOCKED (no compute; licence/trainability)

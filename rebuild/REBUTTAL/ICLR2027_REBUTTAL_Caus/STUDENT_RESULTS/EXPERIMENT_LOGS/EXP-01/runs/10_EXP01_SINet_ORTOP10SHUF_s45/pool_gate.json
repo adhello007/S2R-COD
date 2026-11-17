@@ -1,0 +1,58 @@
+{
+  "pool": {
+    "pool": "Result/CAUS_RUNS/10_EXP01_SINet_ORTOP10SHUF_s45/20261113T160651Z_765365/pool",
+    "arm": "ORTOP10SHUF",
+    "seed": 45,
+    "n_image": 5447,
+    "n_gt": 5447,
+    "a1_counts": true,
+    "a2_stem_sets": true,
+    "a4_parity_all_i": true,
+    "a4_mismatches": 0,
+    "a5_spotcheck": true,
+    "a6_round2_parity": true,
+    "bytes_mismatched_vs_E0": 0,
+    "render_mask_ne_raw_gt": 0,
+    "stems_equal_frozen": true,
+    "stems_sha256": "705815acf05a9cc5465f7c78657bd49f3010d908891af3ecb7cd7b08f08d605f",
+    "image_list_sha256": "3fb5bc6c7ef5173e8be6f1e9fd05c7159ee9d9f06481ac9daf5160efa53a5574",
+    "passed": true
+  },
+  "trainer": {
+    "one_trainer": {
+      "passed": true,
+      "mytrain": [
+        "./MyTrain.py"
+      ],
+      "mytest": [
+        "./MyTest.py"
+      ],
+      "patches_missing": {}
+    },
+    "endpoints": {
+      "passed": true,
+      "mytest_excludes_chameleon": true,
+      "mytest_excludes_camo": true,
+      "myeval_excludes_chameleon": true,
+      "endpoints": [
+        "COD10K",
+        "NC4K"
+      ],
+      "val_root_is_camo": true,
+      "camo_n": 250,
+      "camo_gt_n": 250,
+      "COD10K_imgs": 2026,
+      "COD10K_gt": 2026,
+      "NC4K_imgs": 4121,
+      "NC4K_gt": 4121
+    },
+    "determinism": {
+      "passed": true,
+      "deterministic_true": true,
+      "benchmark_false": true,
+      "seed_from_opt": true,
+      "hardcoded_42_gone": true
+    },
+    "passed": true
+  }
+}
