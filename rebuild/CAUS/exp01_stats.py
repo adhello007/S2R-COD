@@ -66,19 +66,32 @@ def runs_of_record():
     return out, others
 
 
-def score_new(rr):
+def _score_task(t):
+    """Pool worker: committed scorer on one (run, endpoint) + independent S-measure on a fixed subset."""
+    d, ep, pick = t
+    gt = os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')
+    pred = os.path.join(d, 'pred', ep)
+    m = SC.primary(gt, pred)
+    x = np.array(SC.primary_per_image_sm(gt, pred, pick))
+    y = np.array(SC.independent_dir(gt, pred, pick))
+    return (d, ep), m, float(np.abs(x - y).max())
+
+
+def score_new(rr, procs=8):
+    from multiprocessing import Pool
     rows, checks = [], []
     rng = np.random.default_rng(0)
+    tasks = []
     for (arm, s), (d, rec) in sorted(rr.items()):
         for ep in ('COD10K', 'NC4K'):
-            gt = os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')
-            pred = os.path.join(d, 'pred', ep)
-            m = SC.primary(gt, pred)
-            names = sorted(os.listdir(gt))
-            pick = [names[i] for i in sorted(rng.choice(len(names), 200, replace=False))]
-            x = np.array(SC.primary_per_image_sm(gt, pred, pick))
-            y = np.array(SC.independent_dir(gt, pred, pick))
-            checks.append(dict(arm=DISPLAY[arm], seed=s, endpoint=ep, n=200, max_abs_diff=float(np.abs(x - y).max())))
+            names = sorted(os.listdir(os.path.join(K.REPO, 'Dataset/Test', ep, 'GT')))
+            tasks.append((d, ep, [names[i] for i in sorted(rng.choice(len(names), 200, replace=False))]))
+    with Pool(procs) as pool:
+        res = {k: (m, dx) for k, m, dx in pool.map(_score_task, tasks, chunksize=1)}
+    for (arm, s), (d, rec) in sorted(rr.items()):
+        for ep in ('COD10K', 'NC4K'):
+            m, dx = res[(d, ep)]
+            checks.append(dict(arm=DISPLAY[arm], seed=s, endpoint=ep, n=200, max_abs_diff=dx))
             v = rec.get('verify', {})
             rows.append(dict(source='new (EXP-01)', arm=DISPLAY[arm], seed=s, endpoint=ep, n=m['n'],
                              **{k: '%.6f' % m[k] for k in METRICS}, n_appended=v.get('n_appended'),

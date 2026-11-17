@@ -1,0 +1,72 @@
+{
+  "runid": "SINet_ORTOP5_s43",
+  "campaign": "EXP-01",
+  "arm": "ORTOP5",
+  "arm_display": "OR-TOP5",
+  "seed": 43,
+  "script": "08_EXP01_SINet_ORTOP5_s43",
+  "run_dir": "Result/CAUS_RUNS/08_EXP01_SINet_ORTOP5_s43/20261113T141820Z_606934",
+  "started": "2026-11-13T19:48:20+0530",
+  "git": "b5ef58bcbd0b986b953789d430003e7d375c869c",
+  "oracle_score_source": "endpoint-label-leaky",
+  "status": "COMPLETE",
+  "ended": "2026-11-13T21:36:29+0530",
+  "verify": {
+    "rounds": 2,
+    "total_step_set": "0253",
+    "last_epoch": "039/040",
+    "wall_min": 105.7,
+    "tea_best": true,
+    "pool_r1": 5447,
+    "pool_r2": 7397,
+    "n_appended": 1950,
+    "target_loaded_4040": 2,
+    "best_epoch": 28,
+    "wall_within_2x_reference": true,
+    "checks": {
+      "rounds": true,
+      "total_step": true,
+      "last_epoch": true,
+      "tea_best": true,
+      "pool_r1": true,
+      "target": true
+    },
+    "failed_checks": [],
+    "returncode": 0
+  },
+  "predictions": {
+    "COD10K": {
+      "rc": 0,
+      "n": 2026,
+      "n_gt": 2026,
+      "dir": "Result/CAUS_RUNS/08_EXP01_SINet_ORTOP5_s43/20261113T141820Z_606934/pred/COD10K",
+      "digest": "b75b4acd9cdb790467e4efea3b66b2cd11e445d6593ea143be57cb21a043a146"
+    },
+    "NC4K": {
+      "rc": 0,
+      "n": 4121,
+      "n_gt": 4121,
+      "dir": "Result/CAUS_RUNS/08_EXP01_SINet_ORTOP5_s43/20261113T141820Z_606934/pred/NC4K",
+      "digest": "c550c666c87f39dbb26b7e48d0519bfc0fdb7e30a08b266255edd41c989821c8"
+    }
+  },
+  "pool_gate": {
+    "stems_sha256": "94eb645d0d400b15876a7510f2890d00e960fdc7d05081c638462eb8b1a4d223",
+    "image_list_sha256": "da377785547f016423a15035a7e0088c27a91f70115fa7554898d6fde9b472b3"
+  },
+  "round2_pool": {
+    "dir": "Result/CAUS_RUNS/08_EXP01_SINet_ORTOP5_s43/20261113T141820Z_606934/pool_iteration2",
+    "n_image": 7397,
+    "image_list_sha256": "08d010b504dae85f6f33d536abd3aa89a8a271254cab4bc405cc548e17acc9cd"
+  },
+  "tea_best_sha256": "4c48ae64a514be4aef05c2230134f49831644cd99dbed3e4d9db5b5a79109887",
+  "stu40_sha256": "c574b90ad8c230f6d813de63e1a9ae2f0b760963c95debb49ad81cf50ab16c87",
+  "train_log_sha256": "f377c301e2ae88a3086c446d0d381129fb390f04b7bc432aa4a7b47826e64c73",
+  "env": {
+    "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "runner_assigned_gpu": "0"
+  }
+}

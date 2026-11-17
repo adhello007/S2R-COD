@@ -1,0 +1,8 @@
+[2026-11-13T18:33:20] EXP-01 SINet_ORPROP_s43 in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-Caus/Result/CAUS_RUNS/07_EXP01_SINet_ORPROP_s43/20261113T130320Z_502929
+[2026-11-13T18:33:21] guards ok: disk 618.4 GB free, GPU 93.7 GB free
+[2026-11-13T18:33:24] pool gate True | trainer gates True
+[2026-11-13T18:33:24] train: /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python MyTrain.py --network SINet --task S2C --method ours --iteration 2 --seed 43 --save_model ./Result/CAUS_RUNS/07_EXP01_SINet_ORPROP_s43/20261113T130320Z_502929/snap/ --source_root ./Result/CAUS_RUNS/07_EXP01_SINet_ORPROP_s43/20261113T130320Z_502929/pool/ --target_root ./Dataset/Target/ --val_root ./Dataset/Val/CAMO/ --gpu 0
+[2026-11-13T20:19:46] train rc=0 verify ok=True failed=None
+[2026-11-13T20:20:39] infer COD10K rc=0 n=2026/2026
+[2026-11-13T20:21:56] infer NC4K rc=0 n=4121/4121
+[2026-11-13T20:21:56] COMPLETE SINet_ORPROP_s43

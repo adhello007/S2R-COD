@@ -1,7 +1,6 @@
 # Execution status: Reviewer Caus (ICLR 2027 Submission 39230)
 
-*Last updated: 2026-11-12 13:20 IST. This file is updated as EXP-01 runs land; the final version is
-dated at handoff.*
+*Final version, 2026-11-17 (handoff).*
 
 ## Setup
 
@@ -27,15 +26,15 @@ dated at handoff.*
 | TH-02 | VERIFIED | historical estimands recomputed with two implementations; EXP-01 verdict code validated on OR |
 | AN-01 | VERIFIED | 31 claims; 2 incorrect statements of fact (C-07, C-31); CHAMELEON floor ≥ 51 |
 | AN-02 | VERIFIED | original C1 code reproduces (≤ 3e-13); new-shape distinctness; geometry driven by matching plus concentration |
-| AN-03 | VERIFIED (LAKE-RED pool); new generator BLOCKED | 8,885 traced, 0 regenerated; coverage reproduced at every k; no foreground-varying generator with released code |
+| AN-03 | PARTIALLY VERIFIED (LAKE-RED pool VERIFIED; new generator BLOCKED) | 8,885 traced, 0 regenerated; coverage reproduced at every k; no foreground-varying generator with released code |
 | AN-04 | BLOCKED | CamoFormer: no training entrypoint. CTF-Net: no licence. No GPU allocation. |
 | AN-05 | VERIFIED | independent near-duplicate audit; label pathways per arm |
-| EXP-01 | **RUNNING (queued)**: pilot passed; 12 scripts queued 2026-11-12 12:56 IST | see below |
+| EXP-01 | VERIFIED: 12/12 runs complete, scored, and judged by the pre-registered rule | see below and `RESULT_TABLES/EXP-01_comparisons.csv` |
 | EXP-02 | BLOCKED | compute (owner constraint) plus no licensed trainable detector |
 | EXP-03 | BLOCKED | compute plus no foreground-varying generator with code and valid masks |
 | EXP-04 | BLOCKED | entry gates (EXP-02 and EXP-03) not met |
-| DOC-01 | VERIFIED (draft) | patch compiles within 10 pages; the appendix fills from EXP-01 tables |
-| DOC-02 | in progress | |
+| DOC-01 | VERIFIED | patch compiles; main text 9 pages (limit 10); appendix generated from the EXP-01 tables |
+| DOC-02 | VERIFIED | final rebuttal, ≤5000-char copy (counted), summary, evidence ledger, audit, link check, archive with checksums |
 
 ## EXP-01 timeline
 
@@ -47,6 +46,9 @@ dated at handoff.*
 | 11-12 02:05 / 02:14 | Start 1 ran to completion anyway (its process was never stopped); start 2 also completed. Both passed the gate. About 27 GPU-minutes in total, within the 30-minute pilot allocation. |
 | 11-12 12:54 | Addendum A1 (`213039c`): R5 and R6 pass; a duplicate-start lock and a run-of-record rule were added before any run |
 | 11-12 12:56 | 12 run scripts placed (hashes in `EXPERIMENT_LOGS/EXP-01/queue_scripts/SHA256SUMS`) |
+| 11-13 13:06 → 11-14 01:13 | All 12 runs ran, two at a time on GPUs 0 and 1, each exactly once (one start per script, no duplicate start, no lock contention). Every script exited 0; the runner logged 1.800–1.817 GPU-h each, **21.7 GPU-h in total**, inside the 12-run allocation (`EXPERIMENT_LOGS/EXP-01/queue_status_final.txt`). |
+| 11-13 → 11-14 | Every run passed the §5 completion assertions (2 rounds, 0253 steps, 039/040, Tea_epoch_best present, round-1 pool 5447, 4040 targets loaded twice). Wall times were 105.5–106.5 min against the historical 108 min, and the full COD10K (2026) and NC4K (4121) prediction sets were written. Per-run records: `EXPERIMENT_LOGS/EXP-01/runs/`. |
+| 11-17 10:55 | Scoring and verdicts (`exp01_stats.py`) under `nice -n 19` on 8 cores |
 
 ## Problems met, and how each was handled
 
@@ -54,8 +56,11 @@ dated at handoff.*
    - Found from file timestamps. Writing paused; the author chose this session (PID 1041286 at the
      time).
    - The other session left `rebuild/CAUS/exp01_manifests.py`, `rebuild/CAUS/exp01_score.py` and an
-     empty `EXPERIMENT_LOGS/EXP-01/reuse_gate_R5_rescore.log`. **They are untracked and unused,** and
-     were kept for the author to delete or keep (no deletion without permission).
+     empty `EXPERIMENT_LOGS/EXP-01/reuse_gate_R5_rescore.log`. All three are unused by any analysis.
+     The two `.py` files are untracked. **The empty log was committed by mistake in `213039c`,** when
+     the whole EXP-01 log folder was added. It has 0 bytes, carries no result, and the real R5 log is
+     `EXPERIMENT_LOGS/EXP-01/R5_rescore_historical.log`. All three are kept for the author to delete or
+     keep (no deletion without permission).
    - It also wrote 11 stem files, which were verified byte-identical to this session's output before
      adoption.
    - Commit `3949195` ("initial Causs exp", 23:44) was made under the author's identity. It includes the
