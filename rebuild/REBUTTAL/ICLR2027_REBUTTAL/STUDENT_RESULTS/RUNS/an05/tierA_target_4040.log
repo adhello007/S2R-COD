@@ -1,0 +1,19 @@
+/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python -I -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/D2_reaudit/release/detect_contamination.py /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Target/Image --json /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_target_4040.json --csv /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_target_4040.csv --workers 4
+A: 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals
+B: 4040 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Target/Image
+42 dimension groups contain images from both directories
+
+shortlisted 42 candidate pairs, confirmed 42 at mean|diff| <= 6.0
+CONTAMINATED: 41 of 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals are re-encoded copies of images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Target/Image  (53.9%)
+quantization tables differ in 41/42 confirmed pairs (re-encode evidence)
+  1 pair(s) carry no comparable table (a side is not JPEG); of those, 1 differ in CONTAINER FORMAT, which is itself re-encoding evidence
+mean|diff| range: 0.603 .. 5.512
+tolerance sweep: <=1.0: 11, <=2.0: 26, <=3.0: 37, <=5.0: 40, <=6.0: 41
+nearest-neighbour: 51 checkable, 25 unchecked (no same-dimension candidate)
+  GAP: 41 images below 5.51, next at 40.58 (7.4x) -- a data boundary, not a cutoff artifact
+
+LOWER BOUND. lower bound: crops, flips, colour shifts, rescaled copies outside every dimension group, and different photographs of one subject are NOT detected. Unchecked is not clean.
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_target_4040.json
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_target_4040.csv
+
+rc=0

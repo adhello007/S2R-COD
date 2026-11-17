@@ -1,0 +1,53 @@
+# 2026-11-12T07:41:47Z OMP_NUM_THREADS=4 nice -n 19 python -I -B scripts/an04b_signal_correlations.py
+{
+ "generated_utc": "2026-11-12T07:43:49Z",
+ "target_meta": {
+  "total": 4040,
+  "leaked_found": 7,
+  "leaked_declared": 7,
+  "kept": 4033,
+  "source": "rebuild/D2/out/d2_leaked_names.json"
+ },
+ "gate": {
+  "mae": {
+   "mine": 0.8553181524182,
+   "committed": 0.8553181524182,
+   "match_1e9": true
+  },
+  "one_minus_sa": {
+   "mine": 0.4275556500297265,
+   "committed": 0.4275556500297265,
+   "match_1e9": true
+  }
+ },
+ "gate_passed": true,
+ "archs": {
+  "SINet/S2C": {
+   "mae": 0.8553181524182,
+   "one_minus_sa": 0.4275556500297265,
+   "ratio": 0.49987907870412773
+  },
+  "SINet-v2/S2C": {
+   "mae": 0.8866861163430055,
+   "one_minus_sa": 0.5648939715218452,
+   "ratio": 0.6370844892121009
+  },
+  "SegMaR/S2C": {
+   "mae": 0.8283759959716834,
+   "one_minus_sa": 0.5401800526693503,
+   "ratio": 0.6520952505820985
+  },
+  "SINet/S2C_MT": {
+   "mae": 0.8689704046108042,
+   "one_minus_sa": 0.4518494674115412,
+   "ratio": 0.5199825736457805
+  },
+  "SINet/S2C_SO": {
+   "mae": 0.3549544175677044,
+   "one_minus_sa": 0.4578299886960105,
+   "ratio": 1.2898275554175445
+  }
+ },
+ "seconds": 121.7
+}
+rc=0

@@ -1,0 +1,19 @@
+/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python -I -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/D2_reaudit/release/detect_contamination.py /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Val/CAMO/Imgs --json /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_camo250_val.json --csv /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_camo250_val.csv --workers 4
+A: 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals
+B: 250 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Val/CAMO/Imgs
+9 dimension groups contain images from both directories
+
+shortlisted 4 candidate pairs, confirmed 4 at mean|diff| <= 6.0
+CONTAMINATED: 4 of 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals are re-encoded copies of images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Val/CAMO/Imgs  (5.3%)
+quantization tables differ in 0/4 confirmed pairs (re-encode evidence)
+  1 pair(s) carry no comparable table (a side is not JPEG); of those, 1 differ in CONTAINER FORMAT, which is itself re-encoding evidence
+mean|diff| range: 0.000 .. 0.607
+tolerance sweep: <=1.0: 4, <=2.0: 4, <=3.0: 4, <=5.0: 4, <=6.0: 4
+nearest-neighbour: 11 checkable, 65 unchecked (no same-dimension candidate)
+  GAP: 4 images below 0.61, next at 47.66 (78.5x) -- a data boundary, not a cutoff artifact
+
+LOWER BOUND. lower bound: crops, flips, colour shifts, rescaled copies outside every dimension group, and different photographs of one subject are NOT detected. Unchecked is not clean.
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_camo250_val.json
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_camo250_val.csv
+
+rc=0

@@ -1,0 +1,149 @@
+{
+ "generated_utc": "2026-11-12T07:27:17Z",
+ "tierA_selftest_rc": [
+  "self-test",
+  0
+ ],
+ "tierA": {
+  "target_4040": {
+   "contaminated": 41,
+   "sweep": {
+    "1.0": 11,
+    "2.0": 26,
+    "3.0": 37,
+    "5.0": 40,
+    "6.0": 41
+   },
+   "n_unchecked": 25,
+   "pairs": 42
+  },
+  "source_hkuis_4447": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "source_hkuis_raw": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "renders_4447": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 76,
+   "pairs": 0
+  },
+  "camo250_val": {
+   "contaminated": 4,
+   "sweep": {
+    "1.0": 4,
+    "2.0": 4,
+    "3.0": 4,
+    "5.0": 4,
+    "6.0": 4
+   },
+   "n_unchecked": 65,
+   "pairs": 4
+  },
+  "cod10k_test": {
+   "contaminated": 32,
+   "sweep": {
+    "1.0": 6,
+    "2.0": 23,
+    "3.0": 29,
+    "5.0": 32,
+    "6.0": 32
+   },
+   "n_unchecked": 33,
+   "pairs": 32
+  },
+  "nc4k_test": {
+   "contaminated": 0,
+   "sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+   },
+   "n_unchecked": 56,
+   "pairs": 0
+  }
+ },
+ "tierB_operating_point": null,
+ "tierB_keys": [
+  "calibration",
+  "decides",
+  "headline",
+  "limitations",
+  "n_new_matches",
+  "n_new_matches_at_operating_point",
+  "n_unchecked",
+  "negative_control",
+  "operating_point_inliers",
+  "rows",
+  "what"
+ ],
+ "confirmed_floor": 50,
+ "in_cod10k_train": 44,
+ "unchecked": 16,
+ "tierA_checked_no_match": 10,
+ "exact_sha_matches": {
+  "target_4040": 0,
+  "source_hkuis_4447": 0,
+  "source_hkuis_raw": 0,
+  "renders_4447": 0,
+  "camo250_val": 3,
+  "cod10k_test": 0,
+  "nc4k_test": 0
+ },
+ "pixel_identical_matches": {
+  "target_4040": 0,
+  "source_hkuis_4447": 0,
+  "source_hkuis_raw": 0,
+  "renders_4447": 0,
+  "camo250_val": 3,
+  "cod10k_test": 0,
+  "nc4k_test": 0
+ },
+ "camo250_exact_names": [
+  "animal-17",
+  "animal-25",
+  "animal-60"
+ ],
+ "author_release_equals_repo_copy": 76,
+ "masks": {
+  "author_polarity": "object_black",
+  "author_white_frac": 0.7187348889045598,
+  "repo_polarity": "object_white",
+  "repo_white_frac": 0.13997752485263715,
+  "mean_iou_as_stored": 0.0,
+  "mean_iou_aligned": 0.6932359595769725,
+  "n_identical_after_alignment": 27,
+  "n_iou_ge_0p9": 40,
+  "mae_author": 0.21964816590659705,
+  "mae_repo": 0.08163096507620692,
+  "n_preds": 76,
+  "preds_source": "rebuild/D2_reaudit/preds (SINet S2C Tea_epoch_best, committed)"
+ }
+}

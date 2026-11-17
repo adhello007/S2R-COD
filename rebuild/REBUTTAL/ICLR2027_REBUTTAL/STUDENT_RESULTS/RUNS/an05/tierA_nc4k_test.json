@@ -1,0 +1,593 @@
+{
+  "candidate_pairs_shortlisted": 0,
+  "contaminated": {
+    "n": 0,
+    "names": [],
+    "share": 0.0
+  },
+  "dir_a": {
+    "n": 76
+  },
+  "dir_b": {
+    "n": 4121
+  },
+  "limitations": "lower bound: crops, flips, colour shifts, rescaled copies outside every dimension group, and different photographs of one subject are NOT detected. Unchecked is not clean.",
+  "method": {
+    "descriptor": "32x32 greyscale BILINEAR, no contrast normalisation",
+    "shortlist_rms": 14.0,
+    "tolerance_mean_abs": 6.0,
+    "topk_full_res_verified": 8,
+    "verification": "full-resolution mean|A-B| over RGB int16"
+  },
+  "nearest_neighbour": {
+    "largest_gap": null,
+    "n_checkable": 20,
+    "n_unchecked": 56,
+    "sorted_nearest": [
+      39.24,
+      43.44,
+      47.33,
+      47.34,
+      48.82,
+      52.24,
+      53.49,
+      56.55,
+      57.89,
+      58.88,
+      64.63,
+      65.7,
+      65.73,
+      66.74,
+      67.9,
+      68.41,
+      72.28,
+      85.8,
+      89.02,
+      100.54
+    ]
+  },
+  "nn_rows": [
+    {
+      "dims": "1024x768",
+      "n_candidates": 0,
+      "name": "animal-1.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x768",
+      "n_candidates": 0,
+      "name": "animal-12.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x768",
+      "n_candidates": 0,
+      "name": "animal-23.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x768",
+      "n_candidates": 0,
+      "name": "animal-5.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x811",
+      "n_candidates": 0,
+      "name": "animal-10.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "2288x1712",
+      "n_candidates": 0,
+      "name": "animal-11.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "2304x3456",
+      "n_candidates": 0,
+      "name": "animal-13.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1440x900",
+      "n_candidates": 0,
+      "name": "animal-14.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "2048x1225",
+      "n_candidates": 0,
+      "name": "animal-15.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "815x1188",
+      "n_candidates": 0,
+      "name": "animal-16.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x947",
+      "n_candidates": 0,
+      "name": "animal-17.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1536x1136",
+      "n_candidates": 0,
+      "name": "animal-18.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "497x300",
+      "n_candidates": 0,
+      "name": "animal-19.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "2272x1704",
+      "n_candidates": 0,
+      "name": "animal-2.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "620x400",
+      "n_candidates": 2,
+      "name": "animal-20.jpg",
+      "nearest": 67.898,
+      "nearest_name": "1099.jpg"
+    },
+    {
+      "dims": "2560x1920",
+      "n_candidates": 0,
+      "name": "animal-21.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "791x568",
+      "n_candidates": 0,
+      "name": "animal-22.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "550x366",
+      "n_candidates": 1,
+      "name": "animal-24.jpg",
+      "nearest": 89.024,
+      "nearest_name": "5632.jpg"
+    },
+    {
+      "dims": "550x366",
+      "n_candidates": 1,
+      "name": "animal-51.jpg",
+      "nearest": 72.284,
+      "nearest_name": "5632.jpg"
+    },
+    {
+      "dims": "880x587",
+      "n_candidates": 9,
+      "name": "animal-25.jpg",
+      "nearest": 65.735,
+      "nearest_name": "5671.jpg"
+    },
+    {
+      "dims": "880x587",
+      "n_candidates": 9,
+      "name": "animal-42.jpg",
+      "nearest": 56.553,
+      "nearest_name": "2342.jpg"
+    },
+    {
+      "dims": "780x520",
+      "n_candidates": 2,
+      "name": "animal-26.jpg",
+      "nearest": 58.881,
+      "nearest_name": "2329.jpg"
+    },
+    {
+      "dims": "505x360",
+      "n_candidates": 0,
+      "name": "animal-27.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "610x401",
+      "n_candidates": 0,
+      "name": "animal-28.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "620x413",
+      "n_candidates": 5,
+      "name": "animal-29.jpg",
+      "nearest": 47.327,
+      "nearest_name": "242.jpg"
+    },
+    {
+      "dims": "1200x818",
+      "n_candidates": 0,
+      "name": "animal-3.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "600x330",
+      "n_candidates": 0,
+      "name": "animal-30.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "640x480",
+      "n_candidates": 55,
+      "name": "animal-31.jpg",
+      "nearest": 65.702,
+      "nearest_name": "853.jpg"
+    },
+    {
+      "dims": "640x480",
+      "n_candidates": 55,
+      "name": "animal-70.jpg",
+      "nearest": 43.437,
+      "nearest_name": "3817.jpg"
+    },
+    {
+      "dims": "500x375",
+      "n_candidates": 30,
+      "name": "animal-32.jpg",
+      "nearest": 52.238,
+      "nearest_name": "4117.jpg"
+    },
+    {
+      "dims": "426x650",
+      "n_candidates": 0,
+      "name": "animal-33.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "700x436",
+      "n_candidates": 0,
+      "name": "animal-34.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "470x688",
+      "n_candidates": 0,
+      "name": "animal-35.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "962x621",
+      "n_candidates": 0,
+      "name": "animal-36.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "962x622",
+      "n_candidates": 0,
+      "name": "animal-37.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "450x300",
+      "n_candidates": 59,
+      "name": "animal-38.jpg",
+      "nearest": 47.345,
+      "nearest_name": "5114.jpg"
+    },
+    {
+      "dims": "940x590",
+      "n_candidates": 0,
+      "name": "animal-39.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x945",
+      "n_candidates": 0,
+      "name": "animal-4.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "500x728",
+      "n_candidates": 0,
+      "name": "animal-40.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x664",
+      "n_candidates": 1,
+      "name": "animal-41.jpg",
+      "nearest": 57.888,
+      "nearest_name": "3909.jpg"
+    },
+    {
+      "dims": "755x352",
+      "n_candidates": 0,
+      "name": "animal-43.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "755x319",
+      "n_candidates": 0,
+      "name": "animal-44.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "605x349",
+      "n_candidates": 0,
+      "name": "animal-45.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x466",
+      "n_candidates": 0,
+      "name": "animal-46.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "755x487",
+      "n_candidates": 0,
+      "name": "animal-47.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1300x849",
+      "n_candidates": 0,
+      "name": "animal-48.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "580x387",
+      "n_candidates": 1,
+      "name": "animal-49.jpg",
+      "nearest": 48.819,
+      "nearest_name": "3758.jpg"
+    },
+    {
+      "dims": "1024x683",
+      "n_candidates": 102,
+      "name": "animal-50.jpg",
+      "nearest": 39.236,
+      "nearest_name": "3614.jpg"
+    },
+    {
+      "dims": "580x773",
+      "n_candidates": 1,
+      "name": "animal-52.jpg",
+      "nearest": 100.538,
+      "nearest_name": "3282.jpg"
+    },
+    {
+      "dims": "880x585",
+      "n_candidates": 1,
+      "name": "animal-53.jpg",
+      "nearest": 64.628,
+      "nearest_name": "4271.jpg"
+    },
+    {
+      "dims": "880x660",
+      "n_candidates": 1,
+      "name": "animal-54.jpg",
+      "nearest": 85.798,
+      "nearest_name": "1050.jpg"
+    },
+    {
+      "dims": "880x660",
+      "n_candidates": 1,
+      "name": "animal-55.jpg",
+      "nearest": 53.492,
+      "nearest_name": "1050.jpg"
+    },
+    {
+      "dims": "880x660",
+      "n_candidates": 1,
+      "name": "animal-57.jpg",
+      "nearest": 68.41,
+      "nearest_name": "1050.jpg"
+    },
+    {
+      "dims": "880x660",
+      "n_candidates": 1,
+      "name": "animal-58.jpg",
+      "nearest": 66.741,
+      "nearest_name": "1050.jpg"
+    },
+    {
+      "dims": "1800x1389",
+      "n_candidates": 0,
+      "name": "animal-56.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "915x686",
+      "n_candidates": 0,
+      "name": "animal-59.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "880x908",
+      "n_candidates": 0,
+      "name": "animal-6.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "880x707",
+      "n_candidates": 0,
+      "name": "animal-60.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "605x362",
+      "n_candidates": 0,
+      "name": "animal-61.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1000x628",
+      "n_candidates": 0,
+      "name": "animal-62.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "595x454",
+      "n_candidates": 0,
+      "name": "animal-63.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "861x633",
+      "n_candidates": 0,
+      "name": "animal-64.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1600x1120",
+      "n_candidates": 0,
+      "name": "animal-65.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "610x409",
+      "n_candidates": 0,
+      "name": "animal-66.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x831",
+      "n_candidates": 0,
+      "name": "animal-67.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1272x1236",
+      "n_candidates": 0,
+      "name": "animal-68.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "847x565",
+      "n_candidates": 0,
+      "name": "animal-69.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "880x968",
+      "n_candidates": 0,
+      "name": "animal-7.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1024x793",
+      "n_candidates": 0,
+      "name": "animal-71.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "2000x977",
+      "n_candidates": 0,
+      "name": "animal-72.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "850x701",
+      "n_candidates": 0,
+      "name": "animal-73.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "933x700",
+      "n_candidates": 0,
+      "name": "animal-74.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "549x575",
+      "n_candidates": 0,
+      "name": "animal-75.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "829x466",
+      "n_candidates": 0,
+      "name": "animal-76.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x792",
+      "n_candidates": 0,
+      "name": "animal-8.jpg",
+      "nearest": null,
+      "nearest_name": null
+    },
+    {
+      "dims": "1200x943",
+      "n_candidates": 0,
+      "name": "animal-9.jpg",
+      "nearest": null,
+      "nearest_name": null
+    }
+  ],
+  "pairs": [],
+  "pairs_confirmed": 0,
+  "tolerance_sweep": {
+    "1.0": 0,
+    "2.0": 0,
+    "3.0": 0,
+    "5.0": 0,
+    "6.0": 0
+  },
+  "unreadable": 0
+}

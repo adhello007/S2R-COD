@@ -1,0 +1,39 @@
+{
+ "scipy_mismatches": [],
+ "known_answer": {
+  "t": 4.242640687119285,
+  "expected": 4.242640687119285,
+  "passed": true
+ },
+ "sigma_hat_reproduction": {
+  "SINet|COD10K": {
+   "mine": 0.003430941221477226,
+   "committed": 0.0034309412214772257,
+   "df": 28,
+   "match_1e9": true
+  },
+  "SINet|NC4K": {
+   "mine": 0.002959730521169498,
+   "committed": 0.0029597305211694976,
+   "df": 28,
+   "match_1e9": true
+  },
+  "SINetv2|COD10K": {
+   "mine": 0.005070082591815761,
+   "committed": 0.005070082591815761,
+   "df": 28,
+   "match_1e9": true
+  },
+  "SINetv2|NC4K": {
+   "mine": 0.004673306885779427,
+   "committed": 0.004673306885779427,
+   "df": 28,
+   "match_1e9": true
+  }
+ },
+ "tost_table": {
+  "n_rows": 16,
+  "n_match": 16
+ },
+ "data_sha256": "bd245fce30e26980e5127a342de1945708593799977c87157918047e2e25ee54"
+}

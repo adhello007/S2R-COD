@@ -1,0 +1,11 @@
+# 2026-11-12T07:28:58Z python -I -B scripts/an05_pseudolabel_exposure.py
+{
+ "n_runs": 64,
+ "n_partner_images": 50,
+ "per_run_min": 14,
+ "per_run_max": 32,
+ "per_run_mean": 24.703125,
+ "chameleon_images_pseudolabelled_in_any_run": 46,
+ "note": "these photos were seen unlabelled in round 1 by every run, and some were re-used in round 2 with the model's own predicted mask; no CHAMELEON ground truth is used anywhere"
+}
+rc=0

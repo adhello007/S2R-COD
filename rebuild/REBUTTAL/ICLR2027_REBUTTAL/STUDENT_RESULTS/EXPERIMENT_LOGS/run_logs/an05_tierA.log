@@ -1,0 +1,9 @@
+# 2026-11-11T18:37:00Z nice -n 19 python -I -B scripts/an05_chameleon.py --stage tierA --workers 4
+[00:07:01] Tier A vs target_4040
+[00:07:36] Tier A vs source_hkuis_4447
+[00:07:39] Tier A vs source_hkuis_raw
+[00:07:45] Tier A vs renders_4447
+[00:07:48] Tier A vs camo250_val
+[00:07:51] Tier A vs cod10k_test
+[00:08:12] Tier A vs nc4k_test
+rc=0

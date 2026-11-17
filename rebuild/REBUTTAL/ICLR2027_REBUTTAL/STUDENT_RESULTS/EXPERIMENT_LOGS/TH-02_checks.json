@@ -1,0 +1,18 @@
+{
+ "s_e": 0.010122479175327225,
+ "s_e_manuscript": 0.0101,
+ "k": 75,
+ "all_sum_1000": true,
+ "multiset_equal_C10_CSHUF": true,
+ "multiset_equal_C10_CINV": true,
+ "multiset_equal_C10_CORACLE": true,
+ "per_cluster_C10_vs_CSHUF_differs": 73,
+ "per_cluster_C10_vs_CINV_differs": 72,
+ "cinv_single_fixed_point_is_median": true,
+ "cshuf_no_fixed_point": true,
+ "cshuf_rho": -0.03351,
+ "c_family_selection_matches_committed": true,
+ "b_selection_matches_committed_all_seeds": true,
+ "es_ties": 0,
+ "quota_remainder_units": 37
+}

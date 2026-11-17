@@ -1,0 +1,23 @@
+{
+ "generated_utc": "2026-11-11T18:07:34Z",
+ "worktree_head": "8d1d0795fc4e19474d51f89adf0c2d8fb977f313",
+ "data_root": "/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD",
+ "n_runs": 64,
+ "n_rows": 128,
+ "campaign_commits": {
+  "ABC": "065dac6 (dirty)",
+  "T2": "80d2e0f (dirty)",
+  "SE": "28cfd84 (dirty)"
+ },
+ "metric_code": {
+  "Eval/metrics.py": "10c90659f27fca46e3cd46634cf21b6825eed8a4a3a9f389ade449979bc23fb1",
+  "rebuild/ABC/abc_evaluate.py": "c00e9ec98e5a77519df3fa1d2a26770718b1237b1beaafe77815182a8ee3ea25"
+ },
+ "gt_digest": {
+  "COD10K": "6079a373bf4f4d326425231be32d431a96585c54c443e06f28a5a2a778b99544",
+  "NC4K": "893bb28dc55704d2c6b046dd89512d47c8898683cad4f6ed24c13aebf314678c"
+ },
+ "problems": [],
+ "seconds": 5.0,
+ "digest_definition": "sha256 over sorted lines \"<filename>\\t<sha256(file)>\\n\""
+}

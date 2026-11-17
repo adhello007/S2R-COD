@@ -1,0 +1,17 @@
+/home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/.venv/bin/python -I -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/D2_reaudit/release/detect_contamination.py /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs --json /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_source_hkuis_raw.json --csv /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_source_hkuis_raw.csv --workers 4
+A: 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals
+B: 4447 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs
+0 dimension groups contain images from both directories
+
+shortlisted 0 candidate pairs, confirmed 0 at mean|diff| <= 6.0
+CONTAMINATED: 0 of 76 images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/chameleon_new/animals are re-encoded copies of images in /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD/Dataset/Source/HKU-IS_raw/imgs  (0.0%)
+quantization tables differ in 0/0 confirmed pairs (re-encode evidence)
+tolerance sweep: <=1.0: 0, <=2.0: 0, <=3.0: 0, <=5.0: 0, <=6.0: 0
+nearest-neighbour: 0 checkable, 76 unchecked (no same-dimension candidate)
+  no >5x gap: the distribution is continuous, which is what a clean set looks like
+
+LOWER BOUND. lower bound: crops, flips, colour shifts, rescaled copies outside every dimension group, and different photographs of one subject are NOT detected. Unchecked is not clean.
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_source_hkuis_raw.json
+wrote /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/RUNS/an05/tierA_source_hkuis_raw.csv
+
+rc=0

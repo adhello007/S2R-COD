@@ -1,0 +1,87 @@
+{
+ "generated_utc": "2026-11-11T18:36:44Z",
+ "rows": [
+  {
+   "runid": "SINet_C10_s46",
+   "image": "COD10K-CAM-1-Aquatic-1-BatFish-2.png",
+   "shape": [
+    533,
+    800
+   ],
+   "max_abs_diff": 1,
+   "mean_abs_diff": 0.033649155722326456,
+   "frac_within_1": 1.0,
+   "sa_cpu": 0.7748387933041323,
+   "sa_stored": 0.7750289219594151,
+   "sa_abs_diff": 0.0001901286552827841,
+   "seconds": 2.8,
+   "passed": true,
+   "tensors_loaded": 1223,
+   "checkpoint": "Snapshot/ABC/SINet_C10_s46/Tea_epoch_best.pth",
+   "device": "cpu",
+   "torch": "2.11.0+cu128"
+  },
+  {
+   "runid": "SINet_C10_s46",
+   "image": "COD10K-CAM-5-Other-69-Other-5063.png",
+   "shape": [
+    683,
+    1024
+   ],
+   "max_abs_diff": 2,
+   "mean_abs_diff": 0.004980039806002928,
+   "frac_within_1": 0.9999942807467057,
+   "sa_cpu": 0.9695063585696458,
+   "sa_stored": 0.9695075081493781,
+   "sa_abs_diff": 1.1495797322957912e-06,
+   "seconds": 1.7,
+   "passed": true,
+   "tensors_loaded": 1223,
+   "checkpoint": "Snapshot/ABC/SINet_C10_s46/Tea_epoch_best.pth",
+   "device": "cpu",
+   "torch": "2.11.0+cu128"
+  },
+  {
+   "runid": "SINetv2_C10_s46",
+   "image": "COD10K-CAM-1-Aquatic-1-BatFish-2.png",
+   "shape": [
+    533,
+    800
+   ],
+   "max_abs_diff": 2,
+   "mean_abs_diff": 0.02776500938086304,
+   "frac_within_1": 0.9984099437148217,
+   "sa_cpu": 0.8659384096073552,
+   "sa_stored": 0.8661018491688084,
+   "sa_abs_diff": 0.0001634395614531492,
+   "seconds": 1.4,
+   "passed": false,
+   "tensors_loaded": 880,
+   "checkpoint": "Snapshot/ABC/SINetv2_C10_s46/Tea_epoch_best.pth",
+   "device": "cpu",
+   "torch": "2.11.0+cu128"
+  },
+  {
+   "runid": "SINetv2_C10_s46",
+   "image": "COD10K-CAM-5-Other-69-Other-5063.png",
+   "shape": [
+    683,
+    1024
+   ],
+   "max_abs_diff": 2,
+   "mean_abs_diff": 0.003481595442898975,
+   "frac_within_1": 0.9999528161603221,
+   "sa_cpu": 0.962379217926014,
+   "sa_stored": 0.9623915958884532,
+   "sa_abs_diff": 1.237796243924727e-05,
+   "seconds": 1.8,
+   "passed": true,
+   "tensors_loaded": 880,
+   "checkpoint": "Snapshot/ABC/SINetv2_C10_s46/Tea_epoch_best.pth",
+   "device": "cpu",
+   "torch": "2.11.0+cu128"
+  }
+ ],
+ "all_passed": false,
+ "rule": "max|diff| <= 2 grey levels and >= 99.9% of pixels within +-1 (ANALYSIS_PRESPEC.md \u00a77)"
+}

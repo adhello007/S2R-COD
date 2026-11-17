@@ -1,0 +1,11 @@
+  the re-encoded copy is detected                            PASS
+  the unrelated same-dimension image is not matched          PASS
+  the pair is found exactly once                             PASS
+  quantization tables differ (re-encode evidence)            PASS
+  PIL and raw-DQT extractions agree                          PASS
+  the pair is NOT pixel-identical (a real re-encode)         PASS
+  the residual is non-zero and within tolerance              PASS
+  an image with no same-dimension partner is unchecked       PASS
+self-test: PASS
+
+rc=0

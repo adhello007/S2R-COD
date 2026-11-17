@@ -1,0 +1,21 @@
+# 2026-11-12T07:22:59Z python -I -B /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS/scripts/an03_interaction.py --sr /home/ai-server/Public/lab/Diffusion_Inpaint/S2R-COD-dypE/rebuild/REBUTTAL/ICLR2027_REBUTTAL/STUDENT_RESULTS
+{
+ "scipy_mismatch": [],
+ "n_grid": 280,
+ "n_interaction": 70,
+ "data_sha256_boundary": "aa0c8eafef9fb2134f2fb20be70e7a27af0b7da97cb35f42bc55db3b2f28128c",
+ "data_sha256_sa": "bd245fce30e26980e5127a342de1945708593799977c87157918047e2e25ee54",
+ "gate3": {
+  "n_compared": 300,
+  "max_abs_diff": 1.1102230246251565e-16,
+  "n_fail": 0,
+  "passed": true
+ }
+}
+HEADLINE {'metric': 'boundary_iou', 'threshold': 0.5, 'architecture': 'SINet', 'endpoint': 'COD10K', 'contrast': 'C10-B', 'mean_D': 0.004557967553803881, 'paired_ci95_lo': -0.0066487294263866455, 'paired_ci95_hi': 0.01576466453399441, 'gap_over_bar': 0.29740040364154974, 'sign_rule': '5/8'}
+HEADLINE {'metric': 'boundary_iou', 'threshold': 0.5, 'architecture': 'SINet', 'endpoint': 'COD10K', 'contrast': 'CINV-B', 'mean_D': 0.009797242203354754, 'paired_ci95_lo': 0.0039044007707401043, 'paired_ci95_hi': 0.015690083635969403, 'gap_over_bar': 0.6392550520505746, 'sign_rule': '7/8'}
+HEADLINE {'metric': 'boundary_iou', 'threshold': 0.5, 'architecture': 'SINetv2', 'endpoint': 'COD10K', 'contrast': 'C10-B', 'mean_D': 0.00015410948782468986, 'paired_ci95_lo': -0.006060157635758113, 'paired_ci95_hi': 0.006368376611407493, 'gap_over_bar': 0.01624987468433106, 'sign_rule': '4/8'}
+HEADLINE {'metric': 'boundary_iou', 'threshold': 0.5, 'architecture': 'SINetv2', 'endpoint': 'COD10K', 'contrast': 'CINV-B', 'mean_D': 0.00326863193654528, 'paired_ci95_lo': -0.00090911252172727, 'paired_ci95_hi': 0.00744637639481783, 'gap_over_bar': 0.3446566470877183, 'sign_rule': '6/8'}
+INTERACTION {'contrast': 'C10-B', 'D_SINet': 0.004557967553803881, 'D_SINetv2': 0.00015410948782468986, 'delta_model': 0.004403858065979191, 'welch_ci95_lo': -0.007532617417940226, 'welch_ci95_hi': 0.016340333549898608, 'welch_p': 0.4337624585004818, 'perm_p_exact': np.float64(0.43232323232323233)}
+INTERACTION {'contrast': 'CINV-B', 'D_SINet': 0.009797242203354754, 'D_SINetv2': 0.00326863193654528, 'delta_model': 0.0065286102668094745, 'welch_ci95_lo': -9.133223958397284e-05, 'welch_ci95_hi': 0.013148552773202923, 'welch_p': 0.05278262837836809, 'perm_p_exact': np.float64(0.052059052059052056)}
+rc=0
