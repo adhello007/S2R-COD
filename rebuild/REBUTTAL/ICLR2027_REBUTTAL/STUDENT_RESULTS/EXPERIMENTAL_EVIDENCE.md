@@ -139,19 +139,42 @@ Verification notes: (2) The independent re-count passes for all 23 arms. (7) The
 
 ## EXP-01 — Confirmatory equivalence campaign (EQ)
 Reviewer issues: CW-01, QA-01
-Status: **PENDING (training; projected INCOMPLETE). Set on 17 Nov after the committed analysis runs.**
+Status: PARTIALLY VERIFIED. The campaign is INCOMPLETE under Amendment 1: 46 of 81 runs. The primary question is resolved: **equivalent**.
 Pre-registration: `prereg/EQ.md` (`2137849`, 2026-11-09 08:13); Amendment 1, n = 27 per arm (`808988b`, 2026-11-11 21:16, before any EQ run); hashes in `prereg/EQ.hash`
 Code revision: jobs at `808988b`; runner guard: pipeline hash 281e42b8c66b3a74 on every launch
-Commands: queue `rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json`; analysis `analysis/eq_analysis.py --workers 8` (strict) or `--allow-incomplete` after the cutoff, triggered once by `rebuild/RL5B/eq_autorun.sh`
+Commands: queue `rebuild/RL5B/rl5b_runner.py --jobs rebuild/RL5B/queue_jobs.json`; analysis `analysis/eq_analysis.py --workers 8 --allow-incomplete`, triggered once by `rebuild/RL5B/eq_autorun.sh` (2026-11-17 07:40, finished 08:16); spot check `analysis/eq_spot_rescore.py`; manuscript sentences `analysis/make_eq_sentences.py`
 Datasets: as above; pools gated 6/6 (`EXPERIMENT_LOGS/EXP01_build_pools_eq.log`)
-Configuration: arms B, C10, CSHUF on SINet; Welch TOST at ±0.005 (H1: C10 − B; H1b: C10 − CSHUF); 2σ̂ rule with k\* = 19 of 27; pooled EQ+SE secondary
-Seeds: 101–127 (27 per arm), run seed by seed
-Artifacts (exist after the analysis): `RESULT_TABLES/EXP01_EQ.csv`, `RESULT_TABLES/EXP01_EQ.md`, `RESULT_TABLES/EXP01_EQ_summary.json`, `FIGURES/EXP01_forest.pdf`, `EXPERIMENT_LOGS/EXP01_analysis.log`, `EXPERIMENT_LOGS/EXP01_autorun.log`
-Results: **none computed or opened.** At 2026-11-16 21:38: 35 of 81 runs complete, 2 running. Projected complete by the cutoff: seeds 101–115 for all arms, plus B s116.
-Interpretation: pending. The decision sentences are fixed in `prereg/EQ.md` §EQ.5.
-Limitations: n capped at 27 (TOST power 0.78 at Δ = +0.0024). INCOMPLETE reduces this further, to about 15 seeds per arm. With per-arm SDs at the SE values, the expected 90% half-width at 15 seeds is about 0.0024.
-Verification notes: no EQ number exists; no interim look. Per-run asserts (`verify_run`: step pin 253, rounds 2, pool and set hashes) pass for all 35 completed runs (`rebuild/RL5B/out/queue_events.jsonl`).
+Configuration: arms B, C10 and CSHUF on SINet; Welch TOST at ±0.005 (H1: C10 − B; H1b: C10 − CSHUF); 2σ̂ rule; pooled EQ+SE secondary
+Seeds: completed 101–116 for B and 101–115 for C10 and CSHUF. Not run: 35 jobs (B s117–127, C10 and CSHUF s116–127), named in `EXPERIMENT_LOGS/EXP01_analysis.log`
+Artifacts: `RESULT_TABLES/EXP01_EQ.csv`, `RESULT_TABLES/EXP01_EQ.md`, `RESULT_TABLES/EXP01_EQ_summary.json`, `RESULT_TABLES/EXP01_EQ_metrics.csv`, `FIGURES/EXP01_forest.pdf`, `EXPERIMENT_LOGS/EXP01_analysis.log`, `EXPERIMENT_LOGS/EXP01_autorun.log`, `EXPERIMENT_LOGS/EXP01_spot_rescore.log`, `revision/eq_result.tex`
+Results (S_α; Welch; n per arm C10 / other):
 
+| Endpoint | Contrast | n | Δ | 90% CI | 95% CI | TOST p | Decision | 2σ̂ rule |
+|---|---|---|---|---|---|---|---|---|
+| COD10K | C10 − B (H1, primary) | 15 / 16 | +0.0006 | [−0.0027, +0.0039] | [−0.0033, +0.0045] | 0.0149 | (i) equivalent | 0.05×, 8/15, within noise |
+| COD10K | C10 − CSHUF (H1b) | 15 / 15 | −0.0009 | [−0.0051, +0.0034] | [−0.0060, +0.0043] | 0.0555 | (ii) neither | 0.07×, 10/15, within noise |
+| NC4K | C10 − B | 15 / 16 | +0.0005 | [−0.0013, +0.0022] | [−0.0016, +0.0025] | 0.0001 | (i) equivalent | within noise |
+| NC4K | C10 − CSHUF | 15 / 15 | −0.0005 | [−0.0026, +0.0015] | [−0.0030, +0.0019] | 0.0004 | (i) equivalent | within noise |
+
+The Holm-adjusted TOST p-values over the four tests are 0.030, 0.056, 0.0002 and 0.0012.
+
+COD10K arm means (SD) are B 0.7139 (0.0054), C10 0.7145 (0.0053) and CSHUF 0.7153 (0.0081). σ̂ = 0.0064 (df 43), against 0.0034 in SE.
+
+Interpretation: The pre-registered primary test establishes equivalence of targeted and random allocation within ±0.005 S_α on SINet·COD10K, and it survives Holm. Equivalence to the shuffled arm is not established on COD10K (p = 0.056); on NC4K it is.
+Limitations:
+- Only 15–16 of 27 seeds per arm were completed.
+- **Run-to-run spread is about twice SE's.**
+  - The lowest runs (CSHUF s115 0.6933, B s116 0.6974, C10 s111 0.7022) have the lowest pseudo-label counts (1346–1501), and across runs r(pseudo-label count, S_α) = 0.74.
+  - Counts are more spread than in SE (SD 164 against 89).
+  - Low counts occurred before the 11-13 kernel update too (CDR minimum 1487).
+  - No run failed verification, and none is dropped (prereg EQ.6).
+- The design-time power figures assumed the SE SDs.
+Verification notes:
+- (1) 46 runs, each with `train_ok` (step pin 253, rounds 2, hashes) and inference complete. No interim look: the analysis ran once, by the cron trigger, after the cutoff.
+- (2) `analysis/audit_recompute.py` recomputes every EQ number quoted (PASS). Three runs re-scored from their saved maps, including the two lowest, match at 6 dp (`EXPERIMENT_LOGS/EXP01_spot_rescore.log`).
+- (3) Scorer self-check PASS (0.717216 / 0.074463).
+- (6) Pre-registered primary; secondaries and Holm reported.
+- (8) H1b's non-equivalence on COD10K is reported.
 ---
 
 ## EXP-02 — Concentration dose-response (CDR)

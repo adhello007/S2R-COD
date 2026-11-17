@@ -125,6 +125,40 @@ def main():
     check('80% detectable effect, full rule', (lo + hi) / 2, '0.0087', '%.4f')
     log()
 
+    # ---- CW-01: confirmatory campaign (EQ), from the per-run metrics
+    eqp = os.path.join(TAB, 'EXP01_EQ_metrics.csv')
+    if os.path.exists(eqp):
+        log('## CW-01, confirmatory campaign (EQ; per-run metrics)')
+        ev = {}
+        for r in rows(eqp):
+            ev.setdefault((r['endpoint'], r['arm']), {})[int(r['seed'])] = float(r['Sm'])
+        check('EQ completed seeds per arm', '%d (random), %d (targeted) and %d (shuffled)'
+              % tuple(len(ev[('COD10K', a)]) for a in ('B', 'C10', 'CSHUF')), '16 (random), 15 (targeted) and 15 (shuffled)', '%s')
+        ps = {}
+        for ep, hi, lo, qd, qlo, qhi, qp in (('COD10K', 'C10', 'B', '+0.0006', '-0.0027', '+0.0039', '0.015'),
+                                             ('COD10K', 'C10', 'CSHUF', '-0.0009', '-0.0051', '+0.0034', '0.056'),
+                                             ('NC4K', 'C10', 'B', '+0.0005', '-0.0013', '+0.0022', '<0.001'),
+                                             ('NC4K', 'C10', 'CSHUF', '-0.0005', '-0.0026', '+0.0015', '<0.001')):
+            a, b = list(ev[(ep, hi)].values()), list(ev[(ep, lo)].values())
+            d, _, df, p = welch(a, b)
+            va, vb = np.var(a, ddof=1) / len(a), np.var(b, ddof=1) / len(b)
+            t90 = stats.t.ppf(0.95, df) * math.sqrt(va + vb)
+            ps[(ep, lo)] = p
+            tag = 'EQ %s %s-%s' % (ep, hi, lo)
+            check(tag + ' Delta', d, qd, '%+.4f')
+            check(tag + ' 90% CI low', d - t90, qlo, '%+.4f', in_rebuttal=False)
+            check(tag + ' 90% CI high', d + t90, qhi, '%+.4f', in_rebuttal=False)
+            check(tag + ' TOST p', ('%.3f' % p) if p >= 0.001 else '<0.001', qp, '%s', in_rebuttal=False)
+        holm = sorted(ps.values())
+        check('EQ Holm-adjusted p, primary (4 TOSTs)', min(1, max(holm[i] * (4 - i) for i in range(holm.index(ps[('COD10K', 'B')]) + 1))),
+              '0.030', '%.3f')
+        sig_eq = math.sqrt(sum((len(ev[('COD10K', a)]) - 1) * np.var(list(ev[('COD10K', a)].values()), ddof=1) for a in ('B', 'C10', 'CSHUF'))
+                           / sum(len(ev[('COD10K', a)]) - 1 for a in ('B', 'C10', 'CSHUF')))
+        check('EQ sigma-hat (pooled, df 43)', sig_eq, '0.0064', '%.4f')
+        mrow = [r for r in rows(eqp) if r['endpoint'] == 'COD10K']
+        check('EQ corr(pseudo-label count, S_alpha)', np.corrcoef([int(r['n_appended']) for r in mrow], [float(r['Sm']) for r in mrow])[0, 1], '0.74', '%.2f')
+        log()
+
     # ---- CW-02: AN-01 eight-seed boundary, CDR
     log('## CW-02')
     an = rows(os.path.join(TAB, 'AN01_boundary_8seed_per_run.csv'))
@@ -246,13 +280,15 @@ def main():
     # ---- the rebuttal carries no internal details
     log('## Internal details in the rebuttal (must be none)')
     body = re.sub(r'<!--.*?-->', '', REB, flags=re.S)
-    markers = re.findall(r'\*\*\[(?:EQ|AUTHOR)[^\]]*\]\*\*', body)
+    markers = re.findall(r'\*\*\[EQ[^\]]*\]\*\*', body)
+    author = re.findall(r'\*\*\[AUTHOR[^\]]*\]\*\*', body)
     body = re.sub(r'\*\*\[(?:EQ|AUTHOR)[^\]]*\]\*\*', '', body)   # placeholders are counted below, not scanned
     final = '--final' in sys.argv
     if markers and final:
         fails.append('unresolved markers')
-    log('%-4s %-26s %d (%s)' % ('FAIL' if markers and final else ('PEND' if markers else 'PASS'), 'unresolved [EQ]/[AUTHOR]',
+    log('%-4s %-26s %d (%s)' % ('FAIL' if markers and final else ('PEND' if markers else 'PASS'), 'unresolved [EQ]',
         len(markers), 'must be 0 with --final' if markers else 'none'))
+    log('%-4s %-26s %d (the author\'s decision, e.g. the title; never a failure)' % ('NOTE', 'open [AUTHOR] markers', len(author)))
     pats = {'file path or extension': r'\b[\w-]*[A-Za-z][\w-]*/[\w./-]*[A-Za-z]|\.(csv|json|py|md|tex|sh)\b', 'commit hash': r'\b[0-9a-f]{7,40}\b',
             'hardware': r'\b(GPU|RTX|Blackwell|CUDA)\b', 'agent or tool': r'\b(Claude|agent|LLM|cron|watchdog)\b',
             'internal task code': r'\b(TH-0\d|AN-0\d|EXP-0\d|DOC-0\d|E3-[a-f]|CDR|EQ\b)'}

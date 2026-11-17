@@ -1,0 +1,14 @@
+# EQ spot re-score from saved maps (COD10K-test), committed scorer
+PASS SINet_B_s116       Sm      re-scored 0.697392  table 0.697392
+PASS SINet_B_s116       MAE     re-scored 0.077560  table 0.077560
+PASS SINet_B_s116       wFm     re-scored 0.452295  table 0.452295
+PASS SINet_B_s116       meanEm  re-scored 0.711860  table 0.711860
+PASS SINet_CSHUF_s115   Sm      re-scored 0.693264  table 0.693264
+PASS SINet_CSHUF_s115   MAE     re-scored 0.075342  table 0.075342
+PASS SINet_CSHUF_s115   wFm     re-scored 0.450102  table 0.450102
+PASS SINet_CSHUF_s115   meanEm  re-scored 0.711233  table 0.711233
+PASS SINet_C10_s103     Sm      re-scored 0.717681  table 0.717681
+PASS SINet_C10_s103     MAE     re-scored 0.077139  table 0.077139
+PASS SINet_C10_s103     wFm     re-scored 0.480752  table 0.480752
+PASS SINet_C10_s103     meanEm  re-scored 0.745552  table 0.745552
+RESULT: PASS

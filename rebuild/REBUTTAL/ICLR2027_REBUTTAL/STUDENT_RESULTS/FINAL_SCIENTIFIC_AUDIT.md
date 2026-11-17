@@ -1,7 +1,7 @@
 # FINAL_SCIENTIFIC_AUDIT: RL5B rebuttal (Phase 6)
 
-*Provisional at 2026-11-16. The CW-01 entry and the commitment-ledger row for the confirmatory campaign are
-re-assessed on 17 Nov after the EQ analysis; everything else is final.*
+*Final, 2026-11-17. The CW-01 entry and the ledger row for the confirmatory campaign were re-assessed after the
+committed EQ analysis ran (07:40–08:16).*
 
 ## How the audit was done
 
@@ -16,8 +16,10 @@ re-assessed on 17 Nov after the EQ analysis; everything else is final.*
   rebuttal.
 - **Two saved CDR prediction maps were re-scored** from the image files; they match the table at 6 dp.
 - **The rebuttal was scanned for internal details:** paths, hashes, hardware, tools, internal task codes.
-- **Result:** `EXPERIMENT_LOGS/audit_recompute.log`, 67 checks, all PASS. Five author/EQ markers are still open
-  by design.
+- **Result:** `EXPERIMENT_LOGS/audit_recompute.log`, run with `--final`: 88 checks, all PASS, including every EQ
+  number. Two [AUTHOR] markers (the title) remain for the author.
+- **EQ spot check:** three EQ runs re-scored from their saved maps with the committed scorer match at 6 dp
+  (`EXPERIMENT_LOGS/EXP01_spot_rescore.log`). They include the two lowest-scoring runs.
 - **Manuscript references** were checked against the compiled revision
   (`revision/build_rev/AD-PCHGS-revised.pdf`, 27 pages, main text ends on page 10) through its `.aux` labels:
 
@@ -38,18 +40,29 @@ re-assessed on 17 Nov after the EQ analysis; everything else is final.*
 ## CW-01 / QA-01: absence of evidence vs evidence of equivalence
 
 - **Understood?** Yes. The concern is that an interval reaching past the margin cannot support "no meaningful effect"; QA-01 asks for the intervals and for the detected/equivalent distinction to be prominent.
-- **Promised analyses executed?** Wording, done. Table, done. Re-derivation, done. Confirmatory campaign: pre-registered, run, and **projected INCOMPLETE** (see the ledger). Title: the author's decision.
-- **Scientifically valid?** Yes. The re-derivation reproduces the submission exactly. The rule simulation is reproduced by independent code (0.20 and 0.0087). The margin is labelled post hoc; Holm is reported.
-- **Directly addresses the concern?** Yes for the claim, which now matches the evidence. Equivalence itself is decided by EQ.
-- **Reproducible?** Yes (`EXPERIMENT_LOGS/audit_recompute.log`).
+- **Promised analyses executed?**
+  - Wording, the table and the re-derivation: done.
+  - Confirmatory campaign: pre-registered, run, and **INCOMPLETE** (16 / 15 / 15 of 27 seeds per arm), analysed by the committed script under Amendment 1's rule.
+  - Title: the author's decision.
+- **Scientifically valid?** Yes.
+  - The re-derivation reproduces the submission exactly.
+  - Independent code reproduces the rule simulation (0.20 and 0.0087) and every EQ statistic.
+  - The EQ analysis ran once, after the cutoff, with no interim look, and no completed run was dropped.
+  - The margin of the eight-seed analysis is labelled post hoc. The EQ margin was pre-registered.
+- **Directly addresses the concern?** Yes. The reviewer said the interval "does not establish equivalence". The confirmatory campaign establishes it on the primary cell (Δ = +0.0006, 90% CI [−0.0027, +0.0039], TOST p = 0.015, 0.030 after Holm). The claim is calibrated to match.
+- **Reproducible?** Yes (`EXPERIMENT_LOGS/audit_recompute.log`, `EXPERIMENT_LOGS/EXP01_spot_rescore.log`).
 - **Mathematics justified?** Yes. The posted normal approximation is shown to understate the full rule's sensitivity, and the correction is stated.
-- **References accurate?** Yes (table above).
-- **Appropriately qualified?** Yes. "No detectable advantage", with what is and is not excluded.
-- **Consistent with the initial rebuttal?** Yes, with three corrections flagged: the sensitivity figure, σ̂, and the sign rule.
-- **Classification (provisional): SUBSTANTIALLY ADDRESSED.**
-  - The overclaim is removed and QA-01 is met in full.
-  - The confirmatory campaign will be INCOMPLETE (≈ 15 of 27 seeds per arm), so its interval will be wider than designed; it may not settle equivalence at ±0.005.
-  - Re-assess on 17 Nov.
+- **References accurate?** Yes (table above). The EQ sentences sit in §3.1, the abstract and the conclusion, and the main text still ends on page 10.
+- **Appropriately qualified?** Yes:
+  - "incomplete at 15–16 of 27 seeds per arm" is stated wherever the result appears;
+  - equivalence to the shuffled arm on COD10K is reported as not established (p = 0.056);
+  - the larger run-to-run spread, and its link to pseudo-label counts, is reported.
+- **Consistent with the initial rebuttal?** Yes, with three corrections flagged: the sensitivity figure, σ̂ and the sign rule. The posted design promised a sample size "fixed in advance"; the reduction to 27 before any run, and the incomplete finish, are both stated.
+- **Classification: SUBSTANTIALLY ADDRESSED.** The substance is fully addressed: the overclaim is removed, QA-01 is met, and equivalence on the primary comparison is established by a pre-registered test. Two items keep it below FULLY:
+  - the posted plan also revises the title (P1.1b), which is the author's decision;
+  - the campaign stopped at 15–16 of 27 seeds, so H1b on COD10K is unresolved.
+
+  It is FULLY ADDRESSED once the title is revised.
 
 ## CW-02 / QA-02: distributional change vs downstream explanation
 
@@ -129,7 +142,7 @@ re-assessed on 17 Nov after the EQ analysis; everything else is final.*
 | P1.1b | "We also plan to revise the title accordingly." | two options in `RESULT_TABLES/DOC01_claims.md`; (ii) recommended | **author decision** |
 | P1.2 | Main-text table for all 16 contrasts: Δ, 95% CI, 90% CI, TOST p, three labels, defined in the text | Table 3, §3.1 (`revision/table_ci_tost.tex`) | done |
 | P1.3 | Recompute every interval and TOST statistic; report the rule's sensitivity; Welch primary, seed-paired as sensitivity | TH-01 (`RESULT_TABLES/TH01_contrasts.md`, `RESULT_TABLES/TH01_rule_sensitivity.csv`) | done; posted sensitivity corrected |
-| P1.4 | Separately pre-registered confirmatory campaign: B, C10, CSHUF, fresh seeds, n from a TOST power analysis, no seeds added to SE, outcome reported either way | `prereg/EQ.md` (n = 29 by power analysis; Amendment 1 reduced it to 27 before any run). Training runs to 17 Nov 06:00 | **in progress; projected INCOMPLETE** (≈ 15 of 27 seeds per arm); reported either way |
+| P1.4 | Separately pre-registered confirmatory campaign: B, C10, CSHUF, fresh seeds, n from a TOST power analysis, no seeds added to SE, outcome reported either way | `prereg/EQ.md` (n = 29 by power analysis; Amendment 1 reduced it to 27 before any run); 46 of 81 runs; primary **equivalent** (TOST p = 0.015), H1b on COD10K neither | done, **INCOMPLETE** (16 / 15 / 15 of 27 seeds per arm), stated plainly |
 | P1.5 | "Wording … overstate[s] this, and we will correct them" | "no score of any quality helped here" and similar removed | done; title pending (P1.1b) |
 | P2.1 | Separate the claims in the abstract, Sec. 3.2 (including its heading) and the discussion: three tiers | revision §3.2 heading and three tiers; abstract; Discussion | done |
 | P2.2 | Dose-response campaign: N = 1000; ≥ 3 levels (uniform, τ = 1.0, more concentrated); several random permutations with low overlap with C10; primary BIoU on SINet·COD10K; secondary S_α; decision rule as posted | `prereg/CDR.md`; 35 SINet runs; verdict "not supported"; the claim is restricted to the training sets. Permutations share 440–518 of 1,000 images with C10, fewer than C10 shares with its own shuffle | done (SINet) |
@@ -152,8 +165,6 @@ re-assessed on 17 Nov after the EQ analysis; everything else is final.*
 - the higher operating point (P3.4);
 - the RISE split (P3.3, in part).
 
-**Pending:**
-- the EQ outcome (P1.4, on 17 Nov);
-- the title (P1.1b, P4.1).
+**Pending:** the title (P1.1b, P4.1), which is the author's decision.
 
 **No "consistent across architectures" anywhere** (author rule 1): checked by grep over the rebuttal and the revised source. The CDR prereg allows that phrase only if both architectures are "supported".

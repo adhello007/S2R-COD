@@ -1,23 +1,23 @@
 <!--
 DRAFT FOR THE AUTHOR. Not posted. Post each "Part" as a separate OpenReview comment, and the summary as a general comment.
 Before posting, resolve every bold [AUTHOR …] or [EQ …] marker:
-  - [EQ …] in Part 1 and in the summary: replace with the single pre-registered sentence that applies, after the analysis on 17 Nov.
+  - (EQ markers resolved 2026-11-17 from the committed analysis.)
   - [AUTHOR: title] in Part 4 and in the summary: the title decision.
 Character counts are at the end of this file; re-run the count after the EQ insertion.
 -->
 
 ## Response to Reviewer RL5B — Part 1/4 (follow-up: results)
 
-We thank the reviewer again. This follow-up reports what we committed to in our initial response, with outcomes as they came out. Where the new work shows that something we wrote was wrong, we say so and give the corrected value. Two planned items were not run, the SINet-v2 replication of the dose-response experiment and the replication at a higher operating point; we say so where they arise.
+We thank the reviewer again. This follow-up reports what we committed to in our initial response, with outcomes as they came out. Where the new work shows that something we wrote was wrong, we say so and give the corrected value. Two planned items were not run, the SINet-v2 replication of the dose-response experiment and the replication at a higher operating point, and the confirmatory campaign finished only part of its pre-registered seeds; we say so where they arise.
 
 ### CW-01 / QA-01: Absence of evidence vs. evidence of equivalence
 
-**Response.** The downstream claim now reads, throughout: no detectable advantage; an advantage the size of the published method's own gain is excluded on the primary cell; smaller ones are not. Sentences such as "no score of any quality helped here" are gone from the abstract, introduction, Sec. 3.1 and the conclusion. A new main-text table (Table 3, Sec. 3.1) reports all 16 eight-seed contrasts with $\Delta$, the 95% interval, the 90% interval used by TOST, the TOST $p$-value and one of three labels, *detected*, *equivalent within $\pm0.005$* or *not detected*, each defined in the text.
+**Response.** The downstream claim now reads, throughout: no detectable advantage; the eight-seed data exclude an advantage the size of the published method's own gain but not smaller ones; and the pre-registered confirmatory campaign establishes equivalence within $\pm0.005$ on the primary comparison. Sentences such as "no score of any quality helped here" are gone from the abstract, introduction, Sec. 3.1 and the conclusion. A new main-text table (Table 3, Sec. 3.1) reports all 16 eight-seed contrasts with $\Delta$, the 95% interval, the 90% interval used by TOST, the TOST $p$-value and one of three labels, *detected*, *equivalent within $\pm0.005$* or *not detected*, each defined in the text.
 
 **Additional validation.**
 - We recomputed every interval and TOST statistic from the per-run metrics.
 - We simulated the pre-registered rule exactly as it was run.
-- We ran a separately pre-registered confirmatory campaign: arms B, C10 and CSHUF on SINet, fresh seeds, Welch TOST at $\pm0.005$ as the primary test. Its design and analysis were fixed before any run.
+- We ran a separately pre-registered confirmatory campaign: arms B, C10 and CSHUF on SINet, fresh seeds, Welch TOST at $\pm0.005$ as the primary test.
 
 **Results.**
 - The re-derivation reproduces the manuscript: $\Delta(\mathrm{C10}-\mathrm{B}) = +0.0024$, 95% CI $[-0.0020, +0.0067]$, TOST $p = 0.101$.
@@ -29,15 +29,21 @@ We thank the reviewer again. This follow-up reports what we committed to in our 
 
 **Confirmatory campaign.** A power analysis for TOST at $\pm0.005$ gave 29 seeds per arm (power 0.80 at a true $\Delta = +0.0024$). Before any run, we reduced this to 27 for compute (power 0.78) and committed the change.
 
-**[EQ result: replace this paragraph on 17 Nov with exactly one of the pre-registered sentences below, with the numbers filled in. If the campaign is incomplete, add the incomplete sentence.]**
-- (i) "A separately pre-registered confirmatory campaign with $\{n\}$ fresh seeds per arm establishes that targeted and random allocation are equivalent within $\pm0.005$ $S_\alpha$ on the primary cell ($\Delta = \{\Delta\}$, 90% CI $[\{lo_{90}\}, \{hi_{90}\}]$)."
-- (ii) "The confirmatory campaign neither detects an advantage nor establishes equivalence at $\pm0.005$ ($\Delta = \{\Delta\}$, 95% CI $[\{lo_{95}\}, \{hi_{95}\}]$). Effects as large as $\{hi_{95}\}$ are not excluded at this precision."
-- (iii) "The confirmatory campaign detects a difference of $\{\Delta\}$ $S_\alpha$ (95% CI $[\{lo_{95}\}, \{hi_{95}\}]$) in favour of $\{arm\}$." If the 90% CI also lies inside $\pm0.005$, add: "The difference is smaller than the $\pm0.005$ margin."
-- Incomplete: "Hardware interruptions during the discussion period left the campaign incomplete: $\{n_B\}$, $\{n_{C10}\}$ and $\{n_{CSHUF}\}$ of the 27 pre-registered seeds per arm finished before our compute deadline. As pre-registered, every completed run is analysed and none is dropped."
-- The pre-registered rule's verdict at this $n$ is reported next to it: $\{verdict\}$.
+Hardware interruptions left the campaign incomplete: 16 (random), 15 (targeted) and 15 (shuffled) of the 27 pre-registered seeds per arm finished before our compute deadline. As pre-registered, every completed run is analysed and none is dropped.
 
-**Interpretation.** The evidence supports "no detectable advantage". **[EQ: one sentence on whether equivalence on the primary cell is now established.]** Advantages between about $+0.005$ and the upper confidence limit remain possible unless the confirmatory interval excludes them.
+| Contrast (SINet) | Endpoint | Seeds | $\Delta$ | 90% CI | TOST $p$ | Outcome |
+|---|---|---|---|---|---|---|
+| targeted − random (primary) | COD10K-test | 15 / 16 | $+0.0006$ | $[-0.0027, +0.0039]$ | $0.015$ | equivalent |
+| targeted − shuffled | COD10K-test | 15 / 15 | $-0.0009$ | $[-0.0051, +0.0034]$ | $0.056$ | neither |
+| targeted − random | NC4K | 15 / 16 | $+0.0005$ | $[-0.0013, +0.0022]$ | $<0.001$ | equivalent |
+| targeted − shuffled | NC4K | 15 / 15 | $-0.0005$ | $[-0.0026, +0.0015]$ | $<0.001$ | equivalent |
 
+- The campaign establishes that targeted and random allocation are equivalent within $\pm0.005$ $S_\alpha$ on the primary cell ($\Delta = +0.0006$, 90% CI $[-0.0027, +0.0039]$). This survives a Holm correction over the four tests ($p = 0.030$).
+- The manuscript's $2\hat\sigma$ rule finds the gap within noise ($0.05\times$ its bar).
+- Against the shuffled arm on COD10K-test, the campaign neither detects a difference nor establishes equivalence ($\Delta = -0.0009$, 95% CI $[-0.0060, +0.0043]$).
+- Run-to-run spread is larger than in the eight-seed campaign ($\hat\sigma$ $0.0064$ against $0.0034$). It tracks how many target images the self-training round pseudo-labels ($r = 0.74$ across runs).
+
+**Interpretation.** On the primary comparison, the claim is now equivalence within $\pm0.005$, not only the absence of a detectable advantage. The confirmatory 90% interval ends at $+0.0039$, below the margin and below the eight-seed upper limit of $+0.0067$. Two qualifications remain: the campaign finished 15–16 of its 27 seeds per arm, and equivalence to the shuffled arm on COD10K-test is not established at this precision.
 ---
 
 ## Response to Reviewer RL5B — Part 2/4 (follow-up: results)
@@ -155,7 +161,7 @@ It states that we tested allocation, not generation, and makes no claim about ot
 
 We thank the reviewers and the AC. In response to Reviewer RL5B we recalibrated the claims, separated distributional from downstream conclusions, added protocol-matched baselines and bounded the scope. We ran the planned experiments and report their outcomes as they came out.
 
-- **Equivalence (CW-01).** A new main-text table gives every eight-seed contrast with its 95% and 90% intervals, the TOST $p$-value and a label (detected / equivalent / not detected). The claim is now "no detectable advantage; reference-size effects excluded; smaller effects not excluded". **[EQ: one sentence with the confirmatory campaign's pre-registered outcome, and "incomplete" if it applies.]**
+- **Equivalence (CW-01).** A new main-text table gives every eight-seed contrast with its 95% and 90% intervals, the TOST $p$-value and a label (detected / equivalent / not detected). The claim is now "no detectable advantage". A separately pre-registered confirmatory campaign, incomplete at 15–16 of 27 seeds per arm, establishes equivalence within $\pm0.005$ on the primary comparison ($\Delta = +0.0006$, 90% CI $[-0.0027, +0.0039]$); against the shuffled arm on COD10K-test, equivalence is not established.
 - **Concentration (CW-02).** A pre-registered dose-response experiment found no downstream effect of concentration on accuracy (SINet, 35 runs, five random directions per level). We therefore restrict the concentration claim to the training sets. The planned SINet-v2 replication was not run.
 - **Corrections to our initial response.**
   - The rule's sensitivity at $+0.005$ is $0.20$, not $0.14$, and its 80% detectable effect is $0.0087$, not $0.008$.
@@ -165,11 +171,11 @@ We thank the reviewers and the AC. In response to Reviewer RL5B we recalibrated 
 - **Performance gap (CW-03).** Under one scorer, real labels account for most of the gap to supervised SINet-V2: $0.112$ of $0.120$ on COD10K. RISE's advantage comes from pseudo masks on the real target images. The higher-operating-point replication was not run, and the paper says so.
 - **Scope (CW-04).** Every conclusion is bounded to allocation over a fixed LAKE-RED pool that re-uses 4,447 foregrounds with new backgrounds, with the constraint quantified. We make no claim about other generators. **[AUTHOR: title.]**
 
-<!-- CHARACTER COUNTS (measured by analysis/count_rebuttal.py, 2026-11-16 22:00; Python len() on each post from its "## " heading to the next "---")
-  Response to Reviewer RL5B — Part 1/4 (follow-up: results)       4458 / 5000 OK
+<!-- CHARACTER COUNTS (measured by analysis/count_rebuttal.py, 2026-11-17 10:33; Python len() on each post from its "## " heading to the next "---")
+  Response to Reviewer RL5B — Part 1/4 (follow-up: results)       4887 / 5000 OK
   Response to Reviewer RL5B — Part 2/4 (follow-up: results)       3802 / 5000 OK
   Response to Reviewer RL5B — Part 3/4 (follow-up: results)       2919 / 5000 OK
   Response to Reviewer RL5B — Part 4/4 (follow-up: results)       2613 / 5000 OK
-  Summary of revisions (general comment)                          2012 / 2500 OK
-  unresolved [EQ]/[AUTHOR] markers: 5
+  Summary of revisions (general comment)                          2121 / 2500 OK
+  unresolved [EQ]/[AUTHOR] markers: 2
 -->

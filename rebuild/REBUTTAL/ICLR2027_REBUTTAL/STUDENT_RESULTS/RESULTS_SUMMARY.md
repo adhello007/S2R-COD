@@ -1,7 +1,7 @@
 # RESULTS_SUMMARY: RL5B rebuttal
 
 *Verified findings per reviewer concern. Every number is drawn from the artifact cited in `EXPERIMENTAL_EVIDENCE.md`.
-EQ (EXP-01) is still training and is added on 17 Nov.*
+EQ (EXP-01) added on 17 Nov from the committed analysis.*
 
 ## CW-01 / QA-01: absence of evidence vs equivalence
 
@@ -13,7 +13,11 @@ EQ (EXP-01) is still training and is added on 17 Nov.*
   - P(fires | Δ = 0.005) = 0.205, against 0.139 under the posted approximation;
   - the 80% detectable effect is 0.0087;
   - P(fires | Δ = 0.0142) = 0.999.
-- **EQ:** pre-registered at n = 29 and capped at 27 before any run (power 0.78 at Δ = +0.0024). It is projected INCOMPLETE at about 15 seeds per arm, which gives an expected 90% half-width of about 0.0024 instead of 0.0018. No EQ number has been computed.
+- **EQ (pre-registered; INCOMPLETE at 16 / 15 / 15 of 27 seeds per arm).**
+  - **Primary C10 − B on SINet·COD10K: equivalent.** Δ = +0.0006, 90% CI [−0.0027, +0.0039], TOST p = 0.015 (0.030 after Holm over four tests); the 2σ̂ rule finds it within noise.
+  - **C10 − CSHUF on COD10K: neither.** Δ = −0.0009, TOST p = 0.056.
+  - **NC4K:** both contrasts equivalent.
+  - **Spread:** σ̂ is 0.0064, about twice SE's, and tracks the pseudo-label count (r = 0.74).
 
 ## CW-02 / QA-02: distribution vs downstream explanation
 
@@ -60,3 +64,4 @@ EQ (EXP-01) is still training and is added on 17 Nov.*
 | D7 | Rebuttal Part 3: RISE uses "a different representation … and a different training pipeline" | RISE's detector is SINet-V2 on pseudo masks for the same images | revision §1.1, App. A; rebuttal Part 3 |
 | D8 (new) | Rebuttal Part 2: the dose-response varies concentration across three levels | true of the quotas; the delivered levels are much closer (N_eff 50 / 45 / 41) | revision §3.2; rebuttal Part 2 |
 | D9 (new) | Rebuttal Parts 2–3: SINet-v2 replication; higher operating point | neither was run | revision §3.2, Discussion; rebuttal Parts 2–3 |
+| D10 (new) | Rebuttal Part 1: the confirmatory campaign's sample size is "fixed in advance" | fixed at 29, reduced to 27 before any run; only 15–16 per arm completed (INCOMPLETE rule) | revision §3.1; rebuttal Part 1 |

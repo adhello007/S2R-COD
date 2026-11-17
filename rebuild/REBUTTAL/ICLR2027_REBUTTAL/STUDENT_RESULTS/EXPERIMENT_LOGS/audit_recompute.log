@@ -15,6 +15,28 @@ PASS P(rule fires | 0.0142) > 0.99                                  recomputed p
      (P at 0.0142 = 0.9989)
 PASS 80% detectable effect, full rule                               recomputed 0.0087       quoted 0.0087      (in rebuttal)
 
+## CW-01, confirmatory campaign (EQ; per-run metrics)
+PASS EQ completed seeds per arm                                     recomputed 16 (random), 15 (targeted) and 15 (shuffled) quoted 16 (random), 15 (targeted) and 15 (shuffled)  (in rebuttal)
+PASS EQ COD10K C10-B Delta                                          recomputed +0.0006      quoted +0.0006     (in rebuttal)
+PASS EQ COD10K C10-B 90% CI low                                     recomputed -0.0027      quoted -0.0027   
+PASS EQ COD10K C10-B 90% CI high                                    recomputed +0.0039      quoted +0.0039   
+PASS EQ COD10K C10-B TOST p                                         recomputed 0.015        quoted 0.015     
+PASS EQ COD10K C10-CSHUF Delta                                      recomputed -0.0009      quoted -0.0009     (in rebuttal)
+PASS EQ COD10K C10-CSHUF 90% CI low                                 recomputed -0.0051      quoted -0.0051   
+PASS EQ COD10K C10-CSHUF 90% CI high                                recomputed +0.0034      quoted +0.0034   
+PASS EQ COD10K C10-CSHUF TOST p                                     recomputed 0.056        quoted 0.056     
+PASS EQ NC4K C10-B Delta                                            recomputed +0.0005      quoted +0.0005     (in rebuttal)
+PASS EQ NC4K C10-B 90% CI low                                       recomputed -0.0013      quoted -0.0013   
+PASS EQ NC4K C10-B 90% CI high                                      recomputed +0.0022      quoted +0.0022   
+PASS EQ NC4K C10-B TOST p                                           recomputed <0.001       quoted <0.001    
+PASS EQ NC4K C10-CSHUF Delta                                        recomputed -0.0005      quoted -0.0005     (in rebuttal)
+PASS EQ NC4K C10-CSHUF 90% CI low                                   recomputed -0.0026      quoted -0.0026   
+PASS EQ NC4K C10-CSHUF 90% CI high                                  recomputed +0.0015      quoted +0.0015   
+PASS EQ NC4K C10-CSHUF TOST p                                       recomputed <0.001       quoted <0.001    
+PASS EQ Holm-adjusted p, primary (4 TOSTs)                          recomputed 0.030        quoted 0.030       (in rebuttal)
+PASS EQ sigma-hat (pooled, df 43)                                   recomputed 0.0064       quoted 0.0064      (in rebuttal)
+PASS EQ corr(pseudo-label count, S_alpha)                           recomputed 0.74         quoted 0.74        (in rebuttal)
+
 ## CW-02
 PASS AN-01 SINet COD10K BIoU@0.5 C10-B Delta                        recomputed +0.0046      quoted +0.0046     (in rebuttal)
 PASS AN-01 C10-B x bar                                              recomputed 0.30         quoted 0.30        (in rebuttal)
@@ -76,7 +98,8 @@ PASS SINet_CDRLHP3_s43                        re-scored 0.336384  table 0.336384
 PASS SINet_CDRL1P2_s45                        re-scored 0.334698  table 0.334698
 
 ## Internal details in the rebuttal (must be none)
-PEND unresolved [EQ]/[AUTHOR]   5 (must be 0 with --final)
+PASS unresolved [EQ]            0 (none)
+NOTE open [AUTHOR] markers      2 (the author's decision, e.g. the title; never a failure)
 PASS file path or extension     none
 PASS commit hash                none
 PASS hardware                   none

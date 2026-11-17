@@ -1,70 +1,70 @@
 # EXECUTION_STATUS: RL5B rebuttal
 
-## Report to the corresponding author (§11), provisional at 2026-11-16 21:59 IST
+## Report to the corresponding author (§11), final at 2026-11-17 10:33 IST
 
-*EQ is still training. This section is final except for the EQ items (marked **EQ**), which are filled on
-17 Nov after the committed analysis runs.*
-
-**Deadline.** The non-EQ deliverables were complete at 21:59 on 16 Nov, against the 22:00 deadline, with no
-margin.
-- The 35-hour outage (14 Nov 21:27 to 16 Nov 08:38) stopped all work.
-- The CDR result, the evidence ledger, the results summary, the final rebuttal, the audit and the path check
-  were therefore produced between 21:35 and 21:59. `analysis/audit_recompute.py` re-checks every number they
-  quote against the raw files (67 checks, all PASS).
-- The earlier deliverables (TH-01, TH-02, AN-01 to AN-03, EXP-03, DOC-01 to DOC-03) were finished by 14 Nov.
+**Delivery.**
+- **16 Nov:** the non-EQ deliverables were complete at 21:59, against the 22:00 deadline, with no margin. The
+  35-hour outage (14 Nov 21:27 to 16 Nov 08:38) had stopped all work.
+- **17 Nov:** the committed EQ analysis ran once, by the cron trigger, at 07:40–08:16, after the cutoff and with
+  no EQ run in flight. Its result was inserted into the manuscript, the rebuttal and these reports by 10:33, against
+  the 12:00 deadline.
+- **Checks:** `analysis/audit_recompute.py --final` passes (88 checks), and `analysis/path_check.py` passes.
 
 1. **Tasks per status** (definitions from §7; details in `EXPERIMENTAL_EVIDENCE.md`).
    - **VERIFIED:** TH-01, TH-02, AN-01 (exploratory), AN-02, AN-03, DOC-02, DOC-03.
    - **PARTIALLY VERIFIED:**
+     - EXP-01: INCOMPLETE, 46 of 81 runs; the primary question is resolved.
      - EXP-02: SINet complete; the SINet-v2 replication was not run.
      - EXP-03: E3-a, E3-c, E3-d and E3-f done; E3-b and E3-e not run.
-     - DOC-01: EQ sentences pending; the title is the author's decision.
+     - DOC-01: everything filled; the title is the author's decision.
    - **BLOCKED (compute):** EXP-04, dropped before launch.
-   - **Pending (EQ):** EXP-01. It is projected **INCOMPLETE**: about 15 of 27 seeds per arm will be complete
-     by the 06:00 cutoff.
-2. **GPU-hours** (at 21:38):
-   - RL5B campaigns: 333.7 (completed or discarded runs), plus the 0.9 h Stage 0 probe.
-   - Caus scripts: 22.0, counted separately.
-   - Lost to power outages: about 146 GPU-h in all, itemised in the incident sections below.
+2. **GPU-hours** (final; one job per GPU on two GPUs):
+   - RL5B campaigns: **354.1** (completed or discarded runs), plus the 0.9 h Stage 0 probe. EQ alone used 82.0
+     GPU-h of training for its 46 runs.
+   - Caus scripts: **22.0**, counted separately.
+   - Lost to power outages: about **147**, itemised in the incident sections below.
 3. **Verdicts.**
-   - **EXP-02 (CDR, SINet):** the pre-registered test did **not support** a downstream effect of concentration.
+   - **EXP-01 (EQ, SINet, pre-registered, INCOMPLETE: 16 / 15 / 15 of 27 seeds per arm):** targeted and random
+     allocation are **equivalent** within ±0.005 S_α on the primary cell. Δ = +0.0006, 90% CI
+     [−0.0027, +0.0039], TOST p = 0.015, and 0.030 after Holm over four tests. Against the shuffled arm on
+     COD10K, equivalence is not established (p = 0.056); on NC4K both contrasts are equivalent.
+   - **EXP-02 (CDR, SINet, pre-registered):** the test did **not support** a downstream effect of concentration.
      Against a bar of 0.0193 Boundary-IoU, the committed shape differs from the dispersed reference by −0.0005
      and the twice-as-concentrated level by +0.0021. No secondary measure clears its bar.
-   - **EXP-01 (EQ):** **EQ** pending.
 4. **Corrections to the posted rebuttal** (all stated explicitly in `FINAL_UPDATED_REBUTTAL.md`):
-   - Rule sensitivity at Δ = +0.005: 0.14 under the normal approximation. Under the full rule (arm-specific
-     SDs, σ̂ re-estimated, ≥ 7/8 signs) it is **0.20**, and the effect detected 80% of the time is **0.0087**,
-     not 0.008. σ̂ = 0.003431, not ≈ 0.00345.
-   - Boundary result: 1.37× / 1.34× rest on 3 seeds. At 8 seeds they are **0.30× / 0.64×**, within noise.
-   - Pseudo-label means 1977–2025 cover seeds 46–50 only. Over all eight seeds they are 1991–2020 (runs
+   - Rule sensitivity at Δ = +0.005 is 0.20 under the full rule, not 0.14. The 80% detectable effect is 0.0087,
+     not 0.008. σ̂ = 0.00343, not ≈ 0.00345.
+   - The boundary figures 1.37× / 1.34× are three-seed figures. At eight seeds they are **0.30× / 0.64×**,
+     within noise.
+   - The pseudo-label means 1977–2025 cover seeds 46–50 only. Over all seeds they are 1991–2020 (runs
      1782–2278).
    - RISE's detector **is SINet-V2**, trained on pseudo masks for the same 4,040 images. It is not "a different
      training pipeline".
    - The "every seed" sign rule was ≥ 7/8 in the eight-seed campaign.
+   - The confirmatory sample size, "fixed in advance", was cut from 29 to 27 before any run, and only 15–16 per
+     arm finished.
 5. **Concerns not FULLY ADDRESSED** (`FINAL_SCIENTIFIC_AUDIT.md`):
-   - CW-01: SUBSTANTIALLY, provisionally. The overclaim is removed and QA-01 is met. The confirmatory campaign
-     will be INCOMPLETE (**EQ**: re-assessed on 17 Nov).
-   - CW-02: SUBSTANTIALLY. The test ran on one architecture only. The delivered concentration levels are
-     closer than the nominal ones, and the test excludes only boundary effects above ≈ 0.007.
-   - CW-03: SUBSTANTIALLY. Supervision quality and recipe cannot be separated for RISE (E3-e not run), and the
-     higher operating point was not run.
-   - CW-04: SUBSTANTIALLY. The text and quantification are done. It becomes FULLY once the title carries the
-     scope, as posted.
+   - **CW-01: SUBSTANTIALLY.** Equivalence is established on the primary comparison. The title revision (P1.1b)
+     is pending, and the incomplete campaign leaves H1b on COD10K unresolved. FULLY once the title is revised.
+   - **CW-02: SUBSTANTIALLY.** The claim is fully corrected. The test ran on one architecture. The delivered
+     concentration levels are closer than nominal. The unit-level interval excludes only boundary effects above
+     ≈ 0.007.
+   - **CW-03: SUBSTANTIALLY.** RISE's mask quality and recipe cannot be separated (E3-e not run). The higher
+     operating point was not run.
+   - **CW-04: SUBSTANTIALLY.** FULLY once the title carries the scope, as posted.
 6. **Items needing the author's decision.**
-   - **Title:** recommend option (ii) in `RESULT_TABLES/DOC01_claims.md`, given the CDR outcome.
+   - **Title.** Option (ii) in `RESULT_TABLES/DOC01_claims.md` remains correct, and I recommend it. Two
+     `[AUTHOR: title]` markers in `FINAL_UPDATED_REBUTTAL.md` (Part 4 and the summary) wait on this.
    - **Appendix B** of the paper (instruction).
-   - **Push:** this session cannot push. Commits after `c87e052` need the author's push.
-   - **Cron entries** (`watchdog.sh`, `eq_autorun.sh`, `@reboot`): remove after the EQ analysis on 17 Nov.
-     They are left in place until the author agrees.
-   - **Two sentences added to the manuscript on 11-16:**
-     - §3.2: delivered concentration;
-     - Discussion: the untested higher operating point.
-
-     The main text still ends on page 10. Delete either sentence if you disagree (`RESULT_TABLES/DOC01_claims.md`
-     rows 26–27).
-
-**Status at 2026-11-16 21:59 IST:** EQ training (35/81 runs complete, 2 running); all other campaigns finished
-and scored.
+   - **Push.** The 17 Nov commit needs your push.
+   - **Cron entries** (`watchdog.sh`, `eq_autorun.sh`, `@reboot`): no longer needed. The runner is idle at the
+     cutoff and the autorun marker is set. I have left them in place until you agree to remove them.
+   - **Manuscript edits made without your review.** The main text ends exactly at the foot of page 10, with no
+     spare line. All are listed in `RESULT_TABLES/DOC01_claims.md`.
+     - 11-16: the delivered-concentration sentence in §3.2, and the untested operating point in the Discussion.
+     - 17 Nov: the EQ sentences; an updated Discussion clause; and the removal of the conclusion's "smaller ones
+       are not [excluded]", which the EQ result contradicts.
+     - Page-budget trims in the Scope paragraph, and a fix to a stray ", " in the Discussion.
 
 ## Author's binding rules for the revised manuscript and the final rebuttal (checked in the Phase 6 audit)
 
@@ -200,10 +200,10 @@ The GPUs are compute-bound, so the queue runs **one job per GPU**. Capacity from
 | AN-02 | VERIFIED | 11-09 | 11-09 | 0 | 12/12 published values within 0.002 of our re-score; RISE correction (detector is SINet-V2); E3-e sentence corrected 11-16 (it was not run) |
 | AN-03 | VERIFIED | 11-11 | 11-11 | 0 | independent count check PASS (23 arms) |
 | EXP-02 CDR (SINet) | PARTIALLY VERIFIED | 11-09 (bridge) / 11-11 18:26 | runs 11-13 14:23; analysis 11-14 13:13; manuscript 11-16 21:35 | ≈64 incl. re-runs | verdict **not supported**; SINet-v2 replication not run (deviation 12) |
-| EXP-01 EQ | training; projected INCOMPLETE | 11-13 23:59 | (17 Nov ≈07:00) | ≈63 so far | 35/81 done at 21:38 on 11-16; 9 more fit before the cutoff |
+| EXP-01 EQ | PARTIALLY VERIFIED (INCOMPLETE) | 11-13 23:59 | runs 11-17 07:32; analysis 08:16 | 82.0 (training of 46 runs) | primary **equivalent** (TOST p = 0.015); H1b COD10K neither; 35 runs not started before the cutoff |
 | EXP-03 | PARTIALLY VERIFIED | 11-09 08:09 | 11-14 13:24 | ≈7 (E3-c) | E3-a, E3-c, E3-d, E3-f done; E3-b and E3-e not run (deviations 13, 18) |
 | EXP-04 | BLOCKED (compute) | | | 0 | dropped before launch (budget; deviation 11) |
-| DOC-01 | PARTIALLY VERIFIED | 11-12 | 11-16 | 0 | 25 outcome-independent changes; CDR sentences filled 11-16; EQ sentences pending; title for the author |
+| DOC-01 | PARTIALLY VERIFIED | 11-12 | 11-17 | 0 | all outcome sentences filled (CDR 11-16, EQ 11-17); main text ends on p. 10; title for the author |
 | DOC-02, DOC-03 | VERIFIED | 11-12 | 11-14 | 0 | RISE, protocol table and gap paragraph; scope paragraph and sentences |
 | Caus scripts (external) | 13/13 exit 0 | 11-12 | 11-14 01:13 | 22.0 (separate) | run only; not designed, read, scored or cited |
 

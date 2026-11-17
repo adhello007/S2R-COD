@@ -1,0 +1,365 @@
+{
+  "incomplete": true,
+  "missing": [
+    "SINet_B_s117",
+    "SINet_B_s118",
+    "SINet_B_s119",
+    "SINet_B_s120",
+    "SINet_B_s121",
+    "SINet_B_s122",
+    "SINet_B_s123",
+    "SINet_B_s124",
+    "SINet_B_s125",
+    "SINet_B_s126",
+    "SINet_B_s127",
+    "SINet_C10_s116",
+    "SINet_C10_s117",
+    "SINet_C10_s118",
+    "SINet_C10_s119",
+    "SINet_C10_s120",
+    "SINet_C10_s121",
+    "SINet_C10_s122",
+    "SINet_C10_s123",
+    "SINet_C10_s124",
+    "SINet_C10_s125",
+    "SINet_C10_s126",
+    "SINet_C10_s127",
+    "SINet_CSHUF_s116",
+    "SINet_CSHUF_s117",
+    "SINet_CSHUF_s118",
+    "SINet_CSHUF_s119",
+    "SINet_CSHUF_s120",
+    "SINet_CSHUF_s121",
+    "SINet_CSHUF_s122",
+    "SINet_CSHUF_s123",
+    "SINet_CSHUF_s124",
+    "SINet_CSHUF_s125",
+    "SINet_CSHUF_s126",
+    "SINet_CSHUF_s127"
+  ],
+  "seeds_by_arm": {
+    "B": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116
+    ],
+    "C10": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115
+    ],
+    "CSHUF": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115
+    ]
+  },
+  "n_by_arm": {
+    "B": 16,
+    "C10": 15,
+    "CSHUF": 15
+  },
+  "endpoints": {
+    "COD10K": {
+      "arm_mean": {
+        "B": 0.7138686875,
+        "C10": 0.7144656666666668,
+        "CSHUF": 0.7153246
+      },
+      "arm_sd": {
+        "B": 0.0054376686759278255,
+        "C10": 0.005292471292407018,
+        "CSHUF": 0.008122793210642324
+      },
+      "rule": {
+        "sigma_hat": 0.006396554152970161,
+        "df": 43,
+        "bar": 0.012793108305940323,
+        "k_star": 12,
+        "gaps": {
+          "C10-B": {
+            "delta": 0.000596979166666789,
+            "sign": "8/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.04666412199368226
+          },
+          "C10-CSHUF": {
+            "delta": -0.0008589333333332005,
+            "sign": "10/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.06714031592575241
+          }
+        }
+      },
+      "contrasts": {
+        "C10-B": {
+          "role": "H1 (primary)",
+          "welch": {
+            "delta": 0.000596979166666789,
+            "se": 0.001927528261285182,
+            "df": 28.954341275771267,
+            "ci95": [
+              -0.0033455288163182894,
+              0.004539487149651867
+            ],
+            "ci90": [
+              -0.0026783065561446304,
+              0.0038722648894782084
+            ],
+            "p_tost": 0.014936273934607476,
+            "p_two": 0.7589978422572814
+          },
+          "paired_secondary": {
+            "delta": -0.0005014666666666686,
+            "se": 0.0018316650943275082,
+            "df": 14,
+            "ci95": [
+              -0.004429997577704017,
+              0.0034270642443706796
+            ],
+            "ci90": [
+              -0.003727596962650781,
+              0.002724663629317443
+            ],
+            "p_tost": 0.013861469360969688
+          },
+          "pooled_EQ_SE_secondary": {
+            "delta": 0.001467135629318759,
+            "se": 0.0013687154763605206,
+            "ci90": [
+              -0.0007842009862374555,
+              0.0037184722448749736
+            ],
+            "p_tost": 0.00492354322005998
+          },
+          "decision": "i (equivalent)",
+          "sentence": "A separately pre-registered confirmatory campaign with 15 fresh seeds per arm establishes that targeted and random allocation are equivalent within +/-0.005 S_alpha on the primary cell (Delta = +0.0006, 90% CI [-0.0027, +0.0039]).",
+          "rule": {
+            "delta": 0.000596979166666789,
+            "sign": "8/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.04666412199368226
+          }
+        },
+        "C10-CSHUF": {
+          "role": "H1b (secondary)",
+          "welch": {
+            "delta": -0.0008589333333332005,
+            "se": 0.002503198246561246,
+            "df": 24.0716318607921,
+            "ci95": [
+              -0.006024467144854065,
+              0.004306600478187664
+            ],
+            "ci90": [
+              -0.005141099115989012,
+              0.0034232324493226112
+            ],
+            "p_tost": 0.05552366419564264,
+            "p_two": 0.7344760663019916
+          },
+          "paired_secondary": {
+            "delta": -0.0008589333333333116,
+            "se": 0.0025007182729437773,
+            "df": 14,
+            "ci95": [
+              -0.006222440595375927,
+              0.0045045739287093035
+            ],
+            "ci90": [
+              -0.005263473774186667,
+              0.003545607107520044
+            ],
+            "p_tost": 0.059982690270990124
+          },
+          "pooled_EQ_SE_secondary": {
+            "delta": -0.00014110262883339114,
+            "se": 0.001557270905703727,
+            "ci90": [
+              -0.0027025853262261706,
+              0.002420380068559388
+            ],
+            "p_tost": 0.0009038370912609306
+          },
+          "decision": "ii (neither)",
+          "sentence": "The confirmatory campaign neither detects an advantage nor establishes equivalence at +/-0.005 (Delta = -0.0009, 95% CI [-0.0060, +0.0043]). Effects as large as +0.0043 are not excluded at this precision.",
+          "rule": {
+            "delta": -0.0008589333333332005,
+            "sign": "10/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.06714031592575241
+          }
+        }
+      }
+    },
+    "NC4K": {
+      "arm_mean": {
+        "B": 0.766150875,
+        "C10": 0.7666011333333335,
+        "CSHUF": 0.7671434
+      },
+      "arm_sd": {
+        "B": 0.002985127197178249,
+        "C10": 0.002655675159423862,
+        "CSHUF": 0.0037008209861365236
+      },
+      "rule": {
+        "sigma_hat": 0.0031406797408357447,
+        "df": 43,
+        "bar": 0.006281359481671489,
+        "k_star": 12,
+        "gaps": {
+          "C10-B": {
+            "delta": 0.0004502583333334531,
+            "sign": "6/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.07168166933404645
+          },
+          "C10-CSHUF": {
+            "delta": -0.0005422666666665688,
+            "sign": "8/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.08632950689239488
+          }
+        }
+      },
+      "contrasts": {
+        "C10-B": {
+          "role": "H1 (primary) -- NC4K, secondary",
+          "welch": {
+            "delta": 0.0004502583333334531,
+            "se": 0.001013464632231301,
+            "df": 28.927624861059428,
+            "ci95": [
+              -0.0016227348577552048,
+              0.002523251524422111
+            ],
+            "ci90": [
+              -0.0012718889333810863,
+              0.0021724056000479927
+            ],
+            "p_tost": 5.2541146045156604e-05,
+            "p_two": 0.6601488365345951
+          },
+          "paired_secondary": {
+            "delta": 0.00012946666666666662,
+            "se": 0.0009600572248156013,
+            "df": 14,
+            "ci95": [
+              -0.0019296512887571455,
+              0.002188584622090479
+            ],
+            "ci90": [
+              -0.001561491854324965,
+              0.0018204251876582985
+            ],
+            "p_tost": 8.494609355888726e-05
+          },
+          "pooled_EQ_SE_secondary": {
+            "delta": 0.0004217537185972351,
+            "se": 0.0008689649684746034,
+            "ci90": [
+              -0.001007566461491988,
+              0.001851073898686458
+            ],
+            "p_tost": 6.872655721097388e-08
+          },
+          "decision": "i (equivalent)",
+          "sentence": "A separately pre-registered confirmatory campaign with 15 fresh seeds per arm establishes that targeted and random allocation are equivalent within +/-0.005 S_alpha on the primary cell (Delta = +0.0005, 90% CI [-0.0013, +0.0022]).",
+          "rule": {
+            "delta": 0.0004502583333334531,
+            "sign": "6/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.07168166933404645
+          }
+        },
+        "C10-CSHUF": {
+          "role": "H1b (secondary) -- NC4K, secondary",
+          "welch": {
+            "delta": -0.0005422666666665688,
+            "se": 0.0011761146917941142,
+            "df": 25.396367185894103,
+            "ci95": [
+              -0.002962604746292784,
+              0.0018780714129596463
+            ],
+            "ci90": [
+              -0.002550031042907389,
+              0.0014654977095742514
+            ],
+            "p_tost": 0.0004152370959719619,
+            "p_two": 0.6486755188732988
+          },
+          "paired_secondary": {
+            "delta": -0.0005422666666666649,
+            "se": 0.001081326880962485,
+            "df": 14,
+            "ci95": [
+              -0.002861482166242682,
+              0.0017769488329093521
+            ],
+            "ci90": [
+              -0.0024468186621917384,
+              0.0013622853288584088
+            ],
+            "p_tost": 0.0005178516961097001
+          },
+          "pooled_EQ_SE_secondary": {
+            "delta": -0.00011961894694322937,
+            "se": 0.0009517927307621067,
+            "ci90": [
+              -0.0016851786722433264,
+              0.0014459407783568678
+            ],
+            "p_tost": 1.4675522446829684e-07
+          },
+          "decision": "i (equivalent)",
+          "sentence": "A separately pre-registered confirmatory campaign with 15 fresh seeds per arm establishes that targeted and shuffled allocation are equivalent within +/-0.005 S_alpha on the primary cell (Delta = -0.0005, 90% CI [-0.0026, +0.0015]).",
+          "rule": {
+            "delta": -0.0005422666666665688,
+            "sign": "8/15",
+            "verdict": "WITHIN NOISE",
+            "xbar": 0.08632950689239488
+          }
+        }
+      }
+    }
+  }
+}

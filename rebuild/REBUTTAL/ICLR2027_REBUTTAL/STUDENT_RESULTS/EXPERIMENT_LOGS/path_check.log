@@ -1,4 +1,4 @@
-# path_check (2026-11-16 22:00): 22 Markdown files under STUDENT_RESULTS/
+# path_check (2026-11-17 10:33): 23 Markdown files under STUDENT_RESULTS/
   EXECUTION_STATUS.md
   EXPERIMENTAL_EVIDENCE.md
   FINAL_SCIENTIFIC_AUDIT.md
@@ -9,6 +9,7 @@
   RESULT_TABLES/AN02_published_baselines.md
   RESULT_TABLES/AN03_foreground_diversity.md
   RESULT_TABLES/DOC01_claims.md
+  RESULT_TABLES/EXP01_EQ.md
   RESULT_TABLES/EXP02_SINet_mixed.md
   RESULT_TABLES/EXP02_SINet_results.md
   RESULT_TABLES/EXP03_gap_decomposition.md
@@ -21,23 +22,16 @@
   prereg/CDR.md
   prereg/E3.md
   prereg/EQ.md
-references resolved: 316
+references resolved: 338
 resolved through git (ref, or the base commit): 4
   EXECUTION_STATUS.md:213  rebuttal/iclr27/wip2  (git ref)
   EXECUTION_STATUS.md:223  rebuttal/iclr27/wip2  (git ref)
   EXECUTION_STATUS.md:249  AD-PCHG-250926_Final.tex  (exists at the base commit 8d1d079 (removed later by the author))
   EXECUTION_STATUS.md:337  origin/rebuttal/iclr27/wip2  (git ref)
-declared absent or superseded by the file itself: 5
+declared absent or superseded by the file itself: 3
   EXECUTION_STATUS.md:247  02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md  (not supplied by the author; recorded as missing (deviation 9))
-  EXECUTION_STATUS.md:299  EXPERIMENT_LOGS/EXP01_autorun.log  (created by the cron trigger when it fires after the cutoff (deviation 21))
   EXECUTION_STATUS.md:316  EXP02_allocations.csv  (not a separate file; the record is rebuild/ABC/out/cdr/cdr_allocations.csv (deviation 23))
-  EXPERIMENTAL_EVIDENCE.md:149  EXPERIMENT_LOGS/EXP01_autorun.log  (created by the cron trigger when it fires after the cutoff (deviation 21))
   prereg/BRIDGE.md:18  Snapshot/RL5B/bridge/SINet_C10_s42  (superseded by the file's own amendment: Snapshot/RL5B/bridge/BRIDGE_SINet_C10_s42)
-declared as produced later (not yet required): 5
-  EXPERIMENTAL_EVIDENCE.md:149  RESULT_TABLES/EXP01_EQ.csv  (declared as produced later)
-  EXPERIMENTAL_EVIDENCE.md:149  RESULT_TABLES/EXP01_EQ.md  (declared as produced later)
-  EXPERIMENTAL_EVIDENCE.md:149  RESULT_TABLES/EXP01_EQ_summary.json  (declared as produced later)
-  EXPERIMENTAL_EVIDENCE.md:149  FIGURES/EXP01_forest.pdf  (declared as produced later)
-  EXPERIMENTAL_EVIDENCE.md:149  EXPERIMENT_LOGS/EXP01_analysis.log  (declared as produced later)
+declared as produced later (not yet required): 0
 MISSING: 0
 RESULT: PASS
