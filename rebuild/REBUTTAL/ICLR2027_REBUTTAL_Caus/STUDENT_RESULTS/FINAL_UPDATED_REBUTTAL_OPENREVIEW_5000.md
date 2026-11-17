@@ -15,7 +15,7 @@ We thank the reviewer for pressing on three boundaries we had stated too loosely
 - plus a same-shape shuffle of OR-TOP10.
 
 These read test labels, so they are leaky diagnostics, never methods, and we read NC4K beside COD10K. The proportional shape is nearly flat, so any shuffle leaves at least 84% of images unchanged and its direction is untestable; we used those runs for the five-cluster oracle, which therefore has no same-shape control. SINet, seeds 42/43/45, against the committed B, C10 and CORACLE runs (reuse gate passed: identical code, data and first training step; committed metrics re-score exactly):
-[EXP-01 RESULT]
+all four pre-registered contrasts are within noise on COD10K and NC4K (bar 2σ̂ = 0.0057; Δ COD10K: OR-TOP10 − CORACLE +0.0022, OR-TOP10 − its shuffle −0.0002, OR-PROP − CORACLE +0.0023, OR-TOP5 − CORACLE +0.0011). Every oracle arm lands between random and our targeted arm. This null holds although the label leak could only help these arms, so "no ranking helped" now covers four allocation shapes. It is still a null at three seeds, not proof of no effect.
 
 We also correct a provenance statement: the oracle pre-registration was written before any oracle result but committed 62 minutes after its first run started.
 

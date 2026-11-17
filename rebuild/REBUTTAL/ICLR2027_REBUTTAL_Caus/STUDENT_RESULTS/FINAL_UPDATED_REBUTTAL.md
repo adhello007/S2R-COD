@@ -125,12 +125,37 @@ Two things were settled before training:
 - **That five-cluster oracle therefore has no same-shape control,** and we never read its contrast as
   isolating direction.
 
-**Results.** *[EXP-01: to be filled only from `RESULT_TABLES/EXP-01_comparisons.csv` once the runs of
-record exist. Report per-seed S-alpha, the four pre-registered contrasts against their bar with sign
-counts, the NC4K read, and the run status (complete / partial / not run).]*
+**Results.** All 12 runs completed, one start each, and all passed their completion checks. The bar is
+twice the pooled seed-to-seed spread over the seven compared arms (2σ̂ = 0.0057 on COD10K and 0.0064
+on NC4K, 14 degrees of freedom).
 
-**Interpretation.** *[To be written from the verdicts. Whatever they show, no oracle result is a claim
-of optimality, and no leaky-oracle gain is evidence for a deployable method.]*
+| Pre-registered contrast (SINet, 3 seeds) | Δ COD10K | sign | Δ NC4K | verdict |
+|---|---|---|---|---|
+| OR-TOP10 − CORACLE (shape, at true-error aim) | +0.0022 | 2/3 | +0.0011 | within noise |
+| OR-TOP10 − its same-shape shuffle (aim, at the new shape) | −0.0002 | 2/3 | −0.0009 | within noise |
+| OR-PROP − CORACLE (flat shape) | +0.0023 | 2/3 | +0.0028 | within noise |
+| OR-TOP5 − CORACLE (shape and aim together) | +0.0011 | 2/3 | +0.0005 | within noise |
+
+- **Secondary comparisons.** Every oracle arm lands between random allocation (B) and our own
+  targeted arm (C10). Against B the differences are +0.0020 to +0.0032; against C10, −0.0019 to
+  −0.0031. All are within noise.
+- **Arm means.** On COD10K the seven arm means span 0.7134–0.7185. The top-ten oracle and its
+  shuffle are 0.7165 and 0.7166.
+- **Intervals (post hoc, three seeds, so unstable).** On COD10K the intervals for these four contrasts
+  run from about −0.007 to +0.0095. They exclude the +0.0142 reference effect but not effects of a few
+  thousandths.
+
+**Interpretation.** Changing the shape of an oracle allocation, from C10's softmax shape to a near-flat
+error-proportional one, a ten-cluster one or a five-cluster one, bought no resolvable gain on either
+endpoint. The endpoint-label leak could only have helped these arms. At the ten-cluster shape, aiming by
+true error did no better than the same quotas given to shuffled clusters. Together with the original
+oracle, this extends "no ranking helped" from one allocation shape to the four we tested.
+
+It is still a null at this sensitivity, not proof of no effect: effects below about 0.006 can be
+missed with three seeds. It says nothing about shapes we did not try, nor about SINet-v2, which we did
+not re-run. No oracle result is a claim of optimality, and none is evidence for a deployable method.
+The pattern fits a constraint that sits downstream of allocation in this pipeline, such as the fixed
+foreground pool of CW-03, though we have not shown that this is the cause.
 
 We have also corrected a provenance statement while auditing the oracle campaign. Its
 pre-registration was written before any oracle result existed, but it was committed 62 minutes after

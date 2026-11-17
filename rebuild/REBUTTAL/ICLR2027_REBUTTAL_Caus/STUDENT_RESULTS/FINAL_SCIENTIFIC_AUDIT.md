@@ -7,7 +7,7 @@
 | CW-01: contribution beyond a sanity check | **SUBSTANTIALLY ADDRESSED** | Original probe and rank code reproduced. Exact constructions show concentration does not fix the sign of effective rank. The pool geometry shows matching plus concentration drives separation, and that direction adds nothing. The paper's over-attribution to concentration is corrected (C-04/C-23). | The contribution is a control and an audit, not a detector. That is by design, and the rebuttal says so. |
 | CW-02: bounded generalisability | **PARTIALLY ADDRESSED** | Scope stated in the title, abstract, discussion and conclusion (patch). Every trained number re-derived. | No modern detector was trained (AN-04/EXP-02 BLOCKED). |
 | CW-03: foreground bottleneck | **PARTIALLY ADDRESSED** | Provenance, coverage (every k) and mask QC re-measured; the bottleneck premise is confirmed. | No foreground-varying generator was tested (EXP-03 BLOCKED), so its causal role is untested. |
-| QA-01: different-shape oracle | [QA-01 DISPOSITION] | [QA-01 BASIS] | [QA-01 REMAINS] |
+| QA-01: different-shape oracle | **SUBSTANTIALLY ADDRESSED** | Three different-shape oracles plus a same-shape shuffle were pre-registered and trained (12/12 runs). All four primary contrasts are WITHIN NOISE on both endpoints. The answer to the reviewer is "No" for the submitted paper, then the new result. | SINet only; 3 seeds (bar 0.0057); endpoint-label-leaky (no disjoint calibration set); OR-PROP's direction is untestable; OR-TOP5 has no same-shape control |
 | QA-02: modern backbone + new generator; scope the claim | **PARTIALLY ADDRESSED** | The scoping half is done. The replication half is BLOCKED, with concrete reasons (licence, trainability, target-label leakage of released weights, no generator with code, compute). | Both replications |
 
 ## Task statuses (13)
@@ -21,7 +21,7 @@
 | AN-03 | PARTIALLY VERIFIED |
 | AN-04 | BLOCKED |
 | AN-05 | VERIFIED |
-| EXP-01 | [EXP-01 STATUS] |
+| EXP-01 | VERIFIED |
 | EXP-02 | BLOCKED |
 | EXP-03 | BLOCKED |
 | EXP-04 | BLOCKED |

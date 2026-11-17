@@ -48,7 +48,8 @@
 | 11-12 12:56 | 12 run scripts placed (hashes in `EXPERIMENT_LOGS/EXP-01/queue_scripts/SHA256SUMS`) |
 | 11-13 13:06 → 11-14 01:13 | All 12 runs ran, two at a time on GPUs 0 and 1, each exactly once (one start per script, no duplicate start, no lock contention). Every script exited 0; the runner logged 1.800–1.817 GPU-h each, **21.7 GPU-h in total**, inside the 12-run allocation (`EXPERIMENT_LOGS/EXP-01/queue_status_final.txt`). |
 | 11-13 → 11-14 | Every run passed the §5 completion assertions (2 rounds, 0253 steps, 039/040, Tea_epoch_best present, round-1 pool 5447, 4040 targets loaded twice). Wall times were 105.5–106.5 min against the historical 108 min, and the full COD10K (2026) and NC4K (4121) prediction sets were written. Per-run records: `EXPERIMENT_LOGS/EXP-01/runs/`. |
-| 11-17 10:55 | Scoring and verdicts (`exp01_stats.py`) under `nice -n 19` on 8 cores |
+| 11-17 10:50–10:58 | Scoring and verdicts (`exp01_stats.py`) under `nice -n 19` on 8 cores: all four primary contrasts WITHIN NOISE on both endpoints |
+| 11-17 | OpenReview copy: 4,454 Unicode characters (limit 5,000; Markdown counted as text) |
 
 ## Problems met, and how each was handled
 

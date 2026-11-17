@@ -111,6 +111,13 @@ EDITS = [
 ]
 
 
+def q4(x, signed=False):
+    """Round a decimal string to 4 dp, half-up, from its text (not via binary floating point)."""
+    from decimal import Decimal, ROUND_HALF_UP
+    v = Decimal(x).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+    return ('%+.4f' if signed else '%.4f') % v if v != 0 else ('+0.0000' if signed else '0.0000')
+
+
 def shape_appendix():
     """app:shapeoracle, generated from committed result tables only."""
     T = K.TABLES
@@ -156,8 +163,8 @@ def shape_appendix():
     for r in prim:
         n = nc.get(r['contrast'], {})
         lines.append(r"%s & $%s$ & $%s$ & %s & \textsc{%s} & $%s$ \\" % (
-            r['contrast'].replace('-SHUF', '-SHUF').replace(' - ', r' $-$ '), r['delta'][:7], r['bar'][:6], r['sign'],
-            r['verdict'].lower(), n.get('delta', 'n/a')[:7]))
+            r['contrast'].replace(' - ', r' $-$ '), q4(r['delta'], True), q4(r['bar']), r['sign'],
+            r['verdict'].lower(), q4(n['delta'], True) if n.get('delta') else 'n/a'))
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{center}", ""]
     within = all(r['verdict'] == 'WITHIN NOISE' for r in prim)
     if within:
@@ -165,7 +172,7 @@ def shape_appendix():
                      r"sensitivity, and aim at the top-ten shape does not resolve against its own shuffle, although the "
                      r"endpoint-label leak can only favour these arms. The bars are as wide as the effects they would miss "
                      r"($2\hat{\sigma} = %s$ on $\mathrm{df} = %s$); this is a null at this sensitivity, not evidence of no effect."
-                     % (prim[0]['bar'][:6], prim[0]['df_pool']))
+                     % (q4(prim[0]['bar']), prim[0]['df_pool']))
     else:
         lines.append(r"At least one oracle shape departs from the C10-shaped oracle by more than its bar; the verdicts above "
                      r"are reported as pre-registered, and because these arms read endpoint labels, a COD10K gain is "

@@ -11,7 +11,31 @@ all contained in `CODE_CHANGES.patch`.
 
 ### EXP-01: different-shape oracle (QA-01)
 
-[EXP-01 SUMMARY]
+Pre-registration: `EXPERIMENT_LOGS/EXP-01/PREREGISTRATION_EXP01.md`. Results:
+`RESULT_TABLES/EXP-01_metrics_by_seed.csv`, `RESULT_TABLES/EXP-01_comparisons.csv`,
+`RESULT_TABLES/run_manifest.csv`. Run logs: `EXPERIMENT_LOGS/EXP-01/runs/`.
+
+**Status: VERIFIED.** All 12 SINet runs (OR-TOP10, OR-TOP10-SHUF, OR-PROP, OR-TOP5 × seeds 42, 43, 45)
+completed in one start each, used 21.7 GPU-h, and passed the completion assertions. They are compared
+with the reused, gate-checked B, C10 and CORACLE.
+
+| Primary contrast (COD10K decides) | Δ COD10K | 2σ̂ (df 14) | sign | verdict | Δ NC4K (2σ̂ 0.0064) |
+|---|---|---|---|---|---|
+| P1 OR-TOP10 − CORACLE | +0.0022 | 0.0057 | 2/3 | WITHIN NOISE | +0.0011 |
+| P2 OR-TOP10 − OR-TOP10-SHUF | −0.0002 | 0.0057 | 2/3 | WITHIN NOISE | −0.0009 |
+| P3 OR-PROP − CORACLE (overlapping sets, J = 0.52) | +0.0023 | 0.0057 | 2/3 | WITHIN NOISE | +0.0028 |
+| P4 OR-TOP5 − CORACLE (shape plus aim) | +0.0011 | 0.0057 | 2/3 | WITHIN NOISE | +0.0005 |
+
+- **All 14 secondary contrasts are also WITHIN NOISE.** Oracle arms against B: +0.0020 to +0.0032.
+  Against C10: −0.0019 to −0.0031.
+- **COD10K arm means:** B 0.7134, CORACLE 0.7143, OR-TOP5 0.7154, OR-TOP10 0.7165,
+  OR-TOP10-SHUF 0.7166, OR-PROP 0.7166, C10 0.7185.
+- **Checks:** the committed scorer and the independent S-measure agree to 2.2e-16 on 200 images per
+  run and endpoint. The two statistics implementations agree to 1.9e-14.
+- **Leakage:** every oracle arm is endpoint-label-leaky. The leak can only favour them, so the null is
+  conservative.
+- **Exploratory intervals (Welch, n = 3, unstable):** on COD10K they exclude the +0.0142 reference
+  effect for all four contrasts. On NC4K, P1's interval reaches +0.0157.
 
 ### Geometry and the reviewer's rank premise (CW-01)
 `EXPERIMENT_LOGS/TH-01_math_verification.md`, `EXPERIMENT_LOGS/AN-02_audit.md`

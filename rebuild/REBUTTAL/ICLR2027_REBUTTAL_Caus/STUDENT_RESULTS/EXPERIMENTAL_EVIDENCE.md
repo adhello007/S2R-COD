@@ -96,13 +96,18 @@
 
 | Field | Content |
 |---|---|
-| Status | RUNNING (12 scripts queued 2026-11-12 12:56 IST; pilot passed) |
+| Status | VERIFIED: 12/12 runs (2026-11-13 13:06 → 11-14 01:13 IST), one start each, completion assertions passed, 21.7 GPU-h |
 | Pre-registration | `rebuild/CAUS/PREREGISTRATION_EXP01.md` (`b21b67c`, before any run script); Addendum A1 (`213039c`, before any run) |
 | Seeds / arms | 42, 43, 45 × {OR-TOP10, OR-TOP10-SHUF, OR-PROP, OR-TOP5}; reused B, C10, CORACLE |
 | Quotas | `EXP-01_quota_manifests.csv`, `EXP-01_stems/`, `EXP-01_selection_manifest.csv` |
 | Reuse gate | R1–R6 pass: `EXP-01_reuse_gate.csv`, `EXP-01_reuse_R5_rescore.csv`, `EXPERIMENT_LOGS/EXP-01/00_pilot/` |
 | Leakage flag | endpoint-label-leaky (all oracle arms); NC4K read by no allocation |
-| Results | *pending runs of record* |
+| Results | All four primary contrasts WITHIN NOISE on COD10K (2σ̂ = 0.0057, df 14): P1 +0.0022, P2 −0.0002, P3 +0.0023, P4 +0.0011 (signs 2/3). NC4K (2σ̂ = 0.0064): +0.0011, −0.0009, +0.0028, +0.0005. All secondary contrasts are within noise. [NEW VERIFIED] |
+| Commands + SHA | queue scripts `01..12_EXP01_SINet_*.sh` (pinned hashes) → `rebuild/CAUS/exp01_run.py` at `e21752f`; scoring and verdicts `exp01_stats.py` (log `EXPERIMENT_LOGS/EXP-01/scoring/exp01_stats.log`) |
+| Outputs | `EXP-01_metrics_by_seed.csv`, `EXP-01_comparisons.csv`, `EXP-01_runs_of_record.csv`, `EXP-01_independent_sm_check_new.csv`, `run_manifest.csv`, `EXPERIMENT_LOGS/EXP-01/runs/` |
+| Independent check | independent S-measure vs committed scorer: max diff 2.2e-16 (200 images × 12 runs × 2 endpoints); stats implementation A vs B: 1.9e-14 |
+| Interpretation | No oracle shape tested (flat, top-10, top-5) resolves a gain over the C10-shaped oracle; aim at the top-10 shape does not resolve against its shuffle |
+| Limitations | SINet only; 3 seeds; leaky oracle; OR-PROP's direction untestable; OR-TOP5 has no same-shape control |
 
 ## EXP-02: modern detector × LAKE-RED (CW-02, QA-02), §6 blocker record
 
