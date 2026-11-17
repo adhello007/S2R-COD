@@ -117,6 +117,10 @@ the whole of it.
    - The unsupported reading: the probe detects concentration alone.
 4. No geometric result here is evidence about detector accuracy. Accuracy is EXP-01's question.
 
+**Missing data.** The oracle vector has a value for all 75 clusters: n_test is 1–94 per cluster, sum
+2026, with one single-image cluster. No shrinkage rule was needed, so none was applied. The noise in
+low-n clusters is disclosed in the OR pre-registration (§OR.2.3).
+
 **Oracle-source label (TH-01 acceptance).** Every new oracle quota comes from the endpoint-label-leaky
 CORACLE vector; the shuffles are leaky in shape only. No disjoint calibration source exists in the
 pre-rebuttal workspace (`AN-05_leakage_and_calibration.md`).

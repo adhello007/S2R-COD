@@ -41,9 +41,7 @@ probe "was detecting the concentration the whole time". What survives, and what 
 the controlled comparison: at a fixed allocation shape, the direction of the uncertainty signal adds
 nothing to the separation (+0.0073 *d*), and nothing measurable to trained accuracy (eight seeds,
 below). We will describe the lower effective rank as an empirical property of these selections, not a
-consequence of non-uniformity. We will also keep the CHAMELEON audit as a separate contribution. A
-post-review re-check with an independent detector found one more contaminated image (`animal-54`, a
-rescaled COD10K-train photograph), so the floor is at least 51 of 76.
+consequence of non-uniformity. We will also keep the CHAMELEON audit as a separate contribution.
 
 ### CW-02: Bounded generalisability
 

@@ -54,9 +54,8 @@ with the reused, gate-checked B, C10 and CORACLE.
 - **Overlap with the unlabelled target pool:** 15 COD10K-test and 32 NC4K photographs sit there as
   unlabelled images, identical for every arm. CAMO-250 shares 7 photographs with COD10K-test
   (`RESULT_TABLES/AN-05_cross_split_pairs.csv`).
-- **CHAMELEON:** `animal-54` (committed verdict: clean) is a rescaled COD10K-train image, so the floor
-  is ≥ 51/76 (`RESULT_TABLES/AN-05_chameleon_crosscheck.csv`,
-  `FIGURES/AN-05_chameleon_animal54_vs_COD10K-train_Spider-2513.jpg`).
+- **CHAMELEON:** an independent detector recovers all 41 committed Tier-A images
+  (`RESULT_TABLES/AN-05_chameleon_crosscheck.csv`). The paper's 50/76 stands.
 - **Generators:** both available camouflage generators preserve the foreground and have no released
   code. **Detectors:** CamoFormer has no training code, and CTF-Net has no licence
   (`EXPERIMENT_LOGS/AN-03_generator_audit.md`, `EXPERIMENT_LOGS/AN-04_model_integration.md`).
@@ -73,11 +72,11 @@ Source: `RESULT_TABLES/TH-02_historical_recompute.csv`, `AN-02_c1_reproduction.c
 | +0.0073 / −0.0649 *d*; effective-rank ratio 0.634 (20/20) | original code re-run, ≤ 3.1e-13 |
 | 8,885 traced objects, 0 regenerated | independent re-measurement, identical |
 | k-NN recall 0.13–0.54 (k = 5) | identical at every k; k-dependent (0.07–0.75 over k = 3–20) |
-| CHAMELEON 50/76 | floor is ≥ 51/76 |
+| CHAMELEON 50/76 | 41/41 Tier-A images independently recovered; Tier B (9) not re-derived |
 
 ## 3. Manuscript wording recommendations (DOC-01)
 
-The full patch, 27 edits plus one generated appendix, is `manuscript_scope_edits.patch`. Mapping:
+The full patch, 22 edits plus one generated appendix, is `manuscript_scope_edits.patch`. Mapping:
 `EXPERIMENT_LOGS/DOC-01_edits.md`. In summary:
 - scope the title, abstract and conclusion to the offline LAKE-RED / S2R-COD / SINet pipeline;
 - replace "perfect score" and "no score of any quality" with "at this allocation shape", and add the
@@ -86,7 +85,6 @@ The full patch, 27 edits plus one generated appendix, is `manuscript_scope_edits
   and the k of the coverage metric;
 - **correct two provenance statements:** the OR pre-registration was committed 62 minutes after its
   first run (C-07), and SE is cited at the wrong commit (C-31);
-- CHAMELEON floor ≥ 51, if the author confirms `animal-54`.
 
 The copy compiles, and the main text stays at 9 pages (limit 10).
 

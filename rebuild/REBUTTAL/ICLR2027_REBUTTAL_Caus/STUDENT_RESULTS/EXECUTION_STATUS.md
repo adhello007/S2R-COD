@@ -24,7 +24,7 @@
 |---|---|---|
 | TH-01 | VERIFIED | quotas reproduce; shapes defined; analytic and empirical rank counterexamples |
 | TH-02 | VERIFIED | historical estimands recomputed with two implementations; EXP-01 verdict code validated on OR |
-| AN-01 | VERIFIED | 31 claims; 2 incorrect statements of fact (C-07, C-31); CHAMELEON floor ≥ 51 |
+| AN-01 | VERIFIED | 33 claims; 2 incorrect statements of fact (C-07, C-31) |
 | AN-02 | VERIFIED | original C1 code reproduces (≤ 3e-13); new-shape distinctness; geometry driven by matching plus concentration |
 | AN-03 | PARTIALLY VERIFIED (LAKE-RED pool VERIFIED; new generator BLOCKED) | 8,885 traced, 0 regenerated; coverage reproduced at every k; no foreground-varying generator with released code |
 | AN-04 | BLOCKED | CamoFormer: no training entrypoint. CTF-Net: no licence. No GPU allocation. |

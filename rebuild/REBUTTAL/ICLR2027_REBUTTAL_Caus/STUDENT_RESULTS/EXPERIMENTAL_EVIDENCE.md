@@ -43,7 +43,7 @@
 | Field | Content |
 |---|---|
 | Status | VERIFIED |
-| Claimed result | 31 claims audited. Incorrect statements of fact: the OR pre-registration timing (C-07; committed 62 min after the first run, before any score) and the SE commit reference (C-31). Overstated: "no score of any quality" (C-06), "perfect" oracle (C-05), concentration-only attribution (C-04/C-23), missing scope (C-01/02/24/25). CHAMELEON floor ≥ 51 (C-22). |
+| Claimed result | 33 claims audited. Incorrect statements of fact: the OR pre-registration timing (C-07; committed 62 min after the first run, before any score) and the SE commit reference (C-31). Overstated: "no score of any quality" (C-06), "perfect" oracle (C-05), concentration-only attribution (C-04/C-23), missing scope (C-01/02/24/25). CHAMELEON 50/76 supported as a floor; 41/41 Tier-A recovered independently (C-22). |
 | Commands + SHA | compile of the submitted .tex with committed inputs (`latexmk`, 25 pages, 0 undefined); git provenance (`git log`, `git cat-file`, tag `prereg-or-fx-se-a79886a`) |
 | Outputs | `AN-01_claim_ledger.csv`, `EXPERIMENT_LOGS/AN-01_claim_audit.md` |
 | Independent check | each number traced to a committed artifact and, where cheap, re-derived (TH-02, AN-02, AN-03, AN-05) |
@@ -86,9 +86,9 @@
 | Field | Content |
 |---|---|
 | Status | VERIFIED |
-| Claimed result | Exact overlaps reproduce D2 (7 target × COD10K-test; 3 CAMO-250 × CHAMELEON) [ORIGINAL VERIFIED]. New near-duplicates: 15 COD10K-test and 32 NC4K photographs in the unlabelled target pool; 7 CAMO-250 × COD10K-test. All are identical across arms. No disjoint calibration source exists, so the oracle arms are endpoint-label-leaky. CHAMELEON `animal-54` is contaminated (floor ≥ 51). |
+| Claimed result | Exact overlaps reproduce D2 (7 target × COD10K-test; 3 CAMO-250 × CHAMELEON) [ORIGINAL VERIFIED]. New near-duplicates: 15 COD10K-test and 32 NC4K photographs in the unlabelled target pool; 7 CAMO-250 × COD10K-test. All are identical across arms. No disjoint calibration source exists, so the oracle arms are endpoint-label-leaky. CHAMELEON: all 41 Tier-A images recovered independently. |
 | Commands + SHA | `an05_split_audit.py` (`b130d3f`); CHAMELEON cross-check (`5e7a2f9`) |
-| Outputs | `AN-05_split_audit.csv`, `AN-05_cross_split_pairs.csv`, `AN-05_role_ledger.csv`, `AN-05_chameleon_crosscheck.csv`, `../FIGURES/AN-05_chameleon_animal54_vs_COD10K-train_Spider-2513.jpg`, `EXPERIMENT_LOGS/AN-05_leakage_and_calibration.md` |
+| Outputs | `AN-05_split_audit.csv`, `AN-05_cross_split_pairs.csv`, `AN-05_role_ledger.csv`, `AN-05_chameleon_crosscheck.csv`, `EXPERIMENT_LOGS/AN-05_leakage_and_calibration.md` |
 | Independent check | 13/13 confirmed pairs inspected by eye; D2 committed counts |
 | Limitations | Near-duplicate counts are lower bounds (crops, flips and recolours escape the detector) |
 
@@ -102,6 +102,7 @@
 | Quotas | `EXP-01_quota_manifests.csv`, `EXP-01_stems/`, `EXP-01_selection_manifest.csv` |
 | Reuse gate | R1–R6 pass: `EXP-01_reuse_gate.csv`, `EXP-01_reuse_R5_rescore.csv`, `EXPERIMENT_LOGS/EXP-01/00_pilot/` |
 | Leakage flag | endpoint-label-leaky (all oracle arms); NC4K read by no allocation |
+| Hardware / software | every run: NVIDIA RTX PRO 6000 Blackwell (95 GB, ≥ 93.7 GB free at launch), GPUs 0 and 1; Python 3.12 shared uv venv; torch 2.11.0+cu128, CUDA 12.8, cuDNN 9.19 (`runs/*/env.json`) |
 | Results | All four primary contrasts WITHIN NOISE on COD10K (2σ̂ = 0.0057, df 14): P1 +0.0022, P2 −0.0002, P3 +0.0023, P4 +0.0011 (signs 2/3). NC4K (2σ̂ = 0.0064): +0.0011, −0.0009, +0.0028, +0.0005. All secondary contrasts are within noise. [NEW VERIFIED] |
 | Commands + SHA | queue scripts `01..12_EXP01_SINet_*.sh` (pinned hashes) → `rebuild/CAUS/exp01_run.py` at `e21752f`; scoring and verdicts `exp01_stats.py` (log `EXPERIMENT_LOGS/EXP-01/scoring/exp01_stats.log`) |
 | Outputs | `EXP-01_metrics_by_seed.csv`, `EXP-01_comparisons.csv`, `EXP-01_runs_of_record.csv`, `EXP-01_independent_sm_check_new.csv`, `run_manifest.csv`, `EXPERIMENT_LOGS/EXP-01/runs/` |

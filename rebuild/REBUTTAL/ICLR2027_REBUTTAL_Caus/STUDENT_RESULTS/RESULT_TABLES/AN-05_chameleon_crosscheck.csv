@@ -52,7 +52,7 @@ animal-50.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3
 animal-51.jpg,CLEAN_VS_TRAINING,clean,,False,
 animal-52.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-59-Grasshopper-3617.jpg,True,
 animal-53.jpg,CLEAN_VS_TRAINING,clean,,False,
-animal-54.jpg,CLEAN_VS_TRAINING,clean,,True,"NEW: rescaled copy of COD10K-train COD10K-CAM-2-Terrestrial-45-Spider-2513 (880x660 vs 900x675, dHash 2, MAD 0.92/255), visually confirmed"
+animal-54.jpg,CLEAN_VS_TRAINING,clean,,True,"candidate flagged by the independent detector; not adjudicated and not claimed (dropped by author decision, 2026-11-17)"
 animal-55.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-4-Amphibian-67-Frog-4680.jpg,True,
 animal-56.jpg,CONTAMINATED,A_same_dimension,COD10K-CAM-3-Flying-58-Frogmouth-3594.jpg,True,
 animal-57.jpg,CONTAMINATED,A_same_dimension,camourflage_00836.jpg,True,

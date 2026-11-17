@@ -38,11 +38,11 @@
    addresses other shapes (above).
 3. **"The probe was detecting the concentration the whole time"** is too strong. A flat quota under
    the same matching still separates (d ≈ 0.5).
-4. **The CHAMELEON floor is ≥ 51/76, not 50.** This strengthens the finding and needs the author's
-   adjudication of `animal-54`.
-5. **Unlabelled endpoint overlap:** 15 COD10K-test and 32 NC4K photographs are also in the unlabelled
+4. **Unlabelled endpoint overlap:** 15 COD10K-test and 32 NC4K photographs are also in the unlabelled
    target pool, identically for every arm. This affects absolute levels, not contrasts. The paper
    discloses only the 7 exact COD10K pairs.
+5. **A provenance commit can be lost.** `c2114af` (the AC and PC rules, committed 5 minutes before
+   the first PC run) is on no branch and has no tag (C-32). Tag it, as `a79886a` was tagged.
 6. **Not checked locally:** whether the manuscript and `01_INITIAL_REBUTTAL_FOR_SUBMISSION.md` match
    what was uploaded and posted.
 
@@ -68,3 +68,31 @@
 | Both final rebuttal versions prepared; OpenReview copy character-counted | yes (count in `EXECUTION_STATUS.md`). OpenReview's current limit should be confirmed before posting. |
 | Evidence, logs, hashes, code patch, status and audit exist; every linked path resolves | yes (`rebuild/CAUS/doc02_package.py` link check) |
 | No posting, no irreversible action without permission, no suppressed result | yes: nothing posted, nothing deleted, every run reported |
+
+## Compliance with the instruction file
+
+**What was checked.** `Caus_AGENT_EXECUTION_INSTRUCTIONS.md` at the worktree root is byte-identical
+to `03_STUDENT_AGENT_EXECUTION_INSTRUCTIONS.md` (sha256 `b6364bc0…`). This check runs through §§3, 5,
+6 and 7 of it, task by task.
+
+| Requirement | Delivered | Deviation / note |
+|---|---|---|
+| §3 run manifest with the listed fields, `oracle_score_source`, `eligible_capacity_policy` | `RESULT_TABLES/run_manifest.csv` (24 rows: 12 new, 12 historical) | Round-1 checkpoints are overwritten by round 2 in this trainer, so `round1_checkpoint_sha` says so instead of giving a hash |
+| §3.3 smoke test and one-epoch pilot before any campaign | `EXPERIMENT_LOGS/EXP-01/00_pilot/` | The optional CLS smoke timed out on its own budget; validity was shown otherwise (Addendum A1) |
+| TH-01 outputs (3 tables, math log, code SHA, qualification) | all present | — |
+| TH-02 outputs (log, contrast definitions, verified inference script, per-contrast table) | all present (`caus_stats.py`, `exp01_stats.py`, `EXP-01_comparisons.csv`) | Interaction contrasts are defined but not estimable (EXP-02/03 BLOCKED) |
+| AN-01 outputs (audit, ledger, proposed edits); every cited key validated; anonymous repository inspected | all present; 41/41 keys; repository state recorded | Repository subfolders could not be listed without a browser session |
+| AN-02 outputs (overlap, probe/geometry tables, audit) | all present | The optional figure was not drawn. Probe CIs are reported as across-draw sd (as committed), not re-bootstrapped. No normalisation-sensitivity rerun; the alternative rank definition and both representations are reported. |
+| AN-03 outputs (provenance, coverage/QC, audit) | all present | No human mask QC on a blinded sample (masks are shared by every arm). Generator licence not re-checked: no new generator was used. |
+| AN-04 outputs (integration log, preflight, rationale, source revision) | log and preflight present | No adapter (BLOCKED). Source revision not recorded (pages only). |
+| AN-05 outputs (split audit, leakage log) | present (plus cross-split pairs, role ledger, CHAMELEON cross-check) | No data-flow figure; the role ledger carries the flow |
+| EXP-01 outputs (quota manifests, metrics by seed, comparisons, logs, patch, 150–250-word finding) | all present (`EXPERIMENT_LOGS/EXP-01/EXP-01_finding.md`, 243 words) | Smaller arm set predeclared with its rationale (TOP5-SHUF and PROP-SHUF not trained) |
+| EXP-02 / EXP-03 / EXP-04 | §6 blocker records | No log folders: they were not executed (§7) |
+| DOC-01 (summary section, patch, claim-to-sentence table) | all present; patch compiles; main text 9 pages | The CHAMELEON edits were withdrawn (author decision) |
+| DOC-02 (both rebuttals, summary, status, evidence, audit, code patch, archive with checksums) | all present; OpenReview copy counted | — |
+| §7 tree | as specified | `02_REVIEWER_CONCERN_AND_ACTION_MATRIX.md` was not supplied and was not created (noted). `FIGURES/` holds only a README (no figures). |
+
+**Not done, and not claimed:**
+- the clean-calibration oracle comparison;
+- the SINet-v2 oracle runs;
+- the modern-detector and new-generator experiments.

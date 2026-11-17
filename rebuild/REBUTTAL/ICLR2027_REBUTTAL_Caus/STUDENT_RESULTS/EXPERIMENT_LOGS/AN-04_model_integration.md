@@ -28,6 +28,10 @@ declare any replacement before outcomes.
    two rounds, is several times the cost of a SINet run per seed. It lies wholly outside the
    12-run allocation, and the owner's constraint marks EXP-02 BLOCKED for compute.
 
+**Source revision.** The repositories were read as rendered on 2026-11-12. Their commit hashes were
+not visible on the pages and were not recorded. Nothing was cloned or downloaded, so no code revision
+entered this work.
+
 ## §6 blocker record (EXP-02, and EXP-04 through it)
 
 | Field | Content |

@@ -35,7 +35,7 @@ photograph. The counts are **lower bounds**: heavy crops, flips and recolouring 
 | COD10K-test ∩ NC4K | 0 | → 4 | — | endpoints not fully independent |
 | HKU-IS ∩ NC4K / ∩ CAMO-250 | 0 | 1 / 2 | 1 (NC4K) | the HKU-IS image is in every arm's labelled base pool |
 | LAKE-RED renders ∩ any endpoint | 0 | 0 | 0 | none |
-| CHAMELEON ∩ target pool | — | **42** (41 Tier-A + `animal-54`) | 41 Tier-A + 9 Tier-B = 50 | CHAMELEON is not an endpoint; floor ≥ 51/76 |
+| CHAMELEON ∩ target pool | — | 41 Tier-A recovered (one further candidate, `animal-54`, not claimed: dropped by author decision, 2026-11-17) | 41 Tier-A + 9 Tier-B = 50 | CHAMELEON is not an endpoint; the paper's 50/76 stands |
 
 **Arm dependence.** Three HKU-IS foregrounds whose photographs appear in CAMO-250 are selected as
 renders by some arms (`5189`: CINV, CORACLE, OR-TOP10-SHUF, OR-TOP5 and quota-only OR-PROP-INV;

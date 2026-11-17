@@ -1,6 +1,6 @@
 # AN-01: manuscript claim and reproducibility audit
 
-**Status: VERIFIED.** 31 claims are audited. The ledger is `RESULT_TABLES/AN-01_claim_ledger.csv`;
+**Status: VERIFIED.** 33 claims are audited. The ledger is `RESULT_TABLES/AN-01_claim_ledger.csv`;
 the proposed edits are in `DOC-01_edits.md` and `../manuscript_scope_edits.patch`.
 
 ## Which manuscript was audited
@@ -32,8 +32,16 @@ the proposed edits are in `DOC-01_edits.md` and `../manuscript_scope_edits.patch
 3. A high-risk phrase search covered: "perfect", "no score of any quality", "changes nothing",
    "nothing moves", "the whole time", "without hedging", "every concentrat…", "Doesn't Help",
    "closed loop", "generaliz…", "proves".
-4. Citations were checked: every key resolves (0 undefined in the compile), and 11 central keys were
-   checked for semantic correspondence with their use. All match.
+4. Citations were checked. All 41 cited keys (main text and `\input` files) resolve, with 0 undefined in
+   the compile, and every one was checked against the sentence it supports. Two minor imprecisions:
+   CLIP is called self-supervised, and COD10K is cited only to the TPAMI paper (C-33). Two bib entries
+   are never cited, which is harmless.
+5. The anonymised repository (`anonymous.4open.science/r/AD-35F1/`) is live: published 2026-09-25
+   08:59 UTC, expires 2027-03-25, downloads enabled. Its top level lists the trainer code, `Eval/`,
+   `Src/`, `rebuild/`, `results/`, `Paper/`, `Snapshot/` and a separately written README. Ten of the
+   sixteen top-level files match the submission commit in size, including `MyTrain.py`, `MyTest.py`
+   and `CLS.py`. Blob hashes differ, as expected from anonymisation. Subfolders need a browser
+   session, so their contents were not inspected.
 
 ## Findings, in order of consequence
 
@@ -54,11 +62,12 @@ the proposed edits are in `DOC-01_edits.md` and `../manuscript_scope_edits.patch
   (2026-09-13) does not contain the SE pre-registration. The file was first committed in `a79886a` on
   2026-09-18, two days before SE's first run. The ordering claim holds; only the commit reference is
   wrong.
-- **C-22, CHAMELEON count.** The paper's 50/76 is presented as a floor, and it is a low one. An
-  independent detector recovers all 41 Tier-A images. It also finds that `animal-54` (committed
-  verdict: clean) is a rescaled copy of COD10K-train `Spider-2513` (visually confirmed:
-  `FIGURES/AN-05_chameleon_animal54_vs_COD10K-train_Spider-2513.jpg`). The floor is **at least
-  51/76 (67.1%)**, and the clean subset is 9.
+- **C-22, CHAMELEON count.** The paper's 50/76 is a floor and stands. An independent detector
+  recovers all 41 Tier-A images. One further candidate it flagged (`animal-54`) is not claimed
+  (dropped by author decision, 2026-11-17).
+- **C-32, a provenance commit at risk.** The manuscript's pointer `c2114af` (AC and PC rules) is
+  correct: it was committed 5 minutes before the first PC run. But it is on no branch and has no tag,
+  so it can be garbage-collected. Tagging it, as `a79886a` was tagged, is the author's decision.
 - **C-27, prose defect.** The punctuation edit in the supplied .tex leaves one AI-use sentence
   ungrammatical.
 
@@ -99,5 +108,4 @@ The empirical record holds up: every trained number re-derives exactly. The rebu
 1. concede the oracle-shape scope (C-06/C-05) and answer it with EXP-01;
 2. correct the pre-registration timing (C-07) unprompted;
 3. narrow the concentration attribution (C-04/C-23) in the direction the reviewer's CW-01 pushes;
-4. state the pipeline scope in the title, abstract and conclusion (C-01/C-02/C-25);
-5. report the strengthened CHAMELEON floor (C-22).
+4. state the pipeline scope in the title, abstract and conclusion (C-01/C-02/C-25).
