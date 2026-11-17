@@ -1,0 +1,66 @@
+preamble-colour-macros
+preamble-drop-eq-macros
+abstract
+abstract-allocation-wording
+intro-matching
+intro-bounded-null
+intro-contribution-null
+intro-contribution-chameleon
+intro-scope
+intro-chameleon-floor
+cutI-intro-superseded-sentence (deleted, uncoloured)
+cut6-intro-redundant (uncoloured; same content in Sec. 1.1)
+related-rise
+methods-sign-rule
+null-opening
+table2-caption
+table2-padding (uncoloured; fits the ORS rows)
+table2-rows
+null-oracle-shapes
+cut5-three-seeds
+cut4-positive-control
+null-equivalence-block
+s32-heading
+s32-three-claims
+s32-probe-matching
+s32-rank-coverage
+cut2-s32-equivalence
+cut3-s32-boundary
+fig3-caption
+s32-cdr
+s33-opening
+s33-coverage-k
+s34-floor-51-cod10k
+s34-subset
+s34-footnote
+discussion-geometric
+discussion-preflight
+cutK-scope-compress (inside orange span; caveat kept)
+scope-open
+scope-close-detector
+conclusion
+conclusion-open
+ai-use-grammar (uncoloured)
+ai-use-prereg-timing
+repro-prereg-timing
+repro-run-count
+appendix-legend
+appA-rise-open
+appA-rise-close
+appB-emeasure
+appB-campaign-codes
+appB-sign-rule
+appB-prereg-commits
+appC-selfref (uncoloured)
+appC-cdr-table
+appC-ci_tost-eq-paired
+appC-boundary-interaction
+appC-attenuation
+appE-chameleon
+appG-oracle-timing
+appG-pseudolabel-means
+appH-shapeoracle
+appC-ci_tost-caption
+appC-boundary-table-colour
+appA-protocol-table-colour+0.717-fix
+appE-coverage-k-and-selections

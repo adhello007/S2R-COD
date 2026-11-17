@@ -1,0 +1,24 @@
+%% Values: RL5B STUDENT_RESULTS/RESULT_TABLES/EXP02_SINet_results.md and EXP02_SINet_summary.json.
+\begin{table}[h]
+\revfloatcolor{RevShared}
+\caption{The pre-registered dose-response experiment (SINet, $N = 1000$, $35$ new runs plus the eight-seed B runs).
+$\Delta$ is each concentrated level's difference from the dispersed reference (cluster-uniform and random arms,
+Boundary-IoU $0.3308$ at threshold $0.5$ on COD10K-test, the primary measure); the bar is $2\hat\sigma = 0.0193$
+($\mathrm{df} = 24$). A level counts as an effect only if it clears the bar, at least four of its five random permutations
+agree in sign, and the spread between permutations is smaller than the effect. Effective numbers of clusters are
+nominal (quota) and delivered (nearest cluster centre of each selected render). The SINet-v2 replication was not run.}
+\label{tab:cdr}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccccl@{}}
+\toprule
+Level & Clusters (nom./deliv.) & Runs & $\Delta$ B-IoU & $\times$\,bar & Perms agree & $\Delta S_\alpha$ & Verdict \\
+\midrule
+Dispersed (uniform, random) & $75$ / $50$ (random $43$) & $5 + 8$ & reference & & & & \\
+Committed shape ($\atemp = 1.0$) & $30$ / $45$ & $5 \times 3$ & $-0.0005$ & $0.03$ & $2/5$ & $+0.0004$ & \\
+Sharper ($\atemp = 0.758$) & $15$ / $41$ & $5 \times 3$ & $+0.0021$ & $0.11$ & $4/5$ & $+0.0015$ & not supported \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

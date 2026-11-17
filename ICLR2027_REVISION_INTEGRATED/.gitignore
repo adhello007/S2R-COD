@@ -1,0 +1,5 @@
+paper/build/
+paper/build_base/
+paper/*.out
+*.zip
+__pycache__/

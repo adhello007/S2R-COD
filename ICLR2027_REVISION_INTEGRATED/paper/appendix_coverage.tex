@@ -1,0 +1,41 @@
+\section{Coverage of the Target Manifold, and Why AUC Is Not Used}
+\label{app:coverage}
+
+Section~\ref{sec:why} measures how much of the real target manifold a set covers as $k$-NN recall
+at $k = 5$~\citep{kynkaanniemi2019improved}: the fraction of the $4040$ target images that fall inside
+the $k$-NN balls of the compared set, in each of the three embedding spaces of Table~\ref{tab:silhouette}.
+Every real set covers the target near its own ceiling; both synthetic pools collapse, most sharply in
+\texttt{clipL224}. \revB{The values depend on $k$, but the ordering does not: at $k = 3, 5, 10, 20$ our renders cover
+$0.07$--$0.48$, $0.13$--$0.54$, $0.25$--$0.63$ and $0.38$--$0.75$ of the target across the three spaces, against
+$0.60$--$0.64$, $0.71$--$0.75$, $0.84$--$0.88$ and $0.95$--$0.97$ for the raw HKU-IS photographs the generator starts
+from.}
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+Compared set & \texttt{dinoL224} & \texttt{dinoL518} & \texttt{clipL224} \\
+\midrule
+target against itself (random halves) & 0.9332 & 0.9431 & 0.8931 \\
+COD10K part vs CAMO part of the target & 0.8898 & 0.9003 & 0.8730 \\
+NC4K, a different real set & 0.8874 & 0.8995 & 0.7921 \\
+raw HKU-IS, the generator's input & 0.7473 & 0.7097 & 0.7470 \\
+authors' synthetic pool & 0.4829 & 0.4834 & 0.1277 \\
+our synthetic renders & 0.4668 & 0.5421 & 0.1349 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{revblock}{RevC}
+\paragraph{Coverage of the selected sets.} The same estimator applied to the $1000$ injected renders of each arm
+separates the arms that the probe's own coverage table did not: in \texttt{dinoL518}, the three concentrated selections
+cover $0.62$--$0.64$ of the target, against $0.35$--$0.43$ for the eight random draws ($0.50$--$0.53$ against
+$0.27$--$0.45$ in \texttt{dinoL224}; in \texttt{clipL224} the ranges overlap). Concentration therefore moves the
+selected set closer to the target under this estimator, and trained accuracy does not follow. We give no interval,
+because resampling foregrounds biases this estimator.
+\end{revblock}
+
+A real-versus-synthetic classifier is not used as evidence, because it cannot distinguish a
+distributional gap from a re-encoding artifact: re-saving the \emph{identical} target images at
+JPEG quality $30$ already separates them from themselves at AUC $0.9928$ in \texttt{clipL224}, against
+$0.9993$ and $0.9995$ for the two synthetic pools. \emph{Source:} \texttt{rebuild/A3/out/a3\_coverage.csv},
+\texttt{a3\_probe\_table.csv}.

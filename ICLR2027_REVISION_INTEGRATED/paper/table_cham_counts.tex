@@ -1,0 +1,28 @@
+%% Values: dypE STUDENT_RESULTS/RESULT_TABLES/AN-05_chameleon_pairs.csv and AN-05_cross_benchmark.csv; animal-54 from
+%% commit 5e7a2f9 (Caus AN-05_chameleon_crosscheck.csv and pair image). Reconciliation script: tools/verify_numbers.py.
+\begin{table}[h]
+\revfloatcolor{RevC}
+\caption{Every CHAMELEON count, reconciled ($76$ images). Training pool: COD10K-train and CAMO-train. ``No duplicate
+found'' replaces ``clean'': the detectors find re-encodes, rescales and crops, not other photographs of a specimen.}
+\label{tab:chamcount}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Training-pool partner, released detectors (Tier A $41$ + Tier B $9$; $44$ in COD10K-train) & $50$ \\
+\quad plus one rescaled copy found by an independent detector and confirmed by eye (\texttt{animal-54}) & $1$ \\
+\quad total with a training-pool partner ($45$ in COD10K-train) & $\mathbf{51}$ \\
+No training-pool partner: unchecked at both tiers & $16$ \\
+No training-pool partner after a Tier-A check of the dimension group & $9$ \\
+\midrule
+Re-encodes of COD10K-test images (all $16$ unchecked, $8$ of the $9$, and $8$ with a training-pool partner) & $32$ \\
+In CAMO-250, the checkpoint-selection split ($3$ byte-identical, $1$ re-encoded) & $4$ \\
+In NC4K & $0$ \\
+\midrule
+A duplicate found somewhere in COD10K or CAMO & $75$ \\
+No duplicate found anywhere (\texttt{animal-38}) & $1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

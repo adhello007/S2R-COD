@@ -1,0 +1,23 @@
+%% Values: dypE STUDENT_RESULTS/RESULT_TABLES/TH-01_paired_inference.csv. Checked by tools/verify_numbers.py.
+\begin{table}[h]
+\revfloatcolor{RevC}
+\caption{Targeted minus random ($S_\alpha$) at eight seeds, paired by training seed beside the Welch analysis (post hoc;
+decides nothing). Pairing does not sharpen the comparison, because B redraws its images at every seed: on the primary
+cell the paired scores are uncorrelated ($r = -0.04$), the targeted arm is ahead on $6$ of $8$ seeds (exact sign-flip
+$p = 0.29$), and the smallest margin at which the paired test would show equivalence is $\pm 0.0061$.}
+\label{tab:paired}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Cell & Welch 95\% CI & Paired 95\% CI & Paired TOST $p$ ($\pm0.005$) \\
+\midrule
+SINet, COD10K (primary) & $[-0.0020, +0.0067]$ & $[-0.0023, +0.0070]$ & $0.111$ \\
+SINet, NC4K & $[-0.0033, +0.0040]$ & $[-0.0038, +0.0045]$ & $\mathbf{0.016}$ \\
+SINet-v2, COD10K & $[-0.0067, +0.0045]$ & $[-0.0081, +0.0059]$ & $0.114$ \\
+SINet-v2, NC4K & $[-0.0068, +0.0049]$ & $[-0.0077, +0.0058]$ & $0.100$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

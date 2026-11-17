@@ -1,0 +1,27 @@
+%% Values: RL5B STUDENT_RESULTS/RESULT_TABLES/EXP01_EQ.csv (confirmatory rows), TH01_contrasts.csv (8-seed Welch),
+%% dypE STUDENT_RESULTS/RESULT_TABLES/TH-01_paired_inference.csv (8-seed paired). Checked by tools/verify_numbers.py.
+\begin{table}[t]
+\revfloatcolor{RevShared}
+\caption{How small an advantage the primary comparison excludes ($S_\alpha$, SINet; C10 minus comparator; equivalence by
+TOST~\citep{lakens2017equivalence} at $\pm0.005$). Eight-seed rows are post hoc. The confirmatory campaign is pre-registered
+and \textsc{incomplete} (B/C10/CSHUF at $16/15/15$ of $27$ seeds); its $2\hat\sigma$ rule finds every gap within noise, and
+H1 survives a Holm correction over its four tests ($p = 0.030$).}
+\label{tab:equiv}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}llllccccl@{}}
+\toprule
+Campaign & Endpoint & Comparator & Seeds & $\Delta$ & 95\% CI & 90\% CI & TOST $p$ & Reading \\
+\midrule
+Eight-seed, Welch & COD10K & B & $8/8$ & $+0.0024$ & $[-0.0020, +0.0067]$ & $[-0.0012, +0.0059]$ & $0.101$ & neither \\
+Eight-seed, paired & COD10K & B & $8$ pairs & $+0.0024$ & $[-0.0023, +0.0070]$ & $[-0.0014, +0.0061]$ & $0.111$ & neither \\
+\midrule
+Confirmatory, H1 & COD10K & B & $15/16$ & $+0.0006$ & $[-0.0033, +0.0045]$ & $[-0.0027, +0.0039]$ & $\mathbf{0.015}$ & equivalent \\
+Confirmatory, H1b & COD10K & CSHUF & $15/15$ & $-0.0009$ & $[-0.0060, +0.0043]$ & $[-0.0051, +0.0034]$ & $0.056$ & neither \\
+Confirmatory & NC4K & B & $15/16$ & $+0.0005$ & $[-0.0016, +0.0025]$ & $[-0.0013, +0.0022]$ & $\mathbf{<0.001}$ & equivalent \\
+Confirmatory & NC4K & CSHUF & $15/15$ & $-0.0005$ & $[-0.0030, +0.0019]$ & $[-0.0026, +0.0015]$ & $\mathbf{<0.001}$ & equivalent \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
